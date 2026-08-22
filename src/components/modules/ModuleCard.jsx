@@ -2,6 +2,7 @@ import AppButton from '../common/AppButton';
 import Icon from '../common/Icon';
 
 export default function ModuleCard({
+  actionTitle = 'Open',
   disabled,
   icon,
   installed,
@@ -49,7 +50,7 @@ export default function ModuleCard({
             className="package-menu-item__action"
             disabled={disabled || uninstalling}
             onClick={onAction}
-            title="Open"
+            title={actionTitle}
             variant="secondary"
           />
           <AppButton

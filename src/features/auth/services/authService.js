@@ -8,12 +8,18 @@ export const authService = {
       throw new Error(response?.message || 'Login failed. Please check your credentials.');
     }
 
+    if (!response.access_token) {
+      throw new Error('Login succeeded without an access token.');
+    }
+    apiClient.setAccessToken(response.access_token);
+
     return {
       user: { username },
       session: response,
     };
   },
   async logout() {
+    apiClient.setAccessToken('');
     return Promise.resolve();
   },
 };

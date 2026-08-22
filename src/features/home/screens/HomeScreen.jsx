@@ -107,6 +107,7 @@ export default function HomeScreen({ onOpenModule }) {
             {availableModules.map((module) => (
               <ModuleCard
                 {...module}
+                actionTitle={module.id === 'web-testing' ? 'Run Script' : 'Open'}
                 disabled={Boolean(installingModuleId || uninstallingModuleId)
                   && installingModuleId !== module.id
                   && uninstallingModuleId !== module.id}
@@ -172,7 +173,7 @@ export default function HomeScreen({ onOpenModule }) {
                   className="package-detail__open"
                   disabled={Boolean(uninstallingModuleId)}
                   onClick={() => onOpenModule(selectedModule)}
-                  title={`Open ${selectedModule.name}`}
+                  title={selectedModule.id === 'web-testing' ? 'Run Script' : `Open ${selectedModule.name}`}
                 />
                 <AppButton
                   className="package-detail__uninstall package-uninstall-button"
