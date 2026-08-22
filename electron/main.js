@@ -34,6 +34,19 @@ function createWindow() {
   });
 
   if (isDevelopment) {
+    mainWindow.webContents.on('before-input-event', (event, input) => {
+      const isDevToolsShortcut = input.type === 'keyDown'
+        && (input.key === 'F12'
+          || (input.control && input.shift && input.key.toLowerCase() === 'i'));
+
+      if (isDevToolsShortcut) {
+        event.preventDefault();
+        mainWindow.webContents.toggleDevTools();
+      }
+    });
+  }
+
+  if (isDevelopment) {
     mainWindow.loadURL('http://127.0.0.1:5173');
   } else {
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));

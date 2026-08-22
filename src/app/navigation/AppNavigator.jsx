@@ -7,7 +7,13 @@ export default function AppNavigator() {
   const [activeModule, setActiveModule] = useState(null);
 
   if (activeModule) {
-    return <ModulePlaceholderScreen module={activeModule} onBack={() => setActiveModule(null)} />;
+    return (
+      <ModulePlaceholderScreen
+        module={activeModule}
+        onBack={() => setActiveModule(null)}
+        onUninstalled={() => setActiveModule(null)}
+      />
+    );
   }
 
   return <HomeScreen onOpenModule={setActiveModule} />;

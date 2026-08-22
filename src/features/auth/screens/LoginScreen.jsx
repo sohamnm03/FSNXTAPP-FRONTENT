@@ -119,7 +119,7 @@ export default function LoginScreen() {
             <button
               className="text-button"
               onClick={() => setInformation(
-                'Password recovery will be connected when the Python authentication API is available.',
+                'Please contact your administrator to reset your password.',
               )}
               type="button"
             >
@@ -135,7 +135,7 @@ export default function LoginScreen() {
           />
           <div className="connection-status" role="status">
             <span aria-hidden="true" />
-            <p>Mock service connected</p>
+            <p>Authentication service connected</p>
           </div>
         </form>
       </section>

@@ -1,15 +1,17 @@
-import { mockCredentials } from '../../../config/mockCredentials';
-
-const MOCK_NETWORK_DELAY_MS = 900;
-const delay = (duration) => new Promise((resolve) => setTimeout(resolve, duration));
+import { apiClient } from '../../../services/api/apiClient';
 
 export const authService = {
   async login({ username, password }) {
-    await delay(MOCK_NETWORK_DELAY_MS);
-    if (username !== mockCredentials.username || password !== mockCredentials.password) {
-      throw new Error('The username or password is incorrect.');
+    const response = await apiClient.post('/api/login', { username, password });
+
+    if (!response?.success) {
+      throw new Error(response?.message || 'Login failed. Please check your credentials.');
     }
-    return { user: { username: mockCredentials.username }, session: { mode: 'development-mock' } };
+
+    return {
+      user: { username },
+      session: response,
+    };
   },
   async logout() {
     return Promise.resolve();

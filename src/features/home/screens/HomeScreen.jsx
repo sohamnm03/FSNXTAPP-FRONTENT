@@ -11,6 +11,9 @@ export default function HomeScreen({ onOpenModule }) {
   const { logout, user } = useAuth();
   const [installedModuleIds, setInstalledModuleIds] = useState([]);
   const [installingModuleId, setInstallingModuleId] = useState(null);
+  const [uninstallingModuleId, setUninstallingModuleId] = useState(null);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [selectedModuleId, setSelectedModuleId] = useState(availableModules[0].id);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [error, setError] = useState('');
 
@@ -21,22 +24,45 @@ export default function HomeScreen({ onOpenModule }) {
   }, []);
 
   async function handleModuleAction(module) {
+    setSelectedModuleId(module.id);
     if (installedModuleIds.includes(module.id)) {
       onOpenModule(module);
       return;
     }
-    if (installingModuleId) return;
+    if (installingModuleId || uninstallingModuleId) return;
 
     setError('');
     setInstallingModuleId(module.id);
+    setDownloadProgress(0);
     try {
-      setInstalledModuleIds(await packageService.install(module.id));
+      setInstalledModuleIds(await packageService.install(module.id, setDownloadProgress));
     } catch (installationError) {
       setError(installationError.message || 'Installation failed. Please try again.');
     } finally {
       setInstallingModuleId(null);
+      setDownloadProgress(0);
     }
   }
+
+  async function handleUninstall(module) {
+    if (installingModuleId || uninstallingModuleId) return;
+
+    setSelectedModuleId(module.id);
+    setError('');
+    setUninstallingModuleId(module.id);
+    try {
+      setInstalledModuleIds(await packageService.uninstall(module.id));
+    } catch (uninstallationError) {
+      setError(uninstallationError.message || 'Uninstallation failed. Please try again.');
+    } finally {
+      setUninstallingModuleId(null);
+    }
+  }
+
+  const selectedModule = availableModules.find((module) => module.id === selectedModuleId)
+    || availableModules[0];
+  const isSelectedModuleInstalled = installedModuleIds.includes(selectedModule.id);
+  const isSelectedModuleInstalling = installingModuleId === selectedModule.id;
 
   async function handleLogout() {
     if (isLoggingOut) return;
@@ -67,38 +93,102 @@ export default function HomeScreen({ onOpenModule }) {
         />
       </header>
 
-      <div className="workspace-content">
-        <section className="welcome-card">
+      <div className="package-workspace">
+        <aside className="package-sidebar" aria-labelledby="packages-heading">
           <div>
             <p className="eyebrow">TESTING WORKSPACE</p>
-            <h1>Welcome, {user.username}</h1>
-            <p>Install the testing modules you need and launch them from one secure desktop workspace.</p>
-          </div>
-          <div className="welcome-card__icon"><Icon name="toolbox" size={42} /></div>
-        </section>
-
-        <section aria-labelledby="modules-heading">
-          <div className="section-heading">
-            <div>
-              <h2 id="modules-heading">Available modules</h2>
-              <p>Your testing tools, ready when you are.</p>
-            </div>
-            <span className="module-count">{availableModules.length} modules</span>
+            <h1 id="packages-heading">Packages</h1>
+            <p className="package-sidebar__intro">Download and manage your testing tools.</p>
           </div>
 
           {error ? <div className="alert alert--error workspace-alert" role="alert">{error}</div> : null}
 
-          <div className="module-grid">
+          <div className="package-menu">
             {availableModules.map((module) => (
               <ModuleCard
                 {...module}
-                disabled={Boolean(installingModuleId) && installingModuleId !== module.id}
+                disabled={Boolean(installingModuleId || uninstallingModuleId)
+                  && installingModuleId !== module.id
+                  && uninstallingModuleId !== module.id}
                 installed={installedModuleIds.includes(module.id)}
                 installing={installingModuleId === module.id}
                 key={module.id}
                 onAction={() => handleModuleAction(module)}
+                onSelect={() => setSelectedModuleId(module.id)}
+                onUninstall={() => handleUninstall(module)}
+                progress={installingModuleId === module.id ? downloadProgress : 0}
+                selected={selectedModule.id === module.id}
+                uninstalling={uninstallingModuleId === module.id}
               />
             ))}
+          </div>
+
+          <div className="package-sidebar__footer">
+            <span>{availableModules.length} packages available</span>
+            <span>{installedModuleIds.length} installed</span>
+          </div>
+        </aside>
+
+        <section className="package-detail" aria-live="polite">
+          <div className="package-detail__topline">
+            <span>Package details</span>
+            <span>Signed in as <strong>{user.username}</strong></span>
+          </div>
+
+          <div className={`package-access-card ${isSelectedModuleInstalled ? 'package-access-card--ready' : ''}`}>
+            <div className="package-access-card__icon">
+              <Icon name={isSelectedModuleInstalled ? selectedModule.icon : 'lock'} size={42} />
+            </div>
+
+            <div className={`package-access-card__badge ${isSelectedModuleInstalled ? 'package-access-card__badge--ready' : ''}`}>
+              <Icon name={isSelectedModuleInstalled ? 'check' : 'lock'} size={16} />
+              <span>
+                {isSelectedModuleInstalled
+                  ? 'Package ready'
+                  : isSelectedModuleInstalling ? 'Download in progress' : 'Package locked'}
+              </span>
+            </div>
+
+            <h2>{selectedModule.name}</h2>
+            <p>{selectedModule.description}</p>
+
+            {isSelectedModuleInstalling ? (
+              <div className="package-detail__progress">
+                <div className="package-detail__percentage">{downloadProgress}%</div>
+                <div
+                  aria-valuemax="100"
+                  aria-valuemin="0"
+                  aria-valuenow={downloadProgress}
+                  className="package-progress__track package-progress__track--large"
+                  role="progressbar"
+                >
+                  <span style={{ width: `${downloadProgress}%` }} />
+                </div>
+                <p>Downloading and installing your package…</p>
+              </div>
+            ) : isSelectedModuleInstalled ? (
+              <div className="package-detail__actions">
+                <AppButton
+                  className="package-detail__open"
+                  disabled={Boolean(uninstallingModuleId)}
+                  onClick={() => onOpenModule(selectedModule)}
+                  title={`Open ${selectedModule.name}`}
+                />
+                <AppButton
+                  className="package-detail__uninstall package-uninstall-button"
+                  icon="trash"
+                  loading={uninstallingModuleId === selectedModule.id}
+                  onClick={() => handleUninstall(selectedModule)}
+                  title="Uninstall package"
+                  variant="secondary"
+                />
+              </div>
+            ) : (
+              <div className="package-detail__locked-message">
+                <Icon name="download" size={20} />
+                <span>Use the Download button in the left menu to unlock this package.</span>
+              </div>
+            )}
           </div>
         </section>
       </div>

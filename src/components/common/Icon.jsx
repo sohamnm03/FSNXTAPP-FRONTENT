@@ -11,6 +11,7 @@ const paths = {
   arrowLeft: <><path d="m15 18-6-6 6-6M9 12h11"/></>,
   user: <><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20c.7-4 3-6 6.5-6s5.8 2 6.5 6"/></>,
   lock: <><rect height="10" rx="2" width="14" x="5" y="10"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2"/></>,
+  trash: <><path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14M10 11v6M14 11v6"/></>,
 };
 
 export default function Icon({ name, size = 22, className = '' }) {
