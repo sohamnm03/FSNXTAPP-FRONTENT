@@ -9,6 +9,8 @@ dist/
 release/
 web-build/
 expo-env.d.ts
+packages/*/runtime/*
+!packages/*/runtime/.gitkeep
 
 # Native
 .kotlin/
@@ -40,3 +42,7 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+__pycache__/
+*.py[cod]
+.pytest_cache/

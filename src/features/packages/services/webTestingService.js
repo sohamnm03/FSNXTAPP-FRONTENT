@@ -1,25 +1,26 @@
-import { apiClient } from '../../../services/api/apiClient';
-
-const runPath = (runId, suffix = '') => `/api/ai-agents/runs/${encodeURIComponent(runId)}${suffix}`;
+function localRunner() {
+  const runner = window.desktopAPI?.aiAgents;
+  if (!runner) throw new Error('Web Testing runs are available in the desktop application only.');
+  return runner;
+}
 
 export const webTestingService = {
   start(inputs) {
-    return apiClient.post('/api/ai-agents/runs', { inputs });
+    return localRunner().start(inputs);
   },
   getRun(runId) {
-    return apiClient.get(runPath(runId));
+    return localRunner().getRun(runId);
   },
   getLogs(runId) {
-    return apiClient.get(runPath(runId, '/logs'));
+    return localRunner().getLogs(runId);
   },
   getArtifacts(runId) {
-    return apiClient.get(runPath(runId, '/artifacts'));
+    return localRunner().getArtifacts(runId);
   },
   stop(runId) {
-    return apiClient.post(runPath(runId, '/stop'), {});
+    return localRunner().stop(runId);
   },
   downloadArtifact(artifact) {
-    const filename = artifact.path.split('/').pop() || 'site_test_report.html';
-    return apiClient.download(artifact.download_url, filename);
+    return localRunner().download(artifact.run_id, artifact.path);
   },
 };

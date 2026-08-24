@@ -36,12 +36,19 @@
     "appId": "com.fsnxt.testing",
     "productName": "FSNXT Testing Application",
     "asar": true,
+    "asarUnpack": [
+      "packages/**/*"
+    ],
     "directories": {
       "output": "release"
     },
     "files": [
       "dist/**/*",
       "electron/**/*",
+      "packages/**/*",
+      "!packages/**/.pytest_cache{,/**/*}",
+      "!packages/**/__pycache__{,/**/*}",
+      "!packages/**/*.pyc",
       "package.json"
     ],
     "win": {

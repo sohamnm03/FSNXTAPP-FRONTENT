@@ -1,25 +1,17 @@
-import { apiClient } from '../../../services/api/apiClient';
+const FRONTEND_USERNAME = 'admin';
+const FRONTEND_PASSWORD = 'password123';
 
 export const authService = {
   async login({ username, password }) {
-    const response = await apiClient.post('/api/login', { username, password });
-
-    if (!response?.success) {
-      throw new Error(response?.message || 'Login failed. Please check your credentials.');
+    if (username !== FRONTEND_USERNAME || password !== FRONTEND_PASSWORD) {
+      throw new Error('Invalid username or password.');
     }
-
-    if (!response.access_token) {
-      throw new Error('Login succeeded without an access token.');
-    }
-    apiClient.setAccessToken(response.access_token);
-
     return {
       user: { username },
-      session: response,
+      session: { success: true },
     };
   },
   async logout() {
-    apiClient.setAccessToken('');
     return Promise.resolve();
   },
 };

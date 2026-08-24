@@ -1,7 +1,21 @@
-const { app, BrowserWindow, shell } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
 const path = require('path');
+const { createAiAgentsManager } = require('./aiAgentsManager');
 
 const isDevelopment = !app.isPackaged;
+let aiAgentsManager;
+
+function registerAiAgentsHandlers() {
+  aiAgentsManager = createAiAgentsManager(app, dialog);
+  ipcMain.handle('ai-agents:start', (_event, inputs) => aiAgentsManager.start(inputs));
+  ipcMain.handle('ai-agents:get-run', (_event, runId) => aiAgentsManager.getRun(runId));
+  ipcMain.handle('ai-agents:get-logs', (_event, runId) => aiAgentsManager.getLogs(runId));
+  ipcMain.handle('ai-agents:get-artifacts', (_event, runId) => aiAgentsManager.getArtifacts(runId));
+  ipcMain.handle('ai-agents:stop', (_event, runId) => aiAgentsManager.stop(runId));
+  ipcMain.handle('ai-agents:download', (event, runId, artifactPath) => (
+    aiAgentsManager.download(runId, artifactPath, BrowserWindow.fromWebContents(event.sender))
+  ));
+}
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -54,6 +68,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  registerAiAgentsHandlers();
   createWindow();
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -63,3 +78,5 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
+
+app.on('before-quit', () => aiAgentsManager?.stopAll());

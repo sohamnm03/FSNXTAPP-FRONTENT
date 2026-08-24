@@ -3,7 +3,7 @@ const path = require('path');
 const parser = require('@babel/parser');
 
 const projectRoot = path.resolve(__dirname, '..');
-const ignoredDirectories = new Set(['node_modules', '.git', '.expo']);
+const ignoredDirectories = new Set(['node_modules', '.git', '.expo', 'packages']);
 const executableExtensions = new Set(['.js', '.jsx']);
 
 function collectJavaScriptFiles(directory) {
