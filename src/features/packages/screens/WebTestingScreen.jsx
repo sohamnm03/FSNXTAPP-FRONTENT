@@ -28,7 +28,7 @@ export default function WebTestingScreen({ module, onBack, onUninstalled }) {
   const [websiteUrl, setWebsiteUrl] = useState('');
   const [websiteUsername, setWebsiteUsername] = useState('');
   const [websitePassword, setWebsitePassword] = useState('');
-  const [routesText, setRoutesText] = useState('/dashboard');
+  const [routesText, setRoutesText] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
   const [isStopping, setIsStopping] = useState(false);
@@ -160,7 +160,7 @@ export default function WebTestingScreen({ module, onBack, onUninstalled }) {
   }
 
   const isActive = status === 'queued' || status === 'running';
-  const canRun = websiteUrl.trim() && websiteUsername.trim() && websitePassword && parseRoutes(routesText).length;
+  const canRun = websiteUrl.trim() && websiteUsername.trim() && websitePassword;
 
   return (
     <ScreenContainer className="module-screen web-testing-screen">
@@ -179,7 +179,7 @@ export default function WebTestingScreen({ module, onBack, onUninstalled }) {
             <div>
               <p className="eyebrow">PACKAGE INSTALLED</p>
               <h1>Run Web Testing</h1>
-              <p>Enter the target application and run-scoped test credentials.</p>
+              <p>Enter any website login URL and run-scoped test credentials.</p>
             </div>
           </div>
 
@@ -226,17 +226,18 @@ export default function WebTestingScreen({ module, onBack, onUninstalled }) {
               value={websitePassword}
             />
             <div className="field">
-              <label className="field__label" htmlFor="testRoutes">Routes to test</label>
+              <label className="field__label" htmlFor="testRoutes">Routes to test (optional)</label>
               <textarea
                 className="web-testing-routes"
                 disabled={isActive}
                 id="testRoutes"
                 onChange={(event) => setRoutesText(event.target.value)}
                 placeholder="/dashboard, /facility-creation"
-                required
                 value={routesText}
               />
-              <p className="web-testing-help">Separate routes with commas or new lines. Each route must start with /.</p>
+              <p className="web-testing-help">
+                Leave blank to check login only. For broader testing, add absolute paths beginning with /, separated by commas or new lines.
+              </p>
             </div>
 
             <div className="web-testing-form__actions">
