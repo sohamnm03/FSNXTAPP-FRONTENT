@@ -10,9 +10,11 @@
   },
   "scripts": {
     "start": "npm run dev",
+    "electron": "npm run dev",
     "dev": "concurrently --kill-others --names renderer,desktop \"vite --host 127.0.0.1\" \"wait-on http://127.0.0.1:5173 && node scripts/launchElectron.js\"",
     "build": "vite build",
     "preview": "vite preview",
+    "dist": "npm run package:win",
     "package:win": "npm run build && electron-builder --win",
     "lint": "eslint .",
     "check:syntax": "node scripts/checkSyntax.js",
