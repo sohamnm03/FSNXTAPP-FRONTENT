@@ -1,0 +1,28 @@
+{
+  "id": "term-loan-variable-rate",
+  "case": "TC-013",
+  "system": "DS4_100_NIIF",
+  "description": "One term loan with variable interest, company code 1000 / product 22A / txn type 100, partner 700000453 - create only.",
+  "authorised": "Values supplied by the requester on 2026-08-19, except: (1) Contract Date - not supplied, defaults to Term Start, the same hard constraint TC-002/TC-009 hit ('Contract date is after start of term'). (2) Reference Interest Rate - SAP requires one once Interest Category is Variable (TC-003's V10 discovery found this refusal on the 9800/10B profile and did not resolve it, since picking one is a data decision). Discovered live for 1000/22A via the field's own F4 search help (16 codes; see discover-ftr-1000-22a-variable-rate.spec.ts) and RBI_REPO (RBI Repo Rate) chosen by the requester from that list on 2026-08-19. (3) General Valuation Class - not supplied; carried over from TC-009's finding on this same 1000/22A profile (fixed-rate case), whose first live attempt was refused at the check-run without it ('Fill the following required field: General Valuation Class'). Set defensively here - whether it is still required once Interest Category is Variable rather than Fixed had not been tested at authoring time.",
+  "writesPerRow": 1,
+  "defaults": {
+    "companyCode": "1000",
+    "productType": "22A",
+    "transactionType": "100",
+    "partner": "700000453",
+    "currency": "INR",
+    "interestCategory": "Variable",
+    "referenceInterestRate": "RBI_REPO",
+    "interestFrequency": "Monthly",
+    "generalValuationClass": "Short Term"
+  },
+  "rows": [
+    {
+      "id": "baseline",
+      "label": "100k INR, calendar 2026, variable rate (RBI_REPO), interest monthly",
+      "amount": "100000",
+      "startDate": "01.01.2026",
+      "endDate": "31.12.2026"
+    }
+  ]
+}

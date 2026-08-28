@@ -1,0 +1,51 @@
+{
+  "description": "Which suite each web-lane spec belongs to. Every spec in web-tests/tests/ must be classified by exactly one suite - web-tests/suites.ts refuses to load otherwise, because an unclassified spec is one nobody decided about, and the failure mode is that it silently stops running.",
+  "suites": {
+    "regression": {
+      "description": "Case-backed, deterministic, unattended. Every spec here is named by a test-cases/Web-TC/TC-*.md file and writes to the database. Run this suite to answer 'did anything break'.",
+      "specs": [
+        "zfs-odemo-m006-create-facility.spec.ts",
+        "zfs-odemo-m009-create-bond-issuance.spec.ts",
+        "zfs-odemo-m009-create-bond-class.spec.ts",
+        "ftr-term-loan-flow.spec.ts",
+        "ftr-variant-matrix.spec.ts",
+        "business-area-flows.spec.ts",
+        "ftr-term-loan-batch.spec.ts",
+        "ftr-term-loan-accrual-valuation.spec.ts",
+        "ftr-term-loan-accrual-valuation-batch.spec.ts",
+        "ftr-term-loan-variable-rate.spec.ts",
+        "fwzz-mutual-fund-class-create.spec.ts",
+        "fwzz-then-ftr-26b-mutual-fund.spec.ts"
+      ]
+    },
+    "verification": {
+      "description": "Read-only, repeatable, no database write and no case file of its own. Connectivity and after-the-fact checks on documents other cases created.",
+      "specs": [
+        "smoke.spec.ts",
+        "verify-ftr-deals.spec.ts",
+        "verify-ftr-cashflow.spec.ts",
+        "settle-unit.spec.ts",
+        "verify-zfs-odemo-m009-200194.spec.ts",
+        "verify-zfs-odemo-m009-200219.spec.ts",
+        "verify-fwzz-300021.spec.ts"
+      ]
+    },
+    "model-check": {
+      "description": "Change-impact. Compares every screen model in web-tests/screens/ against the live system and names the cases at risk. Read-only. Run after a transport lands, before trusting a green regression run.",
+      "specs": ["screen-model-check.spec.ts"]
+    },
+    "exploratory": {
+      "description": "Model-driven discovery: finding screens, ids and edge cases. Non-deterministic by design and never part of a regression answer. A spec graduates out of here by getting a case file, passing twice with no deviations, and being moved into 'regression' - see docs/test-authoring-guide.md, 'Freezing a case'.",
+      "patterns": [
+        "discover-*.spec.ts",
+        "probe-*.spec.ts",
+        "explore-*.spec.ts",
+        "*-explore.spec.ts"
+      ],
+      "specs": [
+        "tc006-38a-create-9999.spec.ts",
+        "tc006-38a-post.spec.ts"
+      ]
+    }
+  }
+}

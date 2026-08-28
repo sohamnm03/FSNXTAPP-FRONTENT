@@ -1,10 +1,11 @@
 {
   "name": "fsnxtapp-frontend",
-  "version": "1.0.0",
+  "version": "1.0.6",
   "description": "Windows desktop testing platform for FSNXT modules",
   "author": "FSNXT",
   "main": "electron/main.js",
   "dependencies": {
+    "@anthropic-ai/claude-code": "2.1.241",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
@@ -39,7 +40,8 @@
     "productName": "FSNXT Testing Application",
     "asar": true,
     "asarUnpack": [
-      "packages/**/*"
+      "packages/**/*",
+      "node_modules/@anthropic-ai/claude-code/bin/claude.exe"
     ],
     "directories": {
       "output": "release"
@@ -48,13 +50,38 @@
       "dist/**/*",
       "electron/**/*",
       "packages/**/*",
+      "!packages/sap-testing-automation/**/*",
       "!packages/**/.pytest_cache{,/**/*}",
       "!packages/**/__pycache__{,/**/*}",
       "!packages/**/*.pyc",
       "package.json"
     ],
+    "extraResources": [
+      {
+        "from": "packages/sap-testing-automation",
+        "to": "sap-testing-automation",
+        "filter": [
+          "**/*",
+          "!**/.env",
+          "!**/settings.local.json",
+          "!**/.venv/**/*",
+          "!**/.auth/**/*",
+          "!**/__pycache__/**/*",
+          "!**/*.pyc",
+          "!results/**/*",
+          "!evidence/**/*",
+          "!logs/**/*",
+          "!test-results/**/*",
+          "!**/playwright-report/**/*",
+          "!**/blob-report/**/*"
+        ]
+      }
+    ],
     "win": {
-      "target": "nsis"
+      "target": [
+        "nsis",
+        "portable"
+      ]
     }
   }
 }

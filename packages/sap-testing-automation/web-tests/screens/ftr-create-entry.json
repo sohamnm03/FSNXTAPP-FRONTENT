@@ -1,0 +1,24 @@
+{
+  "id": "ftr-create-entry",
+  "transaction": "FTR_CREATE",
+  "dynpro": "SAPLFTR0 / 1000",
+  "description": "Create Financial Transaction - entry screen. Chooses which product to open.",
+  "usedBy": ["TC-002", "TC-003", "TC-004", "TC-005", "TC-006", "TC-007", "TC-008", "TC-013", "TC-019"],
+  "capturedOn": "DS4 / 100",
+  "capturedOnSystem": "DS4_100_NIIF",
+  "capturedAt": "2026-08-18",
+  "anchor": "Company Code",
+  "controls": {
+    "companyCode": { "kind": "input", "title": "Company Code", "verify": true },
+    "productType": { "kind": "input", "title": "Product Type", "verify": true },
+    "transactionType": { "kind": "input", "title": "Financial Transaction Type", "verify": true },
+    "partner": { "kind": "input", "title": "Business Partner Number", "verify": true },
+    "classId": {
+      "kind": "input",
+      "title": "Security Class ID Number",
+      "verify": true,
+      "optional": true,
+      "note": "Only appears for securities-type product types (22B, 26B, ...) - absent for a plain term loan like 22A. Added 2026-08-19 for TC-019 (26B, discover-ftr-26b-entry.spec.ts). Confirmed live: probe-security-class.spec.ts found the same field for 22B."
+    }
+  }
+}

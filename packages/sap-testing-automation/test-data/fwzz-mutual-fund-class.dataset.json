@@ -1,0 +1,21 @@
+{
+  "id": "fwzz-mutual-fund-class",
+  "case": "TC-017",
+  "system": "DS4_100_NIIF",
+  "description": "One security class, product type 26B (Inv: Mutual Funds), created via FWZZ - create only. Id is server-assigned (internally numbered); nothing else in this suite writes against this same id.",
+  "authorised": "Mock data authored by Claude at the user's request ('use your own data'), 2026-08-19. Issuer 700000453 was not invented: it is a real Business Partner already used elsewhere in this workspace (probe/FTR specs) and was confirmed valid for this specific field by discover-fwzz-26b-issuer-typed.spec.ts's live Check (F8) run, which reported 'Data is consistent' - the alternative BP 400000003 was tried first and rejected ('does not exist in role TR0150'), so this is a discovered-valid value, not a guess. Issue Currency INR and Issue Start Date (defaults to the run date) were confirmed sufficient by the same Check run.",
+  "writesPerRow": 1,
+  "defaults": {
+    "productType": "26B",
+    "issuer": "700000453",
+    "issueCurrency": "INR"
+  },
+  "rows": [
+    {
+      "id": "baseline",
+      "label": "NIIF Nifty 50 Index Fund - Growth, mutual fund class, issuer 700000453, INR",
+      "shortName": "NIFTY50 IDX FUN",
+      "longName": "NIIF Nifty 50 Index Fund - Growth"
+    }
+  ]
+}

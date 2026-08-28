@@ -1,0 +1,26 @@
+{
+  "id": "ftr-edit-entry",
+  "transaction": "FTR_EDIT",
+  "dynpro": "FTR_ENTRY / 1000",
+  "description": "Edit Financial Transaction - entry screen. The Settle button opens contract settlement on the named deal.",
+  "usedBy": ["TC-002", "TC-004", "TC-005", "TC-006", "TC-007", "TC-008"],
+  "capturedOn": "DS4 / 100",
+  "capturedOnSystem": "DS4_100_NIIF",
+  "capturedAt": "2026-08-18",
+  "anchor": "Financial Transaction",
+  "controls": {
+    "companyCode": { "kind": "input", "title": "Company Code", "verify": true },
+    "transaction": {
+      "kind": "input",
+      "title": "Financial Transaction",
+      "verify": true,
+      "note": "ITS drops leading keystrokes here. A dropped digit selects a different, real deal - so this is always typed verified."
+    },
+    "settle": {
+      "kind": "button",
+      "id": "M0:46:::5:8",
+      "note": "Named 'Settle' on FTR_ENTRY/1000. Positional id - drift here is silent, so it is model-checked."
+    },
+    "save": { "kind": "button", "resolve": "save", "fallbackId": "M0:50::btn[11]" }
+  }
+}

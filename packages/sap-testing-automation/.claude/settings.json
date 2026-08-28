@@ -1,0 +1,35 @@
+{
+  "enabledPlugins": {
+    "playwright@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "claude-code-setup@claude-plugins-official": true
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "powershell -ExecutionPolicy Bypass -NoProfile -File \"$env:CLAUDE_PROJECT_DIR\\.claude\\hooks\\guard-generated-files.ps1\"",
+            "statusMessage": "Checking the target is not a generated file..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "try { $j = [Console]::In.ReadToEnd() | ConvertFrom-Json; if ($j.tool_input.command -match 'build-dashboard\\.ps1') { $p = 'D:\\SAP Tool\\SAP-Testing-Automation\\results\\dashboard.html'; if (Test-Path $p) { Start-Process $p } } } catch {}",
+            "statusMessage": "Opening results dashboard..."
+          }
+        ]
+      }
+    ]
+  }
+}

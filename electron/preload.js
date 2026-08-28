@@ -14,4 +14,14 @@ contextBridge.exposeInMainWorld('desktopAPI', Object.freeze({
     stop: (runId) => ipcRenderer.invoke('ai-agents:stop', runId),
     download: (runId, artifactPath) => ipcRenderer.invoke('ai-agents:download', runId, artifactPath),
   }),
+  sapTerminal: Object.freeze({
+    getProject: () => ipcRenderer.invoke('sap-terminal:get-project'),
+    getAuthStatus: () => ipcRenderer.invoke('sap-terminal:get-auth-status'),
+    login: () => ipcRenderer.invoke('sap-terminal:login'),
+    prepareCase: (lane, caseId, stage) => ipcRenderer.invoke('sap-terminal:prepare-case', lane, caseId, stage),
+    startConfirmedCase: (confirmationId) => ipcRenderer.invoke('sap-terminal:start-confirmed-case', confirmationId),
+    start: (prompt, sessionId, lane) => ipcRenderer.invoke('sap-terminal:start', prompt, sessionId, lane),
+    getRun: (runId) => ipcRenderer.invoke('sap-terminal:get-run', runId),
+    stop: (runId) => ipcRenderer.invoke('sap-terminal:stop', runId),
+  }),
 }));

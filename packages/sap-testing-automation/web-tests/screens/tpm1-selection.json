@@ -1,0 +1,77 @@
+{
+  "id": "tpm1-selection",
+  "transaction": "TPM1",
+  "dynpro": "RTPM_TRL_VALUATION / 1000",
+  "description": "Run Valuation - selection screen. Test Run decides simulate vs commit, same trap as TBB1.",
+  "usedBy": ["TC-009"],
+  "capturedOn": "DS4 / 100",
+  "capturedOnSystem": "DS4_100_NIIF",
+  "capturedAt": "2026-08-18",
+  "anchor": "Company Code",
+  "controls": {
+    "companyCode": {
+      "kind": "input",
+      "title": "Company Code",
+      "nth": 0,
+      "expectDuplicates": 2,
+      "verify": true,
+      "note": "From/to pair - nth 0 is the 'from' selection field."
+    },
+    "transaction": {
+      "kind": "input",
+      "title": "Financial Transaction",
+      "nth": 0,
+      "expectDuplicates": 2,
+      "verify": true,
+      "note": "From/to pair - nth 0 is the 'from' selection field, used to scope the run to one deal."
+    },
+    "valuationArea": {
+      "kind": "input",
+      "title": "Treasury Valuation Area",
+      "nth": 0,
+      "expectDuplicates": 2,
+      "optional": true
+    },
+    "valuationClass": {
+      "kind": "input",
+      "title": "Valuation Class",
+      "nth": 0,
+      "expectDuplicates": 2,
+      "optional": true,
+      "note": "Coded value, e.g. '0005' (Valuation Area 001) = Short Term. Read from the field's own F4 value help, never guessed - see discover-tpm-valuation-class.spec.ts."
+    },
+    "keyDate": {
+      "kind": "input",
+      "title": "Key Date for Valuation",
+      "verify": true,
+      "note": "Defaults to today. Set to the deal's month-end key date, not its term start - the same key date TPM44 ran with, so both value/accrue as of the same point."
+    },
+    "valuationCategory": {
+      "kind": "dropdown",
+      "title": "Valuation Category",
+      "note": "MANDATORY. Defaults to the placeholder '  ?', and TPM1 refuses to execute without it - 'Make an entry in mandatory field \"Valuation Category\"'. The refusal leaves the selection screen on display looking untouched, so a run that never executed reads as a clean pass unless the caller asserts on the protocol.",
+      "options": [
+        "Year-End Valuation",
+        "Mid-Year Valuation with Reset",
+        "Mid-Year Valuation Without Reset",
+        "Manual Valuation Without Reset",
+        "Manual Valuation with Reset"
+      ]
+    },
+    "testRun": {
+      "kind": "checkbox",
+      "id": "M0:46:::43:5",
+      "note": "Defaults to ON, discovered via a [role=checkbox] dump (discover-tpm-checkboxes.spec.ts) - dumpScreen cannot see it. Left alone, a 'post' simulates, reports success and writes nothing, same trap as TBB1's M0:46:::31:5."
+    },
+    "execute": {
+      "kind": "button",
+      "id": "M0:50::btn[8]",
+      "note": "F8. This only SELECTS positions - it lands on 'Display Selected Treasury Positions for Valuation' and posts nothing. See runValuation, which must then press runValuation below."
+    },
+    "runValuation": {
+      "kind": "button",
+      "id": "M0:48::btn[8]",
+      "note": "'Run the Valuation of the Displayed Treasury Positions (F8)', on the positions screen that execute lands on - NOT the selection screen. This is the step that actually values; without it TPM1 reports no error, shows the deal as 'Valuation Allowed', and has written nothing."
+    }
+  }
+}

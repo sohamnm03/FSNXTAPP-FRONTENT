@@ -1,0 +1,150 @@
+{
+  "description": "How to run each test case without a person deciding anything. A case file says what a case proves and which spec is its executable copy; this says what that spec needs to be handed - the project, the stage, the dataset rows, the environment. scripts/run-case.ps1 reads it. Nothing here is a default anyone has to remember: a case absent from this file cannot be launched by id, which is deliberate, because guessing a stage or a row set means writing the wrong thing to a live client.",
+  "defaults": {
+    "project": "regression",
+    "confirmWrites": true
+  },
+  "cases": {
+    "TC-001": {
+      "spec": "zfs-odemo-m006-create-facility.spec.ts",
+      "summary": "ZFS_ODEMO_M006 facility creation",
+      "writes": "one facility record",
+      "note": "Currently failing on two open product defects - a FAIL run file is the expected output, not a broken runner."
+    },
+    "TC-002": {
+      "spec": "ftr-term-loan-flow.spec.ts",
+      "summary": "Term loan lifecycle: FTR_CREATE -> FTR_EDIT settle -> TBB1 post",
+      "writes": "creates an interest rate instrument, settles it, posts its flows (3 writes)",
+      "stageEnv": "FLOW_STAGE",
+      "stages": ["entry", "fill", "save", "settle-open", "settle", "post"],
+      "defaultStage": "post",
+      "rowsEnv": "DATASET_ROWS",
+      "dataset": "term-loan-single",
+      "defaultRows": "baseline",
+      "env": {},
+      "resumeEnv": "DEAL_NO",
+      "resumeNote": "DEAL_NO=<deal> skips FTR_CREATE and settles/posts that deal instead of creating a second one."
+    },
+    "TC-003": {
+      "spec": "ftr-variant-matrix.spec.ts",
+      "summary": "Term loan variant matrix (create only)",
+      "writes": "one interest rate instrument per accepted variant"
+    },
+    "TC-004": {
+      "spec": "business-area-flows.spec.ts",
+      "summary": "Money market fixed-term deposit",
+      "writes": "one money market deal and its settlement",
+      "env": { "DEAL_KEY": "MM" }
+    },
+    "TC-005": {
+      "spec": "business-area-flows.spec.ts",
+      "summary": "Securities debenture issue / placement",
+      "writes": "one securities position and its settlement",
+      "env": { "DEAL_KEY": "SEC" }
+    },
+    "TC-006": {
+      "spec": "business-area-flows.spec.ts",
+      "summary": "Trade finance letter of credit",
+      "writes": "nothing committed to date - every save attempt was refused",
+      "env": { "DEAL_KEY": "TF" },
+      "note": "Case status is 'blocked' on this system. Expect a FAIL or BLOCKED run file."
+    },
+    "TC-007": {
+      "spec": "business-area-flows.spec.ts",
+      "summary": "Foreign exchange spot",
+      "writes": "nothing committed to date - the save was refused",
+      "env": { "DEAL_KEY": "FX" },
+      "note": "Case status is 'blocked' on this system. Expect a FAIL or BLOCKED run file."
+    },
+    "TC-008": {
+      "spec": "ftr-term-loan-batch.spec.ts",
+      "summary": "Term loan batch of 10 (create, settle, post per row)",
+      "writes": "up to 3 writes per row - create, settle, post",
+      "rowsEnv": "DATASET_ROWS",
+      "dataset": "term-loan-batch",
+      "batch": true
+    },
+    "TC-009": {
+      "spec": "ftr-term-loan-accrual-valuation.spec.ts",
+      "summary": "Term loan through month-end accrual (TPM44) and valuation (TPM1)",
+      "writes": "5 writes - create, settle, post, accrue, value",
+      "stageEnv": "FLOW_STAGE",
+      "stages": ["entry", "fill", "save", "settle", "post", "tpm44", "tpm1"],
+      "defaultStage": "tpm1",
+      "rowsEnv": "DATASET_ROWS",
+      "dataset": "term-loan-accrual-valuation",
+      "defaultRows": "baseline",
+      "resumeEnv": "DEAL_NO"
+    },
+    "TC-010": {
+      "spec": "zfs-odemo-m009-create-bond-issuance.spec.ts",
+      "summary": "ZFS_ODEMO_M009 bond issuance creation",
+      "writes": "one bond issuance transaction"
+    },
+    "TC-011": {
+      "spec": "zfs-odemo-m009-create-bond-class.spec.ts",
+      "summary": "ZFS_ODEMO_M009 bond class creation",
+      "writes": "one new Bond Class"
+    },
+    "TC-012": {
+      "spec": "ftr-term-loan-accrual-valuation-batch.spec.ts",
+      "summary": "Term loan accrual + valuation, batch of 10",
+      "writes": "up to 5 writes per row - create, settle, post, accrue, value",
+      "rowsEnv": "DATASET_ROWS",
+      "dataset": "term-loan-accrual-valuation-batch",
+      "batch": true
+    },
+    "TC-013": {
+      "spec": "ftr-term-loan-variable-rate.spec.ts",
+      "summary": "Term loan with variable interest (Interest Category = Variable, Reference Interest Rate = RBI_REPO), create only",
+      "writes": "creates one interest rate instrument (1 write)",
+      "stageEnv": "FLOW_STAGE",
+      "stages": ["entry", "fill", "save"],
+      "defaultStage": "save",
+      "rowsEnv": "DATASET_ROWS",
+      "dataset": "term-loan-variable-rate",
+      "defaultRows": "baseline",
+      "env": {}
+    },
+    "TC-017": {
+      "spec": "fwzz-mutual-fund-class-create.spec.ts",
+      "summary": "FWZZ create a Class for product type 26B (Inv: Mutual Funds), Issuer 700000453 / INR",
+      "writes": "creates one new Class, server-assigned id (1 write)",
+      "stageEnv": "FLOW_STAGE",
+      "stages": ["entry", "dialog", "basic", "save"],
+      "defaultStage": "save",
+      "rowsEnv": "DATASET_ROWS",
+      "dataset": "fwzz-mutual-fund-class",
+      "defaultRows": "baseline",
+      "env": {}
+    },
+    "TC-019": {
+      "spec": "fwzz-then-ftr-26b-mutual-fund.spec.ts",
+      "summary": "FWZZ create a Class (26B) then FTR_CREATE an Investment transaction against it, co.code 9990",
+      "writes": "creates one new Class and one Investment transaction against it (2 writes)",
+      "stageEnv": "FLOW_STAGE",
+      "stages": ["class-entry", "class-dialog", "class-basic", "class-save", "deal-entry", "deal-fill", "deal-save"],
+      "defaultStage": "deal-save",
+      "rowsEnv": "DATASET_ROWS",
+      "dataset": "fwzz-then-ftr-26b-mutual-fund",
+      "defaultRows": "baseline",
+      "env": {}
+    }
+  },
+  "suites": {
+    "regression": {
+      "summary": "Every case-backed spec. Writes to the live client.",
+      "project": "regression"
+    },
+    "verification": {
+      "summary": "Read-only checks on documents other cases created.",
+      "project": "verification",
+      "confirmWrites": false
+    },
+    "model-check": {
+      "summary": "Screen drift against the live system. Read-only. Run after a transport.",
+      "project": "model-check",
+      "confirmWrites": false
+    }
+  }
+}

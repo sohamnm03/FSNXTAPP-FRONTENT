@@ -1,0 +1,67 @@
+{
+  "screen": "Overview of Conditions / Condition Details",
+  "program": "SAPLTB12 (overview, screen 100) / SAPLFTR_CONDITION_MAIN (detail, screen 500)",
+  "discoveredOn": "DS4/100, 2026-08-24, model-driven exploration while building TC-022",
+  "note": "Reached from the FTR_CREATE Structure screen's 'Conditions' button (ftr-deal-irate.json's conditions button) — before the deal is ever saved, so adding a second interest condition here is part of the same unsaved create, not a later edit. A fresh 1000/22A/100 deal built by fill_term_loan carries two condition rows on the overview grid: 'Nominal interest' (SKOART 1200) and 'Final repayment' (SKOART 1120) — this model only ever addresses the first.",
+  "controls": {
+    "overviewGrid": {
+      "id": "wnd[0]/usr/cntlCC_OVERVIEW/shellcont/shell",
+      "label": "Overview of Conditions ALV grid",
+      "note": "Columns: RFHAZU, LOGIC_RKOND, SKOART, XKOART, DGUEL_KP (Eff. From), XDESCR_AMOUNT, XDESCR_DATE. Double-click any cell in a row (drill_into_row) to open that row's Condition Details."
+    },
+    "itemEffectiveFrom": {
+      "id": "wnd[0]/usr/ctxtVTBEFINKO-DGUEL_KP",
+      "label": "Item Eff. From",
+      "readOnly": true,
+      "note": "On the Condition Details screen header. Read-only display of which dated item is currently open — read this back after Copy condition to confirm the new item's date took."
+    },
+    "percentageRate": {
+      "id": "wnd[0]/usr/tabsTS_COND_DETAIL/tabpTAB1/ssubTABSTRIP:SAPLFF01:0510/subAMOUNT_SUBSCREEN:SAPLFF01:0511/txtVTBKOND_MNT-PKOND_ALT",
+      "label": "Percentage Rate",
+      "technical": "PKOND_ALT",
+      "note": "On the Amounts tab of Condition Details. A DIFFERENT field from the deal screen's own nominalInterestRate (PKOND, in ftr-deal-irate.json) — PKOND_ALT is per dated condition item; only the base (first) item happens to also drive PKOND on the Structure screen."
+    },
+    "calcFirstDate": {
+      "id": "wnd[0]/usr/tabsTS_COND_DETAIL/tabpTAB2/ssubTABSTRIP:SAPLFF01:0520/ctxtVTBKOND_MNT-DVALUT",
+      "label": "Calculation date, 1st date",
+      "technical": "DVALUT",
+      "note": "On the Dates tab. A newly copied condition item's Dates tab is BLANK and must be filled explicitly — it does not inherit the base item's schedule. Left blank, moving off the Dates tab (or validating the Amounts tab) raises hard error 'Enter Due Date' (TM 001)."
+    },
+    "calcMonthEnd": {
+      "id": "wnd[0]/usr/tabsTS_COND_DETAIL/tabpTAB2/ssubTABSTRIP:SAPLFF01:0520/chkVTBKOND_MNT-SVULT",
+      "label": "Mnth-end (calculation date)",
+      "technical": "SVULT"
+    },
+    "dueFirstDate": {
+      "id": "wnd[0]/usr/tabsTS_COND_DETAIL/tabpTAB2/ssubTABSTRIP:SAPLFF01:0520/ctxtVTBKOND_MNT-DFAELL",
+      "label": "Due date, 1st date",
+      "technical": "DFAELL"
+    },
+    "dueMonthEnd": {
+      "id": "wnd[0]/usr/tabsTS_COND_DETAIL/tabpTAB2/ssubTABSTRIP:SAPLFF01:0520/chkVTBKOND_MNT-SFULT",
+      "label": "Mnth-end (due date)",
+      "technical": "SFULT"
+    },
+    "copyPopupEffectiveFrom": {
+      "id": "wnd[1]/usr/ctxtVTBEFINKO-DGUEL_KP",
+      "label": "Eff. From (Copy condition popup)",
+      "note": "The only field on the popup 'Copy condition' raises. Confirming it creates a brand-new dated item on the SAME condition (same Condition Type/Group) — a rate change mid-term, not a new condition type."
+    }
+  },
+  "tabs": {
+    "amounts": { "id": "wnd[0]/usr/tabsTS_COND_DETAIL/tabpTAB1", "label": "Amounts" },
+    "dates": { "id": "wnd[0]/usr/tabsTS_COND_DETAIL/tabpTAB2", "label": "Dates" }
+  },
+  "buttons": {
+    "copyCondition": {
+      "id": "wnd[0]/tbar[1]/btn[5]",
+      "label": "Copy condition",
+      "note": "App toolbar (F5) on Condition Details. Different from 'Create Parallel Condition Group' (NEW_PAR_CND, on the Overview grid's own ALV toolbar) — that button was not used here and was not explored; Copy condition is what produces a later-dated item on the existing condition, which is what a mid-term rate change is."
+    },
+    "copyPopupConfirm": {
+      "id": "wnd[1]/tbar[0]/btn[0]",
+      "label": "Copy (popup)",
+      "note": "Confirms the Eff. From popup raised by Copy condition. Tooltip reads 'Copy   (Enter)'."
+    }
+  }
+}

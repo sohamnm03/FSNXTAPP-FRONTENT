@@ -1,0 +1,37 @@
+{
+  "title": "SAP test results",
+  "system": "DS4 / client 100 (DS4_100_NIIF)",
+  "generatedAt": "2026-08-17 20:10",
+  "chips": ["2 runs", "2 test cases"],
+  "footer": "Sample payload — see dashboard/README.md for the schema.",
+  "runs": [
+    {
+      "id": "TC-002-2026-08-17-1328-monthly-month-end",
+      "case": "TC-002",
+      "title": "FTR term loan — create, settle, post (monthly, month-end)",
+      "lane": "web",
+      "transaction": "FTR_CREATE, FTR_EDIT, TBB1",
+      "verdict": "PASS",
+      "verdictRaw": "PASS — all three writes, and the interest schedule verified on the saved deal",
+      "ranAt": "2026-08-17 13:28",
+      "assertions": { "passed": 18, "failed": 0, "notObserved": 0 },
+      "resultFile": "results/TC-002-2026-08-17-1328-monthly-month-end.md",
+      "resultUrl": "./TC-002-2026-08-17-1328-monthly-month-end.md",
+      "detail": "# TC-002 — run 2026-08-17 13:28\n\n- **Verdict:** PASS\n\n## Assertions\n\n| # | Expected | Observed | Result |\n|---|---|---|---|\n| 1 | Deal saved | Deal 100019 | pass |\n\nThe `detail` field holds the whole result file. It is what the drawer renders, and what makes a published copy of this dashboard readable without access to this machine."
+    },
+    {
+      "id": "TC-007-2026-08-17-1645",
+      "case": "TC-007",
+      "title": "Foreign exchange spot",
+      "lane": "web",
+      "transaction": "FTR_CREATE, FTR_EDIT → Settle, TBB1",
+      "verdict": "BLOCKED",
+      "verdictRaw": "BLOCKED — create refused; no document was created",
+      "ranAt": "2026-08-17 16:45",
+      "assertions": null,
+      "resultFile": "results/TC-007-2026-08-17-1645.md",
+      "resultUrl": "./TC-007-2026-08-17-1645.md",
+      "detail": null
+    }
+  ]
+}

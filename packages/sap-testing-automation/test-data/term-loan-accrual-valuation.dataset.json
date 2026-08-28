@@ -1,0 +1,30 @@
+{
+  "id": "term-loan-accrual-valuation",
+  "case": "TC-009",
+  "system": "DS4_100_NIIF",
+  "description": "One term loan (company code 1000, product 22A) taken through create -> settle -> post -> TPM44 accrual/deferral -> TPM1 valuation, at the first month-end key date after the term start.",
+  "authorised": "Values supplied by the requester on 2026-08-18. Three were not, and were decided at run time: (1) Contract Date - SAP defaults it to today and hard-refuses a save where it is after Term Start (same trap TC-002 hit), so it was set to the term start. (2) 'General Valuation Class: short term' as a key - resolved to the deal screen's own dropdown option 'Short Term' (Administr. tab) and, separately, to TPM44/TPM1's coded selection filter Valuation Area 001 / Valuation Class 0005 ('Short Term'), both read live from DS4 rather than guessed. (3) TPM1's Valuation Category - mandatory, not in the request, and TPM1 silently executes nothing without it; 'Mid-Year Valuation with Reset' was chosen as the conventional month-end (non-year-end) interim valuation. Confirmed by the requester on 2026-08-18 (after reuse on deals 160247, 160248, 160249) as the standing default for this row - do not re-ask.",
+  "writesPerRow": 5,
+  "defaults": {
+    "companyCode": "1000",
+    "productType": "22A",
+    "transactionType": "100",
+    "partner": "700000453",
+    "currency": "INR",
+    "interestRate": "10"
+  },
+  "rows": [
+    {
+      "id": "baseline",
+      "label": "100k INR, calendar 2026, TPM44/TPM1 at the first month-end (31.01.2026)",
+      "amount": "100000",
+      "startDate": "01.01.2026",
+      "endDate": "31.12.2026",
+      "generalValuationClass": "Short Term",
+      "valuationArea": "001",
+      "valuationClass": "0005",
+      "valuationCategory": "Mid-Year Valuation with Reset",
+      "keyDate": "31.01.2026"
+    }
+  ]
+}

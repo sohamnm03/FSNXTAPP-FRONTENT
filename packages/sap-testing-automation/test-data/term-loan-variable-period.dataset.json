@@ -1,0 +1,44 @@
+{
+  "id": "term-loan-variable-period",
+  "case": "TC-016",
+  "system": "DS4_100_NIIF",
+  "description": "One variable-interest term loan per row on the 1000 / 22A / 100 profile, differing only in the length of the interest period. Create only, one write per row. The rows exist because the interest period is NOT a dropdown choice on this screen: SAP's Frequency list has no quarterly, half-yearly or annual entry, so a period is expressed as Frequency 'Monthly' plus a count of months.",
+  "authorised": "Values supplied by the requester across three asks on 2026-08-19 (monthly, then half-yearly, then quarterly), each confirmed via AskUserQuestion before the live write. Carried over from TC-013/TC-015 and unchanged: partner 700000453, contract date = term start (SAP refuses a contract date after the start of term), reference interest rate RBI_REPO (chosen by the requester from the field's own live F4 list of 16 codes on 2026-08-19 - a data decision, not a discoverable default), General Valuation Class 'Short Term' (required on this profile with Variable interest just as with Fixed). The periodCount values are NOT a free choice: the Interest Frequency dropdown was read live on DS4/100 on 2026-08-19 and offers only At End of Term (1), On First Day of Month (5), On Last Day of Month (2), Monthly (3), Daily (4) and Manual Input (0) - no quarterly or half-yearly key exists. The adjacent unit dropdown offers only Days and Months and reads changeable=false, so with Monthly selected the unit is Months and the period is set by the count: 1 = monthly, 3 = quarterly, 6 = half-yearly.",
+  "writesPerRow": 1,
+  "defaults": {
+    "companyCode": "1000",
+    "productType": "22A",
+    "transactionType": "100",
+    "partner": "700000453",
+    "currency": "INR",
+    "amount": "100000",
+    "startDate": "01.01.2026",
+    "endDate": "31.12.2026",
+    "contractDate": "01.01.2026",
+    "interestCategory": "Variable",
+    "interestCategoryKey": "2",
+    "referenceInterestRate": "RBI_REPO",
+    "interestFrequency": "Monthly",
+    "interestFrequencyKey": "3",
+    "generalValuationClass": "Short Term"
+  },
+  "rows": [
+    {
+      "id": "monthly",
+      "label": "100k INR, calendar 2026, variable (RBI_REPO), interest every 1 month",
+      "periodCount": "1",
+      "note": "The same structure TC-015 proves, reached here by setting the count rather than accepting its default of 1. Deals 160281 and 160282 were created on this structure."
+    },
+    {
+      "id": "quarterly",
+      "label": "100k INR, calendar 2026, variable (RBI_REPO), interest every 3 months",
+      "periodCount": "3"
+    },
+    {
+      "id": "half-yearly",
+      "label": "100k INR, calendar 2026, variable (RBI_REPO), interest every 6 months",
+      "periodCount": "6",
+      "note": "First created as a one-off before this case existed - deal 160283, run file results/TC-015H-2026-08-19-2037.md."
+    }
+  ]
+}

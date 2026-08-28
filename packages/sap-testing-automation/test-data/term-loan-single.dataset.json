@@ -1,0 +1,41 @@
+{
+  "id": "term-loan-single",
+  "case": "TC-002",
+  "system": "DS4_100_NIIF",
+  "description": "One term loan, taken through create -> settle -> post one write at a time. The lifecycle reference case; TC-008 runs the same steps ten times over term-loan-batch.",
+  "authorised": "Values supplied by the requester. Contract Date was not: it defaults to today and SAP hard-refuses a 2026 term start against it, so it was set to the term start and confirmed.",
+  "writesPerRow": 3,
+  "defaults": {
+    "companyCode": "9800",
+    "productType": "10B",
+    "transactionType": "200",
+    "partner": "400000003",
+    "currency": "AUD",
+    "interestRate": "10"
+  },
+  "rows": [
+    {
+      "id": "baseline",
+      "label": "100k AUD, calendar 2026, interest at end of term",
+      "amount": "100000",
+      "startDate": "01.01.2026",
+      "endDate": "31.12.2026"
+    },
+    {
+      "id": "monthly",
+      "label": "100k AUD, calendar 2026, interest on the last day of each month",
+      "amount": "100000",
+      "startDate": "01.01.2026",
+      "endDate": "31.12.2026",
+      "interestFrequency": "On Last Day of Month"
+    },
+    {
+      "id": "inr",
+      "label": "100k INR, calendar 2026, interest at end of term",
+      "amount": "100000",
+      "currency": "INR",
+      "startDate": "01.01.2026",
+      "endDate": "31.12.2026"
+    }
+  ]
+}

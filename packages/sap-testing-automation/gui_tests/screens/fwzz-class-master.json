@@ -1,0 +1,96 @@
+{
+  "screen": "Class master screen (create/change/display)",
+  "program": "SAPLFVW4",
+  "screenNumber": 100,
+  "discoveredOn": "DS4/100, 2026-08-19, during the TC-018 build (GUI lane)",
+  "note": "Reached via fwzz-create-dialog's Create (F5). Opens on the 'Search Terms' tab (TS_INDEX); Basic Data (TS_BASIC1) carries the fields product type 26B (Inv:MF) actually requires - Issuer and Issue Currency. The header subscreen (SECURITYV-*, under subHEADER:SAPLFVW4:0110) is present on every tab; the tab-specific fields below live under tabsTABSTRIP_SECURITY and change with which tab is selected. Tabs present for 26B: Search Terms, Basic Data, Conditions, Exchanges, Security Swap, Regulatory Reporting, User Data - a different set from the empty fwzz-entry screen's tab strip, which shows 'SPPI' instead of 'Security Swap' (confirmed both lanes agree on this). Ids are SAP GUI Scripting paths, not portable to the web lane or another system.",
+  "controls": {
+    "idNumber": {
+      "id": "wnd[0]/usr/subHEADER:SAPLFVW4:0110/ctxtSECURITYV-SECURITY_NUMBER",
+      "label": "ID Number",
+      "technical": "SECURITY_NUMBER",
+      "note": "Reads the literal placeholder '\\INTERN\\' before Save for an internally-numbered product type. The real, server-assigned id is only knowable by reading this field again after Save (or re-Displaying)."
+    },
+    "shortNameHeader": {
+      "id": "wnd[0]/usr/subHEADER:SAPLFVW4:0110/txtSECURITYV-SHORT_TEXT",
+      "label": "Short Name (header)",
+      "note": "Read-only mirror in the header subscreen, present on every tab. The editable copy lives on Search Terms - see 'shortName' below."
+    },
+    "shortName": {
+      "id": "wnd[0]/usr/tabsTABSTRIP_SECURITY/tabpTS_INDEX/ssubDETAIL:SAPLFVW4:0160/txtSECURITYV-SHORT_TEXT",
+      "label": "Short Name",
+      "technical": "SHORT_TEXT",
+      "note": "Search Terms tab only."
+    },
+    "longName": {
+      "id": "wnd[0]/usr/tabsTABSTRIP_SECURITY/tabpTS_INDEX/ssubDETAIL:SAPLFVW4:0160/txtSECURITYV-LONG_TEXT",
+      "label": "Long Name",
+      "technical": "LONG_TEXT",
+      "note": "Search Terms tab only."
+    },
+    "productType": {
+      "id": "wnd[0]/usr/tabsTABSTRIP_SECURITY/tabpTS_INDEX/ssubDETAIL:SAPLFVW4:0160/txtSECURITYV-PRODUCT_TYPE",
+      "label": "Product Type",
+      "technical": "PRODUCT_TYPE",
+      "readOnly": true,
+      "note": "Search Terms tab. Read-only once the class exists - set only via the Create dialog."
+    },
+    "productTypeText": {
+      "id": "wnd[0]/usr/tabsTABSTRIP_SECURITY/tabpTS_INDEX/ssubDETAIL:SAPLFVW4:0160/txtSECURITYV-PRODUCT_TYPE_TEXT",
+      "label": "Product Type description",
+      "readOnly": true,
+      "note": "e.g. 'Inv: Mutual Funds' for 26B."
+    },
+    "issuer": {
+      "id": "wnd[0]/usr/tabsTABSTRIP_SECURITY/tabpTS_BASIC1/ssubDETAIL:SAPLFVW4:0120/ctxtSECURITYV-ISSUER",
+      "label": "Issuer",
+      "technical": "ISSUER",
+      "note": "Basic Data tab only. Must be a Business Partner in role TR0150. 700000453 ('TATA FIN PVT.LTD / MUMBAI') is confirmed valid by Check (F8): 'Data is consistent' (message class 65, number 202). Do not assume any BP number works here without a Check first - this is the same finding the web lane made independently (400000003 is a plain deal counterparty, not a valid Issuer)."
+    },
+    "issuerText": {
+      "id": "wnd[0]/usr/tabsTABSTRIP_SECURITY/tabpTS_BASIC1/ssubDETAIL:SAPLFVW4:0120/txtSECURITYV-ISSUER_TEXT",
+      "label": "Issuer (resolved name)",
+      "readOnly": true,
+      "note": "Blank until Enter is pressed after setting Issuer - this is a round trip, not an immediate echo. Reads 'TATA FIN PVT.LTD / MUMBAI 400021' once resolved."
+    },
+    "issueCurrency": {
+      "id": "wnd[0]/usr/tabsTABSTRIP_SECURITY/tabpTS_BASIC1/ssubDETAIL:SAPLFVW4:0120/ctxtSECURITYV-ISSUE_CURRENCY",
+      "label": "Issue Currency",
+      "technical": "ISSUE_CURRENCY",
+      "note": "Basic Data tab. Hard-required by Check (F8)."
+    },
+    "issueStartDate": {
+      "id": "wnd[0]/usr/tabsTABSTRIP_SECURITY/tabpTS_BASIC1/ssubDETAIL:SAPLFVW4:0120/ctxtSECURITYV-ISSUE_START",
+      "label": "Issue Start",
+      "technical": "ISSUE_START",
+      "note": "Basic Data tab. Set by TC-020 from 2026-08-20 onward at the requester's direction; TC-018 leaves it unset (SAP default)."
+    },
+    "nominalValue": {
+      "id": "wnd[0]/usr/tabsTABSTRIP_SECURITY/tabpTS_BASIC1/ssubDETAIL:SAPLFVW4:0120/txtSECURITYV-NOMINAL_VALUE_S",
+      "label": "Nominal Value",
+      "technical": "NOMINAL_VALUE_S",
+      "note": "Basic Data tab. Set by TC-020 from 2026-08-20 onward at the requester's direction; TC-018 leaves it unset."
+    }
+  },
+  "tabs": {
+    "searchTerms": { "id": "wnd[0]/usr/tabsTABSTRIP_SECURITY/tabpTS_INDEX", "label": "Search Terms" },
+    "basicData": { "id": "wnd[0]/usr/tabsTABSTRIP_SECURITY/tabpTS_BASIC1", "label": "Basic Data" },
+    "conditions": { "id": "wnd[0]/usr/tabsTABSTRIP_SECURITY/tabpTS_COND", "label": "Conditions" },
+    "exchanges": { "id": "wnd[0]/usr/tabsTABSTRIP_SECURITY/tabpTS_LIST", "label": "Exchanges" },
+    "securitySwap": { "id": "wnd[0]/usr/tabsTABSTRIP_SECURITY/tabpTS_SWAPS", "label": "Security Swap" },
+    "regulatoryReporting": { "id": "wnd[0]/usr/tabsTABSTRIP_SECURITY/tabpTS_BASIC2", "label": "Regulatory Reporting" },
+    "userData": { "id": "wnd[0]/usr/tabsTABSTRIP_SECURITY/tabpTS_USER", "label": "User Data" }
+  },
+  "buttons": {
+    "check": {
+      "id": "wnd[0]/tbar[1]/btn[8]",
+      "label": "Check (F8)",
+      "note": "Validates only - the read-only way this screen's mandatory fields were discovered, never a save. A clean check prints 'Data is consistent' (message class 65, number 202) to the status bar directly, no popup - different from the web lane's ITS rendering, which shows the same text inside a popup dialog."
+    },
+    "save": {
+      "id": "wnd[0]/tbar[0]/btn[11]",
+      "label": "Save (Ctrl+S)",
+      "note": "THE WRITE. Commits the class."
+    }
+  }
+}

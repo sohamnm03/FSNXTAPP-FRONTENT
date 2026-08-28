@@ -1,0 +1,35 @@
+{
+  "id": "tbb1-selection",
+  "transaction": "TBB1",
+  "dynpro": "RFTBB1 / 1000",
+  "description": "Post flows - selection screen. Test Run decides simulate vs commit.",
+  "usedBy": ["TC-002", "TC-004", "TC-005", "TC-006", "TC-007", "TC-008"],
+  "capturedOn": "DS4 / 100",
+  "capturedOnSystem": "DS4_100_NIIF",
+  "capturedAt": "2026-08-18",
+  "anchor": "Company Code",
+  "controls": {
+    "companyCode": { "kind": "input", "title": "Company Code", "verify": true },
+    "transaction": { "kind": "input", "title": "Financial Transaction", "nth": 0, "verify": true },
+    "dueDateCutoff": {
+      "kind": "input",
+      "title": "Payment or Delivery Date",
+      "verify": true,
+      "note": "Labelled 'Up to and Including Due Date' on screen - the selection cutoff."
+    },
+    "postingDate": {
+      "kind": "input",
+      "title": "Posting Date in the Document",
+      "nth": 1,
+      "expectDuplicates": 2,
+      "verify": true,
+      "note": "TWO inputs share this title: nth 0 is the 'Up to and Incl. Posting Date' selection filter, nth 1 is the Posting Control date that actually stamps the document. Taking .first() posts under today's date while the screen looks right. expectDuplicates is the drift alarm - a third input with this title silently redefines nth 1."
+    },
+    "testRun": {
+      "kind": "checkbox",
+      "id": "M0:46:::31:5",
+      "note": "Defaults to ON. Left alone, a 'post' simulates, reports success and writes nothing."
+    },
+    "execute": { "kind": "button", "id": "M0:50::btn[8]", "note": "F8." }
+  }
+}

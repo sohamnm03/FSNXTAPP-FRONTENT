@@ -1,0 +1,134 @@
+{
+  "id": "ftr-deal-irate",
+  "transaction": "FTR_CREATE",
+  "dynpro": "SAPLFTR_IRATE / 1100 (TM_51)",
+  "description": "Interest rate instrument (term loan) deal screen, Structure tab. Reached from ftr-create-entry with product type 10B.",
+  "usedBy": ["TC-002", "TC-003", "TC-008", "TC-009", "TC-013"],
+  "capturedOn": "DS4 / 100",
+  "capturedOnSystem": "DS4_100_NIIF",
+  "capturedAt": "2026-08-18",
+  "anchor": "Term Start",
+  "reach": {
+    "from": "ftr-create-entry",
+    "dataset": "term-loan-single",
+    "row": "baseline",
+    "note": "No t-code opens this screen directly. Fill the entry screen from the named dataset row and press Enter. Read-only — the model check never saves."
+  },
+  "controls": {
+    "amount": {
+      "kind": "input",
+      "title": "Amount as Text Field",
+      "reformats": true,
+      "note": "SAP returns '100,000.00'. Compared numerically, never by string equality."
+    },
+    "currency": { "kind": "input", "title": "Payment Currency" },
+    "termStart": { "kind": "input", "title": "Term Start", "verify": true },
+    "termEnd": { "kind": "input", "title": "End of Term", "verify": true },
+    "nominalRate": {
+      "kind": "input",
+      "title": "Nominal Interest Rate",
+      "reformats": true,
+      "note": "SAP returns '10.0000000'."
+    },
+    "contractDate": {
+      "kind": "input",
+      "title": "Contract Date",
+      "verify": true,
+      "note": "Must be <= Term Start or SAP refuses the save outright ('Contract date is after start of term'). Defaults to today."
+    },
+    "transactionNumber": {
+      "kind": "input",
+      "title": "Financial Transaction Number",
+      "note": "Holds the placeholder \\INTERN\\ until the number is assigned. Never capture that as a deal number."
+    },
+    "frequencyIndicator": {
+      "kind": "dropdown",
+      "title": "Frequency Indicator",
+      "optional": true,
+      "options": [
+        "At End of Term",
+        "On First Day of Month",
+        "On Last Day of Month",
+        "Monthly",
+        "Daily",
+        "Manual Input"
+      ],
+      "note": "SRHYTHM. Default is 'At End of Term'. A periodic choice reveals frequencyCount and frequencyUnit."
+    },
+    "frequencyCount": {
+      "kind": "input",
+      "title": "Defined Frequency in Days or Months",
+      "optional": true,
+      "note": "Revealed only once a periodic frequency is chosen. Its absence means SAP fell back to a one-off schedule, whatever the dropdown shows."
+    },
+    "frequencyUnit": {
+      "kind": "input",
+      "title": "Treasury: Unit of Frequency",
+      "optional": true
+    },
+    "save": {
+      "kind": "button",
+      "resolve": "save",
+      "fallbackId": "M0:50::btn[11]",
+      "note": "Resolved by its exact (Ctrl+S) tooltip, not by id - the id moves between transactions."
+    },
+    "structureTab": {
+      "kind": "button",
+      "id": "M0:46:2::0:0-title",
+      "note": "The deal screen's own tab strip, not a t-code navigation. SAP refuses to switch tabs while a required field on the current one is empty (e.g. Term Start) - fill the Structure tab first."
+    },
+    "administrTab": {
+      "kind": "button",
+      "id": "M0:46:2::0:3-title",
+      "note": "Holds General Valuation Class, Portfolio, Guarantor, Characteristics. Same tab-switch caveat as structureTab."
+    },
+    "generalValuationClass": {
+      "kind": "dropdown",
+      "title": "General Valuation Class",
+      "optional": true,
+      "note": "Administr. tab, not Structure. Unset is fine for product types that don't require it (10B/9800 never sets this) but a hard save-time refusal for others (22A/1000: 'Fill the following required field: General Valuation Class'). Discovered via aria-controls VTGFHA-RCOMVALCLSAPLFTR_SUBSCR, not dumpScreen - see discover-ftr-gvc-field-type.spec.ts.",
+      "options": [
+        "Short-term investments",
+        "Mid-term investments",
+        "Long-term investments",
+        "Liabilities",
+        "Short Term",
+        "Long Term",
+        "Valuation area 2: Transfer posting mid-term -> short-term",
+        "Valuation area 2 : Transfer posting long-term -> mid-term"
+      ]
+    },
+    "interestCategory": {
+      "kind": "dropdown",
+      "title": "Interest Category",
+      "optional": true,
+      "options": ["Fixed", "Variable", "Amount", "Scaled Interval", "Scaled Incremental"],
+      "note": "Rebuilds the whole interest block - nominalRate disappears and referenceInterestRate/interestMarkup/firstPeriodRate appear once this is 'Variable'. Set before touching any field in that block (TC-003's variant-matrix rule: rate fields last). TC-003's V10 discovery (9800/10B) found SAP refuses the save without a reference rate; TC-013 (1000/22A) confirmed the same requirement and supplies one."
+    },
+    "referenceInterestRate": {
+      "kind": "input",
+      "title": "Reference Interest Rate",
+      "optional": true,
+      "verify": true,
+      "note": "Present only once interestCategory = Variable. A code typed directly (e.g. RBI_REPO) - not chosen from a working F4 grid click, matching the pattern in probe-security-class.spec.ts. Valid codes are landscape- and company-code-specific; see discover-ftr-1000-22a-variable-rate.spec.ts for the full 16-option list read from DS4's own F4 search help for 1000/22A. verify:true because a dropped leading keystroke here does not produce an obviously-invalid string - it can silently select a different, real reference-rate code, the same class of risk termStart/termEnd/contractDate carry."
+    },
+    "interestMarkup": {
+      "kind": "input",
+      "title": "Interest Markup/Markdown",
+      "optional": true,
+      "note": "Present only once interestCategory = Variable. Left blank was accepted by the screen in discovery (no mandatory-field indicator) - untested whether SAP defaults it to zero or refuses the save without it."
+    },
+    "firstPeriodRate": {
+      "kind": "input",
+      "title": "Interest Rate for the First Period",
+      "optional": true,
+      "note": "Present only once interestCategory = Variable. Same caveat as interestMarkup - left blank in discovery, save-time behaviour unconfirmed."
+    },
+    "interestCalcMethod": {
+      "kind": "dropdown",
+      "title": "Interest Calculation Method",
+      "optional": true,
+      "note": "Discovery (1000/22A, Variable + RBI_REPO) showed a warning 'No interest calculation method entered for reference interest rate' even though this field already displayed 'act/365' - untested whether that warning blocks the save or is informational only, like TC-002's own non-blocking check-run warnings. Not set by fillTermLoan; left for the live save's check run to reveal, per this project's discover-don't-guess rule."
+    }
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "screen": "Create Investment Fund: Structure",
+  "program": "SAPLTTM_UI_FRAMEWORK",
+  "screenNumber": 1110,
+  "discoveredOn": "DS4/100, 2026-08-20, during the TC-020 build (GUI lane)",
+  "note": "Reached from ftr-entry with product type 26B (Inv: Mutual Funds), transaction type 100 (Investment), a Security Class id and a Business Partner. Structurally unrelated to ftr-deal-irate.json (SAPLFTR_IRATE, the term-loan screen) - a completely different program, the modern 'Trading Transaction Manager' framework (SAPLTTM_UI_FRAMEWORK), with its own Check button (F6, tbar[1]/btn[6], not F8) and 8 tabs (Structure, Administr., Other Flows, Payment Details, Cash Flow, Memos, Partner Assignment, Status). Same program and field layout the web lane found independently (ftr-26b-deal.json in web-tests/screens/) - confirms this is a lane-independent screen, not a WebGUI rendering quirk.",
+  "controls": {
+    "transactionNumber": {
+      "id": "wnd[0]/usr/sub1100_SUBSCREEN_HEADER:SAPLFTR_SUBSCR:0014/txtVTGFHA-XRFHA",
+      "label": "Transaction",
+      "note": "Header subscreen, present on every tab. Reads the literal placeholder '\\INTERN\\' before Save - the real, server-assigned deal number is only knowable from SAP's own confirmation message after Save, never from this field alone (it stays '\\INTERN\\' on this screen even after a successful save, since the screen navigates back to FTR_ENTRY on commit)."
+    },
+    "securitiesAccount": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLTTM_SECURITIES_UI:1200/sub1200_SUBSCREEN_SECURITIES:SAPLTTM_SECURITIES_UI:1201/ctxtTTMS_SEC_STRUCTURE-RLDEPO",
+      "label": "Securities Account",
+      "technical": "RLDEPO",
+      "note": "Defaults to '1000' already - the only Securities Account this client has (confirmed by the web lane's F4: exactly one row)."
+    },
+    "generalValuationClass": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLTTM_SECURITIES_UI:1200/sub1200_SUBSCREEN_SECURITIES:SAPLTTM_SECURITIES_UI:1201/cmbTTMS_SEC_STRUCTURE-RCOMVALCL",
+      "label": "General Valuation Class",
+      "type": "GuiComboBox",
+      "entries": {
+        "1": "Short-term investments",
+        "2": "Mid-term investments",
+        "3": "Long-term investments",
+        "4": "Liabilities",
+        "5": "Short Term",
+        "6": "Long Term",
+        "90": "Valuation area 2: Transfer posting mid-term -> short-term",
+        "91": "Valuation area 2: Transfer posting long-term -> mid-term"
+      },
+      "note": "Not defaulted - starts blank ( key ' '). 'Short Term' is key '5' (not '1' 'Short-term investments' - a different, similarly-named entry). Select by key, not by typing text."
+    },
+    "numberOfUnits": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLTTM_SECURITIES_UI:1200/sub1200_SUBSCREEN_SECURITIES:SAPLTTM_SECURITIES_UI:1201/txtTTMS_SEC_STRUCTURE-XASTUECK",
+      "label": "Number of Units",
+      "technical": "XASTUECK",
+      "note": "Not defaulted - starts blank. Required."
+    },
+    "price": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLTTM_SECURITIES_UI:1200/sub1200_SUBSCREEN_SECURITIES:SAPLTTM_SECURITIES_UI:1201/txtTTMS_SEC_STRUCTURE-BUPRC",
+      "label": "Price (Unit-Quoted)",
+      "technical": "BUPRC",
+      "note": "Defaults to '0'. Required to be a real value."
+    },
+    "positionValueDate": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLTTM_SECURITIES_UI:1200/sub1200_SUBSCREEN_SECURITIES:SAPLTTM_SECURITIES_UI:1201/ctxtTTMS_SEC_STRUCTURE-DBESTANDX",
+      "label": "Position Value Date",
+      "technical": "DBESTANDX",
+      "note": "Defaults to today automatically - never set by this case, only read (to derive calculationDate/paymentDate, which are NOT auto-defaulted)."
+    },
+    "calculationDate": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLTTM_SECURITIES_UI:1200/sub1200_SUBSCREEN_SECURITIES:SAPLTTM_SECURITIES_UI:1201/ctxtTTMS_SEC_STRUCTURE-DVALUTX",
+      "label": "Calculation Date",
+      "technical": "DVALUTX",
+      "note": "Not defaulted - starts blank. Set to the same value read off positionValueDate."
+    },
+    "paymentDate": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLTTM_SECURITIES_UI:1200/sub1200_SUBSCREEN_SECURITIES:SAPLTTM_SECURITIES_UI:1201/ctxtTTMS_SEC_STRUCTURE-XZTERM",
+      "label": "Payment Date",
+      "technical": "XZTERM",
+      "note": "Not defaulted - starts blank. Set to the same value read off positionValueDate."
+    },
+    "paymentCurrency": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLTTM_SECURITIES_UI:1200/sub1200_SUBSCREEN_SECURITIES:SAPLTTM_SECURITIES_UI:1201/ctxtTTMS_SEC_STRUCTURE-WZBETR",
+      "label": "Payment Amount currency",
+      "technical": "WZBETR",
+      "note": "Defaults to INR for this profile. Asserted, never set."
+    }
+  },
+  "buttons": {
+    "checkButton": {
+      "id": "wnd[0]/tbar[1]/btn[6]",
+      "label": "Check (F6)",
+      "note": "Validates only. A clean-except-for-payment-details check reports message class FTR0, number 030, type W ('No payment details entered for transaction') - a WARNING, but Save alone does not commit past it (see saveButton)."
+    },
+    "saveButton": {
+      "id": "wnd[0]/tbar[0]/btn[11]",
+      "label": "Save (Ctrl+S)",
+      "note": "THE WRITE - but a bare Save press does not commit past the payment-details warning. Confirmed live 2026-08-20: pressing Save straight after Check reproduces message FTR0 030 unchanged and the Transaction field still reads the placeholder. The sequence that actually commits is Enter, Save, Enter - the second Enter is what produces SAP's own confirmation ('Financial transaction saved under number <n>', message T1 033) and navigates the screen back to FTR_ENTRY. Same finding as the web lane, confirming this is a backend/business-logic behavior, not a rendering-path quirk."
+    }
+  }
+}

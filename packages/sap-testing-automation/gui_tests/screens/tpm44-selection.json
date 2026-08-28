@@ -1,0 +1,47 @@
+{
+  "screen": "Execute Accrual/Deferral of Expenses and Revenues",
+  "program": "RTPM_ACCRUAL_DEFERRAL",
+  "screenNumber": 1000,
+  "transaction": "TPM44",
+  "discoveredOn": "DS4/100, 2026-08-19, during the TC-014 run",
+  "controls": {
+    "companyCode": {
+      "id": "wnd[0]/usr/ctxtSO_BUKRS-LOW",
+      "label": "Company Code"
+    },
+    "valuationArea": {
+      "id": "wnd[0]/usr/ctxtSO_VAREA-LOW",
+      "label": "Valuation Area"
+    },
+    "valuationClass": {
+      "id": "wnd[0]/usr/ctxtSO_VCLS-LOW",
+      "label": "Valuation Class",
+      "note": "A coded value - 0005 = Short Term under Valuation Area 001. Read from the field's own F4 help, never typed as prose. NOT the same field as the deal screen's 'Gen. Valn Class' dropdown."
+    },
+    "transaction": {
+      "id": "wnd[0]/usr/ctxtSO_OTCNR-LOW",
+      "label": "Transaction (OTC Transactions block)",
+      "note": "The deal number. Scopes the run to one deal."
+    },
+    "keyDate": {
+      "id": "wnd[0]/usr/ctxtP_KEYDAT",
+      "label": "Accrual/Deferral Key Date",
+      "required": true,
+      "note": "Month-end of the term's start month, not the start date itself."
+    },
+    "testRun": {
+      "id": "wnd[0]/usr/chkP_TEST",
+      "label": "Test Run",
+      "type": "GuiCheckBox",
+      "defaultsTo": true
+    },
+    "keyDateIsMonthEnd": {
+      "id": "wnd[0]/usr/chkP_ULTIMO",
+      "label": "Key Date Is Month End",
+      "type": "GuiCheckBox"
+    }
+  },
+  "results": {
+    "note": "TPM44 lands directly on an inline ALV list on wnd[0] - no popup, unlike TBB1. Read it with screen labels; rows carry update types (AD1000/AD1001), prorated amounts and the key date."
+  }
+}

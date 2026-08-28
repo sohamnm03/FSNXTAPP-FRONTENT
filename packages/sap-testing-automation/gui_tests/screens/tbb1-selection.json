@@ -1,0 +1,49 @@
+{
+  "screen": "Treasury: Post Flows",
+  "program": "RFTBBB00",
+  "screenNumber": 1000,
+  "transaction": "TBB1",
+  "discoveredOn": "DS4/100, 2026-08-19, during the TC-014 run",
+  "controls": {
+    "companyCode": {
+      "id": "wnd[0]/usr/ctxtS_BUKRS-LOW",
+      "label": "Company Code"
+    },
+    "transaction": {
+      "id": "wnd[0]/usr/ctxtS_RFHA-LOW",
+      "label": "Transaction",
+      "note": "The deal number. Scopes the whole run to one deal."
+    },
+    "upToDueDate": {
+      "id": "wnd[0]/usr/ctxtP_DZTERM",
+      "label": "Up to and Including Due Date",
+      "note": "Selection filter. Only flows due by this date are posted - see TC-002's 'TBB1 posts only what is due by its cutoff'."
+    },
+    "upToPostingDate": {
+      "id": "wnd[0]/usr/ctxtP_DBUCHU",
+      "label": "Up to and Incl. Posting Date",
+      "note": "A second selection filter, NOT the date that stamps the document."
+    },
+    "postingDate": {
+      "id": "wnd[0]/usr/ctxtP_BUDAT",
+      "label": "Posting Date (Posting Control)",
+      "note": "THIS is the one that stamps the document. In the web lane both fields carry the title 'Posting Date in the Document' and are told apart only by position; in the GUI lane they are distinct ids, so the ambiguity does not arise."
+    },
+    "testRun": {
+      "id": "wnd[0]/usr/chkP_TEST",
+      "label": "Test Run",
+      "type": "GuiCheckBox",
+      "defaultsTo": true,
+      "note": "Defaults ON. Left alone, a 'post' simulates, reports success and writes nothing. Driven false and recorded; never driven true first (CLAUDE.md rule 3a)."
+    }
+  },
+  "results": {
+    "informationOverviewGrid": {
+      "id": "wnd[1]/usr/cntlCUSTOM_CONTROL1/shellcont/shell",
+      "label": "Information Overview -> Logs and Messages",
+      "type": "GuiGridView",
+      "columns": ["STATE_SYMBOL", "PROTOCOL_TYPE_TEXT"],
+      "note": "Company code 1000 returns this popup where 9800 returns an inline list. Its rows need select_table_row BEFORE double_click_table_cell - a bare double-click on an unselected row silently does nothing. @5B@ in STATE_SYMBOL is the green-light icon."
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "id": "fwzz-class-master",
+  "transaction": "FWZZ",
+  "dynpro": "SAPLFVW4/0100",
+  "description": "Class master screen, reached via fwzz-create-dialog's Create (F5). Opens on the 'Search Terms' tab; Basic Data carries the fields product type 26B (Inv:MF) actually requires - Issuer and Issue Currency - and blocks switching to any other tab until Issuer is filled ('Make an entry in mandatory field \"Issuer\"'). Tabs present for 26B: Search Terms, Basic Data, Conditions, Exchanges, Security Swap, Regulatory Reporting, User Data - note this is a different set from the empty fwzz-entry screen's tab strip (which also shows 'SPPI' and no 'Security Swap'); tabs are product-type-dependent and were not re-verified beyond 26B.",
+  "usedBy": ["TC-017", "TC-019"],
+  "capturedOn": "DS4 / 100",
+  "capturedOnSystem": "DS4_100_NIIF",
+  "capturedAt": "2026-08-19",
+  "anchor": "Short Name",
+  "controls": {
+    "shortName": { "kind": "input", "title": "Short Name" },
+    "longName": { "kind": "input", "title": "Long Name" },
+    "productType": { "kind": "input", "title": "Product Type" },
+    "idNumber": {
+      "kind": "input",
+      "title": "Security Class ID Number",
+      "note": "Reads the literal placeholder '\\INTERN\\' before Save for an internally-numbered product type. The real, server-assigned id is only knowable by reading this field again after Save (or re-Displaying), same rigor TC-011 applies to the Bond Workbench's client-side placeholder."
+    },
+    "searchTermsTab": { "kind": "button", "id": "M0:46:2::0:0-title" },
+    "basicDataTab": { "kind": "button", "id": "M0:46:2::0:1-title" },
+    "issuer": {
+      "kind": "input",
+      "title": "Issuer Identity Key",
+      "verify": true,
+      "note": "Basic Data tab only. Must be a Business Partner in role TR0150 - the field's own F4 returns 0 rows on DS4/100 even with every filter cleared (no BP is set up in that role), so a valid partner has to be known some other way. 700000453 ('TATA FIN PVT.LTD / MUMBAI') is confirmed valid by Check (F8): 'Data is consistent'. 400000003 (a BP used elsewhere in this suite as a plain deal counterparty) is NOT valid here - 'Business partner 400000003 does not exist in role TR0150'. Do not assume any BP number works without a Check first."
+    },
+    "issueCurrency": { "kind": "input", "title": "Issue Currency", "note": "Basic Data tab. Hard-required by Check (F8): 'It is absolutely necessary to enter the issue currency on the Basic Data tab.'" },
+    "issueStartDate": { "kind": "input", "title": "Issue Start Date", "optional": true, "note": "Basic Data tab. Set by TC-019 from 2026-08-20 onward at the requester's direction; TC-017 leaves it unset." },
+    "nominalValue": { "kind": "input", "title": "Nominal Value per Stock (Independent of Currency)", "optional": true, "note": "Basic Data tab. Set by TC-019 from 2026-08-20 onward at the requester's direction; TC-017 leaves it unset." },
+    "checkButton": { "kind": "button", "id": "M0:48::btn[8]", "note": "'Check (F8)'. Validates only - the read-only way this screen's mandatory fields were discovered, never a save." },
+    "saveButton": { "kind": "button", "resolve": "save" }
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "formatVersion": "1.0",
+  "$comment": [
+    "Registry of SAP systems this test workspace may drive through SAP GUI Scripting.",
+    "NON-SECRET metadata only. Passwords live in .claude/settings.local.json and are",
+    "referenced here by environment-variable NAME via 'passwordEnvVar'.",
+    "After editing this file run: powershell -ExecutionPolicy Bypass -File scripts/sync-sap-systems.ps1",
+    "See docs/sap-gui-mcp-setup.md for the full workflow.",
+    "",
+    "PRODUCTION IS DELIBERATELY ABSENT. SAP Logon Pad on this machine also holds",
+    "'NIIF - Production' (PS4) and 'TFSIN - S4 Production' (PS4). Do not add them.",
+    "If a production read-only check is ever genuinely required, add the system with",
+    "sapGui.readOnly = true AND an explicit allowedTransactions whitelist, and get the",
+    "human to confirm in writing first."
+  ],
+
+  "defaultSystem": "DS4_100_NIIF",
+
+  "systems": [
+    {
+      "id": "DS4_100_NIIF",
+      "label": "NIIF S/4HANA Development (DS4, client 100)",
+      "enabled": true,
+      "role": "development",
+
+      "systemId": "DS4",
+      "client": "100",
+      "language": "EN",
+
+      "credentials": {
+        "user": "FS_DEV3",
+        "passwordEnvVar": "SAP_DS4_100_NIIF_PASSWORD"
+      },
+
+      "sapGui": {
+        "enabled": true,
+        "logonDescription": "NIIF - Development",
+        "readOnly": false,
+        "profile": "full",
+        "auditLog": "logs/sap-gui-audit.jsonl",
+        "$comment": [
+          "'logonDescription' MUST match the SAP Logon Pad entry name exactly - it is",
+          "the argument to sap_connect. Set readOnly=true for a look-but-don't-touch",
+          "profile, or add 'allowedTransactions': [\"MM03\",\"VA03\"] to restrict which",
+          "t-codes may run. The server's own blocklist (SU01, PFCG, SE16N and other",
+          "admin tcodes) applies regardless of these settings."
+        ]
+      },
+
+      "web": {
+        "enabled": true,
+        "baseUrl": "https://vhnlqds4ap01.sap.niififl.in:44300",
+        "flpPath": "/sap/bc/ui2/flp?sap-client=100",
+        "webguiPath": "/sap/bc/gui/sap/its/webgui?sap-client=100",
+        "ignoreHttpsErrors": false,
+        "$comment": [
+          "Consumed by web-tests/playwright.config.ts (playwright-sap) for the",
+          "Fiori / WebGUI / UI5 lane. Same credentials block as SAP GUI above.",
+          "All three endpoints answered 401 (auth challenge) on 2026-08-16, so they",
+          "exist and require logon. Leave ignoreHttpsErrors false - if the certificate",
+          "does not validate, import the CA rather than turning verification off."
+        ]
+      },
+
+      "rfc": {
+        "applicationServer": "10.40.1.33",
+        "systemNumber": "00"
+      }
+    },
+    {
+      "id": "DS4_100_TFSIN",
+      "label": "TFS India S/4HANA Development (DS4, client 100)",
+      "enabled": false,
+
+      "$comment": [
+        "Template for a second landscape. Same SYSID and client as DS4_100_NIIF but a",
+        "different system, so the derived server name would collide - mcpServerName is",
+        "set explicitly. Add SAP_DS4_100_TFSIN_PASSWORD to .claude/settings.local.json",
+        "and set enabled=true to activate."
+      ],
+
+      "systemId": "DS4",
+      "client": "100",
+      "language": "EN",
+
+      "credentials": {
+        "user": "FS_DEV",
+        "passwordEnvVar": "SAP_DS4_100_TFSIN_PASSWORD"
+      },
+
+      "sapGui": {
+        "enabled": false,
+        "mcpServerName": "sap-gui-ds4-100-tfsin",
+        "logonDescription": "TFSIN HANA Dev",
+        "readOnly": true,
+        "profile": "exploration"
+      },
+
+      "rfc": {
+        "applicationServer": "10.110.0.33",
+        "systemNumber": "00"
+      }
+    }
+  ]
+}

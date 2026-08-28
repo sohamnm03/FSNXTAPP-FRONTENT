@@ -1,0 +1,72 @@
+{
+  "id": "ftr-26b-deal",
+  "transaction": "FTR_CREATE",
+  "dynpro": "SAPLTTM_UI_FRAMEWORK / 1110",
+  "description": "Create Investment Fund deal screen, reached from ftr-create-entry with product type 26B (Inv: Mutual Funds), transaction type 100 (Investment), a Security Class ID Number and a Business Partner Number. Structurally unrelated to ftr-deal-irate.json (SAPLFTR_IRATE, the term-loan screen) - a completely different program, the modern 'Trading Transaction Manager' framework, with its own field set and its own Check button.",
+  "usedBy": ["TC-019"],
+  "capturedOn": "DS4 / 100",
+  "capturedOnSystem": "DS4_100_NIIF",
+  "capturedAt": "2026-08-20",
+  "anchor": "Number of Units as Text",
+  "controls": {
+    "securitiesAccount": {
+      "kind": "input",
+      "title": "Securities Account",
+      "verify": true,
+      "note": "F4 on this client returns exactly one row: '1000 | Security | 0 | Asset Securities Account'."
+    },
+    "generalValuationClass": {
+      "kind": "dropdown",
+      "title": "General Valuation Class",
+      "note": "Not an F4 field - openValueHelp throws 'did not open on F4'. Use selectDropdown. 'Short Term' (the same value FTR term loans use) is accepted."
+    },
+    "numberOfUnits": {
+      "kind": "input",
+      "title": "Number of Units as Text",
+      "reformats": true,
+      "note": "SAP reformats on entry: '1000' reads back as '1,000'. Compare numerically."
+    },
+    "price": {
+      "kind": "input",
+      "title": "Security Price Without Currency Ref. with Unit Quotation",
+      "note": "Unit-quoted price, no currency symbol in the field itself (see paymentCurrency)."
+    },
+    "calculationDate": {
+      "kind": "input",
+      "title": "Calculation Date",
+      "note": "Not defaulted by SAP - must be set. This case sets it to the same date SAP already defaulted into Position Value Date (today), read off the screen rather than hardcoded, so the case never goes stale."
+    },
+    "paymentDate": {
+      "kind": "input",
+      "title": "Payment Date",
+      "note": "Not defaulted by SAP - must be set. Same today's-date value as calculationDate."
+    },
+    "positionValueDate": {
+      "kind": "input",
+      "title": "Position Value Date",
+      "optional": true,
+      "note": "Defaults to today automatically - never set by this case, only read (to derive calculationDate/paymentDate)."
+    },
+    "paymentCurrency": {
+      "kind": "input",
+      "title": "Payment Currency",
+      "optional": true,
+      "note": "Defaults to INR for this profile. Asserted, never set."
+    },
+    "paymentDetailsTab": {
+      "kind": "button",
+      "id": "M0:46:2::0:12-title",
+      "note": "Not clicked by this case - Check (F6) reports 'No payment details entered for transaction' as a WARNING (status bar text is literally prefixed 'Warning:'), non-blocking, the same way this suite already tolerates FTR term loan check-run warnings. Present here for a future case that needs to fill it."
+    },
+    "checkButton": {
+      "kind": "button",
+      "id": "M0:48::btn[6]",
+      "note": "Check (F6). Validates only - never a save. Different toolbar id from the term-loan screen's Save/Check, since this is a different program."
+    },
+    "saveButton": {
+      "kind": "button",
+      "resolve": "save",
+      "note": "Resolved by (Ctrl+S) tooltip at run time, same as every other screen model."
+    }
+  }
+}

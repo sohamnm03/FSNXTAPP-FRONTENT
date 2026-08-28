@@ -1,0 +1,32 @@
+{
+  "id": "fwzz-create-dialog",
+  "transaction": "FWZZ",
+  "dynpro": "SAPLFVW4/0100",
+  "description": "Modal 'Create Class' dialog (SAPLFVW4115_1), opened by fwzz-entry's Create button. Asks Product Type / Short Name / Long Name plus two radio groups (Active|Inactive, With Reference|Without Reference - both left at their defaults, Active / Without Reference, since neither control type exists in this suite's screen-model vocabulary and the defaults are what this case wants). Create (F5) opens the class master (fwzz-class-master.json) - it does not commit by itself.",
+  "usedBy": ["TC-017"],
+  "capturedOn": "DS4 / 100",
+  "capturedOnSystem": "DS4_100_NIIF",
+  "capturedAt": "2026-08-19",
+  "anchor": "Product Type",
+  "controls": {
+    "idNumber": {
+      "kind": "input",
+      "title": "Security Class ID Number",
+      "nth": 1,
+      "expectDuplicates": 2,
+      "optional": true,
+      "note": "nth=0 is the read-only mirror carried over from the entry screen; nth=1 is this dialog's own editable copy. Left blank for 26B - see fwzz-entry.json's idNumber note."
+    },
+    "productType": { "kind": "input", "title": "Product Type", "verify": true, "note": "max 3 chars. '26B' = 'Inv:MF' (Investment: Mutual Funds)." },
+    "shortName": { "kind": "input", "title": "Short Name", "note": "max 15 chars - SAP truncates silently, does not refuse." },
+    "longName": { "kind": "input", "title": "Long Name", "note": "max 60 chars." },
+    "createConfirmButton": { "kind": "button", "id": "M1:48::btn[5]", "note": "'Create (F5)'. Opens the class master. Does not commit - Save on the master screen is the actual write." },
+    "cancelButton": { "kind": "button", "id": "M1:54::btn[12]" },
+    "continueButton": {
+      "kind": "button",
+      "id": "M1:50::btn[0]",
+      "optional": true,
+      "note": "Dismisses an informational popup that can appear here (e.g. the internal-numbering notice if an id was typed for 26B). Purely navigational."
+    }
+  }
+}

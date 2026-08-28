@@ -1,0 +1,38 @@
+{
+  "id": "fwzz-then-ftr-26b-mutual-fund",
+  "case": "TC-019",
+  "system": "DS4_100_NIIF",
+  "description": "One security class (FWZZ, product type 26B) plus one Investment transaction against it (FTR_CREATE, 26B/100) - two writes, one flow. Mock data authored by Claude at the user's request.",
+  "authorised": "Mock data authored by Claude, 2026-08-20. Class fields mirror TC-017's proven baseline (Issuer 700000453 / TATA FIN PVT.LTD, confirmed valid for role TR0150 by a live Check; currency INR). Deal fields (company code 9990, Securities Account 1000, General Valuation Class Short Term, partner 400000003) all came from live discovery - discover-ftr-26b-cocode.spec.ts found 9990 is the only tried company code where 26B is configured (9800 and 1000 both refuse it: 'Product type 26B not available'), discover-ftr-26b-deal-fields.spec.ts found Securities Account's own F4 returns exactly one row (1000), and discover-ftr-26b-deal-final-check.spec.ts confirmed this exact field set leaves only one non-blocking warning ('No payment details entered for transaction') before Save. `issueStartDate`/`nominalValue` added 2026-08-20 at the requester's direction - the two fields were already discovered on the class master's Basic Data tab (web-tests/screens/fwzz-class-master.json, gui_tests/screens/fwzz-class-master.json) but left unset by TC-017/018/019/020's first runs; both lanes' `ClassData` now accept them as optional so TC-017/018 (which do not set them) are unaffected.",
+  "writesPerRow": 2,
+  "defaults": {
+    "class": {
+      "productType": "26B",
+      "issuer": "700000453",
+      "issueCurrency": "INR",
+      "issueStartDate": "20.08.2026",
+      "nominalValue": "100000"
+    },
+    "deal": {
+      "companyCode": "9990",
+      "transactionType": "100",
+      "partner": "400000003",
+      "securitiesAccount": "1000",
+      "generalValuationClass": "Short Term"
+    }
+  },
+  "rows": [
+    {
+      "id": "baseline",
+      "label": "NIIF Balanced Advantage Fund - Growth, 1000 units @ 100 INR",
+      "class": {
+        "shortName": "NIIF BAL ADV",
+        "longName": "NIIF Balanced Advantage Fund - Growth"
+      },
+      "deal": {
+        "numberOfUnits": "1000",
+        "price": "100"
+      }
+    }
+  ]
+}

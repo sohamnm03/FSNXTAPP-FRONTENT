@@ -1,0 +1,65 @@
+{
+  "screen": "Run Valuation",
+  "program": "RTPM_TRL_VALUATION",
+  "screenNumber": 1000,
+  "transaction": "TPM1",
+  "discoveredOn": "DS4/100, 2026-08-19, during the TC-014 run",
+  "note": "TPM1 is a TWO-STEP transaction and step one writes nothing. F8 only selects positions; the valuation needs the 'Run Valuation' button on the positions screen that F8 lands on.",
+  "controls": {
+    "companyCode": {
+      "id": "wnd[0]/usr/ctxtSO_BUKRS-LOW",
+      "label": "Company Code"
+    },
+    "valuationArea": {
+      "id": "wnd[0]/usr/ctxtSO_VAREA-LOW",
+      "label": "Valuation Area"
+    },
+    "valuationClass": {
+      "id": "wnd[0]/usr/ctxtSO_VCLS-LOW",
+      "label": "Valuation Class"
+    },
+    "transaction": {
+      "id": "wnd[0]/usr/ctxtSO_OTCNR-LOW",
+      "label": "Transaction (OTC Transactions block)"
+    },
+    "keyDate": {
+      "id": "wnd[0]/usr/ctxtKEYDATE",
+      "label": "Key Date for Valuation"
+    },
+    "valuationCategory": {
+      "id": "wnd[0]/usr/cmbVALCAT",
+      "label": "Valuation Category",
+      "type": "GuiComboBox",
+      "required": true,
+      "note": "MANDATORY and silently so - without it TPM1 refuses with 'Make an entry in mandatory field \"Valuation Category\"', no dialog raised, selection screen still looking correct. Only the status bar says so. Always 'Mid-Year Valuation with Reset' for this workspace (key 2)."
+    },
+    "testRun": {
+      "id": "wnd[0]/usr/chkX_SIMULA",
+      "label": "Test Run",
+      "type": "GuiCheckBox",
+      "defaultsTo": true,
+      "note": "Named X_SIMULA here, not P_TEST as on TBB1/TPM44."
+    },
+    "revalueWithoutPosting": {
+      "id": "wnd[0]/usr/chkX_RECALC",
+      "label": "Revaluate Without Posting",
+      "type": "GuiCheckBox",
+      "note": "Left alone. Setting it would make the run write nothing."
+    }
+  },
+  "positionsScreen": {
+    "program": "SAPLSLVC_FULLSCREEN",
+    "screenNumber": 500,
+    "title": "Display Selected Treasury Positions for Valuation",
+    "runValuation": {
+      "id": "wnd[0]/tbar[1]/btn[8]",
+      "label": "Run Valuation",
+      "tooltip": "Run the Valuation of the Displayed Treasury Positions (F8)",
+      "note": "THE write. A run that pressed only F8 on the selection screen reported PASS having valued nothing - the case asserts the run moved off this screen onto the Valuation Log."
+    }
+  },
+  "results": {
+    "valuationLogTitle": "Valuation Log",
+    "note": "Success is landing on 'Valuation Log' with the deal number in it. Still sitting on 'Display Selected Treasury Positions for Valuation' means nothing was valued."
+  }
+}

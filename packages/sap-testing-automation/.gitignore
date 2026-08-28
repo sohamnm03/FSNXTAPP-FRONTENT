@@ -1,0 +1,30 @@
+# Local secrets - the SAP password lives here. Never commit.
+# config/sap-systems.json holds the non-secret metadata instead.
+.claude/settings.local.json
+.env
+.env.local
+
+# Generated from config/sap-systems.json by scripts/sync-sap-systems.ps1.
+# Contains only ${VAR} references, but it is a build product - regenerate it.
+.mcp.json
+
+# Python venv for the SAP GUI Scripting MCP server (recreate, don't commit).
+tools/**/.venv/
+__pycache__/
+*.pyc
+
+# Node tooling for the playwright-sap web lane.
+node_modules/
+web-tests/.env
+# Cached logged-in browser session - a live credential in cookie form.
+web-tests/.auth/
+web-tests/playwright-report/
+web-tests/test-results/
+web-tests/blob-report/
+
+# Run output. All of it can contain live business data from the SAP system.
+logs/
+results/*
+evidence/*
+!results/_TEMPLATE.md
+!evidence/.gitkeep

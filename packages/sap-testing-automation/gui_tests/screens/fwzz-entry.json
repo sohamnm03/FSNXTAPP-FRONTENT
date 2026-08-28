@@ -1,0 +1,24 @@
+{
+  "screen": "Class (FWZZ) entry screen",
+  "program": "SAPLFVW4",
+  "screenNumber": 100,
+  "discoveredOn": "DS4/100, 2026-08-19, during the TC-018 build (GUI lane)",
+  "note": "One id field plus four action buttons - Create/Display/Change/Delete. No product type field here; that is asked for inside the Create dialog (see fwzz-create-dialog.json). Same program/screen as the web lane's FWZZ, but every id below is a SAP GUI Scripting path, not portable to the web lane's DOM ids or to another system - re-discover with sap_get_screen_elements before reusing.",
+  "controls": {
+    "idNumber": {
+      "id": "wnd[0]/usr/subHEADER:SAPLFVW4:0110/ctxtSECURITYV-SECURITY_NUMBER",
+      "label": "ID Number",
+      "technical": "SECURITY_NUMBER",
+      "note": "Left blank for an internally-numbered product type (26B: Check/Create refuses a typed id - 'Numbers assigned to product type 26B internally'). Confirmed live via the GUI lane too, same message as the web lane."
+    }
+  },
+  "buttons": {
+    "create": {
+      "id": "wnd[0]/usr/subHEADER:SAPLFVW4:0110/btnICON_CREATE",
+      "note": "Opens the Create Class dialog (fwzz-create-dialog.json), wnd[1]. Does not commit."
+    },
+    "display": { "id": "wnd[0]/usr/subHEADER:SAPLFVW4:0110/btnICON_DISPLAY" },
+    "change": { "id": "wnd[0]/usr/subHEADER:SAPLFVW4:0110/btnICON_CHANGE" },
+    "delete": { "id": "wnd[0]/usr/subHEADER:SAPLFVW4:0110/btnICON_DELETE" }
+  }
+}

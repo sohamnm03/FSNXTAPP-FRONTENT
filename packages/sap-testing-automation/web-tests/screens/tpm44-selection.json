@@ -1,0 +1,56 @@
+{
+  "id": "tpm44-selection",
+  "transaction": "TPM44",
+  "dynpro": "RTPM_ACCRUAL_DEFERRAL / 1000",
+  "description": "Execute Accrual/Deferral of Expenses and Revenues - selection screen. Test Run decides simulate vs commit, same trap as TBB1.",
+  "usedBy": ["TC-009"],
+  "capturedOn": "DS4 / 100",
+  "capturedOnSystem": "DS4_100_NIIF",
+  "capturedAt": "2026-08-18",
+  "anchor": "Company Code",
+  "controls": {
+    "companyCode": {
+      "kind": "input",
+      "title": "Company Code",
+      "nth": 0,
+      "expectDuplicates": 2,
+      "verify": true,
+      "note": "From/to pair - nth 0 is the 'from' selection field."
+    },
+    "transaction": {
+      "kind": "input",
+      "title": "Financial Transaction",
+      "nth": 0,
+      "expectDuplicates": 2,
+      "verify": true,
+      "note": "From/to pair - nth 0 is the 'from' selection field, used to scope the run to one deal."
+    },
+    "valuationArea": {
+      "kind": "input",
+      "title": "Treasury Valuation Area",
+      "nth": 0,
+      "expectDuplicates": 2,
+      "optional": true
+    },
+    "valuationClass": {
+      "kind": "input",
+      "title": "Valuation Class",
+      "nth": 0,
+      "expectDuplicates": 2,
+      "optional": true,
+      "note": "Coded value, e.g. '0005' (Valuation Area 001) = Short Term. Read from the field's own F4 value help, never guessed - see discover-tpm-valuation-class.spec.ts."
+    },
+    "keyDate": {
+      "kind": "input",
+      "title": "Accrual/Deferral Key Date",
+      "verify": true,
+      "note": "Defaults to today. Set to the deal's month-end key date, not its term start."
+    },
+    "testRun": {
+      "kind": "checkbox",
+      "id": "M0:46:::41:5",
+      "note": "Defaults to ON, discovered via a [role=checkbox] dump (discover-tpm-checkboxes.spec.ts) - dumpScreen cannot see it. Left alone, a 'post' simulates, reports success and writes nothing, same trap as TBB1's M0:46:::31:5."
+    },
+    "execute": { "kind": "button", "id": "M0:50::btn[8]", "note": "F8." }
+  }
+}

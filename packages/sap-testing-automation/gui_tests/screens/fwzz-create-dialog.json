@@ -1,0 +1,44 @@
+{
+  "screen": "Create Class modal dialog",
+  "program": "SAPLFVW4",
+  "screenNumber": 115,
+  "discoveredOn": "DS4/100, 2026-08-19, during the TC-018 build (GUI lane)",
+  "note": "wnd[1], opened by fwzz-entry's create button. Asks Product Type / Short Name (Shrt) / Long Name plus two radio groups (Active|Inactive, With Reference|Without Reference). This case explicitly selects Active + Without Reference rather than trusting an unread default - GuiRadioButton's read_field returns the label text, not a selection state, so 'the field reads Active' does not prove the Active radio is the one selected. Create (F5) opens the class master (fwzz-class-master.json) - it does not commit by itself.",
+  "controls": {
+    "idNumber": {
+      "id": "wnd[1]/usr/ctxtSECURITY_CREATE-SECURITY_NEW",
+      "label": "ID Number",
+      "technical": "SECURITY_NEW",
+      "note": "Left blank for 26B - see fwzz-entry.json's idNumber note."
+    },
+    "productType": {
+      "id": "wnd[1]/usr/ctxtSECURITY_CREATE-PRODUCT_TYPE",
+      "label": "Prod. Type",
+      "technical": "PRODUCT_TYPE",
+      "note": "max 3 chars. '26B' = 'Inv:MF' (Investment: Mutual Funds)."
+    },
+    "shortName": {
+      "id": "wnd[1]/usr/txtSECURITY_CREATE-SHORT_TEXT",
+      "label": "Shrt",
+      "technical": "SHORT_TEXT",
+      "note": "max 15 chars - SAP truncates silently, does not refuse."
+    },
+    "longName": {
+      "id": "wnd[1]/usr/txtSECURITY_CREATE-LONG_TEXT",
+      "label": "Long",
+      "technical": "LONG_TEXT",
+      "note": "max 60 chars."
+    }
+  },
+  "radios": {
+    "statusActive": { "id": "wnd[1]/usr/radSECURITY_CREATE-ACTIVE", "label": "Active" },
+    "statusInactive": { "id": "wnd[1]/usr/radSECURITY_CREATE-INACTIVE", "label": "Inactive" },
+    "withReference": { "id": "wnd[1]/usr/radSECURITY_CREATE-TEMPLATE", "label": "With Reference" },
+    "withoutReference": { "id": "wnd[1]/usr/radSECURITY_CREATE-NO_TEMPLATE", "label": "Without Reference" }
+  },
+  "buttons": {
+    "continue": { "id": "wnd[1]/tbar[0]/btn[0]", "note": "Continue (Enter). Dismisses an informational popup, e.g. the internal-numbering notice if an id was typed for 26B. Purely navigational." },
+    "createConfirm": { "id": "wnd[1]/tbar[0]/btn[5]", "note": "Create (F5). Opens the class master. Does not commit - Save on the master screen is the actual write." },
+    "cancel": { "id": "wnd[1]/tbar[0]/btn[12]", "note": "Cancel (F12). Discards the dialog." }
+  }
+}

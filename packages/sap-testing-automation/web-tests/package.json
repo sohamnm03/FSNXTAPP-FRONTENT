@@ -1,0 +1,24 @@
+{
+  "name": "sap-web-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fiori / WebGUI / UI5 test lane for the SAP Testing Automation workspace, built on playwright-sap.",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:regression": "playwright test --project=regression",
+    "test:verification": "playwright test --project=verification",
+    "test:explore": "playwright test --project=exploratory",
+    "test:model-check": "playwright test --project=model-check",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "codegen": "playwright codegen",
+    "report": "playwright show-report",
+    "install-browsers": "playwright install chromium"
+  },
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@playwright-sap/test": "^1.1.6",
+    "dotenv": "^17.0.0"
+  }
+}

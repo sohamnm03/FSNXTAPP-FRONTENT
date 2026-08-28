@@ -1,0 +1,163 @@
+{
+  "screen": "Create/Settle Interest Rate Instrument: Structure",
+  "program": "SAPLFTR_IRATE",
+  "screenNumber": 1100,
+  "transactions": ["TM_51 (create)", "TM_54 (settle)"],
+  "discoveredOn": "DS4/100, 2026-08-19, during the TC-014 run",
+  "note": "Deal screen for product type 22A / transaction type 100. The subscreen path segments (sub1200_SUBSCREEN_*) are part of the id and change with the product type's screen layout - re-discover for any other product type.",
+  "_prefix": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLFTR_IRATE:1200",
+  "controls": {
+    "amount": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLFTR_IRATE:1200/sub1200_SUBSCREEN_NOMFLOW:SAPLFTR_IRATE:1203/txtVTG_INVEST-XZBETR",
+      "label": "Amount",
+      "technical": "BNWHR",
+      "note": "SAP reformats on entry: 100000 reads back as 100,000.00. set_field_verified() compares digits, not text."
+    },
+    "paymentCurrency": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLFTR_IRATE:1200/sub1200_SUBSCREEN_NOMFLOW:SAPLFTR_IRATE:1203/txtVTG_INVEST-WZBETR",
+      "label": "Payment Currency",
+      "technical": "WAERS",
+      "readOnly": true,
+      "note": "Defaults to INR for product type 22A and is not changeable. Asserted, never set."
+    },
+    "termStart": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLFTR_IRATE:1200/sub1200_SUBSCREEN_TERM:SAPLFTR_IRATE:1204/ctxtVTG_TERM-XBLFZ",
+      "label": "Start",
+      "technical": "DBLFZ"
+    },
+    "termEnd": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLFTR_IRATE:1200/sub1200_SUBSCREEN_TERM:SAPLFTR_IRATE:1204/ctxtVTG_TERM-XELFZ",
+      "label": "End",
+      "technical": "DELFZ"
+    },
+    "nominalInterestRate": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLFTR_IRATE:1200/sub1200_SUBSCREEN_IRATE:SAPLFTR_IRATE:1201/txtVTG_IRATE_STRUCTURE-PKOND",
+      "label": "Percentage Rate",
+      "technical": "PKOND",
+      "note": "SAP renders 10 as 10.0000000. Present only while Interest Cat. is Fixed - switching to Variable REMOVES this field from the screen and replaces it with referenceInterestRate / interestMarkup / firstPeriodRate. A variable-rate case must not address it."
+    },
+    "interestCategory": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLFTR_IRATE:1200/sub1200_SUBSCREEN_IRATE:SAPLFTR_IRATE:1201/cmbVTG_IRATE_STRUCTURE-IRATE_STRUCTURE",
+      "label": "Interest Cat.",
+      "type": "GuiComboBox",
+      "discoveredOn": "DS4/100, 2026-08-19, during the TC-015 model-driven run",
+      "entries": {
+        "1": "Fixed",
+        "2": "Variable",
+        "3": "Amount",
+        "4": "Scaled (Interval)",
+        "5": "Scaled (Incremental)"
+      },
+      "note": "Defaults to Fixed (key 1). Selecting Variable (key 2) REBUILDS the whole interest block on the next Enter: nominalInterestRate disappears, referenceInterestRate appears and is mandatory, and interestFrequency goes read-only until it is filled. Drive it by key, then Enter, then re-address the block."
+    },
+    "referenceInterestRate": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLFTR_IRATE:1200/sub1200_SUBSCREEN_IRATE:SAPLFTR_IRATE:1201/ctxtVTG_IRATE_STRUCTURE-SZSREF",
+      "label": "Ref. Int. Rate",
+      "technical": "SZSREF",
+      "discoveredOn": "DS4/100, 2026-08-19, during the TC-015 model-driven run",
+      "note": "Only present when interestCategory is Variable, and MANDATORY there - an empty value fails Enter with hard error T1 183 'Enter a reference interest rate'. RBI_REPO is the code confirmed on DS4 for the 1000/22A profile (chosen by the requester from this field's own F4 list of 16 codes). It is a data decision, not a discoverable default."
+    },
+    "interestFrequency": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLFTR_IRATE:1200/sub1200_SUBSCREEN_IRATE:SAPLFTR_IRATE:1201/cmbVTG_IRATE_STRUCTURE-SRHYTHM",
+      "label": "Frequency",
+      "technical": "SRHYTHM",
+      "type": "GuiComboBox",
+      "discoveredOn": "DS4/100, 2026-08-19, during the TC-015 model-driven run",
+      "entries": {
+        "1": "At End of Term",
+        "5": "On First Day of Month",
+        "2": "On Last Day of Month",
+        "3": "Monthly",
+        "4": "Daily",
+        "0": "Manual Input"
+      },
+      "note": "Defaults to At End of Term (key 1). Reads changeable=false immediately after interestCategory is switched to Variable and stays that way until referenceInterestRate is filled and accepted - fill the reference rate FIRST or this select silently has nothing to act on."
+    },
+    "frequencyCount": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLFTR_IRATE:1200/sub1200_SUBSCREEN_IRATE:SAPLFTR_IRATE:1201/txtVTG_IRATE_STRUCTURE-ARHYTM",
+      "label": "Every",
+      "technical": "ARHYTM",
+      "discoveredOn": "DS4/100, 2026-08-19, during the TC-015 model-driven run",
+      "note": "Appears once interestFrequency is Monthly, pre-filled with 1. Read, not set, unless a case wants something other than every month."
+    },
+    "frequencyUnit": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLFTR_IRATE:1200/sub1200_SUBSCREEN_IRATE:SAPLFTR_IRATE:1201/cmbVTG_IRATE_STRUCTURE-ARHYTM_UNIT",
+      "label": "Every (unit)",
+      "type": "GuiComboBox",
+      "readOnly": true,
+      "discoveredOn": "DS4/100, 2026-08-19, during the TC-015 model-driven run",
+      "note": "Derived from interestFrequency - reads Months and changeable=false when the frequency is Monthly. Asserted, never set."
+    },
+    "interestMarkup": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLFTR_IRATE:1200/sub1200_SUBSCREEN_IRATE:SAPLFTR_IRATE:1201/txtVTG_IRATE_STRUCTURE-IRATE_MARKUP_DOWN",
+      "label": "+/-",
+      "technical": "IRATE_MARKUP_DOWN",
+      "discoveredOn": "DS4/100, 2026-08-19, during the TC-015 model-driven run",
+      "note": "Variable-only spread over the reference rate. Not mandatory: left blank it saves and reads back 0.0000000 (confirmed live 2026-08-19, deal 160279). A blank is therefore a real choice of zero spread, not an unset field."
+    },
+    "firstPeriodRate": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLFTR_IRATE:1200/sub1200_SUBSCREEN_IRATE:SAPLFTR_IRATE:1201/txtVTG_IRATE_STRUCTURE-PKOND1STPER",
+      "label": "1st Int. Rate",
+      "technical": "PKOND1STPER",
+      "discoveredOn": "DS4/100, 2026-08-19, during the TC-015 model-driven run",
+      "note": "Variable-only override for the first interest period. Same as interestMarkup: blank saves and reads back 0.0000000."
+    },
+    "interestCalcMethod": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLFTR_IRATE:1200/sub1200_SUBSCREEN_IRATE:SAPLFTR_IRATE:1201/cmbVTG_IRATE_STRUCTURE-SZBMETH",
+      "label": "Int.Calc.Method",
+      "technical": "SZBMETH",
+      "type": "GuiComboBox",
+      "discoveredOn": "DS4/100, 2026-08-19, during the TC-015 model-driven run",
+      "note": "Defaults to act/365 for 22A and is left alone. Recorded because setting a Variable reference rate raises warning W T1 129 'No interest calculation method entered for reference interest rate' EVEN THOUGH this field shows act/365 - the warning is about the reference rate's own configuration, not this field, and is non-blocking (confirmed: deal 160279 saved through it)."
+    },
+    "contractDate": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLFTR_IRATE:1200/sub1200_SUBSCREEN_CONTRACT:SAPLFTR_SUBSCR:0800/ctxtVTGFHAZU-XVTRAB",
+      "label": "Contract Date",
+      "technical": "DVTRAB",
+      "note": "Defaults to today. Must be <= Term Start or SAP refuses the save."
+    },
+    "partnerName": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01/ssub1100_SUBSCREEN_APPL:SAPLFTR_IRATE:1200/sub1200_SUBSCREEN_PARTNER:SAPLFTR_SUBSCR:0900/txtVTGFHA-XKONTRH",
+      "label": "Partner name",
+      "readOnly": true
+    },
+    "generalValuationClass": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD03/ssub1100_SUBSCREEN_APPL:SAPLFTR_SUBSCR:0100/subSUBSCREEN_POSITION_ALLOCATION:SAPLFTR_SUBSCR:0140/cmbVTGFHA-RCOMVALCL",
+      "label": "Gen. Valn Class",
+      "type": "GuiComboBox",
+      "note": "On the Administr. tab, NOT the Structure tab. A required dropdown driven by its visible label (Short Term), never by a code. This is a DIFFERENT field from TPM44/TPM1's 'Valuation Class' selection filter (0005) - setting one does not satisfy the other."
+    }
+  },
+  "buttons": {
+    "conditions": {
+      "id": "wnd[0]/tbar[1]/btn[18]",
+      "label": "Conditions",
+      "note": "App toolbar (Shift+F6) on the deal Structure screen. Opens the Overview of Conditions grid (see ftr-interest-conditions.json) for the interest structure just built — reachable before the deal is ever saved. Discovered live DS4/100, 2026-08-24, while building TC-022 (a second, later-dated interest condition on the Fixed 'Nominal interest' structure)."
+    }
+  },
+  "tabs": {
+    "structure": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD01",
+      "label": "Structure"
+    },
+    "administration": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD03",
+      "label": "Administr.",
+      "note": "SAP refuses this tab switch while a required Structure-tab field is empty - the click silently stays put and shows 'Enter the start of term'. Fill Structure first. That refusal is also why a successful switch is indirect evidence the Structure fields were accepted."
+    },
+    "cashFlow": {
+      "id": "wnd[0]/usr/tabs1100_MAIN_TAB/tabpMMFD06",
+      "label": "Cash Flow"
+    }
+  },
+  "header": {
+    "companyCode": {
+      "id": "wnd[0]/usr/sub1100_SUBSCREEN_HEADER:SAPLFTR_SUBSCR:0012/txtVTGFHA-BUKRS",
+      "readOnly": true
+    },
+    "productType": {
+      "id": "wnd[0]/usr/sub1100_SUBSCREEN_HEADER:SAPLFTR_SUBSCR:0012/txtVTGFHA-SGSART",
+      "readOnly": true
+    }
+  }
+}

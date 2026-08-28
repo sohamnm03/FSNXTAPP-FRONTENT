@@ -1,0 +1,23 @@
+{
+  "id": "fwzz-entry",
+  "transaction": "FWZZ",
+  "dynpro": "SAPLFVW4/0100",
+  "description": "Class (FWZZ) entry screen. One id field plus four action buttons - Create/Display/Change/Delete. No product type field here; that is asked for inside the Create dialog (see fwzz-create-dialog.json).",
+  "usedBy": ["TC-017"],
+  "capturedOn": "DS4 / 100",
+  "capturedOnSystem": "DS4_100_NIIF",
+  "capturedAt": "2026-08-19",
+  "anchor": "Security Class ID Number",
+  "controls": {
+    "idNumber": {
+      "kind": "input",
+      "title": "Security Class ID Number",
+      "optional": true,
+      "note": "Left blank for an internally-numbered product type (26B: SAP refuses a typed id with 'Numbers assigned to product type 26B internally - do not enter an ID number'). Not every product type on this screen is internally numbered - discover before assuming."
+    },
+    "createButton": { "kind": "button", "id": "M0:46:1::0:50", "note": "Opens the Create Class dialog (fwzz-create-dialog.json). Does not commit." },
+    "displayButton": { "kind": "button", "id": "M0:46:1::0:53" },
+    "changeButton": { "kind": "button", "id": "M0:46:1::0:56" },
+    "deleteButton": { "kind": "button", "id": "M0:46:1::0:59" }
+  }
+}
