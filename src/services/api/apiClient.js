@@ -18,7 +18,9 @@ async function request(path, options = {}) {
     const responseBody = await response.json().catch(() => null);
 
     if (!response.ok) {
-      throw new Error(responseBody?.error || responseBody?.message || 'The server could not complete the request.');
+      const error = new Error(responseBody?.error || responseBody?.message || 'The server could not complete the request.');
+      error.status = response.status;
+      throw error;
     }
     return responseBody;
   } catch (error) {
