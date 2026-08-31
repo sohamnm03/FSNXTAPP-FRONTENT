@@ -2,11 +2,11 @@
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import sys
 from pathlib import Path
 
+from runner import run_package
 from security import ensure_within, redact_text, safe_error, sanitize_data, secret_values
 
 
@@ -28,7 +28,6 @@ def main() -> int:
     parser.add_argument("--output-dir", required=True)
     args = parser.parse_args()
 
-    package_root = Path(__file__).resolve().parent
     runtime_root = Path(args.runtime_root).resolve()
     output_dir = ensure_within(runtime_root, args.output_dir)
     if output_dir.parent != runtime_root:
@@ -38,13 +37,7 @@ def main() -> int:
     inputs = json.load(sys.stdin)
     secrets = secret_values(inputs)
     try:
-        runner_path = ensure_within(package_root, package_root / "runner.py")
-        spec = importlib.util.spec_from_file_location("desktop_ai_agents_runner", runner_path)
-        if spec is None or spec.loader is None:
-            raise RuntimeError("AI Agents runner could not be loaded")
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        result = sanitize_data(module.run_package(args.run_id, inputs, str(output_dir)), secrets)
+        result = sanitize_data(run_package(args.run_id, inputs, str(output_dir)), secrets)
         _redact_artifacts(output_dir, secrets)
         (output_dir / "result.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
         return 0

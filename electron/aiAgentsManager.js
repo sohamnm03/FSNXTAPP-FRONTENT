@@ -127,6 +127,21 @@ function createAiAgentsManager(electronApp, dialog) {
   const runs = new Map();
   fs.mkdirSync(runtimeRoot, { recursive: true });
 
+  function workerCommand() {
+    if (!electronApp.isPackaged) {
+      return {
+        executable: process.env.PYTHON_EXECUTABLE || (process.platform === 'win32' ? 'python' : 'python3'),
+        prefixArguments: [path.join(packageRoot, 'worker.py')],
+      };
+    }
+
+    const executable = path.join(process.resourcesPath, 'python-worker', 'ai-agents-worker.exe');
+    if (!fs.existsSync(executable)) {
+      throw new Error('The bundled AI Agents worker is missing. Rebuild the Windows installer with npm run package:win.');
+    }
+    return { executable, prefixArguments: [] };
+  }
+
   function requireRun(runId) {
     const run = runs.get(runId);
     if (!run) throw new Error('Run not found.');
@@ -167,6 +182,7 @@ function createAiAgentsManager(electronApp, dialog) {
 
   function start(inputs) {
     const validated = validateInputs(inputs, manifest);
+    const command = workerCommand();
     const runId = crypto.randomUUID();
     const outputDirectory = ensureDirectChild(runtimeRoot, path.join(runtimeRoot, runId));
     fs.mkdirSync(outputDirectory, { recursive: false });
@@ -188,9 +204,8 @@ function createAiAgentsManager(electronApp, dialog) {
     fs.writeFileSync(run.logPath, '', 'utf8');
     runs.set(runId, run);
 
-    const pythonExecutable = process.env.PYTHON_EXECUTABLE || (process.platform === 'win32' ? 'python' : 'python3');
-    const child = spawn(pythonExecutable, [
-      path.join(packageRoot, 'worker.py'),
+    const child = spawn(command.executable, [
+      ...command.prefixArguments,
       '--run-id', runId,
       '--runtime-root', runtimeRoot,
       '--output-dir', outputDirectory,

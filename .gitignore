@@ -7,6 +7,8 @@ node_modules/
 .expo/
 dist/
 release/
+build/
+.build/
 web-build/
 expo-env.d.ts
 packages/*/runtime/*

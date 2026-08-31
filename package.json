@@ -15,7 +15,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "dist": "npm run package:win",
-    "package:win": "npm run build && electron-builder --win",
+    "build:python-worker": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/buildPythonWorker.ps1",
+    "package:win": "npm run build:python-worker && npm run build && electron-builder --win",
     "lint": "eslint .",
     "check:syntax": "node scripts/checkSyntax.js",
     "check": "npm run lint && npm run check:syntax && npm run build"
@@ -40,6 +41,15 @@
     "asar": true,
     "asarUnpack": [
       "packages/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "build/python-worker",
+        "to": "python-worker",
+        "filter": [
+          "**/*"
+        ]
+      }
     ],
     "directories": {
       "output": "release"
