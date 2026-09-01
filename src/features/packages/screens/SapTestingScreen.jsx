@@ -46,6 +46,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   const [isStopping, setIsStopping] = useState(false);
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [isUninstalling, setIsUninstalling] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState('idle');
   const conversationRef = useRef(null);
 
   useEffect(() => {
@@ -131,6 +132,17 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     }
   }
 
+  async function testConnection() {
+    setConnectionStatus('checking');
+    setError('');
+    try {
+      const result = await sapTerminalService.testConnection();
+      setConnectionStatus(result.connected ? 'connected' : 'disconnected');
+    } catch {
+      setConnectionStatus('disconnected');
+    }
+  }
+
   async function confirmRun() {
     if (!pendingConfirmation) return;
     setIsStarting(true);
@@ -192,6 +204,8 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   }
 
   const isActive = status === 'running' || status === 'stopping';
+  const isTestingConnection = connectionStatus === 'checking';
+  const isBusy = isActive || isTestingConnection;
 
   return (
     <ScreenContainer className="module-screen sap-testing-screen">
@@ -211,11 +225,28 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
               </div>
             </div>
 
+            <div className="sap-connection-section">
+              <span className="sap-sidebar-label">SAP system</span>
+              <AppButton
+                disabled={!isConfigured || isActive}
+                loading={isTestingConnection}
+                onClick={testConnection}
+                title={isTestingConnection ? 'Testing connection...' : 'Test Connection'}
+                variant="secondary"
+              />
+              {connectionStatus === 'connected' ? (
+                <p className="sap-connection-result sap-connection-result--connected" role="status">Connection established</p>
+              ) : null}
+              {connectionStatus === 'disconnected' ? (
+                <p className="sap-connection-result sap-connection-result--disconnected" role="status">Not connected</p>
+              ) : null}
+            </div>
+
             <div className="sap-lane-section">
               <span className="sap-sidebar-label">Testing mode</span>
               <div className="sap-lane-switch" role="group" aria-label="Testing mode">
                 {Object.entries(LANES).map(([laneId, details]) => (
-                  <button aria-pressed={lane === laneId} className={lane === laneId ? 'is-active' : ''} disabled={isActive} key={laneId} onClick={() => selectLane(laneId)} type="button">
+                  <button aria-pressed={lane === laneId} className={lane === laneId ? 'is-active' : ''} disabled={isBusy} key={laneId} onClick={() => selectLane(laneId)} type="button">
                     <strong>{details.label}</strong><span>{details.description}</span>
                   </button>
                 ))}
@@ -224,8 +255,8 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
           </div>
 
           <div className="sap-sidebar-actions">
-            <AppButton disabled={isActive || messages.length === 0} onClick={newChat} title="New chat" variant="secondary" />
-            <AppButton className="package-uninstall-button" disabled={isActive} icon="trash" loading={isUninstalling} onClick={uninstall} title="Uninstall" variant="secondary" />
+            <AppButton disabled={isBusy || messages.length === 0} onClick={newChat} title="New chat" variant="secondary" />
+            <AppButton className="package-uninstall-button" disabled={isBusy} icon="trash" loading={isUninstalling} onClick={uninstall} title="Uninstall" variant="secondary" />
           </div>
         </aside>
 
@@ -249,12 +280,12 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
             {isActive ? <div className="sap-thinking"><span /><span /><span /> Claude Code is working in the SAP project…</div> : null}
           </div>
           <form className="sap-prompt-form" onSubmit={sendPrompt}>
-            <textarea disabled={!isConfigured || !isAuthenticated || isActive} onChange={(event) => setPrompt(event.target.value)} onKeyDown={(event) => {
+            <textarea disabled={!isConfigured || !isAuthenticated || isBusy} onChange={(event) => setPrompt(event.target.value)} onKeyDown={(event) => {
               if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); }
             }} placeholder="Ask Claude Code to run or inspect an SAP test…" value={prompt} />
             <div>
               <span>Enter to send · Shift+Enter for a new line</span>
-              {isActive ? <AppButton loading={isStopping} onClick={stopRun} title="Stop" variant="secondary" /> : <AppButton disabled={!isConfigured || !isAuthenticated || !prompt.trim()} loading={isStarting} title="Send" type="submit" />}
+              {isActive ? <AppButton loading={isStopping} onClick={stopRun} title="Stop" variant="secondary" /> : <AppButton disabled={!isConfigured || !isAuthenticated || isTestingConnection || !prompt.trim()} loading={isStarting} title="Send" type="submit" />}
             </div>
           </form>
         </section>

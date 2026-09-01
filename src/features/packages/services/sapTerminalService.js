@@ -11,6 +11,9 @@ export const sapTerminalService = {
   getAuthStatus() {
     return localTerminal().getAuthStatus();
   },
+  testConnection() {
+    return localTerminal().testConnection();
+  },
   login() {
     return localTerminal().login();
   },

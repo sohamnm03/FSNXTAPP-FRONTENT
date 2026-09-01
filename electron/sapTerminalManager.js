@@ -58,6 +58,7 @@ function createSapTerminalManager(electronApp) {
   const confirmations = new Map();
   const claudePath = claudeExecutable(electronApp);
   let authProcess = null;
+  let connectionCheckProcess = null;
   const projectRoot = electronApp.isPackaged
     ? path.join(process.resourcesPath, 'sap-testing-automation')
     : path.resolve(__dirname, '..', 'packages', 'sap-testing-automation');
@@ -87,6 +88,17 @@ function createSapTerminalManager(electronApp) {
     return JSON.parse(fs.readFileSync(path.join(projectRoot, 'config', fileName), 'utf8'));
   }
 
+  function configuredDefaultSystem() {
+    const registry = JSON.parse(
+      fs.readFileSync(path.join(projectRoot, 'config', 'sap-systems.json'), 'utf8'),
+    );
+    const system = registry.systems?.find((entry) => entry.id === registry.defaultSystem);
+    if (!system || !system.enabled || !system.sapGui?.enabled) {
+      throw new Error('The configured default SAP GUI system is missing or disabled.');
+    }
+    return system;
+  }
+
   function normalizeCaseId(caseId) {
     const match = String(caseId || '').toUpperCase().match(/^TC[- ]?0*(\d{1,3})$/);
     if (!match) throw new Error('Enter a valid test case such as TC-015.');
@@ -105,9 +117,7 @@ function createSapTerminalManager(electronApp) {
       throw new Error(`${caseId} does not have stage '${requestedStage}'. Available stages: ${stages.join(', ') || 'none'}.`);
     }
 
-    const systems = JSON.parse(fs.readFileSync(path.join(projectRoot, 'config', 'sap-systems.json'), 'utf8'));
-    const system = systems.systems?.find((entry) => entry.id === systems.defaultSystem);
-    if (!system || !system.enabled) throw new Error('The configured default SAP system is missing or disabled.');
+    const system = configuredDefaultSystem();
 
     const confirmationId = crypto.randomUUID();
     const proposal = {
@@ -233,6 +243,65 @@ function createSapTerminalManager(electronApp) {
     prepareCase,
     startConfirmedCase,
     getAuthStatus,
+    testConnection() {
+      if (connectionCheckProcess) {
+        throw new Error('An SAP connection check is already running.');
+      }
+      if ([...runs.values()].some((run) => !FINAL_STATUSES.has(run.status))) {
+        throw new Error('Another SAP request is already running. Wait for it to finish or stop it first.');
+      }
+      const system = configuredDefaultSystem();
+      if (!system.rfc?.applicationServer || !/^\d{2}$/.test(String(system.rfc.systemNumber))) {
+        throw new Error('The default SAP system has no valid RFC connection metadata.');
+      }
+      const scriptPath = path.join(projectRoot, 'scripts', 'test-sap-connection.ps1');
+      if (!fs.existsSync(scriptPath)) {
+        throw new Error('The SAP connection check is missing. Reinstall the application.');
+      }
+
+      return new Promise((resolve) => {
+        let stdout = '';
+        let settled = false;
+        const child = spawn('powershell.exe', [
+          '-NoProfile',
+          '-ExecutionPolicy', 'Bypass',
+          '-File', scriptPath,
+          '-SystemId', String(system.systemId),
+          '-Client', String(system.client),
+          '-LogonDescription', String(system.sapGui.logonDescription),
+          '-ApplicationServer', String(system.rfc.applicationServer),
+          '-SystemNumber', String(system.rfc.systemNumber),
+        ], {
+          cwd: projectRoot,
+          env: { ...process.env, NO_COLOR: '1', FORCE_COLOR: '0' },
+          windowsHide: true,
+          shell: false,
+          stdio: ['ignore', 'pipe', 'pipe'],
+        });
+        connectionCheckProcess = child;
+
+        const finish = (result) => {
+          if (settled) return;
+          settled = true;
+          connectionCheckProcess = null;
+          resolve(result);
+        };
+
+        child.stdout.on('data', (chunk) => { stdout += chunk.toString('utf8'); });
+        child.once('error', () => finish({ connected: false }));
+        child.once('close', () => {
+          try {
+            const result = JSON.parse(stdout.trim());
+            finish({
+              connected: result.connected === true,
+              reason: typeof result.reason === 'string' ? result.reason : '',
+            });
+          } catch {
+            finish({ connected: false, reason: 'The SAP connection check returned an invalid result.' });
+          }
+        });
+      });
+    },
     login() {
       if (authProcess) throw new Error('Claude sign-in is already in progress.');
       return new Promise((resolve, reject) => {
@@ -342,6 +411,7 @@ function createSapTerminalManager(electronApp) {
     },
     stopAll() {
       authProcess?.kill();
+      connectionCheckProcess?.kill();
       runs.forEach((run) => run.process?.kill());
     },
   };

@@ -1579,6 +1579,33 @@
   text-transform: uppercase;
 }
 
+.sap-connection-section {
+  margin-top: 20px;
+}
+
+.sap-connection-section .app-button {
+  width: 100%;
+}
+
+.sap-connection-result {
+  border-radius: 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.sap-connection-result--connected {
+  background: #eaf8ef;
+  color: #17733a;
+}
+
+.sap-connection-result--disconnected {
+  background: #fff0f0;
+  color: #b42318;
+}
+
 .sap-lane-section,
 .sap-case-section {
   margin-top: 20px;
