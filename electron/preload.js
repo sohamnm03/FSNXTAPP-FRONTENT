@@ -6,6 +6,9 @@ contextBridge.exposeInMainWorld('desktopAPI', Object.freeze({
     chrome: process.versions.chrome,
     electron: process.versions.electron,
   }),
+  googleAuth: Object.freeze({
+    login: () => ipcRenderer.invoke('google-auth:login'),
+  }),
   aiAgents: Object.freeze({
     start: (inputs) => ipcRenderer.invoke('ai-agents:start', inputs),
     getRun: (runId) => ipcRenderer.invoke('ai-agents:get-run', runId),

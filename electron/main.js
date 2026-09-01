@@ -1,10 +1,14 @@
 const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
 const path = require('path');
 const { createAiAgentsManager } = require('./aiAgentsManager');
+const { createGoogleDesktopAuth } = require('./googleDesktopAuth');
 const { createSapTerminalManager } = require('./sapTerminalManager');
 
 const isDevelopment = !app.isPackaged;
+const GOOGLE_DESKTOP_CLIENT_ID = process.env.GOOGLE_DESKTOP_CLIENT_ID
+  || '418759424186-vhvn6f4g6ckvef5gvjdtqi4g6gvfmvpe.apps.googleusercontent.com';
 let aiAgentsManager;
+let googleDesktopAuth;
 let sapTerminalManager;
 
 function registerAiAgentsHandlers() {
@@ -31,6 +35,14 @@ function registerSapTerminalHandlers() {
   ipcMain.handle('sap-terminal:stop', (_event, runId) => sapTerminalManager.stop(runId));
 }
 
+function registerGoogleAuthHandlers() {
+  googleDesktopAuth = createGoogleDesktopAuth({
+    clientId: GOOGLE_DESKTOP_CLIENT_ID,
+    openExternal: (url) => shell.openExternal(url),
+  });
+  ipcMain.handle('google-auth:login', () => googleDesktopAuth.login());
+}
+
 function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1280,
@@ -54,12 +66,19 @@ function createWindow() {
     mainWindow.show();
   });
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('https://')) shell.openExternal(url);
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(url);
+    } catch {
+      return { action: 'deny' };
+    }
+
+    if (parsedUrl.protocol === 'https:') shell.openExternal(url);
     return { action: 'deny' };
   });
   mainWindow.webContents.on('will-navigate', (event, url) => {
     const allowedUrl = isDevelopment
-      ? 'http://127.0.0.1:5173/'
+      ? 'http://localhost:5173/'
       : `file://${path.join(__dirname, '../dist/index.html').replace(/\\/g, '/')}`;
     if (url !== allowedUrl) event.preventDefault();
   });
@@ -78,7 +97,7 @@ function createWindow() {
   }
 
   if (isDevelopment) {
-    mainWindow.loadURL('http://127.0.0.1:5173');
+    mainWindow.loadURL('http://localhost:5173');
   } else {
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
   }
@@ -86,6 +105,7 @@ function createWindow() {
 
 app.whenReady().then(() => {
   registerAiAgentsHandlers();
+  registerGoogleAuthHandlers();
   registerSapTerminalHandlers();
   createWindow();
   app.on('activate', () => {

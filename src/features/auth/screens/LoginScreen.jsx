@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { GoogleLogin } from '@react-oauth/google';
 
 import AppButton from '../../../components/common/AppButton';
 import AppInput from '../../../components/common/AppInput';
@@ -9,7 +10,13 @@ import { useAuth } from '../context/AuthContext';
 import { validateLogin } from '../validation/loginValidation';
 
 export default function LoginScreen() {
-  const { isAuthenticating, login, rememberedUsername } = useAuth();
+  const {
+    isAuthenticating,
+    login,
+    loginWithGoogle,
+    loginWithGoogleDesktop,
+    rememberedUsername,
+  } = useAuth();
   const [username, setUsername] = useState(rememberedUsername);
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(Boolean(rememberedUsername));
@@ -18,6 +25,7 @@ export default function LoginScreen() {
   const [loginError, setLoginError] = useState('');
   const [information, setInformation] = useState('');
   const passwordInput = useRef(null);
+  const desktopGoogleAuth = window.desktopAPI?.googleAuth;
 
   function updateField(field, value) {
     if (field === 'username') setUsername(value);
@@ -40,6 +48,37 @@ export default function LoginScreen() {
       await login({ username, password, rememberMe });
     } catch (error) {
       setLoginError(error.message || 'Login failed. Please try again.');
+    }
+  }
+
+  async function handleGoogleSuccess(credentialResponse) {
+    setLoginError('');
+    const credential = credentialResponse?.credential;
+    if (!credential) {
+      setLoginError('Google did not return a sign-in credential.');
+      return;
+    }
+
+    try {
+      await loginWithGoogle(credential);
+    } catch (error) {
+      setLoginError(error.message || 'Google sign-in failed. Please try again.');
+    }
+  }
+
+  function handleGoogleError() {
+    setLoginError('Google sign-in could not be completed.');
+  }
+
+  async function handleDesktopGoogleLogin() {
+    if (isAuthenticating) return;
+    setLoginError('');
+
+    try {
+      const authorization = await desktopGoogleAuth.login();
+      await loginWithGoogleDesktop(authorization);
+    } catch (error) {
+      setLoginError(error.message || 'Google sign-in failed. Please try again.');
     }
   }
 
@@ -133,6 +172,33 @@ export default function LoginScreen() {
             title={isAuthenticating ? 'Signing in...' : 'Login'}
             type="submit"
           />
+
+          <div className="login-divider" aria-hidden="true">
+            <span>or</span>
+          </div>
+
+          <div className="login-google">
+            {desktopGoogleAuth ? (
+              <AppButton
+                className="login-google__desktop"
+                disabled={isAuthenticating}
+                onClick={handleDesktopGoogleLogin}
+                title="Continue with Google"
+                type="button"
+                variant="secondary"
+              />
+            ) : (
+              <GoogleLogin
+                onError={handleGoogleError}
+                onSuccess={handleGoogleSuccess}
+                shape="rectangular"
+                size="large"
+                text="continue_with"
+                theme="outline"
+              />
+            )}
+          </div>
+
           <div className="connection-status" role="status">
             <span aria-hidden="true" />
             <p>Authentication service connected</p>

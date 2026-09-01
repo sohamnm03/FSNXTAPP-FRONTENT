@@ -812,6 +812,42 @@
   background: linear-gradient(90deg, #084faf, #0647a6);
 }
 
+.login-divider {
+  align-items: center;
+  color: #6b7688;
+  display: flex;
+  font-size: 0.72rem;
+  gap: 12px;
+  margin: 17px 0;
+}
+
+.login-divider::before,
+.login-divider::after {
+  background: #d7dde6;
+  content: '';
+  flex: 1;
+  height: 1px;
+}
+
+.login-google {
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+  overflow: hidden;
+}
+
+.login-google__desktop {
+  background: #fff;
+  border-color: #c8d0dc;
+  color: #263247;
+  min-height: 44px;
+  width: min(100%, 400px);
+}
+
+.login-google__desktop:hover:not(:disabled) {
+  background: #f8fafc;
+}
+
 .login-card .alert {
   border-radius: 5px;
   font-size: 0.77rem;

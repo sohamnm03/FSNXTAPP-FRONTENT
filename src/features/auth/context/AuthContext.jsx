@@ -40,6 +40,36 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  const loginWithGoogle = useCallback(async (credential, expectedAudience) => {
+    if (authAttemptInProgress.current) return null;
+    authAttemptInProgress.current = true;
+    setIsAuthenticating(true);
+
+    try {
+      const result = await authService.loginWithGoogle(credential, expectedAudience);
+      setUser(result.user);
+      return result.user;
+    } finally {
+      authAttemptInProgress.current = false;
+      setIsAuthenticating(false);
+    }
+  }, []);
+
+  const loginWithGoogleDesktop = useCallback(async (authorization) => {
+    if (authAttemptInProgress.current) return null;
+    authAttemptInProgress.current = true;
+    setIsAuthenticating(true);
+
+    try {
+      const result = await authService.loginWithGoogleDesktop(authorization);
+      setUser(result.user);
+      return result.user;
+    } finally {
+      authAttemptInProgress.current = false;
+      setIsAuthenticating(false);
+    }
+  }, []);
+
   const logout = useCallback(async () => {
     await authService.logout();
     setUser(null);
@@ -49,10 +79,12 @@ export function AuthProvider({ children }) {
     isAuthenticating,
     isInitializing,
     login,
+    loginWithGoogle,
+    loginWithGoogleDesktop,
     logout,
     rememberedUsername,
     user,
-  }), [isAuthenticating, isInitializing, login, logout, rememberedUsername, user]);
+  }), [isAuthenticating, isInitializing, login, loginWithGoogle, loginWithGoogleDesktop, logout, rememberedUsername, user]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
