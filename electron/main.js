@@ -27,7 +27,7 @@ function registerSapTerminalHandlers() {
   sapTerminalManager = createSapTerminalManager(app);
   ipcMain.handle('sap-terminal:get-project', () => sapTerminalManager.getProject());
   ipcMain.handle('sap-terminal:get-auth-status', () => sapTerminalManager.getAuthStatus());
-  ipcMain.handle('sap-terminal:test-connection', () => sapTerminalManager.testConnection());
+  ipcMain.handle('sap-terminal:test-connection', (_event, systemId) => sapTerminalManager.testConnection(systemId));
   ipcMain.handle('sap-terminal:login', () => sapTerminalManager.login());
   ipcMain.handle('sap-terminal:prepare-case', (_event, lane, caseId, stage) => sapTerminalManager.prepareCase(lane, caseId, stage));
   ipcMain.handle('sap-terminal:start-confirmed-case', (_event, confirmationId) => sapTerminalManager.startConfirmedCase(confirmationId));

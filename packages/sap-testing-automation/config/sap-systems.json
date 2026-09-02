@@ -71,6 +71,7 @@
       "id": "DS4_100_TFSIN",
       "label": "TFS India S/4HANA Development (DS4, client 100)",
       "enabled": false,
+      "connectionCheckEnabled": true,
 
       "$comment": [
         "Template for a second landscape. Same SYSID and client as DS4_100_NIIF but a",

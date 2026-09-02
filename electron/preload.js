@@ -20,7 +20,7 @@ contextBridge.exposeInMainWorld('desktopAPI', Object.freeze({
   sapTerminal: Object.freeze({
     getProject: () => ipcRenderer.invoke('sap-terminal:get-project'),
     getAuthStatus: () => ipcRenderer.invoke('sap-terminal:get-auth-status'),
-    testConnection: () => ipcRenderer.invoke('sap-terminal:test-connection'),
+    testConnection: (systemId) => ipcRenderer.invoke('sap-terminal:test-connection', systemId),
     login: () => ipcRenderer.invoke('sap-terminal:login'),
     prepareCase: (lane, caseId, stage) => ipcRenderer.invoke('sap-terminal:prepare-case', lane, caseId, stage),
     startConfirmedCase: (confirmationId) => ipcRenderer.invoke('sap-terminal:start-confirmed-case', confirmationId),

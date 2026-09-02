@@ -47,15 +47,18 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [isUninstalling, setIsUninstalling] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState('idle');
-  const [configuredServerName, setConfiguredServerName] = useState('');
+  const [sapSystems, setSapSystems] = useState([]);
+  const [selectedSystemId, setSelectedSystemId] = useState('');
   const [connectionServerName, setConnectionServerName] = useState('');
+  const [connectionProgress, setConnectionProgress] = useState(0);
   const conversationRef = useRef(null);
 
   useEffect(() => {
     Promise.all([sapTerminalService.getProject(), sapTerminalService.getAuthStatus()])
       .then(([project, auth]) => {
         setIsConfigured(Boolean(project.configured));
-        setConfiguredServerName(project.serverName || '');
+        setSapSystems(project.systems || []);
+        setSelectedSystemId(project.defaultSystemId || project.systems?.[0]?.id || '');
         setIsAuthenticated(Boolean(auth.loggedIn));
         if (!project.configured) setError('The SAP automation package is missing. Reinstall the application.');
         else if (!auth.available) setError('The bundled Claude Code runtime is missing. Reinstall the application.');
@@ -90,8 +93,22 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     if (conversationRef.current) conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
   }, [messages, status]);
 
+  useEffect(() => {
+    if (connectionStatus !== 'checking') return undefined;
+    const progressTimer = window.setInterval(() => {
+      setConnectionProgress((current) => {
+        if (current >= 92) return current;
+        if (current < 60) return Math.min(current + 4, 92);
+        if (current < 84) return Math.min(current + 2, 92);
+        return current + 1;
+      });
+    }, 150);
+    return () => window.clearInterval(progressTimer);
+  }, [connectionStatus]);
+
   async function sendPrompt(event) {
     event.preventDefault();
+    if (!connectionServerName) return;
     const nextPrompt = prompt.trim();
     if (!nextPrompt) return;
     const directRequest = explicitRunRequest(nextPrompt);
@@ -136,14 +153,20 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   }
 
   async function testConnection() {
+    if (!selectedSystemId) return;
+    setConnectionProgress(0);
     setConnectionStatus('checking');
     setConnectionServerName('');
     setError('');
     try {
-      const result = await sapTerminalService.testConnection();
+      const result = await sapTerminalService.testConnection(selectedSystemId);
+      setConnectionProgress(100);
+      await new Promise((resolve) => window.setTimeout(resolve, 300));
       setConnectionStatus(result.connected ? 'connected' : 'disconnected');
-      setConnectionServerName(result.connected ? result.serverName || configuredServerName : '');
+      setConnectionServerName(result.connected ? result.serverName || sapSystems.find((system) => system.id === selectedSystemId)?.name || '' : '');
     } catch {
+      setConnectionProgress(100);
+      await new Promise((resolve) => window.setTimeout(resolve, 300));
       setConnectionStatus('disconnected');
       setConnectionServerName('');
     }
@@ -237,8 +260,20 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
 
             <div className="sap-connection-section">
               <span className="sap-sidebar-label">SAP system</span>
+              <select
+                aria-label="SAP system to test"
+                disabled={isBusy || sapSystems.length === 0}
+                onChange={(event) => {
+                  setSelectedSystemId(event.target.value);
+                  setConnectionStatus('idle');
+                  setConnectionServerName('');
+                }}
+                value={selectedSystemId}
+              >
+                {sapSystems.map((system) => <option key={system.id} value={system.id}>{system.name}</option>)}
+              </select>
               <AppButton
-                disabled={!isConfigured || isActive}
+                disabled={!isConfigured || isActive || !selectedSystemId}
                 loading={isTestingConnection}
                 onClick={testConnection}
                 title={isTestingConnection ? 'Testing connection...' : 'Test Connection'}
@@ -299,7 +334,16 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
             }} placeholder="Ask Claude Code to run or inspect an SAP test…" value={prompt} />
             <div>
               <span>Enter to send · Shift+Enter for a new line</span>
-              {isActive ? <AppButton loading={isStopping} onClick={stopRun} title="Stop" variant="secondary" /> : <AppButton disabled={!isConfigured || !isAuthenticated || isTestingConnection || !prompt.trim()} loading={isStarting} title="Send" type="submit" />}
+              {isActive ? <AppButton loading={isStopping} onClick={stopRun} title="Stop" variant="secondary" /> : (
+                <div
+                  aria-label={!connectionServerName ? 'Connect to SAP to begin testing' : undefined}
+                  className={`sap-send-action${!connectionServerName ? ' sap-send-action--connection-required' : ''}`}
+                  data-tooltip={!connectionServerName ? 'Connect to SAP to begin testing' : undefined}
+                  tabIndex={!connectionServerName ? 0 : undefined}
+                >
+                  <AppButton disabled={!isConfigured || !isAuthenticated || !connectionServerName || !prompt.trim()} loading={isStarting} title="Send" type="submit" />
+                </div>
+              )}
             </div>
           </form>
         </section>
@@ -314,11 +358,19 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
             className={`sap-connection-dialog sap-connection-dialog--${connectionStatus}`}
             role="dialog"
           >
-            <div className="sap-connection-dialog__visual" aria-hidden="true">
-              {isTestingConnection ? <span className="sap-connection-spinner" /> : null}
-              {connectionStatus === 'connected' ? <Icon name="check" size={46} /> : null}
-              {connectionStatus === 'disconnected' ? <Icon name="warning" size={46} /> : null}
-            </div>
+            {isTestingConnection ? (
+              <div aria-label="SAP connection test progress" aria-valuemax="100" aria-valuemin="0" aria-valuenow={connectionProgress} className="sap-connection-progress" role="progressbar">
+                <div aria-hidden="true" className="sap-connection-progress__track">
+                  <span style={{ width: `${connectionProgress}%` }} />
+                </div>
+                <strong aria-hidden="true">{connectionProgress}%</strong>
+              </div>
+            ) : (
+              <div className="sap-connection-dialog__visual" aria-hidden="true">
+                {connectionStatus === 'connected' ? <Icon name="check" size={46} /> : null}
+                {connectionStatus === 'disconnected' ? <Icon name="warning" size={46} /> : null}
+              </div>
+            )}
             <p className="eyebrow">SAP CONNECTION</p>
             <h2 id="sap-connection-dialog-title">
               {isTestingConnection ? 'Testing Connection to SAP' : null}

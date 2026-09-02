@@ -88,14 +88,29 @@ function createSapTerminalManager(electronApp) {
     return JSON.parse(fs.readFileSync(path.join(projectRoot, 'config', fileName), 'utf8'));
   }
 
+  function systemRegistry() {
+    return JSON.parse(fs.readFileSync(path.join(projectRoot, 'config', 'sap-systems.json'), 'utf8'));
+  }
+
   function configuredDefaultSystem() {
-    const registry = JSON.parse(
-      fs.readFileSync(path.join(projectRoot, 'config', 'sap-systems.json'), 'utf8'),
-    );
+    const registry = systemRegistry();
     const system = registry.systems?.find((entry) => entry.id === registry.defaultSystem);
     if (!system || !system.enabled || !system.sapGui?.enabled) {
       throw new Error('The configured default SAP GUI system is missing or disabled.');
     }
+    return system;
+  }
+
+  function connectionCheckSystems() {
+    const registry = systemRegistry();
+    return (registry.systems || []).filter((system) => (
+      system.connectionCheckEnabled === true || (system.enabled && system.sapGui?.enabled)
+    ));
+  }
+
+  function configuredConnectionCheckSystem(systemId) {
+    const system = connectionCheckSystems().find((entry) => entry.id === String(systemId || ''));
+    if (!system) throw new Error('Select an SAP system that is available for connection testing.');
     return system;
   }
 
@@ -239,28 +254,33 @@ function createSapTerminalManager(electronApp) {
   return {
     getProject() {
       const configured = validateProject(projectRoot);
-      if (!configured) return { configured: false, serverName: '' };
+      if (!configured) return { configured: false, defaultSystemId: '', systems: [] };
       try {
-        const system = configuredDefaultSystem();
+        const registry = systemRegistry();
+        const systems = connectionCheckSystems().map((system) => ({
+          id: String(system.id),
+          name: String(system.label || system.sapGui?.logonDescription || system.id),
+        }));
         return {
           configured: true,
-          serverName: String(system.label || system.sapGui.logonDescription || system.id),
+          defaultSystemId: String(registry.defaultSystem || systems[0]?.id || ''),
+          systems,
         };
       } catch {
-        return { configured: true, serverName: '' };
+        return { configured: true, defaultSystemId: '', systems: [] };
       }
     },
     prepareCase,
     startConfirmedCase,
     getAuthStatus,
-    testConnection() {
+    testConnection(systemId) {
       if (connectionCheckProcess) {
         throw new Error('An SAP connection check is already running.');
       }
       if ([...runs.values()].some((run) => !FINAL_STATUSES.has(run.status))) {
         throw new Error('Another SAP request is already running. Wait for it to finish or stop it first.');
       }
-      const system = configuredDefaultSystem();
+      const system = configuredConnectionCheckSystem(systemId);
       if (!system.rfc?.applicationServer || !/^\d{2}$/.test(String(system.rfc.systemNumber))) {
         throw new Error('The default SAP system has no valid RFC connection metadata.');
       }
