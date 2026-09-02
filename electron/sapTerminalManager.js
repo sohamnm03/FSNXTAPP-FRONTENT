@@ -238,7 +238,17 @@ function createSapTerminalManager(electronApp) {
 
   return {
     getProject() {
-      return { configured: validateProject(projectRoot) };
+      const configured = validateProject(projectRoot);
+      if (!configured) return { configured: false, serverName: '' };
+      try {
+        const system = configuredDefaultSystem();
+        return {
+          configured: true,
+          serverName: String(system.label || system.sapGui.logonDescription || system.id),
+        };
+      } catch {
+        return { configured: true, serverName: '' };
+      }
     },
     prepareCase,
     startConfirmedCase,
@@ -294,6 +304,7 @@ function createSapTerminalManager(electronApp) {
             const result = JSON.parse(stdout.trim());
             finish({
               connected: result.connected === true,
+              serverName: String(system.label || system.sapGui.logonDescription || system.id),
               reason: typeof result.reason === 'string' ? result.reason : '',
             });
           } catch {

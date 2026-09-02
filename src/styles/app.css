@@ -1390,6 +1390,11 @@
   color: var(--color-success);
 }
 
+.run-status--connected {
+  background: #17733a;
+  color: var(--color-white);
+}
+
 .run-status--failed,
 .run-status--timed_out,
 .run-status--stopped {
@@ -1604,6 +1609,94 @@
 .sap-connection-result--disconnected {
   background: #fff0f0;
   color: #b42318;
+}
+
+.sap-connection-backdrop {
+  align-items: center;
+  background: rgba(10, 24, 48, 0.62);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 24px;
+  position: fixed;
+  z-index: 110;
+}
+
+.sap-connection-dialog {
+  align-items: center;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  box-shadow: 0 24px 70px rgba(8, 28, 64, 0.3);
+  display: flex;
+  flex-direction: column;
+  padding: 34px 32px 30px;
+  text-align: center;
+  width: min(430px, 100%);
+}
+
+.sap-connection-dialog__visual {
+  align-items: center;
+  background: #edf4ff;
+  border-radius: 50%;
+  color: var(--color-primary);
+  display: flex;
+  height: 82px;
+  justify-content: center;
+  margin-bottom: 20px;
+  width: 82px;
+}
+
+.sap-connection-dialog--connected .sap-connection-dialog__visual {
+  background: #eaf8ef;
+  color: #17733a;
+}
+
+.sap-connection-dialog--disconnected .sap-connection-dialog__visual {
+  background: #fff0f0;
+  color: #b42318;
+}
+
+.sap-connection-spinner {
+  animation: sap-connection-spin 0.85s linear infinite;
+  border: 4px solid rgba(23, 105, 224, 0.2);
+  border-radius: 50%;
+  border-top-color: var(--color-primary);
+  height: 42px;
+  width: 42px;
+}
+
+@keyframes sap-connection-spin {
+  to { transform: rotate(360deg); }
+}
+
+.sap-connection-dialog .eyebrow {
+  margin: 0 0 7px;
+}
+
+.sap-connection-dialog h2 {
+  font-size: 1.35rem;
+  margin: 0;
+}
+
+.sap-connection-dialog > p:last-of-type {
+  color: var(--color-muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  margin: 10px 0 0;
+  max-width: 330px;
+}
+
+.sap-connection-dialog__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 24px;
+  width: 100%;
+}
+
+.sap-connection-dialog__actions .app-button {
+  min-width: 112px;
 }
 
 .sap-lane-section,

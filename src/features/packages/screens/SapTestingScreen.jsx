@@ -47,12 +47,15 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [isUninstalling, setIsUninstalling] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState('idle');
+  const [configuredServerName, setConfiguredServerName] = useState('');
+  const [connectionServerName, setConnectionServerName] = useState('');
   const conversationRef = useRef(null);
 
   useEffect(() => {
     Promise.all([sapTerminalService.getProject(), sapTerminalService.getAuthStatus()])
       .then(([project, auth]) => {
         setIsConfigured(Boolean(project.configured));
+        setConfiguredServerName(project.serverName || '');
         setIsAuthenticated(Boolean(auth.loggedIn));
         if (!project.configured) setError('The SAP automation package is missing. Reinstall the application.');
         else if (!auth.available) setError('The bundled Claude Code runtime is missing. Reinstall the application.');
@@ -134,13 +137,20 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
 
   async function testConnection() {
     setConnectionStatus('checking');
+    setConnectionServerName('');
     setError('');
     try {
       const result = await sapTerminalService.testConnection();
       setConnectionStatus(result.connected ? 'connected' : 'disconnected');
+      setConnectionServerName(result.connected ? result.serverName || configuredServerName : '');
     } catch {
       setConnectionStatus('disconnected');
+      setConnectionServerName('');
     }
+  }
+
+  function closeConnectionDialog() {
+    if (connectionStatus !== 'checking') setConnectionStatus('idle');
   }
 
   async function confirmRun() {
@@ -265,7 +275,11 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
             <div><p className="eyebrow">CLAUDE CODE TERMINAL</p><h2>SAP automation assistant</h2></div>
             <div className="sap-chat-header-actions">
               {!isCheckingAuth && !isAuthenticated ? <AppButton loading={isSigningIn} onClick={signIn} title="Sign in to Claude" variant="secondary" /> : null}
-              <span className={`run-status run-status--${status}`}>{isAuthenticated ? statusLabel(status, activeSource) : 'Sign in required'}</span>
+              <span className={`run-status ${connectionServerName ? 'run-status--connected' : `run-status--${status}`}`}>
+                {isAuthenticated ? connectionServerName
+                  ? `Connected to ${connectionServerName}`
+                  : connectionStatus === 'connected' ? 'Connected' : statusLabel(status, activeSource) : 'Sign in required'}
+              </span>
             </div>
           </div>
           {error ? <div className="alert alert--error" role="alert">{error}</div> : null}
@@ -290,6 +304,41 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
           </form>
         </section>
       </main>
+      {connectionStatus !== 'idle' ? (
+        <div className="sap-connection-backdrop" role="presentation">
+          <section
+            aria-describedby="sap-connection-dialog-description"
+            aria-labelledby="sap-connection-dialog-title"
+            aria-live="polite"
+            aria-modal="true"
+            className={`sap-connection-dialog sap-connection-dialog--${connectionStatus}`}
+            role="dialog"
+          >
+            <div className="sap-connection-dialog__visual" aria-hidden="true">
+              {isTestingConnection ? <span className="sap-connection-spinner" /> : null}
+              {connectionStatus === 'connected' ? <Icon name="check" size={46} /> : null}
+              {connectionStatus === 'disconnected' ? <Icon name="warning" size={46} /> : null}
+            </div>
+            <p className="eyebrow">SAP CONNECTION</p>
+            <h2 id="sap-connection-dialog-title">
+              {isTestingConnection ? 'Testing Connection to SAP' : null}
+              {connectionStatus === 'connected' ? 'Connection Successful' : null}
+              {connectionStatus === 'disconnected' ? 'Connection Failed to SAP' : null}
+            </h2>
+            <p id="sap-connection-dialog-description">
+              {isTestingConnection ? 'Please wait while we verify your SAP system connection.' : null}
+              {connectionStatus === 'connected' ? 'SAP is connected and ready to perform tests.' : null}
+              {connectionStatus === 'disconnected' ? 'Connect to SAP to perform tests, then try the connection again.' : null}
+            </p>
+            {!isTestingConnection ? (
+              <div className="sap-connection-dialog__actions">
+                <AppButton onClick={closeConnectionDialog} title="Close" variant="secondary" />
+                {connectionStatus === 'disconnected' ? <AppButton onClick={testConnection} title="Test Again" /> : null}
+              </div>
+            ) : null}
+          </section>
+        </div>
+      ) : null}
       {pendingConfirmation ? (
         <div className="sap-confirmation-backdrop" role="presentation">
           <section aria-labelledby="sap-confirmation-title" aria-modal="true" className="sap-confirmation-dialog" role="dialog">
