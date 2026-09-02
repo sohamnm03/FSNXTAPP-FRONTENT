@@ -83,8 +83,8 @@ exception, and a spec that ignores a returned refusal.
 **Suite classification.**
 Every spec belongs to exactly one suite in `config/suites.json`. A `discover-*`,
 `probe-*` or `explore-*` spec is never a regression answer. A new spec in
-`regression` needs a `test-cases/Web-TC/TC-*.md` naming it on its `Spec file:` line, or
-`check-suite.ps1` will fail.
+`regression` needs a `test-cases/Web-TC/<system id>/TC-*.md` naming it on its
+`Spec file:` line, or `check-suite.ps1` will fail.
 
 **Config that must not drift.**
 `headless: false` is deliberate — a headless SAP run that "passes" is

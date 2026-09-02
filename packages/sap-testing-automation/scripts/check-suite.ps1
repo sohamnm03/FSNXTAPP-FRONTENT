@@ -7,7 +7,7 @@
     exploring a transaction, and a frozen script running the same thing the same
     way every sprint. The line was documented and nothing enforced it. This does.
 
-    Six checks, all read-only. Nothing here touches SAP.
+    Seven checks, all read-only. Nothing here touches SAP.
 
       1. Every spec in web-tests/tests/ is classified by exactly one suite in
          config/suites.json. An unclassified spec belongs to no Playwright
@@ -15,12 +15,18 @@
       2. Every spec config/suites.json names actually exists.
       3. No discovery spec (discover-*, probe-*, explore-*) is in 'regression'.
          Non-deterministic by design; a red run from one is not a regression.
-      4. Every 'regression' spec is named by a test-cases/Web-TC/TC-*.md "Spec file:"
-         line. A regression answer nobody wrote a case for is a script, not a test.
+      4. Every 'regression' spec is named by a test-cases/Web-TC/<system id>/TC-*.md
+         "Spec file:" line. A regression answer nobody wrote a case for is a script,
+         not a test.
       5. Every case whose Status is 'frozen' is in the 'regression' suite.
       6. Every frozen case has at least two PASS runs recorded under results/.
          "Do not freeze a case that has never passed" - a frozen broken test
          fails forever and gets ignored.
+      7. Every case file sits under a system subfolder (test-cases/<lane>/<system id>/),
+         that subfolder name is a system actually in config/sap-systems.json, and
+         the case's own "- **System:**" header names the same system. The valid
+         id list comes from the registry, not a list hardcoded here, so adding a
+         landscape there is enough to make its folder valid everywhere.
 
     Exits 1 if any check fails, so it can gate a run.
 
@@ -43,11 +49,18 @@ $testsDir   = Join-Path $webTestsDir 'tests'
 $caseDir    = Join-Path $root 'test-cases'
 $resultsDir = Join-Path $root 'results'
 $suitesPath = Join-Path $root 'config\suites.json'
+$registryPath = Join-Path $root 'config\sap-systems.json'
 
 . (Join-Path $PSScriptRoot 'lib-markdown.ps1')   # $DASH, Get-Field
 
-if (-not (Test-Path $suitesPath)) { throw "Suite config not found: $suitesPath" }
-if (-not (Test-Path $testsDir))   { throw "Spec directory not found: $testsDir" }
+if (-not (Test-Path $suitesPath))   { throw "Suite config not found: $suitesPath" }
+if (-not (Test-Path $testsDir))     { throw "Spec directory not found: $testsDir" }
+if (-not (Test-Path $registryPath)) { throw "System registry not found: $registryPath" }
+
+# The set of valid system ids a case can be filed under - read from the
+# registry, not hardcoded, so a new landscape only has to be added there.
+$knownSystemIds = @((Get-Content -Path $registryPath -Raw -Encoding UTF8 | ConvertFrom-Json).systems |
+                    ForEach-Object { $_.id })
 
 $failures = New-Object System.Collections.Generic.List[string]
 $notes    = New-Object System.Collections.Generic.List[string]
@@ -120,13 +133,29 @@ foreach ($spec in $regressionSpecs) {
 # ----------------------------------------------- case files and their specs
 
 $cases = @()
-# -Recurse: cases are filed by lane under test-cases/GUI-TC and test-cases/Web-TC.
+# -Recurse: cases are filed by lane then system under test-cases/GUI-TC/<system>
+# and test-cases/Web-TC/<system>.
 foreach ($file in (Get-ChildItem -Path $caseDir -Filter 'TC-*.md' -Recurse -File | Sort-Object Name)) {
     $text = Get-Content -Path $file.FullName -Raw -Encoding UTF8
+    $relPath = $file.FullName.Substring($caseDir.Length + 1).Replace('\', '/')
+    $pathParts = $relPath -split '/'
 
     $caseId = Get-Field $text 'Case id'
     if (-not $caseId) { $caseId = $file.BaseName }
     $caseId = ($caseId -replace '`', '' -replace '\*\*', '').Trim()
+
+    # pathParts[0] is the lane folder (GUI-TC/Web-TC), pathParts[1] the system
+    # subfolder - present only when the case sits three levels deep
+    # (<lane>/<system>/<file>), which check 7 below requires.
+    $laneFolder = $pathParts[0]
+    $systemFolder = $null
+    if ($pathParts.Count -ge 3) { $systemFolder = $pathParts[1] }
+
+    $systemHeaderRaw = Get-Field $text 'System'
+    $systemHeader = $null
+    if ($systemHeaderRaw) {
+        $systemHeader = (($systemHeaderRaw -replace '`', '' -replace '\*\*', '') -split '[\s(]')[0].Trim()
+    }
 
     $statusRaw = Get-Field $text 'Status'
     # First word only: statuses are written as "active -- create + settle proven".
@@ -147,11 +176,33 @@ foreach ($file in (Get-ChildItem -Path $caseDir -Filter 'TC-*.md' -Recurse -File
     }
 
     $cases += [pscustomobject]@{
-        Id        = $caseId
-        File      = $file.FullName.Substring($caseDir.Length + 1).Replace('\', '/')
-        Status    = $status
-        StatusRaw = $statusRaw
-        Specs     = $specNames
+        Id           = $caseId
+        File         = $relPath
+        LaneFolder   = $laneFolder
+        SystemFolder = $systemFolder
+        SystemHeader = $systemHeader
+        Status       = $status
+        StatusRaw    = $statusRaw
+        Specs        = $specNames
+    }
+}
+
+# ------------------------------ check 7: case filed under a known system
+
+foreach ($case in $cases) {
+    if (-not $case.SystemFolder) {
+        Fail "check 7: $($case.Id) ($($case.File)) is not filed under a system subfolder - move it to test-cases/$($case.LaneFolder)/<system id>/"
+        continue
+    }
+    if ($knownSystemIds -notcontains $case.SystemFolder) {
+        $known = ($knownSystemIds | Sort-Object) -join ', '
+        Fail "check 7: $($case.Id) is filed under 'test-cases/$($case.LaneFolder)/$($case.SystemFolder)/', which is not a system id in config/sap-systems.json. Known: $known"
+    }
+    if ($case.SystemHeader -and $case.SystemFolder -and $case.SystemHeader -ne $case.SystemFolder) {
+        Fail "check 7: $($case.Id) is filed under system folder '$($case.SystemFolder)' but its '- **System:**' header says '$($case.SystemHeader)' - they must agree"
+    }
+    if (-not $case.SystemHeader) {
+        Fail "check 7: $($case.Id) ($($case.File)) has no '- **System:**' header, so its folder placement can't be verified against it"
     }
 }
 
@@ -169,7 +220,7 @@ foreach ($case in $cases) {
 
 foreach ($spec in $regressionSpecs) {
     if (-not $specsNamedByCases.Contains($spec)) {
-        Fail "check 4: '$spec' is in the 'regression' suite but no test-cases/Web-TC/TC-*.md names it as its Spec file"
+        Fail "check 4: '$spec' is in the 'regression' suite but no test-cases/Web-TC/<system id>/TC-*.md names it as its Spec file"
     }
 }
 

@@ -21,7 +21,7 @@
       "defaultStage": "tpm1",
       "dataset": "term-loan-accrual-valuation-batch",
       "resumeNote": "--resume <deal> skips FTR_CREATE and settles/posts that deal instead of creating a second one. Only for the single-deal path (no --rows) - a batch run has no one deal to resume against; re-run with --rows limited to what scripts/check-run.ps1 -Latest shows is still missing.",
-      "caseFile": "test-cases/GUI-TC/TC-014-FTR-term-loan-accrual-valuation-gui.md",
+      "caseFile": "test-cases/GUI-TC/DS4_100_NIIF/TC-014-FTR-term-loan-accrual-valuation-gui.md",
       "note": "GUI-lane sibling of TC-009 (web lane). Same business flow and data, different rendering path - the two are not interchangeable as evidence. --rows is opt-in (no defaultRows set here, so the plain command still drives the single BASELINE deal unchanged): pass --rows with row ids from test-data/term-loan-accrual-valuation-batch.dataset.json (or 'all') to run one full lifecycle per row instead - the same 10-row dataset TC-012 (web lane) already drives, added 2026-08-21."
     },
     "TC-015": {
@@ -35,7 +35,7 @@
       ],
       "defaultStage": "save",
       "resumeNote": "--resume is refused: this case is create-only, so there is no later stage to resume into. A quiet no-op would look like a pass.",
-      "caseFile": "test-cases/GUI-TC/TC-015-FTR_CREATE-term-loan-variable-rate-gui.md",
+      "caseFile": "test-cases/GUI-TC/DS4_100_NIIF/TC-015-FTR_CREATE-term-loan-variable-rate-gui.md",
       "note": "GUI-lane sibling of TC-013 (web lane). Reference interest rate RBI_REPO is a DATA decision chosen from the field's live F4 list, not a discoverable default - change it in the case module, never in gui_tests/modules/treasury.py. -Stage entry and -Stage fill write nothing, so they are this case's harness smoke test."
     },
     "TC-016": {
@@ -51,7 +51,7 @@
       "dataset": "term-loan-variable-period",
       "defaultRows": "quarterly",
       "resumeNote": "--resume is refused: this case is create-only, so there is no later stage to resume into. A quiet no-op would look like a pass.",
-      "caseFile": "test-cases/GUI-TC/TC-016-FTR_CREATE-term-loan-variable-period-gui.md",
+      "caseFile": "test-cases/GUI-TC/DS4_100_NIIF/TC-016-FTR_CREATE-term-loan-variable-period-gui.md",
       "note": "Sibling of TC-015, not a replacement: TC-015 accepts the interest period the screen defaults to, this one SETS it. The period is a COUNT OF MONTHS, not a frequency key - SAP's Frequency dropdown has no quarterly or half-yearly entry on DS4/100 (read live 2026-08-19) and its unit dropdown is locked to Months. Add a period by adding a row to test-data/term-loan-variable-period.dataset.json, never by editing gui_tests/modules/treasury.py. -Stage entry and -Stage fill write nothing, so they are this case's harness smoke test."
     },
     "TC-018": {
@@ -66,7 +66,7 @@
       ],
       "defaultStage": "save",
       "resumeNote": "--resume is refused: this case is create-only, so there is no later stage to resume into. A quiet no-op would look like a pass.",
-      "caseFile": "test-cases/GUI-TC/TC-018-FWZZ-26B-mutual-fund-class-creation-gui.md",
+      "caseFile": "test-cases/GUI-TC/DS4_100_NIIF/TC-018-FWZZ-26B-mutual-fund-class-creation-gui.md",
       "note": "GUI-lane sibling of TC-017 (web lane). Same product type, same mock data (Issuer 700000453, currency INR), different rendering path - the two are not interchangeable as evidence. Every id in gui_tests/screens/fwzz-*.json came from live SAP GUI Scripting discovery on DS4/100, 2026-08-19, not carried over from the web lane's DOM ids. -Stage entry, -Stage dialog and -Stage basic write nothing, so they are this case's harness smoke test."
     },
     "TC-020": {
@@ -84,7 +84,7 @@
       ],
       "defaultStage": "deal-save",
       "resumeNote": "--resume is refused: this case always creates a fresh class and deal, so there is no later stage to resume into. A quiet no-op would look like a pass.",
-      "caseFile": "test-cases/GUI-TC/TC-020-FWZZ-26B-then-FTR_CREATE-mutual-fund-gui.md",
+      "caseFile": "test-cases/GUI-TC/DS4_100_NIIF/TC-020-FWZZ-26B-then-FTR_CREATE-mutual-fund-gui.md",
       "note": "GUI-lane sibling of TC-019 (web lane). Same product type, same mock data, different rendering path. The FTR_CREATE deal screen turned out to be the exact same program (SAPLTTM_UI_FRAMEWORK) on both lanes with the identical Enter/Save/Enter commit sequence - confirmed live 2026-08-20. Every id in gui_tests/screens/{ftr-entry,ftr-26b-deal}.json came from live SAP GUI Scripting discovery, not carried over from the web lane's DOM ids."
     },
     "TC-021": {
@@ -102,7 +102,7 @@
       ],
       "defaultStage": "tpm1",
       "resumeNote": "--resume <deal> skips FTR_CREATE and settles/posts that deal instead of creating a second one.",
-      "caseFile": "test-cases/GUI-TC/TC-021-FTR_CREATE-term-loan-variable-lifecycle-gui.md",
+      "caseFile": "test-cases/GUI-TC/DS4_100_NIIF/TC-021-FTR_CREATE-term-loan-variable-lifecycle-gui.md",
       "note": "Combines TC-015's variable-interest deal fill (fill_term_loan_variable/VariableRateTerms) with TC-014's settle->TBB1->TPM44->TPM1 lifecycle (settle_deal/post_flows/run_accrual_deferral/run_valuation) - both reused unchanged from gui_tests/modules/treasury.py. Neither TC-014 (fixed interest) nor TC-015 (variable, create-only) covers this combination."
     },
     "TC-022": {
@@ -121,7 +121,7 @@
       ],
       "defaultStage": "tpm1",
       "resumeNote": "--resume <deal> skips FTR_CREATE and settles/posts that deal instead of creating a second one.",
-      "caseFile": "test-cases/GUI-TC/TC-022-FTR_CREATE-term-loan-fixed-rate-change-gui.md",
+      "caseFile": "test-cases/GUI-TC/DS4_100_NIIF/TC-022-FTR_CREATE-term-loan-fixed-rate-change-gui.md",
       "note": "Reuses TC-014's fixed-rate lifecycle (fill_term_loan/settle_deal/post_flows/run_accrual_deferral/run_valuation) and adds one genuinely new piece: add_interest_condition (gui_tests/modules/treasury.py), which drives the deal screen's 'Conditions' -> 'Copy condition' flow to add a later-dated rate change before the deal is ever saved. Discovered live on DS4/100, 2026-08-24 - not present in any earlier case. fill_term_loan also gained an optional frequency/frequency_key pair for this case (On Last Day of Month); TC-014's call is unaffected since both default to None."
     },
     "TC-023": {
@@ -138,7 +138,7 @@
       ],
       "defaultStage": "tpm",
       "resumeNote": "--resume <deal> skips FTR_CREATE and settles/posts/re-runs the full month loop against that deal instead of creating a second one. settle_deal/post_flows/run_accrual_deferral/run_valuation are all idempotent against a month already done (SAP itself reports 'already settled'/'no flows exist'/'already run'), so resuming does not double-post.",
-      "caseFile": "test-cases/GUI-TC/TC-023-FTR_CREATE-term-loan-variable-full-term-valuation-gui.md",
+      "caseFile": "test-cases/GUI-TC/DS4_100_NIIF/TC-023-FTR_CREATE-term-loan-variable-full-term-valuation-gui.md",
       "note": "Sibling of TC-021, not a replacement: TC-021 deliberately stops after one month-end (31.01.2026); this case answers the same lifecycle for the WHOLE term, looping TPM44 then TPM1 once per calendar month-end from the term start through the term end (12 pairs for this baseline). Same deal profile and create/settle/post lifecycle as TC-021, reused unchanged from gui_tests/modules/treasury.py - only the tpm stage differs."
     }
   }

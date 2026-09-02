@@ -4,7 +4,7 @@
 - **Lane:** sap-gui (SAP GUI for Windows) | web (Fiori / WebGUI / UI5)
 - **Transaction / app:** <TCODE or Fiori app id>
 - **Spec file:** — (web lane only: `web-tests/tests/<name>.spec.ts`)
-- **System:** DS4_100_NIIF (DS4 / client 100)
+- **System:** <system id from config/sap-systems.json, e.g. DS4_100_NIIF> (<SYSID> / client <nnn>) — must match the `test-cases/<lane>/<system id>/` folder this file is filed under
 - **Type:** smoke | functional | negative | regression
 - **Author:** <name>
 - **Created:** YYYY-MM-DD

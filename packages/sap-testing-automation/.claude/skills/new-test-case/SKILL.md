@@ -1,6 +1,6 @@
 ---
 name: new-test-case
-description: Scaffold a new test-cases/{GUI-TC,Web-TC}/TC-*.md from the template and register it in config/runs.json so it can be launched by id.
+description: Scaffold a new test-cases/{GUI-TC,Web-TC}/<system id>/TC-*.md from the template and register it in config/runs.json so it can be launched by id.
 disable-model-invocation: true
 ---
 
@@ -22,16 +22,23 @@ Ask the user for whatever they have not already said:
 | Needed | Why it cannot be defaulted |
 |---|---|
 | **Lane** — `sap-gui` or web | Different rendering path, different failure modes. Never inferred (a standing rule in this workspace). |
+| **System** — an id from `config/sap-systems.json` | Screen ids, master data and element handles are not portable between landscapes (CLAUDE.md rule 4). Never inferred beyond the registry's `defaultSystem` — confirm it with the user rather than assuming. |
 | **Transaction / app** | One case covers one transaction and one scenario. |
 | **What it proves** | Becomes Purpose, and decides what the assertions are. |
 | **Does it write?** | Every committing step must be named before it runs (rule 3). |
 | **Data-driven?** | Rows go in `test-data/*.dataset.json`, never inline in the spec. |
 
+Check the chosen system id is actually listed in `config/sap-systems.json` —
+that file is the only source of valid ids, so a typo'd or not-yet-added system
+would produce a folder `scripts/check-suite.ps1` (check 7) then refuses.
+
 Pick the next free `TC-nnn` by listing `test-cases/` **recursively** — ids are
-unique across both lane folders, so `TC-014` being in `GUI-TC/` still uses up
-`014`. Name the file `TC-<nnn>-<TCODE>-<slug>.md` and write it into the folder
-that matches the lane the user just gave you: `test-cases/GUI-TC/` for
-`sap-gui`, `test-cases/Web-TC/` for web.
+unique across every lane and system folder, so `TC-014` being in
+`GUI-TC/DS4_100_NIIF/` still uses up `014`. Name the file
+`TC-<nnn>-<TCODE>-<slug>.md` and write it into the folder that matches the
+lane and system the user just gave you: `test-cases/GUI-TC/<system id>/` for
+`sap-gui`, `test-cases/Web-TC/<system id>/` for web — e.g.
+`test-cases/GUI-TC/DS4_100_NIIF/TC-024-...-gui.md`.
 
 ## Write the case file
 
@@ -41,6 +48,7 @@ so a malformed line silently breaks tooling:
 
 - `- **Case id:** TC-nnn` — must match the filename
 - `- **Spec file:**` — the web-lane spec, once it exists; `—` until then
+- `- **System:**` — must match the `<system id>` folder the file is filed under
 - `- **Status:** draft` — a new case is never `active`, never `frozen`
 - `- **Writes to the database:**` — must agree with the Writes section
 

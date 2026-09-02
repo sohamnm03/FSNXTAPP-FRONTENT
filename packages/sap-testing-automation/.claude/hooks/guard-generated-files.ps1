@@ -85,7 +85,7 @@ try {
     Allow
 }
 if (-not $filePath) { Allow }
-  
+
 # ------------------------------------------------------------- scope to repo
 #
 # Anchored to this repo rather than matched by name: a bare '\results\*.md'

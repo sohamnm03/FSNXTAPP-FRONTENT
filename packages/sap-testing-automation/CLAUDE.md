@@ -106,7 +106,7 @@ Both lanes read the **same** `config/sap-systems.json` and the **same** credenti
 | `dashboard/` | yes | The results dashboard — `template.html` (the UI), the payload schema, a sample payload |
 | `scripts/build-dashboard.ps1` | yes | Turns `results/*.md` into a payload and renders the dashboard |
 | `web-tests/` | yes (not `node_modules`) | The Fiori / WebGUI / UI5 lane — `playwright-sap` specs, config, fixtures |
-| `test-cases/` | yes | One markdown file per test case, from `_TEMPLATE.md`. Filed by lane: `GUI-TC/` for `sap-gui` cases, `Web-TC/` for web-lane cases. The **Lane:** header inside the file and the folder must agree — the folder is not what decides the lane, the header is |
+| `test-cases/` | yes | One markdown file per test case, from `_TEMPLATE.md`. Filed by lane then system: `GUI-TC/<system id>/` for `sap-gui` cases, `Web-TC/<system id>/` for web-lane cases — `<system id>` is one of the ids in `config/sap-systems.json` (adding a system there is what makes its folder valid, nothing else needs editing). The **Lane:** and **System:** headers inside the file and the folders must agree — the folders are not what decide the lane or system, the headers are. `scripts/check-suite.ps1` enforces both |
 | `test-data/` | yes | Input data a case needs — `*.dataset.json` are the data tables a data-driven case iterates |
 | `docs/` | yes | Setup and authoring guides |
 | `results/` | **no** | One file per run — outcome, observed values, deviations. `results/web/` holds the Playwright HTML report, traces and web-lane journals; `results/gui/` holds GUI-lane journals and run locks; `results/dashboard.html` is the rendered dashboard. |

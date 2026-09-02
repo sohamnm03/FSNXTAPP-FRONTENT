@@ -190,7 +190,7 @@ It becomes one Playwright project per suite.
 
 | Suite | Contains | Run it |
 |---|---|---|
-| `regression` | Case-backed and deterministic. Every spec is named by a `test-cases/Web-TC/TC-*.md`. | `npm run test:regression --prefix web-tests` |
+| `regression` | Case-backed and deterministic. Every spec is named by a `test-cases/Web-TC/<system id>/TC-*.md`. | `npm run test:regression --prefix web-tests` |
 | `verification` | Read-only, repeatable, no case file of its own — connectivity and after-the-fact document checks. | `npm run test:verification --prefix web-tests` |
 | `model-check` | The change-impact check. Read-only. | `npm run test:model-check --prefix web-tests` |
 | `exploratory` | Discovery: finding screens, ids and edge cases. Non-deterministic by design. | `npm run test:explore --prefix web-tests` |
@@ -211,7 +211,7 @@ passing twice with no deviations, and being moved to `regression` — see
 powershell -ExecutionPolicy Bypass -File "scripts\check-suite.ps1"
 ```
 
-Six read-only checks; exits 1 on any failure, so it can gate a run.
+Seven read-only checks; exits 1 on any failure, so it can gate a run.
 
 | # | Check |
 |---|---|
@@ -221,6 +221,7 @@ Six read-only checks; exits 1 on any failure, so it can gate a run.
 | 4 | Every `regression` spec is named by a case file's **Spec file:** line |
 | 5 | Every case whose Status is `frozen` is in `regression` and names a spec |
 | 6 | Every frozen case has at least two `PASS` runs recorded under `results/` |
+| 7 | Every case file sits under `test-cases/<lane>/<system id>/`, that system id is one `config/sap-systems.json` actually lists, and the case's `- **System:**` header agrees with it |
 
 Check 6 is the one the authoring guide already asked for in prose: *do not freeze
 a case that has never passed.* A frozen broken test fails forever and gets ignored.

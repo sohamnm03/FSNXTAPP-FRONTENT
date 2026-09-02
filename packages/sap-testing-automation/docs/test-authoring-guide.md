@@ -7,19 +7,26 @@ How a test case gets written, run and recorded in this workspace.
 One markdown file per case in `test-cases/`, copied from `_TEMPLATE.md` and named
 `TC-<nnn>-<tcode>-<slug>.md` — e.g. `TC-001-MM03-display-material-basic.md`.
 
-Cases are filed by lane, because the two lanes are not interchangeable as
-evidence and a reader should not have to open a file to learn which one it is:
+Cases are filed by lane, then by system, because neither is interchangeable as
+evidence and a reader should not have to open a file to learn either one:
 
 | Folder | Holds |
 |---|---|
-| `test-cases/GUI-TC/` | `- **Lane:** sap-gui` — driven by `gui_tests/`, registered in `config/gui-runs.json` |
-| `test-cases/Web-TC/` | `- **Lane:** web` — driven by a `web-tests/tests/*.spec.ts`, registered in `config/runs.json` |
+| `test-cases/GUI-TC/<system id>/` | `- **Lane:** sap-gui` — driven by `gui_tests/`, registered in `config/gui-runs.json` |
+| `test-cases/Web-TC/<system id>/` | `- **Lane:** web` — driven by a `web-tests/tests/*.spec.ts`, registered in `config/runs.json` |
 | `test-cases/_TEMPLATE.md` | Neither — the template serves both lanes and stays at the root |
 
-The `- **Lane:**` header is still what *declares* the lane; the folder follows
-it. Ids stay unique across both folders (there is one TC-014, not one per
-lane), so a case can move folders without renaming, and every lookup finds a
-case by id wherever it sits.
+`<system id>` is one of the ids in `config/sap-systems.json` (`DS4_100_NIIF`,
+`DS4_100_TFSIN`, and whatever landscape is added there next) — e.g.
+`test-cases/GUI-TC/DS4_100_NIIF/TC-014-...gui.md`. The `- **Lane:**` and
+`- **System:**` headers are still what *declare* the lane and system; the
+folders follow them, and `scripts/check-suite.ps1` (check 7) fails a case
+whose folder disagrees with either header, or whose system folder is not an
+id the registry actually lists — so a new landscape only has to be added to
+`config/sap-systems.json` for its folder to become valid; nothing else needs
+to know its name in advance. Ids stay unique across every lane/system folder
+(there is one TC-014, not one per lane or system), so a case can move folders
+without renaming, and every lookup finds a case by id wherever it sits.
 
 A case covers **one transaction and one scenario**. "Create a sales order" and
 "create a sales order with an invalid material" are two cases, not one, because

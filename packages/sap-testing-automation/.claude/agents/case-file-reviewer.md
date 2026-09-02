@@ -1,6 +1,6 @@
 ---
 name: case-file-reviewer
-description: Reviews a test-cases/{GUI-TC,Web-TC}/TC-*.md against this workspace's authoring rules before it is registered in config/runs.json and drives a live SAP write. Use when a case file is written or edited, or before freezing a case.
+description: Reviews a test-cases/{GUI-TC,Web-TC}/<system id>/TC-*.md against this workspace's authoring rules before it is registered in config/runs.json and drives a live SAP write. Use when a case file is written or edited, or before freezing a case.
 tools: Read, Grep, Glob
 ---
 
@@ -16,8 +16,11 @@ spec, never touch SAP.
 
 - `docs/test-authoring-guide.md` — the rules you are enforcing
 - `test-cases/_TEMPLATE.md` — the required shape (the template stays at the root;
-  cases themselves live in `test-cases/GUI-TC/` or `test-cases/Web-TC/`, and the
-  folder must agree with the file's `- **Lane:**` header)
+  cases themselves live in `test-cases/GUI-TC/<system id>/` or
+  `test-cases/Web-TC/<system id>/`, and the folders must agree with the file's
+  `- **Lane:**` and `- **System:**` headers)
+- `config/sap-systems.json` — the only source of valid system ids; a case's
+  system folder must be one of the ids listed there
 - `CLAUDE.md` — the non-negotiables, especially rules 3, 3a, 5 and 6
 - The case file under review, and any sibling case it references
 
@@ -67,6 +70,11 @@ these, so a malformed line silently breaks tooling:
 - `- **Status:**` is `draft` | `active` | `frozen` — the first word is what gets
   parsed, so "active — create + settle proven" is fine.
 - `- **Writes to the database:**` must agree with the Writes section.
+- `- **System:**` must name an id `config/sap-systems.json` actually lists, and
+  match the `<system id>` folder the file is filed under — flag either a case
+  sitting directly in `GUI-TC/`/`Web-TC/` with no system subfolder, or a folder
+  that disagrees with the header. `scripts/check-suite.ps1` (check 7) enforces
+  this at gate time; you are catching it before that.
 
 **Freezing claims are earned.**
 If Status is `frozen`, the case must name a spec, that spec must be in the
