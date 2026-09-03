@@ -45,6 +45,9 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   const [isStarting, setIsStarting] = useState(false);
   const [isStopping, setIsStopping] = useState(false);
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const [isTokenDialogOpen, setIsTokenDialogOpen] = useState(false);
+  const [oauthToken, setOauthToken] = useState('');
+  const [tokenEnding, setTokenEnding] = useState('');
   const [isUninstalling, setIsUninstalling] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState('idle');
   const [sapSystems, setSapSystems] = useState([]);
@@ -60,6 +63,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
         setSapSystems(project.systems || []);
         setSelectedSystemId(project.defaultSystemId || project.systems?.[0]?.id || '');
         setIsAuthenticated(Boolean(auth.loggedIn));
+        setTokenEnding(auth.tokenEnding || '');
         if (!project.configured) setError('The SAP automation package is missing. Reinstall the application.');
         else if (!auth.available) setError('The bundled AI Assistant runtime is missing. Reinstall the application.');
       })
@@ -139,14 +143,35 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     try { await sapTerminalService.stop(runId); } catch (stopError) { setError(stopError.message); } finally { setIsStopping(false); }
   }
 
-  async function signIn() {
+  async function configureToken(event) {
+    event.preventDefault();
     setIsSigningIn(true);
     setError('');
     try {
-      const auth = await sapTerminalService.login();
+      const auth = await sapTerminalService.configureToken(oauthToken);
       setIsAuthenticated(Boolean(auth.loggedIn));
+      setTokenEnding(auth.tokenEnding || '');
+      setOauthToken('');
+      if (auth.loggedIn) setIsTokenDialogOpen(false);
     } catch (signInError) {
       setError(signInError.message);
+    } finally {
+      setIsSigningIn(false);
+    }
+  }
+
+  async function disconnectToken() {
+    setIsSigningIn(true);
+    setError('');
+    try {
+      await sapTerminalService.clearToken();
+      setIsAuthenticated(false);
+      setTokenEnding('');
+      setOauthToken('');
+      setIsTokenDialogOpen(false);
+      newChat();
+    } catch (disconnectError) {
+      setError(disconnectError.message);
     } finally {
       setIsSigningIn(false);
     }
@@ -309,18 +334,25 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
           <div className="run-status-row sap-chat-header">
             <div><p className="eyebrow">AI ASSISTANT TERMINAL</p><h2>SAP automation assistant</h2></div>
             <div className="sap-chat-header-actions">
-              {!isCheckingAuth && !isAuthenticated ? <AppButton loading={isSigningIn} onClick={signIn} title="Sign in to AI Assistant" variant="secondary" /> : null}
+              {!isCheckingAuth ? (
+                <AppButton
+                  disabled={isBusy}
+                  onClick={() => setIsTokenDialogOpen(true)}
+                  title={isAuthenticated ? `OAuth token ••••${tokenEnding}` : 'Connect OAuth token'}
+                  variant="secondary"
+                />
+              ) : null}
               <span className={`run-status ${connectionServerName ? 'run-status--connected' : `run-status--${status}`}`}>
                 {isAuthenticated ? connectionServerName
                   ? `Connected to ${connectionServerName}`
-                  : connectionStatus === 'connected' ? 'Connected' : statusLabel(status, activeSource) : 'Sign in required'}
+                  : connectionStatus === 'connected' ? 'Connected' : statusLabel(status, activeSource) : 'OAuth token required'}
               </span>
             </div>
           </div>
           {error ? <div className="alert alert--error" role="alert">{error}</div> : null}
           <div className="sap-conversation" ref={conversationRef}>
             {messages.length === 0 ? (
-              <div className="sap-chat-welcome"><Icon name="toolbox" size={36} /><h3>{isAuthenticated ? 'What would you like to test?' : 'Sign in to AI Assistant to begin'}</h3><p>{LANES[lane].description} is selected.</p></div>
+              <div className="sap-chat-welcome"><Icon name="toolbox" size={36} /><h3>{isAuthenticated ? 'What would you like to test?' : 'Connect a Claude OAuth token to begin'}</h3><p>{LANES[lane].description} is selected.</p></div>
             ) : messages.map((message) => (
               <article className={`sap-message sap-message--${message.role}`} key={message.id}>
                 <span>{message.role === 'user' ? 'You' : message.role === 'runner' ? 'Test runner' : 'AI Assistant'}</span><div>{message.text}</div>
@@ -348,6 +380,36 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
           </form>
         </section>
       </main>
+      {isTokenDialogOpen ? (
+        <div className="sap-token-backdrop" role="presentation">
+          <section aria-labelledby="sap-token-dialog-title" aria-modal="true" className="sap-token-dialog" role="dialog">
+            <p className="eyebrow">CLAUDE AUTHENTICATION</p>
+            <h2 id="sap-token-dialog-title">{isAuthenticated ? 'Manage OAuth token' : 'Connect OAuth token'}</h2>
+            <p className="sap-token-dialog__description">
+              The token is encrypted using Windows secure storage and is supplied only to this app's Claude processes.
+            </p>
+            <form onSubmit={configureToken}>
+              <label htmlFor="claude-oauth-token">OAuth token</label>
+              <input
+                autoComplete="off"
+                autoFocus
+                id="claude-oauth-token"
+                onChange={(event) => setOauthToken(event.target.value)}
+                placeholder={isAuthenticated ? `Current token ends in ${tokenEnding}` : 'Paste your Claude OAuth token'}
+                spellCheck="false"
+                type="password"
+                value={oauthToken}
+              />
+              <span>Generate a long-lived token with the Claude Code setup-token command.</span>
+              <div className="sap-token-dialog__actions">
+                {isAuthenticated ? <AppButton disabled={isSigningIn} onClick={disconnectToken} title="Disconnect" variant="secondary" /> : null}
+                <AppButton disabled={isSigningIn} onClick={() => { setOauthToken(''); setIsTokenDialogOpen(false); }} title="Cancel" variant="secondary" />
+                <AppButton disabled={!oauthToken.trim()} loading={isSigningIn} title={isAuthenticated ? 'Replace token' : 'Connect'} type="submit" />
+              </div>
+            </form>
+          </section>
+        </div>
+      ) : null}
       {connectionStatus !== 'idle' ? (
         <div className="sap-connection-backdrop" role="presentation">
           <section

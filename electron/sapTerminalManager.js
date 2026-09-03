@@ -54,14 +54,24 @@ function parseClaudeResult(stdout, stderr) {
   }
 }
 
-async function createSapTerminalManager(electronApp) {
+async function createSapTerminalManager(electronApp, claudeTokenStore) {
   const runs = new Map();
   const confirmations = new Map();
   const claudePath = claudeExecutable(electronApp);
   const workspace = await createSapAutomationWorkspace(electronApp);
-  let authProcess = null;
   let connectionCheckProcess = null;
+  const claudeConfigDir = path.join(electronApp.getPath('userData'), 'claude-runtime');
   const projectRoot = workspace.projectRoot;
+  fs.mkdirSync(claudeConfigDir, { recursive: true });
+
+  function claudeEnvironment(token) {
+    const env = { ...process.env, NO_COLOR: '1', FORCE_COLOR: '0', CLAUDE_CONFIG_DIR: claudeConfigDir };
+    delete env.ANTHROPIC_API_KEY;
+    delete env.ANTHROPIC_AUTH_TOKEN;
+    delete env.CLAUDE_CODE_OAUTH_TOKEN;
+    if (token) env.CLAUDE_CODE_OAUTH_TOKEN = token;
+    return env;
+  }
 
   function requireRun(runId) {
     const run = runs.get(runId);
@@ -224,11 +234,13 @@ async function createSapTerminalManager(electronApp) {
   }
 
   function getAuthStatus() {
+    const token = claudeTokenStore.get();
+    if (!token) return Promise.resolve({ available: true, loggedIn: false, authMethod: 'oauth_token' });
     return new Promise((resolve) => {
       let stdout = '';
       let settled = false;
       const child = spawn(claudePath, ['auth', 'status', '--json'], {
-        env: { ...process.env, NO_COLOR: '1', FORCE_COLOR: '0' },
+        env: claudeEnvironment(token),
         windowsHide: true,
         shell: false,
         stdio: ['ignore', 'pipe', 'pipe'],
@@ -243,7 +255,12 @@ async function createSapTerminalManager(electronApp) {
       child.once('close', (code) => {
         try {
           const status = JSON.parse(stdout.trim());
-          finish({ available: true, loggedIn: code === 0 && status.loggedIn === true, authMethod: status.authMethod || '' });
+          finish({
+            available: true,
+            loggedIn: code === 0 && status.loggedIn === true && status.authMethod === 'oauth_token',
+            authMethod: 'oauth_token',
+            tokenEnding: token.slice(-4),
+          });
         } catch {
           finish({ available: true, loggedIn: false });
         }
@@ -333,41 +350,18 @@ async function createSapTerminalManager(electronApp) {
         });
       });
     },
-    login() {
-      if (authProcess) throw new Error('AI Assistant sign-in is already in progress.');
-      return new Promise((resolve, reject) => {
-        let stderr = '';
-        const child = spawn(claudePath, ['auth', 'login', '--claudeai'], {
-          env: { ...process.env, NO_COLOR: '1', FORCE_COLOR: '0' },
-          windowsHide: true,
-          shell: false,
-          stdio: ['ignore', 'pipe', 'pipe'],
-        });
-        authProcess = child;
-        child.stderr.on('data', (chunk) => { stderr += chunk.toString('utf8'); });
-        child.once('error', (error) => {
-          authProcess = null;
-          reject(new Error(error.code === 'ENOENT'
-            ? 'The bundled AI Assistant runtime is missing. Reinstall the application.'
-            : error.message));
-        });
-        child.once('close', async (code) => {
-          authProcess = null;
-          if (code !== 0) {
-            reject(new Error(stderr.trim() || 'AI Assistant sign-in was not completed.'));
-            return;
-          }
-          const status = await getAuthStatus();
-          if (!status.loggedIn) {
-            reject(new Error('AI Assistant sign-in was not completed.'));
-            return;
-          }
-          resolve(status);
-        });
-      });
+    configureToken(token) {
+      claudeTokenStore.set(token);
+      return getAuthStatus();
+    },
+    clearToken() {
+      claudeTokenStore.clear();
+      return { available: true, loggedIn: false, authMethod: 'oauth_token' };
     },
     start(prompt, previousSessionId = '', lane = 'gui') {
       if (!validateProject(projectRoot)) throw new Error('The bundled SAP automation package is missing or incomplete. Reinstall the application.');
+      const oauthToken = claudeTokenStore.get();
+      if (!oauthToken) throw new Error('Configure a Claude OAuth token before using the AI Assistant.');
       if (typeof prompt !== 'string' || !prompt.trim()) throw new Error('Type what you want the AI Assistant to do.');
       if (previousSessionId && !/^[0-9a-f-]{36}$/i.test(previousSessionId)) throw new Error('The AI Assistant session is invalid. Start a new chat.');
       if (!['gui', 'web'].includes(lane)) throw new Error('Select SAP GUI or Fiori / WebGUI testing.');
@@ -398,7 +392,7 @@ async function createSapTerminalManager(electronApp) {
       };
       const child = spawn(claudePath, args, {
         cwd: projectRoot,
-        env: { ...process.env, NO_COLOR: '1', FORCE_COLOR: '0' },
+        env: claudeEnvironment(oauthToken),
         windowsHide: true,
         shell: false,
         stdio: ['ignore', 'pipe', 'pipe'],
@@ -441,7 +435,6 @@ async function createSapTerminalManager(electronApp) {
       return publicRun(run);
     },
     stopAll() {
-      authProcess?.kill();
       connectionCheckProcess?.kill();
       runs.forEach((run) => run.process?.kill());
       workspace.cleanup();

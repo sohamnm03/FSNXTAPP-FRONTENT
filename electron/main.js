@@ -1,7 +1,8 @@
-const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, safeStorage, shell } = require('electron');
 const path = require('path');
 const { createAiAgentsManager } = require('./aiAgentsManager');
 const { createGoogleDesktopAuth } = require('./googleDesktopAuth');
+const { createClaudeTokenStore } = require('./claudeTokenStore');
 const { createSapTerminalManager } = require('./sapTerminalManager');
 
 const isDevelopment = !app.isPackaged;
@@ -24,11 +25,13 @@ function registerAiAgentsHandlers() {
 }
 
 async function registerSapTerminalHandlers() {
-  sapTerminalManager = await createSapTerminalManager(app);
+  const claudeTokenStore = createClaudeTokenStore(app, safeStorage);
+  sapTerminalManager = await createSapTerminalManager(app, claudeTokenStore);
   ipcMain.handle('sap-terminal:get-project', () => sapTerminalManager.getProject());
   ipcMain.handle('sap-terminal:get-auth-status', () => sapTerminalManager.getAuthStatus());
   ipcMain.handle('sap-terminal:test-connection', (_event, systemId) => sapTerminalManager.testConnection(systemId));
-  ipcMain.handle('sap-terminal:login', () => sapTerminalManager.login());
+  ipcMain.handle('sap-terminal:configure-token', (_event, token) => sapTerminalManager.configureToken(token));
+  ipcMain.handle('sap-terminal:clear-token', () => sapTerminalManager.clearToken());
   ipcMain.handle('sap-terminal:prepare-case', (_event, lane, caseId, stage) => sapTerminalManager.prepareCase(lane, caseId, stage));
   ipcMain.handle('sap-terminal:start-confirmed-case', (_event, confirmationId) => sapTerminalManager.startConfirmedCase(confirmationId));
   ipcMain.handle('sap-terminal:start', (_event, prompt, sessionId, lane) => sapTerminalManager.start(prompt, sessionId, lane));

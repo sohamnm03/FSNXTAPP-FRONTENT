@@ -2106,6 +2106,77 @@
   transform: translateY(0);
 }
 
+.sap-token-backdrop {
+  align-items: center;
+  background: rgba(10, 40, 72, 0.52);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 24px;
+  position: fixed;
+  z-index: 120;
+}
+
+.sap-token-dialog {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  box-shadow: 0 24px 70px rgba(8, 47, 95, 0.24);
+  padding: 30px;
+  width: min(520px, 100%);
+}
+
+.sap-token-dialog h2 {
+  color: var(--color-text);
+  font-size: 1.4rem;
+  margin: 4px 0 9px;
+}
+
+.sap-token-dialog__description {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  line-height: 1.55;
+  margin: 0 0 22px;
+}
+
+.sap-token-dialog form > label {
+  color: var(--color-text);
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  margin-bottom: 7px;
+}
+
+.sap-token-dialog input {
+  background: #fafdff;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  color: var(--color-text);
+  min-height: 46px;
+  outline: 0;
+  padding: 0 12px;
+  width: 100%;
+}
+
+.sap-token-dialog input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(8, 115, 209, 0.12);
+}
+
+.sap-token-dialog form > span {
+  color: var(--color-muted);
+  display: block;
+  font-size: 0.68rem;
+  margin-top: 8px;
+}
+
+.sap-token-dialog__actions {
+  display: flex;
+  gap: 9px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
 .sap-confirmation-backdrop {
   align-items: center;
   background: rgba(10, 24, 48, 0.58);
