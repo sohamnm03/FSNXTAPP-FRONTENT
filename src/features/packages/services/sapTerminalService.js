@@ -20,8 +20,14 @@ export const sapTerminalService = {
   clearToken() {
     return localTerminal().clearToken();
   },
-  prepareCase(lane, caseId, stage) {
-    return localTerminal().prepareCase(lane, caseId, stage);
+  listCases(lane) {
+    return localTerminal().listCases(lane);
+  },
+  getCaseFile(lane, caseId) {
+    return localTerminal().getCaseFile(lane, caseId);
+  },
+  prepareCase(lane, caseId, stage, credentials) {
+    return localTerminal().prepareCase(lane, caseId, stage, credentials);
   },
   startConfirmedCase(confirmationId) {
     return localTerminal().startConfirmedCase(confirmationId);

@@ -5,6 +5,12 @@
  * the sap-gui MCP server reads it through scripts/sync-sap-systems.ps1, and the
  * web lane reads it here. Endpoints and user names live in that file; the
  * password never does - it is named there and resolved from the environment.
+ *
+ * SAP_WEB_USER / SAP_WEB_PASSWORD, if set, override the registry's user and
+ * the resolved password for this run only. The desktop app's Web Lane sidebar
+ * sets these when the user types their own SAP credentials there instead of
+ * using the registry's account; unattended/model-driven runs never set them,
+ * so they keep using the registry account exactly as before.
  */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -57,7 +63,10 @@ if (!system.web?.enabled) {
   );
 }
 
-const password = process.env[system.credentials.passwordEnvVar];
+const overrideUser = process.env.SAP_WEB_USER?.trim();
+const overridePassword = process.env.SAP_WEB_PASSWORD;
+
+const password = overridePassword || process.env[system.credentials.passwordEnvVar];
 if (!password) {
   throw new Error(
     `Password not found. Set ${system.credentials.passwordEnvVar} in the environment ` +
@@ -89,7 +98,7 @@ export const sapSystem = {
   systemId: system.systemId,
   client: system.client,
   language: system.language,
-  user: system.credentials.user,
+  user: overrideUser || system.credentials.user,
   password,
   baseUrl,
   flpUrl: baseUrl + system.web.flpPath,

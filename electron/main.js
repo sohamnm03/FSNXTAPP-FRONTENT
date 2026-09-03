@@ -32,7 +32,9 @@ async function registerSapTerminalHandlers() {
   ipcMain.handle('sap-terminal:test-connection', (_event, systemId) => sapTerminalManager.testConnection(systemId));
   ipcMain.handle('sap-terminal:configure-token', (_event, token) => sapTerminalManager.configureToken(token));
   ipcMain.handle('sap-terminal:clear-token', () => sapTerminalManager.clearToken());
-  ipcMain.handle('sap-terminal:prepare-case', (_event, lane, caseId, stage) => sapTerminalManager.prepareCase(lane, caseId, stage));
+  ipcMain.handle('sap-terminal:list-cases', (_event, lane) => sapTerminalManager.listCases(lane));
+  ipcMain.handle('sap-terminal:get-case-file', (_event, lane, caseId) => sapTerminalManager.getCaseFile(lane, caseId));
+  ipcMain.handle('sap-terminal:prepare-case', (_event, lane, caseId, stage, credentials) => sapTerminalManager.prepareCase(lane, caseId, stage, credentials));
   ipcMain.handle('sap-terminal:start-confirmed-case', (_event, confirmationId) => sapTerminalManager.startConfirmedCase(confirmationId));
   ipcMain.handle('sap-terminal:start', (_event, prompt, sessionId, lane) => sapTerminalManager.start(prompt, sessionId, lane));
   ipcMain.handle('sap-terminal:get-run', (_event, runId) => sapTerminalManager.getRun(runId));

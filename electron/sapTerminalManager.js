@@ -130,7 +130,61 @@ async function createSapTerminalManager(electronApp, claudeTokenStore) {
     return `TC-${match[1].padStart(3, '0')}`;
   }
 
-  function prepareCase(lane, requestedCaseId, requestedStage = '') {
+  function laneCasesDir(lane) {
+    return path.join(projectRoot, 'test-cases', lane === 'gui' ? 'GUI-TC' : 'Web-TC');
+  }
+
+  function findCaseMarkdownFile(lane, caseId, manifestEntry) {
+    if (manifestEntry?.caseFile) {
+      const explicit = path.join(projectRoot, manifestEntry.caseFile);
+      if (fs.existsSync(explicit)) return explicit;
+    }
+    const baseDir = laneCasesDir(lane);
+    if (!fs.existsSync(baseDir)) return null;
+    const stack = [baseDir];
+    while (stack.length) {
+      const current = stack.pop();
+      for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+        const full = path.join(current, entry.name);
+        if (entry.isDirectory()) { stack.push(full); continue; }
+        if (entry.isFile() && entry.name.toUpperCase().startsWith(`${caseId}-`)) return full;
+      }
+    }
+    return null;
+  }
+
+  function listCases(lane) {
+    if (!validateProject(projectRoot)) throw new Error('The bundled SAP automation package is missing or incomplete. Reinstall the application.');
+    const manifest = caseManifest(lane);
+    const cases = Object.entries(manifest.cases || {})
+      .map(([caseId, entry]) => ({
+        caseId,
+        summary: String(entry.summary || ''),
+        writes: String(entry.writes || ''),
+        stages: Array.isArray(entry.stages) ? entry.stages.map(String) : [],
+        defaultStage: entry.defaultStage ? String(entry.defaultStage) : '',
+        hasFile: Boolean(findCaseMarkdownFile(lane, caseId, entry)),
+      }))
+      .sort((a, b) => a.caseId.localeCompare(b.caseId));
+    return { lane, cases };
+  }
+
+  function getCaseFile(lane, requestedCaseId) {
+    if (!validateProject(projectRoot)) throw new Error('The bundled SAP automation package is missing or incomplete. Reinstall the application.');
+    const caseId = normalizeCaseId(requestedCaseId);
+    const manifest = caseManifest(lane);
+    const entry = manifest.cases?.[caseId];
+    if (!entry) throw new Error(`${caseId} is not registered in the selected ${lane === 'gui' ? 'SAP GUI' : 'Fiori / WebGUI'} lane.`);
+    const filePath = findCaseMarkdownFile(lane, caseId, entry);
+    if (!filePath) throw new Error(`No documentation file was found for ${caseId}.`);
+    return {
+      caseId,
+      fileName: path.basename(filePath),
+      content: fs.readFileSync(filePath, 'utf8'),
+    };
+  }
+
+  function prepareCase(lane, requestedCaseId, requestedStage = '', requestedCredentials = null) {
     if (!validateProject(projectRoot)) throw new Error('The bundled SAP automation package is missing or incomplete. Reinstall the application.');
     const caseId = normalizeCaseId(requestedCaseId);
     const manifest = caseManifest(lane);
@@ -144,6 +198,13 @@ async function createSapTerminalManager(electronApp, claudeTokenStore) {
 
     const system = configuredDefaultSystem();
 
+    // Web lane only: a username/password typed into the sidebar overrides the
+    // registry's account for this run. The GUI lane logs on through the
+    // already-open SAP GUI session, so credentials typed here do not apply to it.
+    const username = typeof requestedCredentials?.username === 'string' ? requestedCredentials.username.trim() : '';
+    const password = typeof requestedCredentials?.password === 'string' ? requestedCredentials.password : '';
+    const credentials = lane === 'web' && username && password ? { username, password } : null;
+
     const confirmationId = crypto.randomUUID();
     const proposal = {
       confirmationId,
@@ -156,6 +217,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore) {
       hasStageArgument: Boolean(stage && stages.length),
       systemId: system.id,
       systemLabel: `${system.label} [${system.id}]`,
+      credentials,
     };
     confirmations.set(confirmationId, proposal);
     return {
@@ -166,6 +228,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore) {
       writes: proposal.writes,
       stage: proposal.stage,
       systemLabel: proposal.systemLabel,
+      usesCustomCredentials: Boolean(credentials),
     };
   }
 
@@ -205,7 +268,13 @@ async function createSapTerminalManager(electronApp, claudeTokenStore) {
     };
     const child = spawn('powershell.exe', args, {
       cwd: projectRoot,
-      env: { ...process.env, SAP_SYSTEM_ID: proposal.systemId, NO_COLOR: '1', FORCE_COLOR: '0' },
+      env: {
+        ...process.env,
+        SAP_SYSTEM_ID: proposal.systemId,
+        ...(proposal.credentials ? { SAP_WEB_USER: proposal.credentials.username, SAP_WEB_PASSWORD: proposal.credentials.password } : {}),
+        NO_COLOR: '1',
+        FORCE_COLOR: '0',
+      },
       windowsHide: true,
       shell: false,
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -287,6 +356,8 @@ async function createSapTerminalManager(electronApp, claudeTokenStore) {
         return { configured: true, defaultSystemId: '', systems: [] };
       }
     },
+    listCases,
+    getCaseFile,
     prepareCase,
     startConfirmedCase,
     getAuthStatus,

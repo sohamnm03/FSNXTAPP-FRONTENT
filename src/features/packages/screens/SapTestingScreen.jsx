@@ -52,8 +52,15 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   const [connectionStatus, setConnectionStatus] = useState('idle');
   const [sapSystems, setSapSystems] = useState([]);
   const [selectedSystemId, setSelectedSystemId] = useState('');
+  const [sapUsername, setSapUsername] = useState('');
+  const [sapPassword, setSapPassword] = useState('');
   const [connectionServerName, setConnectionServerName] = useState('');
   const [connectionProgress, setConnectionProgress] = useState(0);
+  const [cases, setCases] = useState([]);
+  const [isLoadingCases, setIsLoadingCases] = useState(false);
+  const [viewingCase, setViewingCase] = useState(null);
+  const [isLoadingCaseFile, setIsLoadingCaseFile] = useState(false);
+  const [caseFileError, setCaseFileError] = useState('');
   const conversationRef = useRef(null);
 
   useEffect(() => {
@@ -66,9 +73,11 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
         setTokenEnding(auth.tokenEnding || '');
         if (!project.configured) setError('The SAP automation package is missing. Reinstall the application.');
         else if (!auth.available) setError('The bundled AI Assistant runtime is missing. Reinstall the application.');
+        if (project.configured) loadCases(lane);
       })
       .catch((projectError) => setError(projectError.message))
       .finally(() => setIsCheckingAuth(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once on mount with the initial lane
   }, []);
 
   useEffect(() => {
@@ -97,6 +106,19 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     if (conversationRef.current) conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
   }, [messages, status]);
 
+  async function loadCases(nextLane) {
+    setIsLoadingCases(true);
+    setCases([]);
+    try {
+      const result = await sapTerminalService.listCases(nextLane);
+      setCases(result.cases || []);
+    } catch (listError) {
+      setError(listError.message);
+    } finally {
+      setIsLoadingCases(false);
+    }
+  }
+
   useEffect(() => {
     if (connectionStatus !== 'checking') return undefined;
     const progressTimer = window.setInterval(() => {
@@ -110,6 +132,11 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     return () => window.clearInterval(progressTimer);
   }, [connectionStatus]);
 
+  function webCredentials() {
+    const username = sapUsername.trim();
+    return lane === 'web' && username && sapPassword ? { username, password: sapPassword } : null;
+  }
+
   async function sendPrompt(event) {
     event.preventDefault();
     if (!connectionServerName) return;
@@ -122,7 +149,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     setPrompt('');
     try {
       if (directRequest) {
-        const proposal = await sapTerminalService.prepareCase(lane, directRequest.caseId, directRequest.stage);
+        const proposal = await sapTerminalService.prepareCase(lane, directRequest.caseId, directRequest.stage, webCredentials());
         setPendingConfirmation(proposal);
         return;
       }
@@ -201,6 +228,41 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     if (connectionStatus !== 'checking') setConnectionStatus('idle');
   }
 
+  async function openCase(testCase) {
+    setViewingCase({ caseId: testCase.caseId, summary: testCase.summary, fileName: '', content: '' });
+    setCaseFileError('');
+    setIsLoadingCaseFile(true);
+    try {
+      const file = await sapTerminalService.getCaseFile(lane, testCase.caseId);
+      setViewingCase((current) => (current && current.caseId === testCase.caseId ? { ...current, ...file } : current));
+    } catch (fileError) {
+      setCaseFileError(fileError.message);
+    } finally {
+      setIsLoadingCaseFile(false);
+    }
+  }
+
+  function closeCaseDialog() {
+    setViewingCase(null);
+    setCaseFileError('');
+  }
+
+  async function runViewedCase() {
+    if (!viewingCase) return;
+    const caseId = viewingCase.caseId;
+    closeCaseDialog();
+    setIsStarting(true);
+    setError('');
+    try {
+      const proposal = await sapTerminalService.prepareCase(lane, caseId, '', webCredentials());
+      setPendingConfirmation(proposal);
+    } catch (runError) {
+      setError(runError.message);
+    } finally {
+      setIsStarting(false);
+    }
+  }
+
   async function confirmRun() {
     if (!pendingConfirmation) return;
     setIsStarting(true);
@@ -248,6 +310,8 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   function selectLane(nextLane) {
     setLane(nextLane);
     newChat();
+    closeCaseDialog();
+    loadCases(nextLane);
   }
 
   async function uninstall() {
@@ -297,6 +361,31 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
               >
                 {sapSystems.map((system) => <option key={system.id} value={system.id}>{system.name}</option>)}
               </select>
+              <div className="sap-credential-fields">
+                <label className="sap-credential-field">
+                  <span>Username</span>
+                  <input
+                    autoComplete="off"
+                    disabled={isBusy}
+                    onChange={(event) => setSapUsername(event.target.value)}
+                    placeholder="SAP username"
+                    spellCheck="false"
+                    type="text"
+                    value={sapUsername}
+                  />
+                </label>
+                <label className="sap-credential-field">
+                  <span>Password</span>
+                  <input
+                    autoComplete="off"
+                    disabled={isBusy}
+                    onChange={(event) => setSapPassword(event.target.value)}
+                    placeholder="SAP password"
+                    type="password"
+                    value={sapPassword}
+                  />
+                </label>
+              </div>
               <AppButton
                 disabled={!isConfigured || isActive || !selectedSystemId}
                 loading={isTestingConnection}
@@ -318,6 +407,25 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                 {Object.entries(LANES).map(([laneId, details]) => (
                   <button aria-pressed={lane === laneId} className={lane === laneId ? 'is-active' : ''} disabled={isBusy} key={laneId} onClick={() => selectLane(laneId)} type="button">
                     <strong>{details.label}</strong><span>{details.description}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="sap-case-section">
+              <span className="sap-sidebar-label">{LANES[lane].label} test cases</span>
+              <div className="sap-case-list">
+                {isLoadingCases ? (
+                  <p>Loading test cases…</p>
+                ) : cases.length === 0 ? (
+                  <p>No test cases found for this lane.</p>
+                ) : cases.map((testCase) => (
+                  <button disabled={isBusy} key={testCase.caseId} onClick={() => openCase(testCase)} type="button">
+                    <span className="sap-case-list__number">{testCase.caseId.replace('TC-', '')}</span>
+                    <span>
+                      <strong>{testCase.caseId}</strong>
+                      <span>{testCase.summary}</span>
+                    </span>
                   </button>
                 ))}
               </div>
@@ -453,6 +561,43 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
           </section>
         </div>
       ) : null}
+      {viewingCase ? (
+        <div className="sap-case-backdrop" onClick={closeCaseDialog} role="presentation">
+          <section
+            aria-labelledby="sap-case-dialog-title"
+            aria-modal="true"
+            className="sap-case-dialog"
+            onClick={(event) => event.stopPropagation()}
+            role="dialog"
+          >
+            <header className="sap-case-dialog__header">
+              <div>
+                <p className="eyebrow">{LANES[lane].label.toUpperCase()} TEST CASE</p>
+                <h2 id="sap-case-dialog-title">{viewingCase.caseId}{viewingCase.summary ? ` — ${viewingCase.summary}` : ''}</h2>
+              </div>
+              <button aria-label="Close" className="sap-case-dialog__close" onClick={closeCaseDialog} type="button">×</button>
+            </header>
+            <div className="sap-case-dialog__body">
+              {isLoadingCaseFile ? (
+                <p className="sap-case-dialog__status">Loading test case…</p>
+              ) : caseFileError ? (
+                <p className="sap-case-dialog__status sap-case-dialog__status--error">{caseFileError}</p>
+              ) : (
+                <pre>{viewingCase.content}</pre>
+              )}
+            </div>
+            <div className="sap-case-dialog__actions">
+              <AppButton onClick={closeCaseDialog} title="Close" variant="secondary" />
+              <AppButton
+                disabled={!connectionServerName || isBusy || isStarting || isLoadingCaseFile || Boolean(caseFileError)}
+                loading={isStarting}
+                onClick={runViewedCase}
+                title="Run test case"
+              />
+            </div>
+          </section>
+        </div>
+      ) : null}
       {pendingConfirmation ? (
         <div className="sap-confirmation-backdrop" role="presentation">
           <section aria-labelledby="sap-confirmation-title" aria-modal="true" className="sap-confirmation-dialog" role="dialog">
@@ -475,6 +620,12 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                 <dt>Database writes</dt>
                 <dd>{pendingConfirmation.writes}</dd>
               </div>
+              {pendingConfirmation.lane === 'web' ? (
+                <div>
+                  <dt>Fiori logon</dt>
+                  <dd>{pendingConfirmation.usesCustomCredentials ? 'Using the username entered in the sidebar' : 'Using the default configured account'}</dd>
+                </div>
+              ) : null}
             </dl>
             <p className="sap-confirmation-warning">Confirm only if you intend to make these changes in the displayed SAP system. Cancel performs no write.</p>
             <div className="sap-confirmation-actions">
