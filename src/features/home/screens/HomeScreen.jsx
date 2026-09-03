@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import AppButton from '../../../components/common/AppButton';
+import BrandLogo from '../../../components/common/BrandLogo';
 import Icon from '../../../components/common/Icon';
 import ModuleCard from '../../../components/modules/ModuleCard';
 import ScreenContainer from '../../../components/common/ScreenContainer';
@@ -78,7 +79,7 @@ export default function HomeScreen({ onOpenModule }) {
     <ScreenContainer className="workspace-screen">
       <header className="app-header">
         <div className="app-header__brand">
-          <div className="brand-mark">FS</div>
+          <BrandLogo />
           <div>
             <strong>FSNXT Testing Application</strong>
             <span>Desktop Workspace</span>

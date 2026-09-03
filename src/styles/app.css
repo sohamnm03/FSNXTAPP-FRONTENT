@@ -43,6 +43,36 @@
   width: 82px;
 }
 
+.brand-logo {
+  align-items: center;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 11px;
+  box-shadow: 0 5px 14px rgba(18, 67, 111, 0.08);
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 40px;
+  justify-content: center;
+  width: 40px;
+}
+
+.brand-logo svg {
+  display: block;
+  height: 25px;
+  width: 25px;
+}
+
+.brand-logo--large {
+  border-radius: 15px;
+  height: 54px;
+  width: 54px;
+}
+
+.brand-logo--large svg {
+  height: 34px;
+  width: 34px;
+}
+
 .login-screen {
   background: var(--color-background);
   display: grid;
@@ -266,19 +296,19 @@
 }
 
 .app-button--primary:hover:not(:disabled) {
-  background: #125bc4;
+  background: #0564ba;
 }
 
 .app-button--secondary {
   background: var(--color-primary-light);
-  border-color: #b9d1f7;
+  border-color: #b9d9f3;
   color: var(--color-primary-dark);
 }
 
 .app-button--ghost {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.25);
-  color: var(--color-white);
+  background: var(--color-white);
+  border-color: var(--color-border);
+  color: var(--color-primary-dark);
 }
 
 .login-card__submit {
@@ -355,8 +385,9 @@
 
 .app-header {
   align-items: center;
-  background: var(--color-primary-dark);
-  color: var(--color-white);
+  background: rgba(248, 252, 255, 0.96);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
   display: flex;
   height: 72px;
   justify-content: space-between;
@@ -378,7 +409,7 @@
 }
 
 .app-header__brand span {
-  color: #bcd1f3;
+  color: var(--color-muted);
   font-size: 0.72rem;
   margin-top: 3px;
 }
@@ -509,8 +540,9 @@
 
 .module-screen__header {
   align-items: center;
-  background: var(--color-primary-dark);
-  color: var(--color-white);
+  background: rgba(248, 252, 255, 0.96);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
   display: flex;
   height: 72px;
   justify-content: space-between;
@@ -521,13 +553,20 @@
   align-items: center;
   background: transparent;
   border: 0;
-  color: var(--color-white);
+  border-radius: 9px;
+  color: var(--color-primary-dark);
   cursor: pointer;
   display: flex;
   font-weight: 700;
   gap: 9px;
   min-height: 44px;
-  padding: 0 8px;
+  padding: 0 12px;
+  transition: background var(--transition), color var(--transition);
+}
+
+.back-button:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
 }
 
 .module-placeholder {
@@ -601,7 +640,7 @@
 
 /* Desktop sign-in layout mirrors the product's connected testing identity. */
 .login-screen {
-  background: var(--color-white);
+  background: var(--color-background);
   display: grid;
   grid-template-columns: minmax(560px, 59%) minmax(390px, 41%);
   height: 100%;
@@ -611,8 +650,9 @@
 
 .login-brand {
   background:
-    radial-gradient(circle at 78% 48%, rgba(16, 83, 205, 0.64), transparent 38%),
-    linear-gradient(135deg, #031a4d 0%, #05296d 56%, #063a91 100%);
+    radial-gradient(circle at 78% 48%, rgba(45, 145, 224, 0.17), transparent 38%),
+    linear-gradient(145deg, #f8fcff 0%, #eaf6ff 58%, #dceeff 100%);
+  border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -623,7 +663,7 @@
 }
 
 .login-brand::after {
-  background: linear-gradient(90deg, transparent, rgba(53, 153, 255, 0.08));
+  background: linear-gradient(90deg, transparent, rgba(53, 153, 255, 0.06));
   content: "";
   inset: 0;
   pointer-events: none;
@@ -632,26 +672,12 @@
 
 .login-brand__header {
   align-items: center;
-  color: var(--color-white);
+  color: var(--color-text);
   display: flex;
   flex: 0 0 auto;
   gap: 15px;
   position: relative;
   z-index: 2;
-}
-
-.shield-logo {
-  color: var(--color-white);
-  display: block;
-  flex: 0 0 auto;
-  height: 52px;
-  width: 46px;
-}
-
-.shield-logo--large {
-  color: var(--color-primary);
-  height: 58px;
-  width: 52px;
 }
 
 .login-brand__header h1 {
@@ -663,7 +689,7 @@
 }
 
 .login-brand__header p {
-  color: #d4e2fb;
+  color: var(--color-muted);
   font-size: clamp(0.72rem, 1vw, 0.9rem);
   margin: 7px 0 0;
 }
@@ -690,8 +716,8 @@
 .login-panel {
   align-items: center;
   background:
-    radial-gradient(circle at 95% 5%, rgba(23, 105, 224, 0.035), transparent 32%),
-    var(--color-white);
+    radial-gradient(circle at 95% 5%, rgba(8, 115, 209, 0.08), transparent 32%),
+    var(--color-background);
   display: flex;
   height: 100%;
   justify-content: center;
@@ -700,12 +726,12 @@
 }
 
 .login-card {
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  box-shadow: var(--shadow-card);
   max-width: 430px;
-  padding: 0;
+  padding: 38px;
   width: 100%;
 }
 
@@ -719,7 +745,7 @@
 }
 
 .login-card__header h2 {
-  color: #111827;
+  color: var(--color-text);
   font-size: clamp(1.7rem, 2.3vw, 2.25rem);
   font-weight: 760;
   letter-spacing: -0.035em;
@@ -727,7 +753,7 @@
 }
 
 .login-card__header > p:last-child {
-  color: #4c566a;
+  color: var(--color-muted);
   font-size: 0.94rem;
   line-height: 1.4;
   margin: 0;
@@ -899,11 +925,6 @@
     padding-top: 24px;
   }
 
-  .login-brand__header .shield-logo {
-    height: 43px;
-    width: 39px;
-  }
-
   .login-card__header {
     margin-bottom: 20px;
   }
@@ -919,7 +940,7 @@
 
 /* Package workspace */
 .workspace-screen {
-  background: #f3f6fb;
+  background: var(--color-background);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -939,7 +960,7 @@
 }
 
 .package-sidebar {
-  background: var(--color-white);
+  background: #f2f9ff;
   border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
@@ -949,7 +970,7 @@
 }
 
 .package-sidebar h1 {
-  color: #101a2e;
+  color: var(--color-text);
   font-size: 1.8rem;
   letter-spacing: -0.035em;
   margin: 0 0 7px;
@@ -970,17 +991,17 @@
 }
 
 .package-menu-item {
-  background: #f9fbfe;
-  border: 1px solid #dce4ef;
+  background: rgba(255, 255, 255, 0.66);
+  border: 1px solid transparent;
   border-radius: 14px;
   padding: 8px;
   transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
 }
 
 .package-menu-item--selected {
-  background: #f2f7ff;
-  border-color: #8ab8f7;
-  box-shadow: 0 0 0 3px rgba(23, 105, 224, 0.07);
+  background: #deeffd;
+  border-color: #c8e2f7;
+  box-shadow: inset 4px 0 0 var(--color-primary);
 }
 
 .package-menu-item__main {
@@ -999,7 +1020,7 @@
 .package-menu-item__icon {
   align-items: center;
   background: var(--color-primary-light);
-  border-radius: 10px;
+  border-radius: 50%;
   color: var(--color-primary);
   display: flex;
   height: 42px;
@@ -1101,6 +1122,9 @@
 }
 
 .package-detail {
+  background:
+    radial-gradient(circle at 85% 12%, rgba(55, 154, 226, 0.12), transparent 30%),
+    var(--color-background);
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -1126,7 +1150,7 @@
     radial-gradient(circle at 50% 16%, rgba(23, 105, 224, 0.08), transparent 28%),
     var(--color-white);
   border: 1px solid var(--color-border);
-  border-radius: 24px;
+  border-radius: 16px;
   box-shadow: var(--shadow-card);
   display: flex;
   flex: 1;
@@ -1177,7 +1201,7 @@
 }
 
 .package-access-card h2 {
-  color: #101a2e;
+  color: var(--color-text);
   font-size: clamp(2rem, 3vw, 2.8rem);
   letter-spacing: -0.045em;
   margin: 17px 0 12px;
@@ -1265,6 +1289,9 @@
 }
 
 .web-testing-layout {
+  background:
+    radial-gradient(circle at 92% 8%, rgba(55, 154, 226, 0.1), transparent 27%),
+    var(--color-background);
   display: grid;
   gap: 22px;
   grid-template-columns: minmax(390px, 0.86fr) minmax(430px, 1.14fr);
@@ -1276,7 +1303,7 @@
 .web-testing-panel {
   background: var(--color-white);
   border: 1px solid var(--color-border);
-  border-radius: 18px;
+  border-radius: 14px;
   box-shadow: var(--shadow-soft);
   min-height: 0;
   overflow-y: auto;
@@ -1299,7 +1326,7 @@
 
 .web-testing-heading h1,
 .run-status-row h2 {
-  color: #101a2e;
+  color: var(--color-text);
   letter-spacing: -0.035em;
   margin: 2px 0 5px;
 }
@@ -1520,7 +1547,7 @@
   padding: 0 13px;
 }
 
-/* SAP Testing - Claude Code conversation */
+/* SAP Testing - AI Assistant conversation */
 .sap-testing-screen { overflow: hidden; }
 
 .sap-chat-layout {
@@ -1532,7 +1559,7 @@
 }
 
 .sap-chat-sidebar {
-  background: var(--color-white);
+  background: #f2f9ff;
   border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
@@ -1541,8 +1568,91 @@
   padding: 26px 22px;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .sap-chat-layout {
+    grid-template-columns: 84px minmax(0, 1fr);
+  }
+
+  .sap-chat-sidebar {
+    box-shadow: none;
+    padding: 20px 10px;
+    position: relative;
+    transition: box-shadow 180ms ease, padding 180ms ease, width 180ms ease;
+    width: 84px;
+    z-index: 5;
+  }
+
+  .sap-chat-sidebar:hover,
+  .sap-chat-sidebar:focus-within {
+    box-shadow: 12px 0 28px rgba(8, 28, 64, 0.14);
+    padding: 26px 22px;
+    width: 320px;
+  }
+
+  .sap-chat-sidebar .web-testing-heading {
+    margin-bottom: 0;
+  }
+
+  .sap-chat-sidebar:hover .web-testing-heading,
+  .sap-chat-sidebar:focus-within .web-testing-heading {
+    margin-bottom: 24px;
+  }
+
+  .sap-chat-sidebar .web-testing-heading > div:last-child,
+  .sap-chat-sidebar .sap-connection-section,
+  .sap-chat-sidebar .sap-lane-section,
+  .sap-chat-sidebar .sap-sidebar-actions {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 100ms ease;
+    width: 276px;
+  }
+
+  .sap-chat-sidebar:hover .web-testing-heading > div:last-child,
+  .sap-chat-sidebar:hover .sap-connection-section,
+  .sap-chat-sidebar:hover .sap-lane-section,
+  .sap-chat-sidebar:hover .sap-sidebar-actions,
+  .sap-chat-sidebar:focus-within .web-testing-heading > div:last-child,
+  .sap-chat-sidebar:focus-within .sap-connection-section,
+  .sap-chat-sidebar:focus-within .sap-lane-section,
+  .sap-chat-sidebar:focus-within .sap-sidebar-actions {
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: 80ms;
+  }
+
+  .sap-chat-sidebar .web-testing-heading .module-placeholder__icon {
+    height: 62px;
+    width: 62px;
+  }
+
+  .sap-chat-sidebar:not(:hover):not(:focus-within) .sap-sidebar-content {
+    overflow-y: hidden;
+    padding-right: 0;
+  }
+}
+
 .sap-sidebar-content {
+  flex: 1;
   min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-color: #a9c9e5 transparent;
+  scrollbar-width: thin;
+}
+
+.sap-sidebar-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sap-sidebar-content::-webkit-scrollbar-thumb {
+  background: #a9c9e5;
+  border-radius: 99px;
+}
+
+.sap-sidebar-content::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .sap-chat-sidebar .web-testing-heading {
@@ -1847,7 +1957,9 @@
 }
 
 .sap-chat-panel {
-  background: #f4f7fc;
+  background:
+    radial-gradient(circle at 92% 8%, rgba(55, 154, 226, 0.1), transparent 27%),
+    var(--color-background);
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -1871,7 +1983,7 @@
 .sap-conversation {
   background: var(--color-white);
   border: 1px solid var(--color-border);
-  border-radius: 16px;
+  border-radius: 14px;
   box-shadow: var(--shadow-soft);
   flex: 1;
   min-height: 0;
@@ -1943,7 +2055,7 @@
 .sap-prompt-form {
   background: var(--color-white);
   border: 1px solid var(--color-border);
-  border-radius: 14px;
+  border-radius: 12px;
   box-shadow: var(--shadow-soft);
   flex: 0 0 auto;
   margin-top: 14px;
@@ -2064,8 +2176,8 @@
   justify-content: flex-end;
 }
 
-@media (max-width: 1040px) {
-  .sap-chat-layout { grid-template-columns: minmax(250px, 300px) minmax(430px, 1fr); }
+@media (max-width: 1040px) and (hover: hover) and (pointer: fine) {
+  .sap-chat-layout { grid-template-columns: 84px minmax(430px, 1fr); }
   .sap-chat-panel { padding: 18px; }
 
   .web-testing-layout {

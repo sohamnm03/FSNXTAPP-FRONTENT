@@ -1,19 +1,3 @@
-function ShieldLogo({ large = false }) {
-  return (
-    <svg
-      aria-hidden="true"
-      className={large ? 'shield-logo shield-logo--large' : 'shield-logo'}
-      viewBox="0 0 64 72"
-    >
-      <path d="M32 3 58 13v20c0 17-10.8 29.5-26 36C16.8 62.5 6 50 6 33V13L32 3Z" fill="currentColor" />
-      <path d="M32 10 51 17v16c0 12.7-7.5 22.5-19 28-11.5-5.5-19-15.3-19-28V17l19-7Z" fill="#0a3b91" />
-      <path d="m23 34 6 6 13-14" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="5" />
-    </svg>
-  );
-}
-
-export { ShieldLogo };
-
 export default function LoginIllustration() {
   return (
     <svg

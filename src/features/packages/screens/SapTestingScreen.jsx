@@ -8,12 +8,12 @@ import { sapTerminalService } from '../services/sapTerminalService';
 
 const FINAL_STATUSES = new Set(['completed', 'failed', 'stopped']);
 const LANES = {
-  gui: { label: 'SAP GUI', description: 'SAP GUI for Windows' },
-  web: { label: 'Fiori / WebGUI', description: 'Browser-based SAP testing' },
+  gui: { label: 'GUI Lane', description: 'SAP GUI for Windows' },
+  web: { label: 'Web Lane', description: 'Browser-based SAP testing' },
 };
 
 function statusLabel(status, source) {
-  return ({ idle: 'Ready', running: source === 'direct' ? 'Test is running' : 'Claude is working', completed: 'Ready', failed: 'Needs attention', stopped: 'Stopped', stopping: 'Stopping' })[status] || 'Ready';
+  return ({ idle: 'Ready', running: source === 'direct' ? 'Test is running' : 'AI Assistant is working', completed: 'Ready', failed: 'Needs attention', stopped: 'Stopped', stopping: 'Stopping' })[status] || 'Ready';
 }
 
 function explicitRunRequest(text) {
@@ -61,7 +61,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
         setSelectedSystemId(project.defaultSystemId || project.systems?.[0]?.id || '');
         setIsAuthenticated(Boolean(auth.loggedIn));
         if (!project.configured) setError('The SAP automation package is missing. Reinstall the application.');
-        else if (!auth.available) setError('The bundled Claude Code runtime is missing. Reinstall the application.');
+        else if (!auth.available) setError('The bundled AI Assistant runtime is missing. Reinstall the application.');
       })
       .catch((projectError) => setError(projectError.message))
       .finally(() => setIsCheckingAuth(false));
@@ -80,7 +80,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
           setSessionId(run.sessionId || '');
           setMessages((current) => [...current, { id: `${run.id}-assistant`, role: run.source === 'direct' ? 'runner' : 'assistant', text: run.response || 'Completed.' }]);
         } else if (run.status === 'failed') {
-          setError(run.error || 'Claude Code could not complete the request.');
+          setError(run.error || 'AI Assistant could not complete the request.');
         }
       } catch (pollError) {
         if (!cancelled) setError(pollError.message);
@@ -244,11 +244,11 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     <ScreenContainer className="module-screen sap-testing-screen">
       <header className="module-screen__header">
         <button className="back-button" onClick={onBack} type="button"><Icon name="arrowLeft" /><span>Back to workspace</span></button>
-        <strong>SAP Testing with Claude Code</strong>
+        <strong>SAP Testing with AI Assistant</strong>
       </header>
 
       <main className="sap-chat-layout">
-        <aside className="sap-chat-sidebar">
+        <aside aria-label="SAP testing controls" className="sap-chat-sidebar">
           <div className="sap-sidebar-content">
             <div className="web-testing-heading">
               <div className="module-placeholder__icon"><Icon name="building" size={38} /></div>
@@ -307,9 +307,9 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
 
         <section className="sap-chat-panel">
           <div className="run-status-row sap-chat-header">
-            <div><p className="eyebrow">CLAUDE CODE TERMINAL</p><h2>SAP automation assistant</h2></div>
+            <div><p className="eyebrow">AI ASSISTANT TERMINAL</p><h2>SAP automation assistant</h2></div>
             <div className="sap-chat-header-actions">
-              {!isCheckingAuth && !isAuthenticated ? <AppButton loading={isSigningIn} onClick={signIn} title="Sign in to Claude" variant="secondary" /> : null}
+              {!isCheckingAuth && !isAuthenticated ? <AppButton loading={isSigningIn} onClick={signIn} title="Sign in to AI Assistant" variant="secondary" /> : null}
               <span className={`run-status ${connectionServerName ? 'run-status--connected' : `run-status--${status}`}`}>
                 {isAuthenticated ? connectionServerName
                   ? `Connected to ${connectionServerName}`
@@ -320,18 +320,18 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
           {error ? <div className="alert alert--error" role="alert">{error}</div> : null}
           <div className="sap-conversation" ref={conversationRef}>
             {messages.length === 0 ? (
-              <div className="sap-chat-welcome"><Icon name="toolbox" size={36} /><h3>{isAuthenticated ? 'What would you like to test?' : 'Sign in to Claude to begin'}</h3><p>{LANES[lane].description} is selected.</p></div>
+              <div className="sap-chat-welcome"><Icon name="toolbox" size={36} /><h3>{isAuthenticated ? 'What would you like to test?' : 'Sign in to AI Assistant to begin'}</h3><p>{LANES[lane].description} is selected.</p></div>
             ) : messages.map((message) => (
               <article className={`sap-message sap-message--${message.role}`} key={message.id}>
-                <span>{message.role === 'user' ? 'You' : message.role === 'runner' ? 'Test runner' : 'Claude'}</span><div>{message.text}</div>
+                <span>{message.role === 'user' ? 'You' : message.role === 'runner' ? 'Test runner' : 'AI Assistant'}</span><div>{message.text}</div>
               </article>
             ))}
-            {isActive ? <div className="sap-thinking"><span /><span /><span /> Claude Code is working in the SAP project…</div> : null}
+            {isActive ? <div className="sap-thinking"><span /><span /><span /> AI Assistant is working in the SAP project…</div> : null}
           </div>
           <form className="sap-prompt-form" onSubmit={sendPrompt}>
             <textarea disabled={!isConfigured || !isAuthenticated || isBusy} onChange={(event) => setPrompt(event.target.value)} onKeyDown={(event) => {
               if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); }
-            }} placeholder="Ask Claude Code to run or inspect an SAP test…" value={prompt} />
+            }} placeholder="Ask the AI Assistant to run or inspect an SAP test…" value={prompt} />
             <div>
               <span>Enter to send · Shift+Enter for a new line</span>
               {isActive ? <AppButton loading={isStopping} onClick={stopRun} title="Stop" variant="secondary" /> : (

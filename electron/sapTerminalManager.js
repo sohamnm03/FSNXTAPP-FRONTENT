@@ -42,14 +42,14 @@ function parseClaudeResult(stdout, stderr) {
     return {
       response: typeof payload.result === 'string' ? payload.result.trim() : '',
       sessionId: payload.session_id || '',
-      error: payload.is_error ? (payload.result || 'Claude Code could not complete the request.') : '',
+      error: payload.is_error ? (payload.result || 'AI Assistant could not complete the request.') : '',
     };
   } catch {
     const fallback = stdout.trim() || stderr.trim();
     return {
       response: fallback,
       sessionId: '',
-      error: fallback || 'Claude Code returned an unreadable response.',
+      error: fallback || 'AI Assistant returned an unreadable response.',
     };
   }
 }
@@ -65,7 +65,7 @@ async function createSapTerminalManager(electronApp) {
 
   function requireRun(runId) {
     const run = runs.get(runId);
-    if (!run) throw new Error('Claude Code request not found.');
+    if (!run) throw new Error('AI Assistant request not found.');
     return run;
   }
 
@@ -334,7 +334,7 @@ async function createSapTerminalManager(electronApp) {
       });
     },
     login() {
-      if (authProcess) throw new Error('Claude sign-in is already in progress.');
+      if (authProcess) throw new Error('AI Assistant sign-in is already in progress.');
       return new Promise((resolve, reject) => {
         let stderr = '';
         const child = spawn(claudePath, ['auth', 'login', '--claudeai'], {
@@ -348,18 +348,18 @@ async function createSapTerminalManager(electronApp) {
         child.once('error', (error) => {
           authProcess = null;
           reject(new Error(error.code === 'ENOENT'
-            ? 'The bundled Claude Code runtime is missing. Reinstall the application.'
+            ? 'The bundled AI Assistant runtime is missing. Reinstall the application.'
             : error.message));
         });
         child.once('close', async (code) => {
           authProcess = null;
           if (code !== 0) {
-            reject(new Error(stderr.trim() || 'Claude sign-in was not completed.'));
+            reject(new Error(stderr.trim() || 'AI Assistant sign-in was not completed.'));
             return;
           }
           const status = await getAuthStatus();
           if (!status.loggedIn) {
-            reject(new Error('Claude sign-in was not completed.'));
+            reject(new Error('AI Assistant sign-in was not completed.'));
             return;
           }
           resolve(status);
@@ -368,8 +368,8 @@ async function createSapTerminalManager(electronApp) {
     },
     start(prompt, previousSessionId = '', lane = 'gui') {
       if (!validateProject(projectRoot)) throw new Error('The bundled SAP automation package is missing or incomplete. Reinstall the application.');
-      if (typeof prompt !== 'string' || !prompt.trim()) throw new Error('Type what you want Claude Code to do.');
-      if (previousSessionId && !/^[0-9a-f-]{36}$/i.test(previousSessionId)) throw new Error('The Claude Code session is invalid. Start a new chat.');
+      if (typeof prompt !== 'string' || !prompt.trim()) throw new Error('Type what you want the AI Assistant to do.');
+      if (previousSessionId && !/^[0-9a-f-]{36}$/i.test(previousSessionId)) throw new Error('The AI Assistant session is invalid. Start a new chat.');
       if (!['gui', 'web'].includes(lane)) throw new Error('Select SAP GUI or Fiori / WebGUI testing.');
 
       const laneGuidance = lane === 'gui'
@@ -411,7 +411,7 @@ async function createSapTerminalManager(electronApp) {
       child.once('error', (error) => {
         run.status = 'failed';
         run.error = error.code === 'ENOENT'
-          ? 'The bundled Claude Code runtime is missing. Reinstall the application.'
+          ? 'The bundled AI Assistant runtime is missing. Reinstall the application.'
           : error.message;
       });
       child.once('close', (code) => {
@@ -425,7 +425,7 @@ async function createSapTerminalManager(electronApp) {
         const parsed = parseClaudeResult(run.stdout, run.stderr);
         run.response = parsed.response;
         run.sessionId = parsed.sessionId || run.sessionId;
-        run.error = parsed.error || (code === 0 ? '' : 'Claude Code could not complete the request. Check that you are signed in.');
+        run.error = parsed.error || (code === 0 ? '' : 'AI Assistant could not complete the request. Check that you are signed in.');
         run.status = code === 0 && !run.error ? 'completed' : 'failed';
       });
       return publicRun(run);
@@ -435,7 +435,7 @@ async function createSapTerminalManager(electronApp) {
     },
     stop(runId) {
       const run = requireRun(runId);
-      if (!run.process || FINAL_STATUSES.has(run.status)) throw new Error('Claude Code has already finished responding.');
+      if (!run.process || FINAL_STATUSES.has(run.status)) throw new Error('AI Assistant has already finished responding.');
       run.status = 'stopping';
       run.process.kill();
       return publicRun(run);

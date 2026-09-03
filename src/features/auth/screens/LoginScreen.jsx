@@ -3,9 +3,10 @@ import { GoogleLogin } from '@react-oauth/google';
 
 import AppButton from '../../../components/common/AppButton';
 import AppInput from '../../../components/common/AppInput';
+import BrandLogo from '../../../components/common/BrandLogo';
 import Icon from '../../../components/common/Icon';
 import ScreenContainer from '../../../components/common/ScreenContainer';
-import LoginIllustration, { ShieldLogo } from '../components/LoginIllustration';
+import LoginIllustration from '../components/LoginIllustration';
 import { useAuth } from '../context/AuthContext';
 import { validateLogin } from '../validation/loginValidation';
 
@@ -86,7 +87,7 @@ export default function LoginScreen() {
     <ScreenContainer className="login-screen">
       <section className="login-brand" aria-label="Application introduction">
         <header className="login-brand__header">
-          <ShieldLogo />
+          <BrandLogo large />
           <div>
             <h1>FSNXT Testing Application</h1>
             <p>One platform for intelligent enterprise testing</p>
@@ -100,7 +101,7 @@ export default function LoginScreen() {
       <section className="login-panel">
         <form className="login-card" noValidate onSubmit={handleSubmit}>
           <header className="login-card__header">
-            <div className="login-card__mobile-logo"><ShieldLogo large /></div>
+            <div className="login-card__mobile-logo"><BrandLogo large /></div>
             <h2>Welcome Back</h2>
             <p>Sign in to continue</p>
           </header>
