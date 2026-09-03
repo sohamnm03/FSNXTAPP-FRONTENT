@@ -2,6 +2,7 @@ const { spawn } = require('child_process');
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const { createSapAutomationWorkspace } = require('./sapAutomationWorkspace');
 
 const FINAL_STATUSES = new Set(['completed', 'failed', 'stopped']);
 const CONFIRMATION_TTL_MS = 10 * 60 * 1000;
@@ -53,15 +54,14 @@ function parseClaudeResult(stdout, stderr) {
   }
 }
 
-function createSapTerminalManager(electronApp) {
+async function createSapTerminalManager(electronApp) {
   const runs = new Map();
   const confirmations = new Map();
   const claudePath = claudeExecutable(electronApp);
+  const workspace = await createSapAutomationWorkspace(electronApp);
   let authProcess = null;
   let connectionCheckProcess = null;
-  const projectRoot = electronApp.isPackaged
-    ? path.join(process.resourcesPath, 'sap-testing-automation')
-    : path.resolve(__dirname, '..', 'packages', 'sap-testing-automation');
+  const projectRoot = workspace.projectRoot;
 
   function requireRun(runId) {
     const run = runs.get(runId);
@@ -444,6 +444,7 @@ function createSapTerminalManager(electronApp) {
       authProcess?.kill();
       connectionCheckProcess?.kill();
       runs.forEach((run) => run.process?.kill());
+      workspace.cleanup();
     },
   };
 }

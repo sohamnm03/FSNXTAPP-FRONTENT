@@ -17,9 +17,10 @@
     "build": "vite build",
     "preview": "vite preview",
     "dist": "npm run package:win",
-    "package:win": "npm run build && electron-builder --win",
+    "package:win": "npm run build && node scripts/packageWindows.js",
     "lint": "eslint .",
     "test:desktop-auth": "node --test electron/googleDesktopAuth.test.js",
+    "test:sap-payload": "node --test electron/sapAutomationPayload.test.js",
     "check:syntax": "node scripts/checkSyntax.js",
     "check": "npm run lint && npm run check:syntax && npm run build"
   },
@@ -51,6 +52,8 @@
     "files": [
       "dist/**/*",
       "electron/**/*",
+      "!electron/**/*.test.js",
+      "scripts/sapAutomationPayload.js",
       "packages/**/*",
       "!packages/sap-testing-automation/**/*",
       "!packages/**/.pytest_cache{,/**/*}",
@@ -60,23 +63,8 @@
     ],
     "extraResources": [
       {
-        "from": "packages/sap-testing-automation",
-        "to": "sap-testing-automation",
-        "filter": [
-          "**/*",
-          "!**/.env",
-          "!**/settings.local.json",
-          "!**/.venv/**/*",
-          "!**/.auth/**/*",
-          "!**/__pycache__/**/*",
-          "!**/*.pyc",
-          "!results/**/*",
-          "!evidence/**/*",
-          "!logs/**/*",
-          "!test-results/**/*",
-          "!**/playwright-report/**/*",
-          "!**/blob-report/**/*"
-        ]
+        "from": ".build/sap-automation/sap-testing-automation.fsnxtpkg",
+        "to": "sap-testing-automation.fsnxtpkg"
       }
     ],
     "win": {

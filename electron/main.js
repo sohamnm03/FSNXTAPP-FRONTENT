@@ -23,8 +23,8 @@ function registerAiAgentsHandlers() {
   ));
 }
 
-function registerSapTerminalHandlers() {
-  sapTerminalManager = createSapTerminalManager(app);
+async function registerSapTerminalHandlers() {
+  sapTerminalManager = await createSapTerminalManager(app);
   ipcMain.handle('sap-terminal:get-project', () => sapTerminalManager.getProject());
   ipcMain.handle('sap-terminal:get-auth-status', () => sapTerminalManager.getAuthStatus());
   ipcMain.handle('sap-terminal:test-connection', (_event, systemId) => sapTerminalManager.testConnection(systemId));
@@ -104,14 +104,17 @@ function createWindow() {
   }
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   registerAiAgentsHandlers();
   registerGoogleAuthHandlers();
-  registerSapTerminalHandlers();
+  await registerSapTerminalHandlers();
   createWindow();
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+}).catch((error) => {
+  dialog.showErrorBox('FSNXT could not start', error.message);
+  app.quit();
 });
 
 app.on('window-all-closed', () => {
