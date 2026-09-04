@@ -78,9 +78,20 @@ async function decryptFile(payloadPath, destinationPath, key) {
   );
 }
 
+function resolveTarExecutable() {
+  // Git for Windows and other tools ship a GNU tar that shadows the OS's own
+  // tar.exe on PATH. GNU tar treats a "C:\..." archive path as a remote
+  // "host:file" spec and fails with "Cannot connect to C: resolve failed".
+  // Windows' built-in tar.exe (System32, bsdtar) handles drive letters
+  // correctly, so prefer it explicitly instead of relying on PATH order.
+  const systemTar = path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'tar.exe');
+  return fs.existsSync(systemTar) ? systemTar : 'tar.exe';
+}
+
 module.exports = {
   deriveKey,
   decryptFile,
   encryptFile,
   readHeader,
+  resolveTarExecutable,
 };

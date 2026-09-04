@@ -7,7 +7,7 @@ node_modules/
 .expo/
 dist/
 release/
-.build/sap-automation/
+.build/
 electron/sapAutomationKey.generated.js
 web-build/
 expo-env.d.ts

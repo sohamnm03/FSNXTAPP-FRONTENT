@@ -23,6 +23,15 @@ function validateProject(projectRoot) {
   ].every((candidate) => fs.existsSync(candidate));
 }
 
+// The GUI lane drives SAP through pywin32, so it needs a real interpreter. The
+// packaged app carries a self-contained one because the repo's venv borrows the
+// developer's Python install and cannot be copied to another machine.
+function bundledPython(electronApp) {
+  if (!electronApp.isPackaged) return '';
+  const candidate = path.join(process.resourcesPath, 'python', 'python.exe');
+  return fs.existsSync(candidate) ? candidate : '';
+}
+
 function claudeExecutable(electronApp) {
   const bundled = electronApp.isPackaged
     ? path.join(process.resourcesPath, 'app.asar.unpacked', 'node_modules', '@anthropic-ai', 'claude-code', 'bin', 'claude.exe')
@@ -58,6 +67,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore) {
   const runs = new Map();
   const confirmations = new Map();
   const claudePath = claudeExecutable(electronApp);
+  const pythonPath = bundledPython(electronApp);
   const workspace = await createSapAutomationWorkspace(electronApp);
   let connectionCheckProcess = null;
   const claudeConfigDir = path.join(electronApp.getPath('userData'), 'claude-runtime');
@@ -66,6 +76,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore) {
 
   function claudeEnvironment(token) {
     const env = { ...process.env, NO_COLOR: '1', FORCE_COLOR: '0', CLAUDE_CONFIG_DIR: claudeConfigDir };
+    if (pythonPath) env.FSNXT_PYTHON = pythonPath;
     delete env.ANTHROPIC_API_KEY;
     delete env.ANTHROPIC_AUTH_TOKEN;
     delete env.CLAUDE_CODE_OAUTH_TOKEN;
@@ -272,6 +283,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore) {
         ...process.env,
         SAP_SYSTEM_ID: proposal.systemId,
         ...(proposal.credentials ? { SAP_WEB_USER: proposal.credentials.username, SAP_WEB_PASSWORD: proposal.credentials.password } : {}),
+        ...(pythonPath ? { FSNXT_PYTHON: pythonPath } : {}),
         NO_COLOR: '1',
         FORCE_COLOR: '0',
       },

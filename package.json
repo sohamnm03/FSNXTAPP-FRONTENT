@@ -65,11 +65,15 @@
       {
         "from": ".build/sap-automation/sap-testing-automation.fsnxtpkg",
         "to": "sap-testing-automation.fsnxtpkg"
+      },
+      {
+        "from": ".build/python-runtime/python",
+        "to": "python"
       }
     ],
     "win": {
       "target": [
-        "nsis",
+        "nsis", 
         "portable"
       ]
     }

@@ -2,7 +2,8 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { encryptFile } = require('./sapAutomationPayload');
+const { encryptFile, resolveTarExecutable } = require('./sapAutomationPayload');
+const { buildPythonRuntime } = require('./buildPythonRuntime');
 
 const projectRoot = path.resolve(__dirname, '..');
 const sourceRoot = path.join(projectRoot, 'packages', 'sap-testing-automation');
@@ -33,12 +34,13 @@ async function main() {
   fs.rmSync(buildRoot, { recursive: true, force: true });
   fs.rmSync(generatedKeyPath, { force: true });
   const password = requireBuildPassword();
+  await buildPythonRuntime();
   const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'fsnxt-sap-build-'));
   const archivePath = path.join(temporaryRoot, 'sap-testing-automation.tar.gz');
   fs.mkdirSync(buildRoot, { recursive: true });
 
   try {
-    run('tar', [
+    run(resolveTarExecutable(), [
       '-czf', archivePath,
       '--exclude=*/.env',
       '--exclude=*/settings.local.json',

@@ -109,7 +109,12 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $root   = Split-Path -Parent $PSScriptRoot
-$python = Join-Path $root 'tools\mcp-sap-gui\.venv\Scripts\python.exe'
+
+# The packaged desktop app ships its own relocatable interpreter and names it in
+# FSNXT_PYTHON, because the vendored venv is not portable off this machine. A
+# source checkout has no such variable and uses the venv.
+$python = if ($env:FSNXT_PYTHON) { $env:FSNXT_PYTHON }
+          else { Join-Path $root 'tools\mcp-sap-gui\.venv\Scripts\python.exe' }
 
 if (-not (Test-Path $python)) {
     Write-Host ''

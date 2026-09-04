@@ -2,7 +2,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { decryptFile } = require('../scripts/sapAutomationPayload');
+const { decryptFile, resolveTarExecutable } = require('../scripts/sapAutomationPayload');
 
 function removeRuntimeDirectory(runtimeRoot) {
   if (!runtimeRoot) return;
@@ -39,7 +39,7 @@ function removeStaleRuntimeDirectories() {
 }
 
 function extractArchive(archivePath, destinationPath) {
-  const result = spawnSync('tar.exe', ['-xzf', archivePath, '-C', destinationPath], {
+  const result = spawnSync(resolveTarExecutable(), ['-xzf', archivePath, '-C', destinationPath], {
     windowsHide: true,
     shell: false,
     stdio: ['ignore', 'ignore', 'pipe'],
