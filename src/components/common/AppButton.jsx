@@ -3,6 +3,7 @@ import Icon from './Icon';
 export default function AppButton({
   disabled = false,
   icon,
+  iconElement,
   loading = false,
   onClick,
   title,
@@ -21,7 +22,8 @@ export default function AppButton({
       type={type}
     >
       {loading ? <span aria-hidden="true" className="spinner spinner--button" /> : null}
-      {!loading && icon ? <Icon name={icon} size={19} /> : null}
+      {!loading && iconElement ? iconElement : null}
+      {!loading && !iconElement && icon ? <Icon name={icon} size={19} /> : null}
       <span>{title}</span>
     </button>
   );

@@ -58,6 +58,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   const [connectionProgress, setConnectionProgress] = useState(0);
   const [cases, setCases] = useState([]);
   const [isLoadingCases, setIsLoadingCases] = useState(false);
+  const [selectedCase, setSelectedCase] = useState(null);
   const [viewingCase, setViewingCase] = useState(null);
   const [isLoadingCaseFile, setIsLoadingCaseFile] = useState(false);
   const [caseFileError, setCaseFileError] = useState('');
@@ -111,7 +112,11 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     setCases([]);
     try {
       const result = await sapTerminalService.listCases(nextLane);
-      setCases(result.cases || []);
+      const nextCases = result.cases || [];
+      setCases(nextCases);
+      setSelectedCase((current) => nextCases.find((testCase) => testCase.caseId === current?.caseId)
+        || nextCases[0]
+        || null);
     } catch (listError) {
       setError(listError.message);
     } finally {
@@ -229,6 +234,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   }
 
   async function openCase(testCase) {
+    setSelectedCase(testCase);
     setViewingCase({ caseId: testCase.caseId, summary: testCase.summary, fileName: '', content: '' });
     setCaseFileError('');
     setIsLoadingCaseFile(true);
@@ -310,6 +316,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   function selectLane(nextLane) {
     setLane(nextLane);
     newChat();
+    setSelectedCase(null);
     closeCaseDialog();
     loadCases(nextLane);
   }
@@ -328,6 +335,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   const isActive = status === 'running' || status === 'stopping';
   const isTestingConnection = connectionStatus === 'checking';
   const isBusy = isActive || isTestingConnection;
+  const visibleSelectedCase = connectionServerName ? selectedCase : null;
 
   return (
     <ScreenContainer className="module-screen sap-testing-screen">
@@ -343,7 +351,9 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
               <div className="module-placeholder__icon"><Icon name="building" size={38} /></div>
               <div>
                 <p className="eyebrow">SAP TESTING</p>
-                <p>Choose a testing mode, then type what you want to test.</p>
+                <p>{connectionServerName
+                  ? 'Choose a testing mode, then select a test case.'
+                  : 'Enter your SAP credentials to connect and begin testing.'}</p>
               </div>
             </div>
 
@@ -361,6 +371,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
               >
                 {sapSystems.map((system) => <option key={system.id} value={system.id}>{system.name}</option>)}
               </select>
+              <span className="sap-sidebar-label">SAP credentials</span>
               <div className="sap-credential-fields">
                 <label className="sap-credential-field">
                   <span>Username</span>
@@ -387,49 +398,71 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                 </label>
               </div>
               <AppButton
-                disabled={!isConfigured || isActive || !selectedSystemId}
+                disabled={!isConfigured || isActive || !selectedSystemId || !sapUsername.trim() || !sapPassword.trim()}
                 loading={isTestingConnection}
                 onClick={testConnection}
                 title={isTestingConnection ? 'Testing connection...' : 'Test Connection'}
                 variant="secondary"
               />
-              {connectionStatus === 'connected' ? (
-                <p className="sap-connection-result sap-connection-result--connected" role="status">Connection established</p>
-              ) : null}
               {connectionStatus === 'disconnected' ? (
                 <p className="sap-connection-result sap-connection-result--disconnected" role="status">Not connected</p>
               ) : null}
             </div>
 
-            <div className="sap-lane-section">
-              <span className="sap-sidebar-label">Testing mode</span>
-              <div className="sap-lane-switch" role="group" aria-label="Testing mode">
-                {Object.entries(LANES).map(([laneId, details]) => (
-                  <button aria-pressed={lane === laneId} className={lane === laneId ? 'is-active' : ''} disabled={isBusy} key={laneId} onClick={() => selectLane(laneId)} type="button">
-                    <strong>{details.label}</strong><span>{details.description}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
+            {connectionServerName ? (
+              <>
+                <div className="sap-lane-section">
+                  <div className="sap-section-label">
+                    <span className="sap-sidebar-label">Testing mode</span>
+                    <Icon name="info" size={14} />
+                  </div>
+                  <div className="sap-lane-switch" role="group" aria-label="Testing mode">
+                    {Object.entries(LANES).map(([laneId, details]) => (
+                      <button aria-pressed={lane === laneId} className={lane === laneId ? 'is-active' : ''} disabled={isBusy} key={laneId} onClick={() => selectLane(laneId)} type="button">
+                        <Icon className="sap-lane-switch__icon" name={laneId === 'gui' ? 'window' : 'globe'} size={20} />
+                        <span className="sap-lane-switch__copy">
+                          <strong>{details.label}</strong>
+                          <span>{details.description}</span>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-            <div className="sap-case-section">
-              <span className="sap-sidebar-label">{LANES[lane].label} test cases</span>
-              <div className="sap-case-list">
-                {isLoadingCases ? (
-                  <p>Loading test cases…</p>
-                ) : cases.length === 0 ? (
-                  <p>No test cases found for this lane.</p>
-                ) : cases.map((testCase) => (
-                  <button disabled={isBusy} key={testCase.caseId} onClick={() => openCase(testCase)} type="button">
-                    <span className="sap-case-list__number">{testCase.caseId.replace('TC-', '')}</span>
-                    <span>
-                      <strong>{testCase.caseId}</strong>
-                      <span>{testCase.summary}</span>
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
+                <div className="sap-case-section">
+                  <div className="sap-case-section__header">
+                    <span className="sap-sidebar-label">{LANES[lane].label} test cases</span>
+                    <div className="sap-case-section__tools">
+                      <span className="sap-case-count">{cases.length} test {cases.length === 1 ? 'case' : 'cases'}</span>
+                      <span aria-hidden="true" className="sap-case-options"><Icon name="sliders" size={16} /></span>
+                    </div>
+                  </div>
+                  <div className="sap-case-list">
+                    {isLoadingCases ? (
+                      <p>Loading test cases…</p>
+                    ) : cases.length === 0 ? (
+                      <p>No test cases found for this lane.</p>
+                    ) : cases.map((testCase) => (
+                      <button
+                        aria-pressed={selectedCase?.caseId === testCase.caseId}
+                        className={selectedCase?.caseId === testCase.caseId ? 'is-active' : ''}
+                        disabled={isBusy}
+                        key={testCase.caseId}
+                        onClick={() => openCase(testCase)}
+                        type="button"
+                      >
+                        <span className="sap-case-list__number">{testCase.caseId.replace('TC-', '')}</span>
+                        <span>
+                          <strong>{testCase.caseId}</strong>
+                          <span>{testCase.summary}</span>
+                        </span>
+                        <Icon className="sap-case-list__chevron" name="chevronRight" size={17} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : null}
           </div>
 
           <div className="sap-sidebar-actions">
@@ -442,6 +475,13 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
           <div className="run-status-row sap-chat-header">
             <div><p className="eyebrow">AI ASSISTANT TERMINAL</p><h2>SAP automation assistant</h2></div>
             <div className="sap-chat-header-actions">
+              {connectionServerName ? (
+                <span className="sap-server-chip">
+                  <span aria-hidden="true" className="sap-server-chip__dot" />
+                  <span>Connected</span>
+                  <strong>· {connectionServerName}</strong>
+                </span>
+              ) : null}
               {!isCheckingAuth ? (
                 <AppButton
                   disabled={isBusy}
@@ -450,17 +490,41 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                   variant="secondary"
                 />
               ) : null}
-              <span className={`run-status ${connectionServerName ? 'run-status--connected' : `run-status--${status}`}`}>
-                {isAuthenticated ? connectionServerName
-                  ? `Connected to ${connectionServerName}`
-                  : connectionStatus === 'connected' ? 'Connected' : statusLabel(status, activeSource) : 'OAuth token required'}
-              </span>
+              {!connectionServerName ? (
+                <span className={`run-status run-status--${status}`}>
+                  {isAuthenticated ? statusLabel(status, activeSource) : 'OAuth token required'}
+                </span>
+              ) : null}
             </div>
           </div>
+          {visibleSelectedCase ? (
+            <section className="sap-selected-case" aria-label="Selected test case context">
+              <div className="sap-selected-case__icon"><Icon name="testCase" size={24} /></div>
+              <div className="sap-selected-case__copy">
+                <div>
+                  <strong>{visibleSelectedCase.caseId}</strong>
+                  <span>{LANES[lane].label}</span>
+                </div>
+                <p>{visibleSelectedCase.summary}</p>
+              </div>
+            </section>
+          ) : null}
           {error ? <div className="alert alert--error" role="alert">{error}</div> : null}
           <div className="sap-conversation" ref={conversationRef}>
             {messages.length === 0 ? (
-              <div className="sap-chat-welcome"><Icon name="toolbox" size={36} /><h3>{isAuthenticated ? 'What would you like to test?' : 'Connect a Claude OAuth token to begin'}</h3><p>{LANES[lane].description} is selected.</p></div>
+              <div className="sap-chat-welcome">
+                <Icon name="toolbox" size={36} />
+                <h3>
+                  {isAuthenticated
+                    ? visibleSelectedCase ? `How can I help with ${visibleSelectedCase.caseId}?` : 'What would you like to test?'
+                    : 'Connect a Claude OAuth token to begin'}
+                </h3>
+                <p>
+                  {visibleSelectedCase
+                    ? 'Ask about this test case, its steps, prerequisites, or a previous result.'
+                    : `${LANES[lane].description} is selected.`}
+                </p>
+              </div>
             ) : messages.map((message) => (
               <article className={`sap-message sap-message--${message.role}`} key={message.id}>
                 <span>{message.role === 'user' ? 'You' : message.role === 'runner' ? 'Test runner' : 'AI Assistant'}</span><div>{message.text}</div>
@@ -471,7 +535,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
           <form className="sap-prompt-form" onSubmit={sendPrompt}>
             <textarea disabled={!isConfigured || !isAuthenticated || isBusy} onChange={(event) => setPrompt(event.target.value)} onKeyDown={(event) => {
               if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); }
-            }} placeholder="Ask the AI Assistant to run or inspect an SAP test…" value={prompt} />
+            }} placeholder={visibleSelectedCase ? `Ask the AI Assistant anything about ${visibleSelectedCase.caseId}…` : 'Ask the AI Assistant about an SAP test…'} value={prompt} />
             <div>
               <span>Enter to send · Shift+Enter for a new line</span>
               {isActive ? <AppButton loading={isStopping} onClick={stopRun} title="Stop" variant="secondary" /> : (

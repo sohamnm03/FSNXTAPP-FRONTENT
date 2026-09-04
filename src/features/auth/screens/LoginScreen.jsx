@@ -4,6 +4,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import AppButton from '../../../components/common/AppButton';
 import AppInput from '../../../components/common/AppInput';
 import BrandLogo from '../../../components/common/BrandLogo';
+import GoogleIcon from '../../../components/common/GoogleIcon';
 import Icon from '../../../components/common/Icon';
 import ScreenContainer from '../../../components/common/ScreenContainer';
 import LoginIllustration from '../components/LoginIllustration';
@@ -183,6 +184,7 @@ export default function LoginScreen() {
               <AppButton
                 className="login-google__desktop"
                 disabled={isAuthenticating}
+                iconElement={<GoogleIcon size={19} />}
                 onClick={handleDesktopGoogleLogin}
                 title="Continue with Google"
                 type="button"
