@@ -77,12 +77,12 @@ export default function HomeScreen({ onOpenModule }) {
 
   return (
     <ScreenContainer className="workspace-screen">
-      <header className="app-header">
+      <header className="app-header workspace-header">
         <div className="app-header__brand">
           <BrandLogo />
           <div>
             <strong>FSNXT Testing Application</strong>
-            <span>Desktop Workspace</span>
+            <span>Package workspace</span>
           </div>
         </div>
         <AppButton
@@ -133,10 +133,13 @@ export default function HomeScreen({ onOpenModule }) {
 
         <section className="package-detail" aria-live="polite">
           <div className="package-detail__topline">
-            <span>Package details</span>
+            <div className="package-breadcrumb">
+              <span>Packages</span>
+              <Icon name="chevronRight" size={13} />
+              <strong>{selectedModule.name}</strong>
+            </div>
             <span>Signed in as <strong>{user.username}</strong></span>
           </div>
-
           <div className={`package-access-card ${isSelectedModuleInstalled ? 'package-access-card--ready' : ''}`}>
             <div className="package-access-card__icon">
               <Icon name={isSelectedModuleInstalled ? selectedModule.icon : 'lock'} size={42} />
@@ -173,6 +176,7 @@ export default function HomeScreen({ onOpenModule }) {
                 <AppButton
                   className="package-detail__open"
                   disabled={Boolean(uninstallingModuleId)}
+                  icon="play"
                   onClick={() => onOpenModule(selectedModule)}
                   title={selectedModule.id === 'web-testing' ? 'Run Script' : `Open ${selectedModule.name}`}
                 />
@@ -186,11 +190,17 @@ export default function HomeScreen({ onOpenModule }) {
                 />
               </div>
             ) : (
-              <div className="package-detail__locked-message">
-                <Icon name="download" size={20} />
-                <span>Use the Download button in the left menu to unlock this package.</span>
+              <div className="package-detail__actions">
+                <AppButton
+                  className="package-detail__open"
+                  disabled={Boolean(installingModuleId || uninstallingModuleId)}
+                  icon="download"
+                  onClick={() => handleModuleAction(selectedModule)}
+                  title="Download package"
+                />
               </div>
             )}
+
           </div>
         </section>
       </div>

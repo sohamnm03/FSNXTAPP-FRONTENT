@@ -41,6 +41,7 @@ body,
 }
 
 body {
+  font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
   min-width: 720px;
   min-height: 520px;
   overflow: hidden;
@@ -48,6 +49,7 @@ body {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
 }
