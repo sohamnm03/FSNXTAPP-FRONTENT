@@ -250,9 +250,14 @@ $runId = $now.ToString('yyyyMMdd-HHmmss')
 $who   = $RunBy
 if (-not $who) { $who = "$env:USERNAME (unattended, scripts\run-case.ps1)" }
 
-$argList = @('playwright', 'test', "--project=$project")
+$playwrightCmd = Join-Path $webTestsDir 'node_modules\.bin\playwright.cmd'
+if (-not (Test-Path $playwrightCmd)) {
+    throw "Local Playwright CLI was not found at '$playwrightCmd'. Restore web-tests dependencies with 'npm ci' before running the suite."
+}
+
+$argList = @('test', "--project=$project")
 if ($specArg) { $argList += $specArg }
-$commandLine = "npx $($argList -join ' ')"
+$commandLine = "playwright $($argList -join ' ')"
 
 $systemId = $env:SAP_SYSTEM_ID
 if (-not $systemId) {
@@ -360,7 +365,7 @@ Write-Host ''
 
 Push-Location $webTestsDir
 try {
-    & npx @argList
+    & $playwrightCmd @argList
     $testExit = $LASTEXITCODE
 } finally {
     Pop-Location

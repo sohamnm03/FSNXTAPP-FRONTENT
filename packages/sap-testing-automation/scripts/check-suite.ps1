@@ -84,24 +84,71 @@ function ConvertFrom-Glob {
 # can silently drift from the one Playwright actually runs against. Instead,
 # this asks Playwright itself what it resolved and reads the answer back.
 
-Push-Location $webTestsDir
-try {
-    $listRaw = & npx playwright test --list --reporter=json 2>&1
-    $listExit = $LASTEXITCODE
-} finally {
-    Pop-Location
+# Resolve Playwright from this project's own node_modules instead of using
+# npx/global resolution. This keeps the suite check tied to the version pinned
+# by package-lock.json and avoids npm notices/warnings being promoted to
+# terminating NativeCommandError records by Windows PowerShell 5.1.
+$playwrightCmd = Join-Path $webTestsDir 'node_modules\.bin\playwright.cmd'
+$listRaw = @()
+$listExit = 1
+
+if (-not (Test-Path $playwrightCmd)) {
+    Fail "check 1/2: local Playwright CLI was not found at '$playwrightCmd'. Restore web-tests dependencies with 'npm ci' before running the suite."
+} else {
+    $stdoutFile = Join-Path ([System.IO.Path]::GetTempPath()) ("fsnxt-playwright-out-{0}.txt" -f [guid]::NewGuid().ToString('N'))
+    $stderrFile = Join-Path ([System.IO.Path]::GetTempPath()) ("fsnxt-playwright-err-{0}.txt" -f [guid]::NewGuid().ToString('N'))
+
+    try {
+        # Start-Process keeps native stdout/stderr separate. A harmless npm/node
+        # message written to stderr therefore cannot terminate this script just
+        # because $ErrorActionPreference is 'Stop'. The process ExitCode is the
+        # source of truth for success/failure.
+        $command = ('""{0}" test --list --reporter=json"' -f $playwrightCmd)
+        $process = Start-Process `
+            -FilePath $env:ComSpec `
+            -ArgumentList '/d', '/s', '/c', $command `
+            -WorkingDirectory $webTestsDir `
+            -RedirectStandardOutput $stdoutFile `
+            -RedirectStandardError $stderrFile `
+            -NoNewWindow `
+            -Wait `
+            -PassThru
+
+        $listExit = $process.ExitCode
+
+        $stdout = ''
+        $stderr = ''
+
+        if (Test-Path $stdoutFile) {
+            $stdout = Get-Content -Path $stdoutFile -Raw -Encoding UTF8
+        }
+        if (Test-Path $stderrFile) {
+            $stderr = Get-Content -Path $stderrFile -Raw -Encoding UTF8
+        }
+
+        if ($stdout) {
+            $listRaw = @($stdout)
+        }
+
+        if ($listExit -ne 0 -and $stderr) {
+            $listRaw += $stderr
+        }
+    } finally {
+        Remove-Item -Path $stdoutFile -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path $stderrFile -Force -ErrorAction SilentlyContinue
+    }
 }
 
 $owner = @{}
 $suiteNames = @()
 
 if ($listExit -ne 0) {
-    Fail "check 1/2: 'npx playwright test --list' failed to load config/suites.json via web-tests/suites.ts:`n$($listRaw -join "`n")"
+    Fail "check 1/2: local Playwright 'test --list' failed to load config/suites.json via web-tests/suites.ts:`n$($listRaw -join "`n")"
 } else {
     try {
         $listing = ($listRaw -join "`n") | ConvertFrom-Json
     } catch {
-        Fail "check 1/2: could not parse 'npx playwright test --list --reporter=json' output: $($_.Exception.Message)"
+        Fail "check 1/2: could not parse local Playwright 'test --list --reporter=json' output: $($_.Exception.Message)"
         $listing = $null
     }
     if ($listing) {

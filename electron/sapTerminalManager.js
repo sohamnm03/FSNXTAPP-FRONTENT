@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const { createSapAutomationWorkspace } = require('./sapAutomationWorkspace');
+const { webRuntimeEnvironment } = require('./sapWebRuntime');
 
 const FINAL_STATUSES = new Set(['completed', 'failed', 'stopped']);
 const CONFIRMATION_TTL_MS = 10 * 60 * 1000;
@@ -75,7 +76,10 @@ async function createSapTerminalManager(electronApp, claudeTokenStore) {
   fs.mkdirSync(claudeConfigDir, { recursive: true });
 
   function claudeEnvironment(token) {
-    const env = { ...process.env, NO_COLOR: '1', FORCE_COLOR: '0', CLAUDE_CONFIG_DIR: claudeConfigDir };
+    const env = {
+      ...(electronApp.isPackaged ? webRuntimeEnvironment(process.resourcesPath) : process.env),
+      NO_COLOR: '1', FORCE_COLOR: '0', CLAUDE_CONFIG_DIR: claudeConfigDir,
+    };
     if (pythonPath) env.FSNXT_PYTHON = pythonPath;
     delete env.ANTHROPIC_API_KEY;
     delete env.ANTHROPIC_AUTH_TOKEN;
@@ -280,7 +284,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore) {
     const child = spawn('powershell.exe', args, {
       cwd: projectRoot,
       env: {
-        ...process.env,
+        ...(electronApp.isPackaged && proposal.lane === 'web' ? webRuntimeEnvironment(process.resourcesPath) : process.env),
         SAP_SYSTEM_ID: proposal.systemId,
         ...(proposal.credentials ? { SAP_WEB_USER: proposal.credentials.username, SAP_WEB_PASSWORD: proposal.credentials.password } : {}),
         ...(pythonPath ? { FSNXT_PYTHON: pythonPath } : {}),

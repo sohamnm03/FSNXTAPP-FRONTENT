@@ -64,6 +64,10 @@
     ],
     "extraResources": [
       {
+        "from": ".build/sap-web-runtime",
+        "to": "sap-web-runtime"
+      },
+      {
         "from": ".build/sap-automation/sap-testing-automation.fsnxtpkg",
         "to": "sap-testing-automation.fsnxtpkg"
       },

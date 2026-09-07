@@ -4,6 +4,7 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 const { encryptFile, resolveTarExecutable } = require('./sapAutomationPayload');
 const { buildPythonRuntime } = require('./buildPythonRuntime');
+const { buildSapWebRuntime } = require('./buildSapWebRuntime');
 
 const projectRoot = path.resolve(__dirname, '..');
 const sourceRoot = path.join(projectRoot, 'packages', 'sap-testing-automation');
@@ -34,6 +35,7 @@ async function main() {
   fs.rmSync(buildRoot, { recursive: true, force: true });
   fs.rmSync(generatedKeyPath, { force: true });
   const password = requireBuildPassword();
+  buildSapWebRuntime();
   await buildPythonRuntime();
   const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'fsnxt-sap-build-'));
   const archivePath = path.join(temporaryRoot, 'sap-testing-automation.tar.gz');
