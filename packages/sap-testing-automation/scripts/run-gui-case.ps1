@@ -109,6 +109,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $root   = Split-Path -Parent $PSScriptRoot
+$startedAtUtc = (Get-Date).ToUniversalTime()
 
 # The packaged desktop app ships its own relocatable interpreter and names it in
 # FSNXT_PYTHON, because the vendored venv is not portable off this machine. A
@@ -163,6 +164,23 @@ if ($producedARun -and -not $NoDashboard) {
     $dashboard = Join-Path $PSScriptRoot 'build-dashboard.ps1'
     if (Test-Path $dashboard) {
         & powershell -ExecutionPolicy Bypass -File $dashboard
+    }
+}
+
+if ($producedARun) {
+    $archive = Join-Path $PSScriptRoot 'archive-run-artifacts.ps1'
+    if (Test-Path $archive) {
+        Write-Host ''
+        Write-Host 'Creating local artifact archive' -ForegroundColor Cyan
+        & powershell -ExecutionPolicy Bypass -File $archive `
+            -RunId (Get-Date -Format 'yyyyMMdd-HHmmss') `
+            -StartedAtUtc $startedAtUtc `
+            -Case $Case `
+            -Lane gui `
+            -SystemId $System
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host 'Artifact archive failed - reports and evidence are still on disk.' -ForegroundColor Yellow
+        }
     }
 }
 

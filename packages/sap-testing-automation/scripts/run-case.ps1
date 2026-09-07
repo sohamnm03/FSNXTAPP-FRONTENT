@@ -246,6 +246,7 @@ foreach ($kv in $SetEnv.GetEnumerator()) { $runEnv[$kv.Key] = [string]$kv.Value 
 # --------------------------------------------------------------- run identity
 
 $now   = Get-Date
+$startedAtUtc = $now.ToUniversalTime()
 $runId = $now.ToString('yyyyMMdd-HHmmss')
 $who   = $RunBy
 if (-not $who) { $who = "$env:USERNAME (unattended, scripts\run-case.ps1)" }
@@ -411,6 +412,20 @@ if (-not $NoDashboard) {
     } else {
         Write-Host ("  {0}" -f (Join-Path $root 'results\dashboard.html')) -ForegroundColor Green
     }
+}
+
+# --------------------------------------------------------------- archive
+
+Write-Host ''
+Write-Host 'Creating local artifact archive' -ForegroundColor Cyan
+& powershell -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'archive-run-artifacts.ps1') `
+    -RunId $runId `
+    -StartedAtUtc $startedAtUtc `
+    -Case $targetName `
+    -Lane web `
+    -SystemId $systemId
+if ($LASTEXITCODE -ne 0) {
+    Write-Host 'Artifact archive failed - reports and evidence are still on disk.' -ForegroundColor Yellow
 }
 
 Write-Host ''

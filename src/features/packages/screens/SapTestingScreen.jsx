@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import AppButton from '../../../components/common/AppButton';
 import Icon from '../../../components/common/Icon';
 import ScreenContainer from '../../../components/common/ScreenContainer';
+import { useAuth } from '../../auth/context/AuthContext';
 import { packageService } from '../services/packageService';
 import { sapTerminalService } from '../services/sapTerminalService';
 
@@ -30,6 +31,7 @@ function explicitRunRequest(text) {
 }
 
 export default function SapTestingScreen({ module, onBack, onUninstalled }) {
+  const { user } = useAuth();
   const [isConfigured, setIsConfigured] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -62,14 +64,17 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   const [viewingCase, setViewingCase] = useState(null);
   const [isLoadingCaseFile, setIsLoadingCaseFile] = useState(false);
   const [caseFileError, setCaseFileError] = useState('');
+  const [archiveDirectory, setArchiveDirectory] = useState('');
+  const [isChoosingArchiveDirectory, setIsChoosingArchiveDirectory] = useState(false);
   const conversationRef = useRef(null);
 
   useEffect(() => {
-    Promise.all([sapTerminalService.getProject(), sapTerminalService.getAuthStatus()])
+    Promise.all([sapTerminalService.getProject(user?.username), sapTerminalService.getAuthStatus()])
       .then(([project, auth]) => {
         setIsConfigured(Boolean(project.configured));
         setSapSystems(project.systems || []);
         setSelectedSystemId(project.defaultSystemId || project.systems?.[0]?.id || '');
+        setArchiveDirectory(project.archiveDirectory || '');
         setIsAuthenticated(Boolean(auth.loggedIn));
         setTokenEnding(auth.tokenEnding || '');
         if (!project.configured) setError('The SAP automation package is missing. Reinstall the application.');
@@ -269,6 +274,19 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     }
   }
 
+  async function chooseArchiveDirectory() {
+    setIsChoosingArchiveDirectory(true);
+    setError('');
+    try {
+      const result = await sapTerminalService.chooseArchiveDirectory();
+      setArchiveDirectory(result.archiveDirectory || '');
+    } catch (chooseError) {
+      setError(chooseError.message);
+    } finally {
+      setIsChoosingArchiveDirectory(false);
+    }
+  }
+
   async function confirmRun() {
     if (!pendingConfirmation) return;
     setIsStarting(true);
@@ -411,6 +429,18 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
 
             {connectionServerName ? (
               <>
+                <div className="sap-archive-section">
+                  <span className="sap-sidebar-label">Evidence zip folder</span>
+                  <p title={archiveDirectory}>{archiveDirectory || 'Downloads\\FSNXT SAP Test Archives'}</p>
+                  <AppButton
+                    disabled={isBusy}
+                    loading={isChoosingArchiveDirectory}
+                    onClick={chooseArchiveDirectory}
+                    title="Change folder"
+                    variant="secondary"
+                  />
+                </div>
+
                 <div className="sap-lane-section">
                   <div className="sap-section-label">
                     <span className="sap-sidebar-label">Testing mode</span>

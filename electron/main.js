@@ -26,8 +26,11 @@ function registerAiAgentsHandlers() {
 
 async function registerSapTerminalHandlers() {
   const claudeTokenStore = createClaudeTokenStore(app, safeStorage);
-  sapTerminalManager = await createSapTerminalManager(app, claudeTokenStore);
-  ipcMain.handle('sap-terminal:get-project', () => sapTerminalManager.getProject());
+  sapTerminalManager = await createSapTerminalManager(app, claudeTokenStore, dialog);
+  ipcMain.handle('sap-terminal:get-project', (_event, username) => sapTerminalManager.getProject(username));
+  ipcMain.handle('sap-terminal:choose-archive-directory', (event) => (
+    sapTerminalManager.chooseArchiveDirectory(BrowserWindow.fromWebContents(event.sender))
+  ));
   ipcMain.handle('sap-terminal:get-auth-status', () => sapTerminalManager.getAuthStatus());
   ipcMain.handle('sap-terminal:test-connection', (_event, systemId) => sapTerminalManager.testConnection(systemId));
   ipcMain.handle('sap-terminal:configure-token', (_event, token) => sapTerminalManager.configureToken(token));

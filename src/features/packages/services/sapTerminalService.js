@@ -5,8 +5,11 @@ function localTerminal() {
 }
 
 export const sapTerminalService = {
-  getProject() {
-    return localTerminal().getProject();
+  getProject(username) {
+    return localTerminal().getProject(username);
+  },
+  chooseArchiveDirectory() {
+    return localTerminal().chooseArchiveDirectory();
   },
   getAuthStatus() {
     return localTerminal().getAuthStatus();

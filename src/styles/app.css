@@ -1674,6 +1674,7 @@
 
   .sap-chat-sidebar .web-testing-heading > div:last-child,
   .sap-chat-sidebar .sap-connection-section,
+  .sap-chat-sidebar .sap-archive-section,
   .sap-chat-sidebar .sap-lane-section,
   .sap-chat-sidebar .sap-case-section,
   .sap-chat-sidebar .sap-sidebar-actions {
@@ -1685,11 +1686,13 @@
 
   .sap-chat-sidebar:hover .web-testing-heading > div:last-child,
   .sap-chat-sidebar:hover .sap-connection-section,
+  .sap-chat-sidebar:hover .sap-archive-section,
   .sap-chat-sidebar:hover .sap-lane-section,
   .sap-chat-sidebar:hover .sap-case-section,
   .sap-chat-sidebar:hover .sap-sidebar-actions,
   .sap-chat-sidebar:focus-within .web-testing-heading > div:last-child,
   .sap-chat-sidebar:focus-within .sap-connection-section,
+  .sap-chat-sidebar:focus-within .sap-archive-section,
   .sap-chat-sidebar:focus-within .sap-lane-section,
   .sap-chat-sidebar:focus-within .sap-case-section,
   .sap-chat-sidebar:focus-within .sap-sidebar-actions {
@@ -1811,6 +1814,33 @@
 .sap-connection-section select:disabled {
   cursor: not-allowed;
   opacity: 0.65;
+}
+
+.sap-archive-section {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid #dceaf5;
+  border-radius: 12px;
+  box-shadow: 0 5px 16px rgba(27, 91, 145, 0.04);
+  margin-top: 12px;
+  padding: 14px;
+}
+
+.sap-archive-section p {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  color: var(--color-text);
+  font-size: 0.68rem;
+  line-height: 1.45;
+  margin: 0 0 8px;
+  overflow: hidden;
+  padding: 9px 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sap-archive-section .app-button {
+  width: 100%;
 }
 
 .sap-credential-fields {

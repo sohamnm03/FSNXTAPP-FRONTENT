@@ -64,21 +64,53 @@ function parseClaudeResult(stdout, stderr) {
   }
 }
 
-async function createSapTerminalManager(electronApp, claudeTokenStore) {
+async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
   const runs = new Map();
   const confirmations = new Map();
   const claudePath = claudeExecutable(electronApp);
   const pythonPath = bundledPython(electronApp);
   const workspace = await createSapAutomationWorkspace(electronApp);
   let connectionCheckProcess = null;
+  let currentUsername = '';
   const claudeConfigDir = path.join(electronApp.getPath('userData'), 'claude-runtime');
+  const settingsPath = path.join(electronApp.getPath('userData'), 'sap-terminal-settings.json');
   const projectRoot = workspace.projectRoot;
   fs.mkdirSync(claudeConfigDir, { recursive: true });
+
+  // Windows folder names can't hold <>:"/\|?* or control characters.
+  function sanitizeForFolderName(value) {
+    return String(value || '').trim().replace(/[<>:"/\\|?*\x00-\x1F]/g, '').trim();
+  }
+
+  function defaultArchiveDir() {
+    const suffix = sanitizeForFolderName(currentUsername);
+    const folderName = suffix ? `FSNXT SAP Test Archives - ${suffix}` : 'FSNXT SAP Test Archives';
+    return path.join(electronApp.getPath('downloads'), folderName);
+  }
+
+  function readSettings() {
+    try {
+      return JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+    } catch {
+      return {};
+    }
+  }
+
+  function writeSettings(settings) {
+    fs.mkdirSync(path.dirname(settingsPath), { recursive: true });
+    fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2), 'utf8');
+  }
+
+  function archiveDir() {
+    const configured = readSettings().archiveDirectory;
+    return typeof configured === 'string' && configured.trim() ? configured : defaultArchiveDir();
+  }
 
   function claudeEnvironment(token) {
     const env = {
       ...(electronApp.isPackaged ? webRuntimeEnvironment(process.resourcesPath) : process.env),
       NO_COLOR: '1', FORCE_COLOR: '0', CLAUDE_CONFIG_DIR: claudeConfigDir,
+      FSNXT_ARTIFACT_ARCHIVE_DIR: archiveDir(),
     };
     if (pythonPath) env.FSNXT_PYTHON = pythonPath;
     delete env.ANTHROPIC_API_KEY;
@@ -288,6 +320,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore) {
         SAP_SYSTEM_ID: proposal.systemId,
         ...(proposal.credentials ? { SAP_WEB_USER: proposal.credentials.username, SAP_WEB_PASSWORD: proposal.credentials.password } : {}),
         ...(pythonPath ? { FSNXT_PYTHON: pythonPath } : {}),
+        FSNXT_ARTIFACT_ARCHIVE_DIR: archiveDir(),
         NO_COLOR: '1',
         FORCE_COLOR: '0',
       },
@@ -354,9 +387,10 @@ async function createSapTerminalManager(electronApp, claudeTokenStore) {
   }
 
   return {
-    getProject() {
+    getProject(username = '') {
+      currentUsername = typeof username === 'string' ? username : '';
       const configured = validateProject(projectRoot);
-      if (!configured) return { configured: false, defaultSystemId: '', systems: [] };
+      if (!configured) return { configured: false, defaultSystemId: '', systems: [], archiveDirectory: archiveDir() };
       try {
         const registry = systemRegistry();
         const systems = connectionCheckSystems().map((system) => ({
@@ -367,10 +401,25 @@ async function createSapTerminalManager(electronApp, claudeTokenStore) {
           configured: true,
           defaultSystemId: String(registry.defaultSystem || systems[0]?.id || ''),
           systems,
+          archiveDirectory: archiveDir(),
         };
       } catch {
-        return { configured: true, defaultSystemId: '', systems: [] };
+        return { configured: true, defaultSystemId: '', systems: [], archiveDirectory: archiveDir() };
       }
+    },
+    async chooseArchiveDirectory(ownerWindow) {
+      const current = archiveDir();
+      const result = await dialog.showOpenDialog(ownerWindow, {
+        title: 'Choose SAP test archive folder',
+        defaultPath: current,
+        properties: ['openDirectory', 'createDirectory'],
+      });
+      if (result.canceled || !result.filePaths?.[0]) {
+        return { archiveDirectory: current };
+      }
+      const selected = result.filePaths[0];
+      writeSettings({ ...readSettings(), archiveDirectory: selected });
+      return { archiveDirectory: selected };
     },
     listCases,
     getCaseFile,

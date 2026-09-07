@@ -18,7 +18,8 @@ contextBridge.exposeInMainWorld('desktopAPI', Object.freeze({
     download: (runId, artifactPath) => ipcRenderer.invoke('ai-agents:download', runId, artifactPath),
   }),
   sapTerminal: Object.freeze({
-    getProject: () => ipcRenderer.invoke('sap-terminal:get-project'),
+    getProject: (username) => ipcRenderer.invoke('sap-terminal:get-project', username),
+    chooseArchiveDirectory: () => ipcRenderer.invoke('sap-terminal:choose-archive-directory'),
     getAuthStatus: () => ipcRenderer.invoke('sap-terminal:get-auth-status'),
     testConnection: (systemId) => ipcRenderer.invoke('sap-terminal:test-connection', systemId),
     configureToken: (token) => ipcRenderer.invoke('sap-terminal:configure-token', token),
