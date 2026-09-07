@@ -106,6 +106,22 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     return typeof configured === 'string' && configured.trim() ? configured : defaultArchiveDir();
   }
 
+  // The AI-chat lane spawns claude.exe with cwd=projectRoot, so Claude Code
+  // loads this file's "env" block itself (the same mechanism that hands
+  // SAP_DS4_100_NIIF_PASSWORD to a run). The confirmed-case lane below spawns
+  // powershell.exe directly and bypasses Claude Code, so it has to read the
+  // same gitignored, local-only file itself to pick up secrets such as
+  // AZURE_STORAGE_CONNECTION_STRING.
+  function projectLocalEnv() {
+    try {
+      const raw = fs.readFileSync(path.join(projectRoot, '.claude', 'settings.local.json'), 'utf8');
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed.env === 'object' && parsed.env ? parsed.env : {};
+    } catch {
+      return {};
+    }
+  }
+
   function claudeEnvironment(token) {
     const env = {
       ...(electronApp.isPackaged ? webRuntimeEnvironment(process.resourcesPath) : process.env),
@@ -317,6 +333,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       cwd: projectRoot,
       env: {
         ...(electronApp.isPackaged && proposal.lane === 'web' ? webRuntimeEnvironment(process.resourcesPath) : process.env),
+        ...projectLocalEnv(),
         SAP_SYSTEM_ID: proposal.systemId,
         ...(proposal.credentials ? { SAP_WEB_USER: proposal.credentials.username, SAP_WEB_PASSWORD: proposal.credentials.password } : {}),
         ...(pythonPath ? { FSNXT_PYTHON: pythonPath } : {}),
