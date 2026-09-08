@@ -79,7 +79,7 @@
     {
       "id": "DS4_100_TFSIN",
       "label": "TFS India S/4HANA Development (DS4, client 100)",
-      "enabled": false,
+      "enabled": true,
       "connectionCheckEnabled": true,
 
       "$comment": [
@@ -99,7 +99,7 @@
       },
 
       "sapGui": {
-        "enabled": false,
+        "enabled": true,
         "mcpServerName": "sap-gui-ds4-100-tfsin",
         "logonDescription": "TFSIN HANA Dev",
         "readOnly": true,
