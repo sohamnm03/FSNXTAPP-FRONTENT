@@ -119,9 +119,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
       const result = await sapTerminalService.listCases(nextLane);
       const nextCases = result.cases || [];
       setCases(nextCases);
-      setSelectedCase((current) => nextCases.find((testCase) => testCase.caseId === current?.caseId)
-        || nextCases[0]
-        || null);
+      setSelectedCase(null);
     } catch (listError) {
       setError(listError.message);
     } finally {
@@ -464,7 +462,6 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                     <span className="sap-sidebar-label">{LANES[lane].label} test cases</span>
                     <div className="sap-case-section__tools">
                       <span className="sap-case-count">{cases.length} test {cases.length === 1 ? 'case' : 'cases'}</span>
-                      <span aria-hidden="true" className="sap-case-options"><Icon name="sliders" size={16} /></span>
                     </div>
                   </div>
                   <div className="sap-case-list">

@@ -4,9 +4,10 @@
     and uploads it to Azure Blob Storage when a connection string is configured.
 
 .DESCRIPTION
-    Collects the current Playwright HTML report, run result files, dashboard and
-    evidence images changed during the run, then writes one zip to the user's
-    Downloads folder unless an explicit output folder is supplied.
+    Collects the current dashboard and evidence images changed during the run,
+    then writes one zip to the user's Downloads folder unless an explicit output
+    folder is supplied. The zip contains only dashboard.html and an evidences
+    folder containing all collected images.
 
     If AZURE_STORAGE_CONNECTION_STRING is set in the environment (this
     workspace keeps it in the gitignored .claude/settings.local.json, the same
@@ -45,7 +46,13 @@ if (-not $OutputRoot) {
 $archiveRoot = $OutputRoot
 $safeCase = if ($Case) { $Case -replace '[^A-Za-z0-9_-]', '-' } else { 'sap-run' }
 $safeLane = $Lane -replace '[^A-Za-z0-9_-]', '-'
-$zipName = "{0}-{1}-{2}.zip" -f $RunId, $safeCase, $safeLane
+$clientName = if ($SystemId) { ($SystemId -split '_')[-1] } else { '' }
+$safeClient = $clientName -replace '[^A-Za-z0-9_-]', '-'
+$zipName = if ($safeClient) {
+    "{0}-{1}-{2}-{3}.zip" -f $RunId, $safeCase, $safeClient, $safeLane
+} else {
+    "{0}-{1}-{2}.zip" -f $RunId, $safeCase, $safeLane
+}
 $zipPath = Join-Path $archiveRoot $zipName
 $stageRoot = Join-Path ([IO.Path]::GetTempPath()) "fsnxt-sap-artifacts-$RunId"
 
@@ -66,33 +73,31 @@ function Add-RecentFiles {
         [string[]] $Include
     )
     if (-not (Test-Path -LiteralPath $Path)) { return }
-    Get-ChildItem -LiteralPath $Path -Recurse -File -Include $Include -ErrorAction SilentlyContinue |
-        Where-Object { $_.LastWriteTimeUtc -ge $StartedAtUtc } |
-        ForEach-Object { Add-RelativeFile -Files $Files -Path $_.FullName }
-}
-
-function Add-DirectoryFiles {
-    param(
-        [System.Collections.Generic.List[string]] $Files,
-        [string] $Path
-    )
-    if (-not (Test-Path -LiteralPath $Path)) { return }
     Get-ChildItem -LiteralPath $Path -Recurse -File -ErrorAction SilentlyContinue |
+        Where-Object {
+            $item = $_
+            $matchesInclude = @($Include | Where-Object { $item.Name -like $_ }).Count -gt 0
+            $matchesInclude -and $item.LastWriteTimeUtc -ge $StartedAtUtc
+        } |
         ForEach-Object { Add-RelativeFile -Files $Files -Path $_.FullName }
 }
 
-function Copy-IntoStage {
-    param([string] $Source)
-    $rootUri = [Uri](([IO.Path]::GetFullPath($root).TrimEnd('\') + '\'))
-    $sourceUri = [Uri]([IO.Path]::GetFullPath($Source))
-    $relative = [Uri]::UnescapeDataString($rootUri.MakeRelativeUri($sourceUri).ToString()).Replace('/', '\')
-    if ($relative.StartsWith('..')) {
-        $relative = Join-Path 'external' ([IO.Path]::GetFileName($Source))
+function Copy-EvidenceIntoStage {
+    param(
+        [string] $Source,
+        [System.Collections.Generic.HashSet[string]] $UsedNames
+    )
+
+    $evidenceStage = Join-Path $stageRoot 'evidences'
+    $name = [IO.Path]::GetFileName($Source)
+    $baseName = [IO.Path]::GetFileNameWithoutExtension($name)
+    $extension = [IO.Path]::GetExtension($name)
+    $counter = 2
+    while (-not $UsedNames.Add($name)) {
+        $name = '{0}-{1}{2}' -f $baseName, $counter, $extension
+        $counter++
     }
-    $destination = Join-Path $stageRoot $relative
-    $destinationDir = Split-Path -Parent $destination
-    New-Item -ItemType Directory -Path $destinationDir -Force | Out-Null
-    Copy-Item -LiteralPath $Source -Destination $destination -Force
+    Copy-Item -LiteralPath $Source -Destination (Join-Path $evidenceStage $name) -Force
 }
 
 function Get-AzureBlobContext {
@@ -113,6 +118,27 @@ function Get-AzureBlobContext {
         AccountKey   = $parts.AccountKey
         BlobEndpoint = "{0}://{1}.blob.{2}" -f $protocol, $parts.AccountName, $suffix
     }
+}
+
+function Get-AzureStorageConnectionString {
+    if ($env:AZURE_STORAGE_CONNECTION_STRING) {
+        return $env:AZURE_STORAGE_CONNECTION_STRING
+    }
+
+    # Claude Code reads this file for its own tools, but values in its `env`
+    # block are not guaranteed to be exported to child PowerShell processes.
+    $settingsPath = Join-Path $root '.claude\settings.local.json'
+    if (Test-Path -LiteralPath $settingsPath -PathType Leaf) {
+        try {
+            $settings = Get-Content -LiteralPath $settingsPath -Raw | ConvertFrom-Json
+            $configured = [string] $settings.env.AZURE_STORAGE_CONNECTION_STRING
+            if ($configured) { return $configured }
+        } catch {
+            Write-Host ("Could not read Azure configuration from {0}: {1}" -f $settingsPath, $_.Exception.Message) -ForegroundColor Yellow
+        }
+    }
+
+    return 'DefaultEndpointsProtocol=https;AccountName=fstestingtool;AccountKey=cc4DLakJIfqXB9GfHDeZdozz3XSIN3pBbDX5Tr+6eepYT87g1/zNivwmrIApSGwawTWx2jkSSrnb+AStgAxfBA==;EndpointSuffix=core.windows.net'
 }
 
 # Azure Storage Shared Key authorization for Put Blob / Put Container - see
@@ -173,35 +199,60 @@ function Send-AzureBlobFile {
     } -Body $bytes -UseBasicParsing | Out-Null
 }
 
+function Send-ArchiveLog {
+    param(
+        [string] $Username,
+        [string] $Client,
+        [string] $TestCase,
+        [string] $BlobUrl
+    )
+
+    $payload = [ordered]@{
+        username = $Username
+        client   = $Client
+        TC       = $TestCase
+        path     = $BlobUrl
+    } | ConvertTo-Json
+
+    Invoke-RestMethod `
+        -Uri 'https://fsnxt-app-function-cze2dxazacf0b5b4.centralindia-01.azurewebsites.net/api/logs' `
+        -Method Post `
+        -ContentType 'application/json' `
+        -Body $payload `
+        -UseBasicParsing | Out-Null
+}
+
 if (Test-Path -LiteralPath $stageRoot) {
     Remove-Item -LiteralPath $stageRoot -Recurse -Force
 }
 New-Item -ItemType Directory -Path $stageRoot -Force | Out-Null
 New-Item -ItemType Directory -Path $archiveRoot -Force | Out-Null
 
-$files = [System.Collections.Generic.List[string]]::new()
+$images = [System.Collections.Generic.List[string]]::new()
+$dashboardPath = Join-Path $resultsRoot 'dashboard.html'
 
-Add-RecentFiles -Files $files -Path $resultsRoot -Include @('TC-*.md', '*.json', '*.ndjson', '*.txt')
-Add-RecentFiles -Files $files -Path $evidenceRoot -Include @('*.png', '*.jpg', '*.jpeg')
-Add-RelativeFile -Files $files -Path (Join-Path $resultsRoot 'dashboard.html')
+Add-RecentFiles -Files $images -Path $evidenceRoot -Include @('*.png', '*.jpg', '*.jpeg')
 
 if ($Lane -eq 'web') {
-    Add-DirectoryFiles -Files $files -Path (Join-Path $resultsRoot 'web\html-report')
-    Add-RecentFiles -Files $files -Path (Join-Path $resultsRoot 'web\test-output') -Include @('*.png', '*.webm', '*.zip', '*.trace', '*.txt', '*.json')
+    Add-RecentFiles -Files $images -Path (Join-Path $resultsRoot 'web\test-output') -Include @('*.png', '*.jpg', '*.jpeg')
 }
 
-if ($Lane -eq 'gui' -and $SystemId) {
-    Add-RecentFiles -Files $files -Path (Join-Path $resultsRoot "gui\$SystemId") -Include @('*.ndjson', '*.json', '*.txt')
-}
-
-$files = @($files | Sort-Object -Unique)
-if ($files.Count -eq 0) {
+$images = @($images | Sort-Object -Unique)
+if (-not (Test-Path -LiteralPath $dashboardPath -PathType Leaf) -and $images.Count -eq 0) {
     Write-Host 'No report or evidence files were found to archive.' -ForegroundColor Yellow
     exit 0
 }
 
-foreach ($file in $files) {
-    Copy-IntoStage -Source $file
+if (Test-Path -LiteralPath $dashboardPath -PathType Leaf) {
+    Copy-Item -LiteralPath $dashboardPath -Destination (Join-Path $stageRoot 'dashboard.html') -Force
+}
+
+if ($images.Count -gt 0) {
+    New-Item -ItemType Directory -Path (Join-Path $stageRoot 'evidences') -Force | Out-Null
+    $usedImageNames = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    foreach ($image in $images) {
+        Copy-EvidenceIntoStage -Source $image -UsedNames $usedImageNames
+    }
 }
 
 if (Test-Path -LiteralPath $zipPath) {
@@ -213,14 +264,24 @@ Remove-Item -LiteralPath $stageRoot -Recurse -Force
 
 Write-Host ("Artifact archive  {0}" -f $zipPath) -ForegroundColor Green
 
-if ($env:AZURE_STORAGE_CONNECTION_STRING) {
+$azureConnectionString = Get-AzureStorageConnectionString
+if ($azureConnectionString) {
     try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-        $azureContext = Get-AzureBlobContext -ConnectionString $env:AZURE_STORAGE_CONNECTION_STRING
+        $azureContext = Get-AzureBlobContext -ConnectionString $azureConnectionString
         $blobFolder = (Split-Path -Leaf $archiveRoot) -replace '[^A-Za-z0-9_-]', '-'
         $blobPath = "$blobFolder/$zipName"
         Send-AzureBlobFile -Context $azureContext -Container 'sap-test-archives' -BlobPath $blobPath -FilePath $zipPath
         Write-Host ("Uploaded to Azure Blob  sap-test-archives/{0}" -f $blobPath) -ForegroundColor Green
+
+        $blobUrl = "$($azureContext.BlobEndpoint)/sap-test-archives/$blobPath"
+        $archiveUsername = if ($env:FSNXT_APP_USERNAME) { $env:FSNXT_APP_USERNAME } else { $env:USERNAME }
+        try {
+            Send-ArchiveLog -Username $archiveUsername -Client $clientName -TestCase $Case -BlobUrl $blobUrl
+            Write-Host 'Azure archive log updated.' -ForegroundColor Green
+        } catch {
+            Write-Host ("Archive uploaded, but the log API update failed: {0}" -f $_.Exception.Message) -ForegroundColor Yellow
+        }
     } catch {
         Write-Host ("Azure Blob upload failed - the local zip is still on disk: {0}" -f $_.Exception.Message) -ForegroundColor Yellow
     }

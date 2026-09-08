@@ -127,6 +127,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       ...(electronApp.isPackaged ? webRuntimeEnvironment(process.resourcesPath) : process.env),
       NO_COLOR: '1', FORCE_COLOR: '0', CLAUDE_CONFIG_DIR: claudeConfigDir,
       FSNXT_ARTIFACT_ARCHIVE_DIR: archiveDir(),
+      FSNXT_APP_USERNAME: currentUsername,
     };
     if (pythonPath) env.FSNXT_PYTHON = pythonPath;
     delete env.ANTHROPIC_API_KEY;
@@ -338,6 +339,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         ...(proposal.credentials ? { SAP_WEB_USER: proposal.credentials.username, SAP_WEB_PASSWORD: proposal.credentials.password } : {}),
         ...(pythonPath ? { FSNXT_PYTHON: pythonPath } : {}),
         FSNXT_ARTIFACT_ARCHIVE_DIR: archiveDir(),
+        FSNXT_APP_USERNAME: currentUsername,
         NO_COLOR: '1',
         FORCE_COLOR: '0',
       },
