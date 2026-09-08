@@ -3780,3 +3780,79 @@
     display: none;
   }
 }
+
+@media (hover: hover) and (pointer: fine) {
+  .home-package-workspace {
+    grid-template-columns: 84px minmax(680px, 1fr);
+    transition: grid-template-columns 180ms ease;
+  }
+
+  .home-package-workspace:has(.home-catalog-sidebar:hover),
+  .home-package-workspace:has(.home-catalog-sidebar:focus-within) {
+    grid-template-columns: 300px minmax(680px, 1fr);
+  }
+
+  .home-catalog-sidebar {
+    min-width: 0;
+    padding: 20px 10px;
+    transition: background 180ms ease, box-shadow 180ms ease, padding 180ms ease;
+    z-index: 5;
+  }
+
+  .home-catalog-sidebar:hover,
+  .home-catalog-sidebar:focus-within {
+    background: #f5faff;
+    box-shadow: 12px 0 28px rgba(8, 28, 64, 0.14);
+    padding: 26px 18px 16px;
+  }
+
+  .home-catalog-sidebar:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+
+  .home-catalog-sidebar:not(:hover):not(:focus-within) :is(
+    .home-catalog-sidebar__heading,
+    .home-package-search,
+    .home-package-filters,
+    .alert,
+    .home-package-card__copy,
+    .home-package-card__main > .icon,
+    .package-progress,
+    .home-catalog-sidebar__footer
+  ) {
+    display: none;
+  }
+
+  .home-catalog-sidebar:not(:hover):not(:focus-within) .home-package-list {
+    margin-top: 0;
+    padding: 1px 0 8px;
+  }
+
+  .home-catalog-sidebar:not(:hover):not(:focus-within) .home-package-card {
+    padding: 6px;
+  }
+
+  .home-catalog-sidebar:not(:hover):not(:focus-within) .home-package-card__main {
+    justify-content: center;
+    padding: 3px 0;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (max-width: 1120px) {
+  .home-package-workspace {
+    grid-template-columns: 84px minmax(620px, 1fr);
+  }
+
+  .home-package-workspace:has(.home-catalog-sidebar:hover),
+  .home-package-workspace:has(.home-catalog-sidebar:focus-within) {
+    grid-template-columns: 270px minmax(620px, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-package-workspace,
+  .home-catalog-sidebar {
+    transition: none;
+  }
+}

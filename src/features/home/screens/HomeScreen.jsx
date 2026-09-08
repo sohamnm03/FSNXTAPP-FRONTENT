@@ -146,7 +146,7 @@ export default function HomeScreen({ onOpenModule }) {
       </header>
 
       <div className="home-package-workspace">
-        <aside className="home-catalog-sidebar" aria-labelledby="packages-heading">
+        <aside className="home-catalog-sidebar" aria-labelledby="packages-heading" tabIndex={0}>
           <div className="home-catalog-sidebar__heading">
             <p className="eyebrow">TESTING WORKSPACE</p>
             <h1 id="packages-heading">Packages</h1>
@@ -176,7 +176,7 @@ export default function HomeScreen({ onOpenModule }) {
               const installing = installingModuleId === module.id;
               return (
                 <article className={`home-package-card ${selectedModule.id === module.id ? 'is-selected' : ''}`} key={module.id}>
-                  <button className="home-package-card__main" onClick={() => setSelectedModuleId(module.id)} type="button">
+                  <button aria-label={module.name} className="home-package-card__main" onClick={() => setSelectedModuleId(module.id)} title={module.name} type="button">
                     <span className="home-package-card__icon"><Icon name={module.icon} size={23} /></span>
                     <span className="home-package-card__copy">
                       <strong>{module.name}</strong>
