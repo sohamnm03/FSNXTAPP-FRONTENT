@@ -17,6 +17,15 @@ function statusLabel(status, source) {
   return ({ idle: 'Ready', running: source === 'direct' ? 'Test is running' : 'AI Assistant is working', completed: 'Ready', failed: 'Needs attention', stopped: 'Stopped', stopping: 'Stopping' })[status] || 'Ready';
 }
 
+// The archive/log API (see gui_tests archive script -> POST /api/logs) wants
+// the prefix of the user's email (e.g. "swarangi.k" from "swarangi.k@fourthsignal.com"),
+// not the login/display username. Falls back to stripping "@..." off the
+// username itself if the account only carries that field.
+function emailPrefix(user) {
+  const source = user?.email || user?.username || '';
+  return String(source).split('@')[0].trim();
+}
+
 function explicitRunRequest(text) {
   if (/\b(?:do not|don't|dont|never)\s+(?:run|execute|start)|\b(?:preview|dry[- ]?run|explain|list)\b/i.test(text)) return null;
   if (!/\b(?:run|execute|start|perform)\b/i.test(text)) return null;
@@ -69,7 +78,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   const conversationRef = useRef(null);
 
   useEffect(() => {
-    Promise.all([sapTerminalService.getProject(user?.username), sapTerminalService.getAuthStatus()])
+    Promise.all([sapTerminalService.getProject(emailPrefix(user)), sapTerminalService.getAuthStatus()])
       .then(([project, auth]) => {
         setIsConfigured(Boolean(project.configured));
         setSapSystems(project.systems || []);

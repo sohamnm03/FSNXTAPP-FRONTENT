@@ -275,7 +275,12 @@ if ($azureConnectionString) {
         Write-Host ("Uploaded to Azure Blob  sap-test-archives/{0}" -f $blobPath) -ForegroundColor Green
 
         $blobUrl = "$($azureContext.BlobEndpoint)/sap-test-archives/$blobPath"
-        $archiveUsername = if ($env:FSNXT_APP_USERNAME) { $env:FSNXT_APP_USERNAME } else { $env:USERNAME }
+        # /api/logs wants the prefix of the user's email (e.g. "swarangi.k" from
+        # "swarangi.k@fourthsignal.com"), not a full address - the desktop app
+        # already sends that prefix via FSNXT_APP_USERNAME, but this strips any
+        # "@..." that reaches here anyway so the payload is correct either way.
+        $rawArchiveUsername = if ($env:FSNXT_APP_USERNAME) { $env:FSNXT_APP_USERNAME } else { $env:USERNAME }
+        $archiveUsername = ($rawArchiveUsername -split '@')[0]
         try {
             Send-ArchiveLog -Username $archiveUsername -Client $clientName -TestCase $Case -BlobUrl $blobUrl
             Write-Host 'Azure archive log updated.' -ForegroundColor Green
