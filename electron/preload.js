@@ -21,7 +21,7 @@ contextBridge.exposeInMainWorld('desktopAPI', Object.freeze({
     getProject: (username) => ipcRenderer.invoke('sap-terminal:get-project', username),
     chooseArchiveDirectory: () => ipcRenderer.invoke('sap-terminal:choose-archive-directory'),
     getAuthStatus: () => ipcRenderer.invoke('sap-terminal:get-auth-status'),
-    testConnection: (systemId) => ipcRenderer.invoke('sap-terminal:test-connection', systemId),
+    testConnection: (systemId, credentials) => ipcRenderer.invoke('sap-terminal:test-connection', systemId, credentials),
     configureToken: (token) => ipcRenderer.invoke('sap-terminal:configure-token', token),
     clearToken: () => ipcRenderer.invoke('sap-terminal:clear-token'),
     listCases: (lane) => ipcRenderer.invoke('sap-terminal:list-cases', lane),

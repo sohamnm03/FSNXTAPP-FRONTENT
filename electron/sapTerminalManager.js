@@ -267,7 +267,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     // already-open SAP GUI session, so credentials typed here do not apply to it.
     const username = typeof requestedCredentials?.username === 'string' ? requestedCredentials.username.trim() : '';
     const password = typeof requestedCredentials?.password === 'string' ? requestedCredentials.password : '';
-    const credentials = lane === 'web' && username && password ? { username, password } : null;
+    const credentials = username && password ? { username, password } : null;
 
     const confirmationId = crypto.randomUUID();
     const proposal = {
@@ -336,7 +336,10 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         ...(electronApp.isPackaged && proposal.lane === 'web' ? webRuntimeEnvironment(process.resourcesPath) : process.env),
         ...projectLocalEnv(),
         SAP_SYSTEM_ID: proposal.systemId,
-        ...(proposal.credentials ? { SAP_WEB_USER: proposal.credentials.username, SAP_WEB_PASSWORD: proposal.credentials.password } : {}),
+        ...(proposal.credentials ? {
+          ...(proposal.lane === 'web' ? { SAP_WEB_USER: proposal.credentials.username, SAP_WEB_PASSWORD: proposal.credentials.password } : {}),
+          ...(proposal.lane === 'gui' ? { SAP_TEST_USERNAME: proposal.credentials.username, SAP_TEST_PASSWORD: proposal.credentials.password } : {}),
+        } : {}),
         ...(pythonPath ? { FSNXT_PYTHON: pythonPath } : {}),
         FSNXT_ARTIFACT_ARCHIVE_DIR: archiveDir(),
         FSNXT_APP_USERNAME: currentUsername,
@@ -445,7 +448,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     prepareCase,
     startConfirmedCase,
     getAuthStatus,
-    testConnection(systemId) {
+    testConnection(systemId, requestedCredentials = null) {
       if (connectionCheckProcess) {
         throw new Error('An SAP connection check is already running.');
       }
@@ -453,10 +456,13 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         throw new Error('Another SAP request is already running. Wait for it to finish or stop it first.');
       }
       const system = configuredConnectionCheckSystem(systemId);
+      const username = typeof requestedCredentials?.username === 'string' ? requestedCredentials.username.trim() : '';
+      const password = typeof requestedCredentials?.password === 'string' ? requestedCredentials.password : '';
+      if (!username || !password) throw new Error('Enter an SAP username and password.');
       if (!system.rfc?.applicationServer || !/^\d{2}$/.test(String(system.rfc.systemNumber))) {
         throw new Error('The default SAP system has no valid RFC connection metadata.');
       }
-      const scriptPath = path.join(projectRoot, 'scripts', 'test-sap-connection.ps1');
+      const scriptPath = path.join(projectRoot, 'scripts', 'test-sap-gui-login.ps1');
       if (!fs.existsSync(scriptPath)) {
         throw new Error('The SAP connection check is missing. Reinstall the application.');
       }
@@ -475,7 +481,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
           '-SystemNumber', String(system.rfc.systemNumber),
         ], {
           cwd: projectRoot,
-          env: { ...process.env, NO_COLOR: '1', FORCE_COLOR: '0' },
+          env: { ...process.env, SAP_TEST_USERNAME: username, SAP_TEST_PASSWORD: password, NO_COLOR: '1', FORCE_COLOR: '0' },
           windowsHide: true,
           shell: false,
           stdio: ['ignore', 'pipe', 'pipe'],

@@ -28,10 +28,31 @@ if str(REPO_ROOT) not in sys.path:
 
 from gui_tests.journal import Journal  # noqa: E402
 from gui_tests.render_result import render  # noqa: E402
-from gui_tests.session import ComDisconnected, GuiSession, SystemMismatch, WriteRefused  # noqa: E402
+from gui_tests.session import (  # noqa: E402
+    ComDisconnected, GuiSession, SystemMismatch, TransactionRefused, WriteRefused,
+)
 
 REGISTRY = REPO_ROOT / "config" / "gui-runs.json"
 SYSTEMS = REPO_ROOT / "config" / "sap-systems.json"
+
+
+def load_local_env() -> None:
+    """Load the shared gitignored web-lane .env for plain terminal GUI runs."""
+    env_file = REPO_ROOT / "web-tests" / ".env"
+    if not env_file.is_file():
+        return
+    for raw_line in env_file.read_text(encoding="utf-8-sig").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
+load_local_env()
 
 #: The Windows console is cp1252, so an em dash prints as a replacement
 #: character. Journal and run-file text keep their typography (those are written
@@ -67,13 +88,18 @@ def load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def resolve_system(system_id: str | None) -> tuple[str, str, str]:
+def resolve_system(system_id: str | None) -> tuple[str, str, str, dict]:
     """
-    (registry id, SAP system name, client) from the one registry both lanes read.
+    (registry id, SAP system name, client, login info) from the one registry
+    both lanes read.
 
     `config/sap-systems.json` is the single source of truth for the GUI lane and
     the web lane alike — there is no second place to add a system, and therefore
     no way for the two lanes to disagree about what they are allowed to drive.
+
+    `login info` is what `GuiSession.login()` needs to open a fresh session:
+    the SAP Logon Pad entry name, credentials, and the allow-list that
+    `start_transaction()` enforces independently of the MCP server.
     """
     registry = load_json(SYSTEMS)
     sid = system_id or registry.get("defaultSystem")
@@ -99,7 +125,18 @@ def resolve_system(system_id: str | None) -> tuple[str, str, str]:
                 f"Refusing to run against {sid!r} — it looks like a production system "
                 f"(matched {marker!r}). CLAUDE.md rule 7: no production, ever."
             )
-    return sid, name, client
+
+    gui = entry.get("sapGui") or {}
+    creds = entry.get("credentials") or {}
+    password_env = creds.get("passwordEnvVar")
+    login_info = {
+        "logon_description": gui.get("logonDescription"),
+        "user": os.environ.get("SAP_TEST_USERNAME") or os.environ.get("SAP_USER") or creds.get("user"),
+        "password": os.environ.get("SAP_TEST_PASSWORD") or os.environ.get("SAP_PASSWORD") or (os.environ.get(password_env) if password_env else None),
+        "language": entry.get("language", "EN"),
+        "allowed_transactions": gui.get("allowedTransactions"),
+    }
+    return sid, name, client, login_info
 
 
 class RunLock:
@@ -257,7 +294,7 @@ def main(argv: list[str] | None = None) -> int:
     if stage and stages and stage not in stages:
         raise SystemExit(f"Unknown stage {stage!r} for {case_id}. Known: {', '.join(stages)}")
 
-    system_id, system_name, client = resolve_system(args.system or entry.get("system"))
+    system_id, system_name, client, login_info = resolve_system(args.system or entry.get("system"))
 
     # Rows are opt-in per case. A module that takes none is called exactly as
     # before, so adding this changed nothing for TC-014 or TC-015; asking for rows
@@ -306,6 +343,13 @@ def main(argv: list[str] | None = None) -> int:
         say()
         return 0
 
+    if not login_info["password"]:
+        raise SystemExit(
+            f"No password resolved for {system_id!r} — check its passwordEnvVar "
+            f"is set in .claude/settings.local.json. login() needs it; there is no "
+            f"attach-to-existing fallback any more."
+        )
+
     confirm_writes(case_id, writes, system_id, system_name, client, args.yes)
 
     if args.tag:
@@ -335,11 +379,17 @@ def main(argv: list[str] | None = None) -> int:
     say(f"  journal  results/gui/{system_id}/journal/{run_id}.ndjson")
     say()
 
-    sap = GuiSession(journal, expect_system=system_name, expect_client=client)
+    sap = GuiSession(
+        journal, expect_system=system_name, expect_client=client,
+        logon_description=login_info["logon_description"],
+        sap_user=login_info["user"], sap_password=login_info["password"],
+        language=login_info["language"],
+        allowed_transactions=login_info["allowed_transactions"],
+    )
     try:
-        info = sap.attach()
-        say(f"  attached to {info['system']}/{info['client']} as {info['user']}")
-        sap.assert_dev_system("attach")
+        info = sap.login()
+        say(f"  logged in fresh to {info['system']}/{info['client']} as {info['user']}")
+        sap.assert_dev_system("login")
         run_kwargs = {"stage": stage, "deal_number": args.resume}
         if takes_rows:
             run_kwargs["rows"] = rows
@@ -356,6 +406,12 @@ def main(argv: list[str] | None = None) -> int:
         error_text = str(exc)
         journal.deviation(f"A write was refused and nothing was committed for it: {exc}")
         say(f"  REFUSED: {exc}")
+    except TransactionRefused as exc:
+        blocked = True
+        error_text = str(exc)
+        journal.verdict("BLOCKED", "a t-code outside the allow-list was requested — see Deviations")
+        journal.deviation(f"Transaction refused, nothing was run: {exc}")
+        say(f"  BLOCKED: {exc}")
     except ComDisconnected as exc:
         failed = True
         error_text = str(exc)

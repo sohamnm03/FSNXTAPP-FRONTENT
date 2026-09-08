@@ -142,7 +142,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
 
   function webCredentials() {
     const username = sapUsername.trim();
-    return lane === 'web' && username && sapPassword ? { username, password: sapPassword } : null;
+    return username && sapPassword ? { username, password: sapPassword } : null;
   }
 
   async function sendPrompt(event) {
@@ -219,16 +219,21 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     setConnectionServerName('');
     setError('');
     try {
-      const result = await sapTerminalService.testConnection(selectedSystemId);
+      const result = await sapTerminalService.testConnection(selectedSystemId, {
+        username: sapUsername.trim(),
+        password: sapPassword,
+      });
       setConnectionProgress(100);
       await new Promise((resolve) => window.setTimeout(resolve, 300));
       setConnectionStatus(result.connected ? 'connected' : 'disconnected');
       setConnectionServerName(result.connected ? result.serverName || sapSystems.find((system) => system.id === selectedSystemId)?.name || '' : '');
+      if (!result.connected) setError(result.reason || 'Connection failed. Check the SAP username and password.');
     } catch {
       setConnectionProgress(100);
       await new Promise((resolve) => window.setTimeout(resolve, 300));
       setConnectionStatus('disconnected');
       setConnectionServerName('');
+      setError('Connection failed. Check the SAP username and password.');
     }
   }
 
@@ -421,7 +426,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                 variant="secondary"
               />
               {connectionStatus === 'disconnected' ? (
-                <p className="sap-connection-result sap-connection-result--disconnected" role="status">Not connected</p>
+                <p className="sap-connection-result sap-connection-result--disconnected" role="status">Connection failed</p>
               ) : null}
             </div>
 

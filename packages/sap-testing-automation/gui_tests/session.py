@@ -57,6 +57,36 @@ class SystemMismatch(Exception):
     """Rule 1 failed: this is not the system the case is allowed to drive."""
 
 
+class TransactionRefused(Exception):
+    """
+    The requested t-code is not on this workspace's allow-list.
+
+    This lane imports `SAPGUIController` directly and never goes through the
+    MCP server, so the server's own blocklist/allow-list (config/sap-systems.json
+    -> scripts/sync-sap-systems.ps1 -> --allowed-transactions) does not apply
+    here on its own. This mirrors that same check independently, so SE16,
+    SE16N and SM30 (direct table maintenance) are refused in the scripted
+    lane too, not only when a model drives MCP tools.
+    """
+
+
+_TCODE_PREFIX = ("/N", "/O", "/*")
+
+
+def _normalize_tcode(raw: str) -> str:
+    value = raw.strip().upper()
+    while value.startswith("="):
+        value = value[1:].lstrip()
+    changed = True
+    while changed:
+        changed = False
+        for prefix in _TCODE_PREFIX:
+            if value.startswith(prefix):
+                value = value[len(prefix):].lstrip()
+                changed = True
+    return value
+
+
 class ComDisconnected(Exception):
     """
     The COM transport dropped. The state of any in-flight write is UNKNOWN.
@@ -108,42 +138,135 @@ class CheckRun:
 class GuiSession:
     """A live SAP GUI session, with this workspace's rules wrapped around it."""
 
-    def __init__(self, journal: Journal, expect_system: str, expect_client: str,
+    def __init__(self, journal: Journal, expect_system: str, expect_client: str, *,
+                 logon_description: str | None = None, sap_user: str | None = None,
+                 sap_password: str | None = None, language: str = "EN",
+                 allowed_transactions: Iterable[str] | None = None,
                  evidence_dir: Path | None = None):
         self.journal = journal
         self.expect_system = expect_system
         self.expect_client = expect_client
+        self.logon_description = logon_description
+        self.sap_user = sap_user
+        self.sap_password = sap_password
+        self.language = language
+        self._allowed_transactions = (
+            {_normalize_tcode(t) for t in allowed_transactions}
+            if allowed_transactions else None
+        )
         self.evidence_dir = evidence_dir or (REPO_ROOT / "evidence" / journal.system_id)
         self.controller = SAPGUIController()
         self._attached = False
+        self._session_id: str | None = None
 
     # ------------------------------------------------------------ connection
 
-    def attach(self) -> dict:
+    def login(self) -> dict:
         """
-        Attach to the session already open in SAP Logon.
+        Open a brand-new SAP GUI session and log in fresh.
 
-        `sap_connect_existing`, not `sap_connect`: CLAUDE.md rule 2 — attaching
-        to what is open is the only mode where the human can see what is being
-        driven. Opening a second session is a rule-9 decision, not a script's.
+        `sap_connect`, not `sap_connect_existing`: every GUI-lane case now
+        starts this way, superseding the old attach-to-whatever's-open
+        default (CLAUDE.md rule 2/9, updated). Whatever is already logged on
+        — the human's own window, a session left over from a prior run — is
+        never touched: not attached to, and never logged off. This session
+        opens alongside it.
+
+        Opening a second session for the same user reliably raises SAP's
+        "License Information for Multiple Logons" popup; `_keep_other_sessions`
+        always answers it by keeping every other session alive and continuing
+        with this new one.
         """
-        self.controller.connect_to_existing_session(0, 0)
+        if not (self.logon_description and self.sap_user and self.sap_password):
+            raise SystemMismatch(
+                "login() needs logon_description, sap_user and sap_password — "
+                "resolve them from config/sap-systems.json before constructing GuiSession."
+            )
+        self.controller.connect(
+            system_description=self.logon_description,
+            client=self.expect_client,
+            user=self.sap_user,
+            password=self.sap_password,
+            language=self.language,
+        )
+        self._keep_other_sessions()
+        self._session_id = getattr(self.controller._session, "Id", None)
         self._attached = True
         return self.session_info()
 
+    #: Discovered live against DS4/100, 2026-09-05, by actually opening a
+    #: second connection while FS_DEV3 was already logged on twice: the popup
+    #: is titled exactly this, offers three radio buttons (OPT1 ends every
+    #: other logon, OPT2 keeps them all, OPT3 terminates this new one) plus a
+    #: toolbar button whose *tooltip* (its visible text is empty) reads
+    #: "Confirm Selection   (Enter)" and submits whichever radio is currently
+    #: selected. CLAUDE.md rule 4 is exactly why this is hardcoded from a
+    #: live observation instead of a generic confirm-pattern match: that
+    #: button's tooltip contains the word "confirm", so a generic matcher
+    #: would press it against whatever SAP defaults the radio group to —
+    #: untested, and not provably OPT2.
+    _MULTI_LOGON_TITLE = "License Information for Multiple Logons"
+    _MULTI_LOGON_KEEP_OPEN_RADIO = "radMULTI_LOGON_OPT2"
+    _MULTI_LOGON_CONFIRM_BUTTON = "Confirm Selection"
+
+    def _keep_other_sessions(self) -> None:
+        """
+        Answer SAP's multiple-logons popup, if raised, by explicitly selecting
+        "Continue with this logon, without ending any other logons in the
+        system" and confirming — never by pressing a plausible-looking button
+        against whatever the dialog happened to default to.
+
+        A popup that doesn't match the known dialog by title AND by carrying
+        the expected radio button is refused rather than guessed at: pressing
+        the wrong control here could end a session this workspace never asked
+        to end.
+        """
+        popup = self.popup()
+        if not popup.get("popup_exists"):
+            return
+        title = str(popup.get("title", ""))
+        names = {str(e.get("name", "")) for e in popup.get("interactive_elements", [])}
+        if title != self._MULTI_LOGON_TITLE or "MULTI_LOGON_OPT2" not in names:
+            raise SystemMismatch(
+                f"login() hit an unrecognised popup ({title or '(untitled)'}) instead "
+                f"of the known multiple-logons dialog. Buttons offered: "
+                f"{popup.get('buttons', [])}. Refusing rather than guessing which one "
+                f"to press (CLAUDE.md rule 4)."
+            )
+        self.journal.meta(
+            "Multiple-logons popup on login()",
+            "kept every other session open (selected MULTI_LOGON_OPT2, confirmed)",
+        )
+        popup_id = popup["window_id"]
+        self.controller.select_radio_button(
+            f"{popup_id}/usr/{self._MULTI_LOGON_KEEP_OPEN_RADIO}"
+        )
+        self.controller.handle_popup(action="press", button_text=self._MULTI_LOGON_CONFIRM_BUTTON)
+
     def reattach(self) -> dict:
         """
-        Re-establish COM after a drop.
+        Re-establish COM after a drop, onto the SAME session this run opened.
 
         The controller caches the scripting engine and the session object; both
-        are dead after a disconnect, so they are cleared before reconnecting or
-        the reconnect hands back the same corpse.
+        are dead after a disconnect, so they are cleared before reconnecting.
+        Reconnecting by session id (not connection index 0) matters now that
+        login() may coexist with another session already open at a lower
+        index — index 0 is no longer reliably "the session this run is
+        driving".
         """
         c = self.controller
+        session_id = self._session_id
         c._sap_gui_auto = None
         c._application = None
         c._connection = None
         c._session = None
+        if session_id:
+            connection, session = c._find_session_by_id(session_id)
+            if session is not None:
+                c._connection = connection
+                c._session = session
+                c._owns_session = True
+                return self.session_info()
         c.connect_to_existing_session(0, 0)
         return self.session_info()
 
@@ -184,6 +307,25 @@ class GuiSession:
     # -------------------------------------------------------------- screens
 
     def start_transaction(self, tcode: str) -> dict:
+        """
+        Run a t-code, refusing anything not on this workspace's allow-list.
+
+        This lane bypasses the MCP server (it imports `SAPGUIController`
+        directly), so the server's own blocklist/`allowedTransactions`
+        enforcement never runs here on its own. This check mirrors it, so
+        SE16, SE16N and SM30 (direct table maintenance) are refused in a
+        scripted case exactly as they would be for a model driving MCP
+        tools — never on config/sap-systems.json's word alone.
+        """
+        canonical = _normalize_tcode(tcode)
+        if self._allowed_transactions is not None and canonical not in self._allowed_transactions:
+            raise TransactionRefused(
+                f"{canonical} is not on this workspace's allowed-transactions list "
+                f"(config/sap-systems.json). Direct table maintenance (SE16, SE16N, "
+                f"SM30) is deliberately never on it. If {canonical} is genuinely "
+                f"needed, add it there and re-run scripts/sync-sap-systems.ps1 — "
+                f"never bypass this check instead."
+            )
         result = self.controller.execute_transaction(tcode)
         self.assert_dev_system(tcode)
         return result

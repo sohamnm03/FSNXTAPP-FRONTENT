@@ -32,7 +32,7 @@ async function registerSapTerminalHandlers() {
     sapTerminalManager.chooseArchiveDirectory(BrowserWindow.fromWebContents(event.sender))
   ));
   ipcMain.handle('sap-terminal:get-auth-status', () => sapTerminalManager.getAuthStatus());
-  ipcMain.handle('sap-terminal:test-connection', (_event, systemId) => sapTerminalManager.testConnection(systemId));
+  ipcMain.handle('sap-terminal:test-connection', (_event, systemId, credentials) => sapTerminalManager.testConnection(systemId, credentials));
   ipcMain.handle('sap-terminal:configure-token', (_event, token) => sapTerminalManager.configureToken(token));
   ipcMain.handle('sap-terminal:clear-token', () => sapTerminalManager.clearToken());
   ipcMain.handle('sap-terminal:list-cases', (_event, lane) => sapTerminalManager.listCases(lane));

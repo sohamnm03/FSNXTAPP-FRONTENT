@@ -38,12 +38,21 @@
         "readOnly": false,
         "profile": "full",
         "auditLog": "logs/sap-gui-audit.jsonl",
+        "allowedTransactions": ["FTR_CREATE", "FTR_EDIT", "TBB1", "TPM44", "TPM1", "FWZZ"],
         "$comment": [
           "'logonDescription' MUST match the SAP Logon Pad entry name exactly - it is",
           "the argument to sap_connect. Set readOnly=true for a look-but-don't-touch",
-          "profile, or add 'allowedTransactions': [\"MM03\",\"VA03\"] to restrict which",
-          "t-codes may run. The server's own blocklist (SU01, PFCG, SE16N and other",
-          "admin tcodes) applies regardless of these settings."
+          "profile. The server's own blocklist (SU01, PFCG, SE16N and other admin",
+          "tcodes) applies regardless of these settings.",
+          "",
+          "'allowedTransactions' is a deliberate hardblock, not just a restriction:",
+          "it whitelists exactly the t-codes this workspace's cases use today, so",
+          "SE16, SE16N and SM30 (direct table maintenance) are refused even though",
+          "only SE16N is in the server's own built-in blocklist. gui_tests/session.py",
+          "enforces the same list independently for the scripted lane, which never",
+          "goes through this MCP server. A new case needing a new t-code must add it",
+          "here deliberately and re-run scripts/sync-sap-systems.ps1 - that friction",
+          "is intentional."
         ]
       },
 
