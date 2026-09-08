@@ -10,9 +10,11 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "tools" / "mcp-sap-gui" / ".venv" / "Lib" / "site-packages"))
 from mcp_sap_gui.sap_controller import SAPGUIController  # noqa: E402
+import pythoncom  # noqa: E402
 
 
 def main() -> int:
+    pythoncom.CoInitialize()
     controller = SAPGUIController()
     try:
         controller.connect(
@@ -51,13 +53,14 @@ def main() -> int:
         print(json.dumps({"connected": True, "user": user}))
         return 0
     except Exception as exc:
-        print(json.dumps({"connected": False, "reason": str(exc)}))
+        print(json.dumps({"connected": False, "reason": str(exc) or exc.__class__.__name__}))
         return 0
     finally:
         try:
             controller.disconnect()
         except Exception:
             pass
+        pythoncom.CoUninitialize()
 
 
 if __name__ == "__main__":

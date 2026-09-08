@@ -481,7 +481,14 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
           '-SystemNumber', String(system.rfc.systemNumber),
         ], {
           cwd: projectRoot,
-          env: { ...process.env, SAP_TEST_USERNAME: username, SAP_TEST_PASSWORD: password, NO_COLOR: '1', FORCE_COLOR: '0' },
+          env: {
+            ...process.env,
+            ...(pythonPath ? { FSNXT_PYTHON: pythonPath } : {}),
+            SAP_TEST_USERNAME: username,
+            SAP_TEST_PASSWORD: password,
+            NO_COLOR: '1',
+            FORCE_COLOR: '0',
+          },
           windowsHide: true,
           shell: false,
           stdio: ['ignore', 'pipe', 'pipe'],
