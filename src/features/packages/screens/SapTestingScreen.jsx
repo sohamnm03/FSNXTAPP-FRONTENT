@@ -66,6 +66,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   const [sapUsername, setSapUsername] = useState('');
   const [sapPassword, setSapPassword] = useState('');
   const [connectionServerName, setConnectionServerName] = useState('');
+  const [connectedSystemId, setConnectedSystemId] = useState('');
   const [connectionProgress, setConnectionProgress] = useState(0);
   const [cases, setCases] = useState([]);
   const [isLoadingCases, setIsLoadingCases] = useState(false);
@@ -88,7 +89,6 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
         setTokenEnding(auth.tokenEnding || '');
         if (!project.configured) setError('The SAP automation package is missing. Reinstall the application.');
         else if (!auth.available) setError('The bundled AI Assistant runtime is missing. Reinstall the application.');
-        if (project.configured) loadCases(lane);
       })
       .catch((projectError) => setError(projectError.message))
       .finally(() => setIsCheckingAuth(false));
@@ -121,20 +121,18 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     if (conversationRef.current) conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
   }, [messages, status]);
 
-  async function loadCases(nextLane) {
-    setIsLoadingCases(true);
-    setCases([]);
-    try {
-      const result = await sapTerminalService.listCases(nextLane);
-      const nextCases = result.cases || [];
-      setCases(nextCases);
-      setSelectedCase(null);
-    } catch (listError) {
-      setError(listError.message);
-    } finally {
-      setIsLoadingCases(false);
+  useEffect(() => {
+    let cancelled = false;
+    // The current GUI-TC and Web-TC folders contain NIIF cases only.
+    if (connectedSystemId !== 'DS4_100_NIIF') {
+      return undefined;
     }
-  }
+    sapTerminalService.listCases(lane)
+      .then((result) => { if (!cancelled) setCases(result.cases || []); })
+      .catch((listError) => { if (!cancelled) setError(listError.message); })
+      .finally(() => { if (!cancelled) setIsLoadingCases(false); });
+    return () => { cancelled = true; };
+  }, [connectedSystemId, lane]);
 
   useEffect(() => {
     if (connectionStatus !== 'checking') return undefined;
@@ -226,6 +224,11 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     setConnectionProgress(0);
     setConnectionStatus('checking');
     setConnectionServerName('');
+    setConnectedSystemId('');
+    setCases([]);
+    setIsLoadingCases(false);
+    setSelectedCase(null);
+    closeCaseDialog();
     setError('');
     try {
       const result = await sapTerminalService.testConnection(selectedSystemId, {
@@ -235,6 +238,8 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
       setConnectionProgress(100);
       await new Promise((resolve) => window.setTimeout(resolve, 300));
       setConnectionStatus(result.connected ? 'connected' : 'disconnected');
+      setConnectedSystemId(result.connected ? selectedSystemId : '');
+      setIsLoadingCases(result.connected && selectedSystemId === 'DS4_100_NIIF');
       setConnectionServerName(result.connected ? result.serverName || sapSystems.find((system) => system.id === selectedSystemId)?.name || '' : '');
       if (!result.connected) setError(result.reason || 'Connection failed. Check the SAP username and password.');
     } catch {
@@ -344,11 +349,13 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   }
 
   function selectLane(nextLane) {
+    if (nextLane === lane) return;
+    setCases([]);
+    setIsLoadingCases(connectedSystemId === 'DS4_100_NIIF');
     setLane(nextLane);
     newChat();
     setSelectedCase(null);
     closeCaseDialog();
-    loadCases(nextLane);
   }
 
   async function uninstall() {
@@ -396,6 +403,11 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                   setSelectedSystemId(event.target.value);
                   setConnectionStatus('idle');
                   setConnectionServerName('');
+                  setConnectedSystemId('');
+                  setCases([]);
+                  setIsLoadingCases(false);
+                  setSelectedCase(null);
+                  closeCaseDialog();
                 }}
                 value={selectedSystemId}
               >
@@ -471,7 +483,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                   </div>
                 </div>
 
-                <div className="sap-case-section">
+                {connectedSystemId === 'DS4_100_NIIF' ? <div className="sap-case-section">
                   <div className="sap-case-section__header">
                     <span className="sap-sidebar-label">{LANES[lane].label} test cases</span>
                     <div className="sap-case-section__tools">
@@ -501,7 +513,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                       </button>
                     ))}
                   </div>
-                </div>
+                </div> : null}
               </>
             ) : null}
           </div>
