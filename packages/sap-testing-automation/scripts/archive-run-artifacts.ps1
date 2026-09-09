@@ -204,14 +204,18 @@ function Send-ArchiveLog {
         [string] $Username,
         [string] $Client,
         [string] $TestCase,
-        [string] $BlobUrl
+        [string] $BlobUrl,
+        [ValidateSet('web', 'gui')]
+        [string] $Lane
     )
 
+    $apiLane = if ($Lane -eq 'gui') { 'GUI' } else { 'WEB' }
     $payload = [ordered]@{
         username = $Username
         client   = $Client
         TC       = $TestCase
         path     = $BlobUrl
+        lane     = $apiLane
     } | ConvertTo-Json
 
     Invoke-RestMethod `
@@ -282,7 +286,7 @@ if ($azureConnectionString) {
         $rawArchiveUsername = if ($env:FSNXT_APP_USERNAME) { $env:FSNXT_APP_USERNAME } else { $env:USERNAME }
         $archiveUsername = ($rawArchiveUsername -split '@')[0]
         try {
-            Send-ArchiveLog -Username $archiveUsername -Client $clientName -TestCase $Case -BlobUrl $blobUrl
+            Send-ArchiveLog -Username $archiveUsername -Client $clientName -TestCase $Case -BlobUrl $blobUrl -Lane $Lane
             Write-Host 'Azure archive log updated.' -ForegroundColor Green
         } catch {
             Write-Host ("Archive uploaded, but the log API update failed: {0}" -f $_.Exception.Message) -ForegroundColor Yellow
