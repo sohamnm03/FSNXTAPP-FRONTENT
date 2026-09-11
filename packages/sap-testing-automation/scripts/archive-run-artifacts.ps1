@@ -12,8 +12,8 @@
     If AZURE_STORAGE_CONNECTION_STRING is set in the environment (this
     workspace keeps it in the gitignored .claude/settings.local.json, the same
     place SAP_DS4_100_NIIF_PASSWORD lives), the zip is also uploaded to the
-    'sap-test-archives' container under a blob path derived from the local
-    archive folder name, so evidence backs up off the tester's machine without
+    'sap-test-archives' container under a blob path derived from the signed-in
+    app username, so evidence backs up off the tester's machine without
     a person doing it by hand. A missing connection string, or an upload
     failure, is a warning, not an error - the local zip is the record of
     record and this script must not fail a run over network trouble.
@@ -226,6 +226,13 @@ function Send-ArchiveLog {
         -UseBasicParsing | Out-Null
 }
 
+function Get-ArchiveUsername {
+    $rawArchiveUsername = if ($env:FSNXT_APP_USERNAME) { $env:FSNXT_APP_USERNAME } else { $env:USERNAME }
+    $archiveUsername = (($rawArchiveUsername -split '@')[0] -replace '[^A-Za-z0-9_.-]', '-').Trim('-')
+    if ($archiveUsername) { return $archiveUsername }
+    return 'unknown-user'
+}
+
 if (Test-Path -LiteralPath $stageRoot) {
     Remove-Item -LiteralPath $stageRoot -Recurse -Force
 }
@@ -273,18 +280,13 @@ if ($azureConnectionString) {
     try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
         $azureContext = Get-AzureBlobContext -ConnectionString $azureConnectionString
-        $blobFolder = (Split-Path -Leaf $archiveRoot) -replace '[^A-Za-z0-9_-]', '-'
+        $archiveUsername = Get-ArchiveUsername
+        $blobFolder = $archiveUsername
         $blobPath = "$blobFolder/$zipName"
         Send-AzureBlobFile -Context $azureContext -Container 'sap-test-archives' -BlobPath $blobPath -FilePath $zipPath
         Write-Host ("Uploaded to Azure Blob  sap-test-archives/{0}" -f $blobPath) -ForegroundColor Green
 
         $blobUrl = "$($azureContext.BlobEndpoint)/sap-test-archives/$blobPath"
-        # /api/logs wants the prefix of the user's email (e.g. "swarangi.k" from
-        # "swarangi.k@fourthsignal.com"), not a full address - the desktop app
-        # already sends that prefix via FSNXT_APP_USERNAME, but this strips any
-        # "@..." that reaches here anyway so the payload is correct either way.
-        $rawArchiveUsername = if ($env:FSNXT_APP_USERNAME) { $env:FSNXT_APP_USERNAME } else { $env:USERNAME }
-        $archiveUsername = ($rawArchiveUsername -split '@')[0]
         try {
             Send-ArchiveLog -Username $archiveUsername -Client $clientName -TestCase $Case -BlobUrl $blobUrl -Lane $Lane
             Write-Host 'Azure archive log updated.' -ForegroundColor Green

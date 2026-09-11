@@ -82,6 +82,10 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     return String(value || '').trim().replace(/[<>:"/\\|?*\x00-\x1F]/g, '').trim();
   }
 
+  function currentUsernameKey() {
+    return sanitizeForFolderName(currentUsername).toLowerCase();
+  }
+
   function defaultArchiveDir() {
     const suffix = sanitizeForFolderName(currentUsername);
     const folderName = suffix ? `FSNXT SAP Test Archives - ${suffix}` : 'FSNXT SAP Test Archives';
@@ -102,8 +106,14 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
   }
 
   function archiveDir() {
-    const configured = readSettings().archiveDirectory;
-    return typeof configured === 'string' && configured.trim() ? configured : defaultArchiveDir();
+    const settings = readSettings();
+    const usernameKey = currentUsernameKey();
+    const userConfigured = usernameKey && settings.archiveDirectories?.[usernameKey];
+    if (typeof userConfigured === 'string' && userConfigured.trim()) return userConfigured;
+    if (!usernameKey && typeof settings.archiveDirectory === 'string' && settings.archiveDirectory.trim()) {
+      return settings.archiveDirectory;
+    }
+    return defaultArchiveDir();
   }
 
   // The AI-chat lane spawns claude.exe with cwd=projectRoot, so Claude Code
@@ -440,7 +450,19 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         return { archiveDirectory: current };
       }
       const selected = result.filePaths[0];
-      writeSettings({ ...readSettings(), archiveDirectory: selected });
+      const settings = readSettings();
+      const usernameKey = currentUsernameKey();
+      if (usernameKey) {
+        writeSettings({
+          ...settings,
+          archiveDirectories: {
+            ...(settings.archiveDirectories || {}),
+            [usernameKey]: selected,
+          },
+        });
+      } else {
+        writeSettings({ ...settings, archiveDirectory: selected });
+      }
       return { archiveDirectory: selected };
     },
     listCases,
