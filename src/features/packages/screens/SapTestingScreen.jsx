@@ -12,6 +12,60 @@ const LANES = {
   gui: { label: 'GUI Lane', description: 'SAP GUI for Windows' },
   web: { label: 'Web Lane', description: 'Browser-based SAP testing' },
 };
+// Chat-driven test case creation: instead of a form dialog, the AI Assistant
+// terminal collects these fields one message at a time (Claude Code-style),
+// then hands the answers to the same createCase() IPC the old form used.
+const CASE_WIZARD_FIELDS = [
+  { key: 'transaction', question: 'Which SAP transaction or app is this test case for? (e.g., FTR_CREATE)', required: true },
+  { key: 'summary', question: 'Give me a one-line summary of what this test case covers.', required: true },
+  { key: 'purpose', question: 'What does this case prove, and what does it not cover?', required: true },
+  { key: 'preconditions', question: 'List any preconditions, one per line. Say "none" if there are none.', required: false },
+  { key: 'testData', question: 'List the test data / field values needed, one per line. Say "none" if not applicable.', required: false },
+  { key: 'steps', question: 'List the test steps in order, one per line.', required: true },
+  { key: 'assertions', question: 'List the expected results, one per line. Say "none" if not applicable.', required: false },
+  { key: 'writes', question: 'What database writes does this case make? Say "none" if it is read-only.', required: false },
+  { key: 'cleanup', question: 'Any cleanup needed after the run? Say "none" if not required.', required: false },
+];
+
+function isCaseWizardSkip(text) {
+  return /^(skip|none|n\/a|na)$/i.test(text.trim());
+}
+
+function isCaseWizardCancel(text) {
+  return /^(cancel|stop|nevermind|never mind|abort|quit)$/i.test(text.trim());
+}
+
+// Catches "I pasted a whole case file instead of answering the question" —
+// the wizard stores each answer verbatim into one field, so a pasted document
+// (headers, tables, another case's markdown) lands whole inside one bullet or
+// gets mangled line-by-line into a broken table, not a real answer.
+function looksLikePastedDocument(text) {
+  if (/^#{1,6}\s/m.test(text)) return true;
+  if (/-\s*\*\*Case id:\*\*/i.test(text)) return true;
+  if ((text.match(/^\s*\|.*\|\s*$/gm) || []).length >= 2) return true;
+  if (text.length > 1200) return true;
+  return false;
+}
+
+function detectCreateCaseIntent(text) {
+  return /\b(create|add|new|make)\b.{0,40}\btest\s*cases?\b/i.test(text)
+    || /\btest\s*cases?\b.{0,40}\b(create|add|new|make)\b/i.test(text);
+}
+
+function formatCaseWizardSummary(data) {
+  return [
+    "Here's what I have:",
+    `- Transaction / app: ${data.transaction}`,
+    `- Summary: ${data.summary}`,
+    `- Purpose: ${data.purpose}`,
+    `- Preconditions: ${data.preconditions || 'None specified.'}`,
+    `- Test data: ${data.testData || 'None specified.'}`,
+    `- Steps: ${data.steps}`,
+    `- Assertions: ${data.assertions || 'None specified.'}`,
+    `- Writes: ${data.writes || 'None - read-only case.'}`,
+    `- Cleanup: ${data.cleanup || 'None specified.'}`,
+  ].join('\n');
+}
 
 function statusLabel(status, source) {
   return ({ idle: 'Ready', running: source === 'direct' ? 'Test is running' : 'AI Assistant is working', completed: 'Ready', failed: 'Needs attention', stopped: 'Stopped', stopping: 'Stopping' })[status] || 'Ready';
@@ -37,6 +91,31 @@ function explicitRunRequest(text) {
     caseId: `TC-${caseMatch[1].padStart(3, '0')}`,
     stage: stageMatch?.[1]?.toLowerCase() || '',
   };
+}
+
+// A case with no frozen automation script (chat-wizard-created, or a browsed
+// file that was never registered in config/gui-runs.json or config/runs.json)
+// still has a full Steps section — this hands it to the real AI Assistant
+// (the same claude.exe the terminal chat already drives) to execute live via
+// its SAP GUI / web MCP tools, instead of leaving the case read-only forever.
+function buildInteractiveRunPrompt(lane, testCase) {
+  const laneLabel = lane === 'gui' ? 'SAP GUI for Windows' : 'Fiori / WebGUI';
+  const locate = testCase.filePath
+    ? `Its full text is at ${testCase.filePath} — read it first if you have not already.`
+    : `Look it up as ${testCase.caseId} and read its full text first if you have not already.`;
+  const sessionNote = lane === 'gui'
+    ? 'A fresh session was just opened and logged on for this run — attach to it with sap_connect_existing rather than opening another (rule 2). '
+    : '';
+  return [
+    `Run test case ${testCase.caseId} interactively right now, driving ${laneLabel} live through the MCP tools. `
+    + 'This case has no frozen automation script, so you are the runner for this pass.',
+    locate,
+    `${sessionNote}Confirm the SAP session matches the System named in the case header before touching anything (CLAUDE.md rule 1). Then work through Preconditions, and the Steps in order.`,
+    'Discover every screen element id live as you go (sap_get_screen_elements for the GUI lane) — never guess one or reuse one from another case (rule 4).',
+    'Before any step that saves, posts, or otherwise commits a database write, stop, tell me exactly what it will write, and wait for my explicit confirmation in this chat before performing it (rule 3) — never write on your own.',
+    'Record what actually happens at every step, including any deviation from what the case expected. Never write down an expected value as observed if you could not read it (rules 5-6).',
+    'When you are done or blocked, summarize the outcome.',
+  ].join('\n\n');
 }
 
 export default function SapTestingScreen({ module, onBack, onUninstalled }) {
@@ -76,6 +155,8 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   const [caseFileError, setCaseFileError] = useState('');
   const [archiveDirectory, setArchiveDirectory] = useState('');
   const [isChoosingArchiveDirectory, setIsChoosingArchiveDirectory] = useState(false);
+  const [isCreatingCase, setIsCreatingCase] = useState(false);
+  const [caseWizard, setCaseWizard] = useState(null);
   const conversationRef = useRef(null);
 
   useEffect(() => {
@@ -147,6 +228,19 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     return () => window.clearInterval(progressTimer);
   }, [connectionStatus]);
 
+  async function loadCasesForLane(nextLane = lane) {
+    if (connectedSystemId !== 'DS4_100_NIIF') return;
+    setIsLoadingCases(true);
+    try {
+      const result = await sapTerminalService.listCases(nextLane);
+      setCases(result.cases || []);
+    } catch (listError) {
+      setError(listError.message);
+    } finally {
+      setIsLoadingCases(false);
+    }
+  }
+
   function webCredentials() {
     const username = sapUsername.trim();
     return username && sapPassword ? { username, password: sapPassword } : null;
@@ -157,6 +251,21 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     if (!connectionServerName) return;
     const nextPrompt = prompt.trim();
     if (!nextPrompt) return;
+
+    if (caseWizard) {
+      setMessages((current) => [...current, { id: crypto.randomUUID(), role: 'user', text: nextPrompt }]);
+      setPrompt('');
+      submitWizardAnswer(nextPrompt);
+      return;
+    }
+
+    if (!isBusy && connectedSystemId === 'DS4_100_NIIF' && detectCreateCaseIntent(nextPrompt)) {
+      setMessages((current) => [...current, { id: crypto.randomUUID(), role: 'user', text: nextPrompt }]);
+      setPrompt('');
+      startCaseWizard();
+      return;
+    }
+
     const directRequest = explicitRunRequest(nextPrompt);
     setIsStarting(true);
     setError('');
@@ -257,7 +366,14 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
 
   async function openCase(testCase) {
     setSelectedCase(testCase);
-    setViewingCase({ caseId: testCase.caseId, summary: testCase.summary, fileName: '', content: '' });
+    setViewingCase({
+      caseId: testCase.caseId,
+      summary: testCase.summary,
+      fileName: '',
+      content: '',
+      source: testCase.source || 'built-in',
+      externalLabel: testCase.externalLabel || '',
+    });
     setCaseFileError('');
     setIsLoadingCaseFile(true);
     try {
@@ -275,8 +391,125 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     setCaseFileError('');
   }
 
+  async function browseForCase() {
+    setError('');
+    try {
+      const result = await sapTerminalService.browseCase();
+      if (result.canceled) return;
+      if (result.lane !== lane) selectLane(result.lane);
+      const source = result.runnable ? 'built-in' : 'external';
+      const externalLabel = result.runnable ? '' : 'No frozen script — runs interactively';
+      setSelectedCase({ caseId: result.caseId, summary: result.summary, source, externalLabel });
+      setViewingCase({
+        caseId: result.caseId,
+        summary: result.summary,
+        fileName: result.fileName,
+        content: result.content,
+        source,
+        externalLabel,
+        runnableReason: result.reason,
+        filePath: result.filePath,
+      });
+      setCaseFileError('');
+      setIsLoadingCaseFile(false);
+    } catch (browseError) {
+      setError(browseError.message);
+    }
+  }
+
+  function pushRunnerMessage(text) {
+    setMessages((current) => [...current, { id: crypto.randomUUID(), role: 'runner', text }]);
+  }
+
+  function startCaseWizard() {
+    setError('');
+    setCaseWizard({ stepIndex: 0, data: {}, awaitingConfirm: false });
+    pushRunnerMessage(
+      `Let's create a new ${LANES[lane].label} test case for ${connectionServerName}. `
+      + `I'll ask a few questions, one at a time — type "cancel" anytime to stop.\n\n${CASE_WIZARD_FIELDS[0].question}`,
+    );
+  }
+
+  function cancelCaseWizard(reason = 'Test case creation was cancelled. No file was saved.') {
+    setCaseWizard(null);
+    pushRunnerMessage(reason);
+  }
+
+  async function submitWizardAnswer(rawText) {
+    const text = rawText.trim();
+    if (isCaseWizardCancel(text)) {
+      cancelCaseWizard();
+      return;
+    }
+
+    if (caseWizard.awaitingConfirm) {
+      if (/^(yes|y|confirm|create|go)$/i.test(text)) {
+        await finalizeCaseWizard(caseWizard.data);
+      } else if (/^(no|n)$/i.test(text)) {
+        cancelCaseWizard();
+      } else {
+        pushRunnerMessage('Type "confirm" to create this test case, or "cancel" to discard it.');
+      }
+      return;
+    }
+
+    const field = CASE_WIZARD_FIELDS[caseWizard.stepIndex];
+    let value = text;
+    if (isCaseWizardSkip(text)) {
+      value = field.required ? '' : (field.key === 'writes' ? 'None - read-only case.' : 'None specified.');
+    } else if (looksLikePastedDocument(text)) {
+      pushRunnerMessage(
+        `That looks like a whole document was pasted in rather than a short answer — pasting another case's file in verbatim `
+        + "breaks this one (each answer goes into a single field, not merged in as its own section). Give me a brief answer instead — "
+        + `a sentence or two, or one item per line for a list — and I'll build the file. ${field.question}`,
+      );
+      return;
+    }
+    if (field.required && !value) {
+      pushRunnerMessage(`I need this to create the test case. ${field.question}`);
+      return;
+    }
+
+    const nextData = { ...caseWizard.data, [field.key]: value };
+    const nextIndex = caseWizard.stepIndex + 1;
+
+    if (nextIndex >= CASE_WIZARD_FIELDS.length) {
+      setCaseWizard({ stepIndex: nextIndex, data: nextData, awaitingConfirm: true });
+      pushRunnerMessage(`${formatCaseWizardSummary(nextData)}\n\nType "confirm" to create this test case, or "cancel" to discard it.`);
+      return;
+    }
+
+    setCaseWizard({ stepIndex: nextIndex, data: nextData, awaitingConfirm: false });
+    pushRunnerMessage(CASE_WIZARD_FIELDS[nextIndex].question);
+  }
+
+  async function finalizeCaseWizard(data) {
+    setIsCreatingCase(true);
+    setError('');
+    try {
+      const createdCase = await sapTerminalService.createCase(lane, connectedSystemId, data);
+      await loadCasesForLane(lane);
+      setSelectedCase(createdCase);
+      pushRunnerMessage(
+        `${createdCase.caseId} was created and saved to ${createdCase.filePath || 'your local test case folder'}. `
+        + 'It now shows in the left panel tagged "External created TC" — open it and choose "Run interactively" to have the '
+        + 'AI Assistant drive it live (confirming with you before any write), since it doesn\'t have a frozen automation script yet.',
+      );
+    } catch (createError) {
+      setError(createError.message);
+      pushRunnerMessage(`I couldn't create the test case: ${createError.message}`);
+    } finally {
+      setIsCreatingCase(false);
+      setCaseWizard(null);
+    }
+  }
+
   async function runViewedCase() {
     if (!viewingCase) return;
+    if (viewingCase.source === 'external') {
+      setError(viewingCase.runnableReason || 'This test case has no frozen automation script — use "Run interactively" instead.');
+      return;
+    }
     const caseId = viewingCase.caseId;
     closeCaseDialog();
     setIsStarting(true);
@@ -286,6 +519,47 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
       setPendingConfirmation(proposal);
     } catch (runError) {
       setError(runError.message);
+    } finally {
+      setIsStarting(false);
+    }
+  }
+
+  async function runCaseInteractively() {
+    if (!viewingCase) return;
+    if (!isAuthenticated) {
+      setError('Connect a Claude OAuth token before asking the AI Assistant to run a case interactively.');
+      return;
+    }
+    const testCase = viewingCase;
+    closeCaseDialog();
+    setMessages((current) => [...current, { id: crypto.randomUUID(), role: 'user', text: `Run ${testCase.caseId} interactively.` }]);
+    setIsStarting(true);
+    setError('');
+    try {
+      // Match how every frozen-script GUI-lane run already starts (session.py's
+      // GuiSession.login(), CLAUDE.md rule 2/9): open a brand-new logged-on
+      // session first, alongside whatever else is open, rather than asking the
+      // AI Assistant to guess whether one already exists. Best-effort — if the
+      // sidebar has no SAP credentials typed in, or the open fails, the AI
+      // Assistant still tries to attach to whatever session is already open.
+      if (lane === 'gui' && sapUsername.trim() && sapPassword) {
+        pushRunnerMessage(`Opening a new SAP GUI session on ${connectionServerName}…`);
+        try {
+          const opened = await sapTerminalService.openGuiSession(connectedSystemId, { username: sapUsername.trim(), password: sapPassword });
+          pushRunnerMessage(opened.opened
+            ? `Session opened and logged on as ${opened.user || sapUsername.trim()}. Handing off to the AI Assistant…`
+            : `Couldn't open a new session automatically (${opened.reason || 'unknown reason'}) — the AI Assistant will try to attach to whatever session is already open instead.`);
+        } catch (sessionError) {
+          pushRunnerMessage(`Couldn't open a new session automatically (${sessionError.message}) — the AI Assistant will try to attach to whatever session is already open instead.`);
+        }
+      }
+      const run = await sapTerminalService.start(buildInteractiveRunPrompt(lane, testCase), sessionId, lane);
+      setActiveSource('claude');
+      setRunId(run.id);
+      setStatus(run.status);
+    } catch (runError) {
+      setError(runError.message);
+      setStatus('failed');
     } finally {
       setIsStarting(false);
     }
@@ -344,6 +618,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     setActiveSource('claude');
     setMessages([]);
     setPendingConfirmation(null);
+    setCaseWizard(null);
     setError('');
     setPrompt('');
   }
@@ -371,7 +646,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
 
   const isActive = status === 'running' || status === 'stopping';
   const isTestingConnection = connectionStatus === 'checking';
-  const isBusy = isActive || isTestingConnection;
+  const isBusy = isActive || isTestingConnection || isCreatingCase;
   const visibleSelectedCase = connectionServerName ? selectedCase : null;
 
   return (
@@ -488,6 +763,20 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                     <span className="sap-sidebar-label">{LANES[lane].label} test cases</span>
                     <div className="sap-case-section__tools">
                       <span className="sap-case-count">{cases.length} test {cases.length === 1 ? 'case' : 'cases'}</span>
+                      <AppButton
+                        disabled={isBusy}
+                        icon="folder"
+                        onClick={browseForCase}
+                        title="Browse"
+                        variant="secondary"
+                      />
+                      <AppButton
+                        disabled={isBusy || Boolean(caseWizard)}
+                        icon="testCase"
+                        onClick={startCaseWizard}
+                        title="Create"
+                        variant="secondary"
+                      />
                     </div>
                   </div>
                   <div className="sap-case-list">
@@ -507,6 +796,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                         <span className="sap-case-list__number">{testCase.caseId.replace('TC-', '')}</span>
                         <span>
                           <strong>{testCase.caseId}</strong>
+                          {testCase.source === 'external' ? <em>External created TC</em> : null}
                           <span>{testCase.summary}</span>
                         </span>
                         <Icon className="sap-case-list__chevron" name="chevronRight" size={17} />
@@ -557,6 +847,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                 <div>
                   <strong>{visibleSelectedCase.caseId}</strong>
                   <span>{LANES[lane].label}</span>
+                  {visibleSelectedCase.source === 'external' ? <span className="sap-selected-case__external">External created TC</span> : null}
                 </div>
                 <p>{visibleSelectedCase.summary}</p>
               </div>
@@ -586,9 +877,9 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
             {isActive ? <div className="sap-thinking"><span /><span /><span /> AI Assistant is working in the SAP project…</div> : null}
           </div>
           <form className="sap-prompt-form" onSubmit={sendPrompt}>
-            <textarea disabled={!isConfigured || !isAuthenticated || isBusy} onChange={(event) => setPrompt(event.target.value)} onKeyDown={(event) => {
+            <textarea disabled={!isConfigured || (!isAuthenticated && !caseWizard) || isBusy} onChange={(event) => setPrompt(event.target.value)} onKeyDown={(event) => {
               if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); }
-            }} placeholder={visibleSelectedCase ? `Ask the AI Assistant anything about ${visibleSelectedCase.caseId}…` : 'Ask the AI Assistant about an SAP test…'} value={prompt} />
+            }} placeholder={caseWizard ? 'Type your answer…' : visibleSelectedCase ? `Ask the AI Assistant anything about ${visibleSelectedCase.caseId}…` : 'Ask the AI Assistant about an SAP test…'} value={prompt} />
             <div>
               <span>Enter to send · Shift+Enter for a new line</span>
               {isActive ? <AppButton loading={isStopping} onClick={stopRun} title="Stop" variant="secondary" /> : (
@@ -598,7 +889,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                   data-tooltip={!connectionServerName ? 'Connect to SAP to begin testing' : undefined}
                   tabIndex={!connectionServerName ? 0 : undefined}
                 >
-                  <AppButton disabled={!isConfigured || !isAuthenticated || !connectionServerName || !prompt.trim()} loading={isStarting} title="Send" type="submit" />
+                  <AppButton disabled={!isConfigured || (!isAuthenticated && !caseWizard) || !connectionServerName || !prompt.trim() || isBusy} loading={isStarting || isCreatingCase} title="Send" type="submit" />
                 </div>
               )}
             </div>
@@ -694,6 +985,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
               </div>
               <button aria-label="Close" className="sap-case-dialog__close" onClick={closeCaseDialog} type="button">×</button>
             </header>
+                {viewingCase.source === 'external' ? <span className="sap-external-case-tag">{viewingCase.externalLabel || 'External created TC'}</span> : null}
             <div className="sap-case-dialog__body">
               {isLoadingCaseFile ? (
                 <p className="sap-case-dialog__status">Loading test case…</p>
@@ -705,12 +997,21 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
             </div>
             <div className="sap-case-dialog__actions">
               <AppButton onClick={closeCaseDialog} title="Close" variant="secondary" />
-              <AppButton
-                disabled={!connectionServerName || isBusy || isStarting || isLoadingCaseFile || Boolean(caseFileError)}
-                loading={isStarting}
-                onClick={runViewedCase}
-                title="Run test case"
-              />
+              {viewingCase.source === 'external' ? (
+                <AppButton
+                  disabled={!connectionServerName || !isAuthenticated || isBusy || isStarting || isLoadingCaseFile || Boolean(caseFileError)}
+                  loading={isStarting}
+                  onClick={runCaseInteractively}
+                  title="Run interactively"
+                />
+              ) : (
+                <AppButton
+                  disabled={!connectionServerName || isBusy || isStarting || isLoadingCaseFile || Boolean(caseFileError)}
+                  loading={isStarting}
+                  onClick={runViewedCase}
+                  title="Run test case"
+                />
+              )}
             </div>
           </section>
         </div>

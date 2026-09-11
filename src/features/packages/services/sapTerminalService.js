@@ -17,6 +17,9 @@ export const sapTerminalService = {
   testConnection(systemId, credentials) {
     return localTerminal().testConnection(systemId, credentials);
   },
+  openGuiSession(systemId, credentials) {
+    return localTerminal().openGuiSession(systemId, credentials);
+  },
   configureToken(token) {
     return localTerminal().configureToken(token);
   },
@@ -28,6 +31,12 @@ export const sapTerminalService = {
   },
   getCaseFile(lane, caseId) {
     return localTerminal().getCaseFile(lane, caseId);
+  },
+  createCase(lane, systemId, payload) {
+    return localTerminal().createCase(lane, systemId, payload);
+  },
+  browseCase() {
+    return localTerminal().browseCase();
   },
   prepareCase(lane, caseId, stage, credentials) {
     return localTerminal().prepareCase(lane, caseId, stage, credentials);

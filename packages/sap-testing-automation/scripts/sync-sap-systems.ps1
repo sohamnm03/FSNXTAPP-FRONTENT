@@ -136,9 +136,19 @@ function Get-SapGuiServerName($sys) {
     return ('sap-gui-{0}-{1}' -f $sys.systemId.ToLower(), $sys.client)
 }
 
-$guiPython = Join-Path $root 'tools\mcp-sap-gui\.venv\Scripts\python.exe'
+# The packaged desktop app sets FSNXT_PYTHON to its own bundled, relocatable
+# interpreter (mcp-sap-gui and its deps installed directly into it) because the
+# dev-only .venv below is excluded from packaging and never portable off the
+# machine it was created on (see run-gui-case.ps1's comment on FSNXT_PYTHON,
+# and packageWindows.js's `--exclude=*/.venv`). Prefer it the same way every
+# other script here does; fall back to the local dev venv when unset.
+$guiPython = if ($env:FSNXT_PYTHON -and (Test-Path $env:FSNXT_PYTHON)) {
+    $env:FSNXT_PYTHON
+} else {
+    Join-Path $root 'tools\mcp-sap-gui\.venv\Scripts\python.exe'
+}
 if (-not (Test-Path $guiPython)) {
-    Write-Warn2 "SAP GUI MCP venv not found: $guiPython"
+    Write-Warn2 "SAP GUI MCP interpreter not found: $guiPython"
     Write-Warn2 "Create it with: python -m venv tools\mcp-sap-gui\.venv"
     Write-Warn2 "then: tools\mcp-sap-gui\.venv\Scripts\python.exe -m pip install `"mcp-sap-gui[screenshots]==0.2.2`""
 }

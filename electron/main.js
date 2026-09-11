@@ -19,10 +19,13 @@ async function registerSapTerminalHandlers() {
   ));
   ipcMain.handle('sap-terminal:get-auth-status', () => sapTerminalManager.getAuthStatus());
   ipcMain.handle('sap-terminal:test-connection', (_event, systemId, credentials) => sapTerminalManager.testConnection(systemId, credentials));
+  ipcMain.handle('sap-terminal:open-gui-session', (_event, systemId, credentials) => sapTerminalManager.openGuiSession(systemId, credentials));
   ipcMain.handle('sap-terminal:configure-token', (_event, token) => sapTerminalManager.configureToken(token));
   ipcMain.handle('sap-terminal:clear-token', () => sapTerminalManager.clearToken());
   ipcMain.handle('sap-terminal:list-cases', (_event, lane) => sapTerminalManager.listCases(lane));
   ipcMain.handle('sap-terminal:get-case-file', (_event, lane, caseId) => sapTerminalManager.getCaseFile(lane, caseId));
+  ipcMain.handle('sap-terminal:create-case', (_event, lane, systemId, payload) => sapTerminalManager.createCase(lane, systemId, payload));
+  ipcMain.handle('sap-terminal:browse-case', (event) => sapTerminalManager.browseCase(BrowserWindow.fromWebContents(event.sender)));
   ipcMain.handle('sap-terminal:prepare-case', (_event, lane, caseId, stage, credentials) => sapTerminalManager.prepareCase(lane, caseId, stage, credentials));
   ipcMain.handle('sap-terminal:start-confirmed-case', (_event, confirmationId) => sapTerminalManager.startConfirmedCase(confirmationId));
   ipcMain.handle('sap-terminal:start', (_event, prompt, sessionId, lane) => sapTerminalManager.start(prompt, sessionId, lane));

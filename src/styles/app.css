@@ -2061,7 +2061,30 @@
 .sap-case-list button:disabled { cursor: not-allowed; opacity: 0.55; }
 .sap-case-list strong { font-size: 0.7rem; }
 .sap-case-list span { font-size: 0.65rem; line-height: 1.35; }
+.sap-case-list em {
+  background: #fff7df;
+  border: 1px solid #ead28c;
+  border-radius: 99px;
+  color: #7a5600;
+  display: inline-flex;
+  font-size: 0.52rem;
+  font-style: normal;
+  font-weight: 800;
+  margin-left: 6px;
+  padding: 2px 6px;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
 .sap-case-list p { color: var(--color-muted); font-size: 0.7rem; margin: 0; padding: 12px; }
+
+.sap-case-section__tools .app-button {
+  min-height: 28px;
+  padding: 0 8px;
+}
+
+.sap-case-section__tools .app-button span {
+  font-size: 0.62rem;
+}
 
 .sap-case-list__number {
   align-items: center;
@@ -2111,6 +2134,18 @@
   width: min(720px, 100%);
 }
 
+.sap-create-case-dialog {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  box-shadow: 0 24px 70px rgba(8, 28, 64, 0.3);
+  display: flex;
+  flex-direction: column;
+  max-height: min(780px, 90vh);
+  overflow: hidden;
+  width: min(780px, 100%);
+}
+
 .sap-case-dialog__header {
   align-items: flex-start;
   border-bottom: 1px solid var(--color-border);
@@ -2144,6 +2179,89 @@
   min-height: 0;
   overflow-y: auto;
   padding: 22px 26px;
+}
+
+.sap-external-case-tag,
+.sap-selected-case__external {
+  background: #fff7df;
+  border: 1px solid #ead28c;
+  border-radius: 99px;
+  color: #7a5600;
+  display: inline-flex;
+  font-size: 0.58rem;
+  font-weight: 800;
+  margin-top: 8px;
+  padding: 4px 8px;
+  text-transform: uppercase;
+}
+
+.sap-selected-case__copy > div .sap-selected-case__external {
+  background: #fff7df;
+  color: #7a5600;
+}
+
+.sap-create-case-form {
+  display: grid;
+  gap: 14px;
+  overflow-y: auto;
+  padding: 22px 26px;
+}
+
+.sap-create-case-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(180px, 0.8fr) minmax(240px, 1.2fr);
+}
+
+.sap-create-case-form label {
+  display: grid;
+  gap: 7px;
+}
+
+.sap-create-case-form label > span {
+  color: var(--color-text);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.sap-create-case-form input,
+.sap-create-case-form textarea {
+  background: #fafdff;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.78rem;
+  outline: 0;
+  padding: 11px 12px;
+  width: 100%;
+}
+
+.sap-create-case-form input {
+  min-height: 42px;
+}
+
+.sap-create-case-form textarea {
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.sap-create-case-form input:focus,
+.sap-create-case-form textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(8, 115, 209, 0.12);
+}
+
+.sap-create-case-note {
+  background: #eef7ff;
+  border: 1px solid #cfe5f8;
+  border-radius: 10px;
+  color: #265677;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  margin: 0;
+  padding: 10px 12px;
 }
 
 .sap-case-dialog__body pre {

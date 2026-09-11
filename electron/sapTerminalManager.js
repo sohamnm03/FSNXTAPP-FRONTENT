@@ -75,7 +75,48 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
   const claudeConfigDir = path.join(electronApp.getPath('userData'), 'claude-runtime');
   const settingsPath = path.join(electronApp.getPath('userData'), 'sap-terminal-settings.json');
   const projectRoot = workspace.projectRoot;
+  const externalCasesRoot = path.join(electronApp.getPath('documents'), 'FSNXT SAP Test Cases');
+  const externalCasesManifestPath = path.join(externalCasesRoot, 'config', 'external-cases.json');
   fs.mkdirSync(claudeConfigDir, { recursive: true });
+
+  // .mcp.json bakes in an absolute python.exe path and audit-log path at the
+  // moment scripts/sync-sap-systems.ps1 last ran — on whatever machine that
+  // was. A payload built and packaged on one machine, then installed on
+  // another (or just unpacked into a fresh runtime temp dir each launch, per
+  // createSapAutomationWorkspace), carries those stale paths, so the AI
+  // Assistant's SAP GUI MCP server never starts there — no sap_* tools at
+  // all, not a login failure. Regenerating here, every launch, with this
+  // process's own pythonPath/projectRoot, means no one ever has to run this
+  // by hand on a second machine.
+  if (validateProject(projectRoot)) {
+    try {
+      await new Promise((resolve) => {
+        const syncScript = path.join(projectRoot, 'scripts', 'sync-sap-systems.ps1');
+        if (!fs.existsSync(syncScript)) { resolve(); return; }
+        const child = spawn('powershell.exe', [
+          '-NoProfile',
+          '-ExecutionPolicy', 'Bypass',
+          '-File', syncScript,
+        ], {
+          cwd: projectRoot,
+          env: {
+            ...process.env,
+            ...(pythonPath ? { FSNXT_PYTHON: pythonPath } : {}),
+            NO_COLOR: '1',
+            FORCE_COLOR: '0',
+          },
+          windowsHide: true,
+          shell: false,
+          stdio: ['ignore', 'ignore', 'ignore'],
+        });
+        child.once('error', () => resolve());
+        child.once('close', () => resolve());
+      });
+    } catch {
+      // Best-effort — a stale .mcp.json still surfaces as a clear "no sap_*
+      // tools" error from the AI Assistant itself rather than failing silently.
+    }
+  }
 
   // Windows folder names can't hold <>:"/\|?* or control characters.
   function sanitizeForFolderName(value) {
@@ -204,8 +245,171 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     return `TC-${match[1].padStart(3, '0')}`;
   }
 
+  function todayIsoDate() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function laneLabel(lane) {
+    return lane === 'gui' ? 'SAP GUI' : 'Web';
+  }
+
+  function laneCaseFolder(lane) {
+    return lane === 'gui' ? 'GUI-TC' : 'Web-TC';
+  }
+
   function laneCasesDir(lane) {
-    return path.join(projectRoot, 'test-cases', lane === 'gui' ? 'GUI-TC' : 'Web-TC');
+    return path.join(projectRoot, 'test-cases', laneCaseFolder(lane));
+  }
+
+  function externalLaneCasesDir(lane, systemId) {
+    const system = String(systemId || '').trim() || 'DS4_100_NIIF';
+    if (!/^[A-Za-z0-9_-]+$/.test(system)) throw new Error('The selected SAP system id is invalid.');
+    return path.join(externalCasesRoot, 'test-cases', laneCaseFolder(lane), system);
+  }
+
+  function readJsonFile(filePath, fallback) {
+    try {
+      return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    } catch {
+      return fallback;
+    }
+  }
+
+  function writeJsonFile(filePath, value) {
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
+  }
+
+  function externalManifest() {
+    const parsed = readJsonFile(externalCasesManifestPath, null);
+    if (parsed && typeof parsed === 'object' && parsed.cases && typeof parsed.cases === 'object') return parsed;
+    return {
+      description: 'User-created SAP test cases stored outside the packaged FSNXT automation workspace.',
+      cases: {},
+    };
+  }
+
+  function externalCaseKey(lane, caseId) {
+    return `${lane}:${caseId}`;
+  }
+
+  function externalCaseEntries(lane) {
+    const manifest = externalManifest();
+    return Object.entries(manifest.cases || {})
+      .filter(([, entry]) => entry?.lane === lane)
+      .map(([key, entry]) => ({ key, entry }));
+  }
+
+  function caseNumber(caseId) {
+    const match = String(caseId || '').match(/^TC-(\d{3})$/);
+    return match ? Number(match[1]) : 0;
+  }
+
+  function nextExternalCaseId(lane) {
+    const builtInManifest = caseManifest(lane);
+    const builtInIds = Object.keys(builtInManifest.cases || {});
+    const externalIds = externalCaseEntries(lane).map((item) => item.entry.caseId);
+    const highest = [...builtInIds, ...externalIds].reduce((max, caseId) => Math.max(max, caseNumber(caseId)), 0);
+    return `TC-${String(highest + 1).padStart(3, '0')}`;
+  }
+
+  function sanitizeFilePart(value) {
+    return String(value || '')
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 72);
+  }
+
+  function sanitizeText(value, fallback = '') {
+    const text = String(value || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+    return text || fallback;
+  }
+
+  function markdownTableRows(value, blankCount) {
+    const lines = sanitizeText(value).split('\n').map((line) => line.trim()).filter(Boolean);
+    const blanks = Array.from({ length: blankCount }, () => '').join(' | ');
+    if (!lines.length) return `| 1 | ${blanks} |\n`;
+    return lines.map((line, index) => `| ${index + 1} | ${line.replace(/\|/g, '\\|')} | ${blanks} |`).join('\n');
+  }
+
+  function buildExternalCaseMarkdown(lane, systemId, caseId, payload, author) {
+    const summary = sanitizeText(payload.summary, 'User-created SAP test case');
+    const transaction = sanitizeText(payload.transaction, '-');
+    const purpose = sanitizeText(payload.purpose, summary);
+    const writes = sanitizeText(payload.writes, 'Draft - writes not classified yet.');
+    const preconditions = markdownTableRows(payload.preconditions, 1);
+    const testData = markdownTableRows(payload.testData, 2);
+    const steps = markdownTableRows(payload.steps, 2);
+    const assertions = markdownTableRows(payload.assertions, 3);
+    const cleanup = sanitizeText(payload.cleanup, 'None specified.');
+    const system = sanitizeText(systemId, 'DS4_100_NIIF');
+    const caseType = sanitizeText(payload.caseType, 'functional');
+    const status = sanitizeText(payload.status, 'draft');
+    const laneName = lane === 'gui' ? 'sap-gui (SAP GUI for Windows)' : 'web (Fiori / WebGUI / UI5)';
+    return `# ${caseId} - ${transaction}: ${summary}
+
+- **Case id:** ${caseId}
+- **Lane:** ${laneName}
+- **Transaction / app:** ${transaction}
+- **Spec file:** - external documentation-only case
+- **System:** ${system}
+- **Type:** ${caseType}
+- **Author:** ${sanitizeText(author, 'FSNXT app user')}
+- **Created:** ${todayIsoDate()}
+- **Status:** ${status}
+- **Source:** External created TC
+- **Writes to the database:** ${writes}
+
+## Purpose
+
+${purpose}
+
+## Preconditions
+
+| # | Condition | How to check |
+|---|---|---|
+${preconditions}
+
+## Test data
+
+| # | Field | Technical name | Value |
+|---|---|---|---|
+${testData}
+
+## Steps
+
+${lane === 'gui' ? 'GUI lane:' : 'Web lane:'}
+
+| # | Action | Tool / API | Element / argument |
+|---|---|---|---|
+${steps}
+
+## Assertions
+
+| # | Field / source | Technical name | Expected | Read with |
+|---|---|---|---|---|
+${assertions}
+
+## Writes
+
+${writes}
+
+## Cleanup
+
+${cleanup}
+
+## Known deviations
+
+None recorded.
+
+## Run history
+
+| Date | Result | Result file | Notes |
+|---|---|---|---|
+| | | | |
+`;
   }
 
   function findCaseMarkdownFile(lane, caseId, manifestEntry) {
@@ -230,7 +434,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
   function listCases(lane) {
     if (!validateProject(projectRoot)) throw new Error('The bundled SAP automation package is missing or incomplete. Reinstall the application.');
     const manifest = caseManifest(lane);
-    const cases = Object.entries(manifest.cases || {})
+    const builtInCases = Object.entries(manifest.cases || {})
       .map(([caseId, entry]) => ({
         caseId,
         summary: String(entry.summary || ''),
@@ -238,8 +442,23 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         stages: Array.isArray(entry.stages) ? entry.stages.map(String) : [],
         defaultStage: entry.defaultStage ? String(entry.defaultStage) : '',
         hasFile: Boolean(findCaseMarkdownFile(lane, caseId, entry)),
+        source: 'built-in',
+      }));
+    const externalCases = externalCaseEntries(lane)
+      .map(({ entry }) => ({
+        caseId: String(entry.caseId || ''),
+        summary: String(entry.summary || ''),
+        writes: String(entry.writes || ''),
+        stages: [],
+        defaultStage: '',
+        hasFile: typeof entry.caseFile === 'string' && fs.existsSync(path.join(externalCasesRoot, entry.caseFile)),
+        source: 'external',
+        externalLabel: 'External created TC',
+        filePath: typeof entry.caseFile === 'string' ? path.join(externalCasesRoot, entry.caseFile) : '',
       }))
-      .sort((a, b) => a.caseId.localeCompare(b.caseId));
+      .filter((entry) => /^TC-\d{3}$/.test(entry.caseId));
+    const cases = [...builtInCases, ...externalCases]
+      .sort((a, b) => caseNumber(a.caseId) - caseNumber(b.caseId) || a.caseId.localeCompare(b.caseId));
     return { lane, cases };
   }
 
@@ -248,13 +467,158 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     const caseId = normalizeCaseId(requestedCaseId);
     const manifest = caseManifest(lane);
     const entry = manifest.cases?.[caseId];
-    if (!entry) throw new Error(`${caseId} is not registered in the selected ${lane === 'gui' ? 'SAP GUI' : 'Fiori / WebGUI'} lane.`);
+    if (!entry) {
+      const externalEntry = externalCaseEntries(lane).find((item) => item.entry.caseId === caseId)?.entry;
+      if (!externalEntry?.caseFile) {
+        throw new Error(`${caseId} is not registered in the selected ${lane === 'gui' ? 'SAP GUI' : 'Fiori / WebGUI'} lane.`);
+      }
+      const externalPath = path.join(externalCasesRoot, externalEntry.caseFile);
+      if (!fs.existsSync(externalPath)) throw new Error(`No documentation file was found for ${caseId}.`);
+      return {
+        caseId,
+        fileName: path.basename(externalPath),
+        content: fs.readFileSync(externalPath, 'utf8'),
+        source: 'external',
+        externalLabel: 'External created TC',
+        filePath: externalPath,
+      };
+    }
     const filePath = findCaseMarkdownFile(lane, caseId, entry);
     if (!filePath) throw new Error(`No documentation file was found for ${caseId}.`);
     return {
       caseId,
       fileName: path.basename(filePath),
       content: fs.readFileSync(filePath, 'utf8'),
+      source: 'built-in',
+      filePath,
+    };
+  }
+
+  function createCase(lane, systemId, payload = {}) {
+    if (!['gui', 'web'].includes(lane)) throw new Error('Select SAP GUI or Fiori / WebGUI testing.');
+    if (!validateProject(projectRoot)) throw new Error('The bundled SAP automation package is missing or incomplete. Reinstall the application.');
+    const system = String(systemId || '').trim() || 'DS4_100_NIIF';
+    const summary = sanitizeText(payload.summary);
+    if (!summary) throw new Error('Enter a test case summary.');
+    const transaction = sanitizeText(payload.transaction);
+    if (!transaction) throw new Error('Enter the SAP transaction or app name.');
+    const purpose = sanitizeText(payload.purpose);
+    if (!purpose) throw new Error('Enter the test purpose.');
+    const steps = sanitizeText(payload.steps);
+    if (!steps) throw new Error('Enter at least one test step.');
+
+    const caseId = nextExternalCaseId(lane);
+    const slug = sanitizeFilePart(`${transaction}-${summary}`) || `external-${caseId.toLowerCase()}`;
+    const fileName = `${caseId}-${slug}-${lane === 'gui' ? 'gui' : 'web'}.md`;
+    const caseDirectory = externalLaneCasesDir(lane, system);
+    const filePath = path.join(caseDirectory, fileName);
+    fs.mkdirSync(caseDirectory, { recursive: true });
+    if (fs.existsSync(filePath)) throw new Error(`${caseId} already exists in the external test case folder.`);
+
+    const author = currentUsername || payload.author || '';
+    const markdown = buildExternalCaseMarkdown(lane, system, caseId, payload, author);
+    fs.writeFileSync(filePath, markdown, 'utf8');
+
+    const manifest = externalManifest();
+    const relativeCaseFile = path.relative(externalCasesRoot, filePath).split(path.sep).join('/');
+    manifest.cases[externalCaseKey(lane, caseId)] = {
+      caseId,
+      lane,
+      system,
+      summary,
+      writes: sanitizeText(payload.writes, 'Draft - writes not classified yet.'),
+      transaction,
+      caseFile: relativeCaseFile,
+      createdAt: new Date().toISOString(),
+      createdBy: author,
+      source: 'external',
+    };
+    writeJsonFile(externalCasesManifestPath, manifest);
+
+    return {
+      caseId,
+      lane,
+      summary,
+      writes: manifest.cases[externalCaseKey(lane, caseId)].writes,
+      source: 'external',
+      externalLabel: 'External created TC',
+      fileName,
+      filePath,
+      storageRoot: externalCasesRoot,
+    };
+  }
+
+  // Parses the "- **Header:** value" bullets every case file (built-in,
+  // external, or a random one someone hands us) is written with — see
+  // test-cases/_TEMPLATE.md and buildExternalCaseMarkdown() above.
+  function parseCaseHeaders(content) {
+    const headers = {};
+    for (const line of String(content || '').split('\n')) {
+      const match = line.match(/^-\s*\*\*(.+?):\*\*\s*(.*)$/);
+      if (match) headers[match[1].trim()] = match[2].trim();
+    }
+    return headers;
+  }
+
+  function laneFromHeader(value) {
+    const normalized = String(value || '').trim().toLowerCase();
+    if (normalized.startsWith('sap-gui')) return 'gui';
+    if (normalized.startsWith('web')) return 'web';
+    return '';
+  }
+
+  // Lets a user point the app at any TC-*.md file via a native file picker —
+  // not just cases the packaged project already knows about — and, if that
+  // case turns out to be registered to run (config/gui-runs.json or
+  // config/runs.json), hands back everything prepareCase() needs to launch it
+  // through the exact same human-confirmed pipeline as a case picked from the
+  // left panel. A file that parses but isn't registered is still opened, just
+  // marked not runnable, matching how an "external created" case behaves.
+  async function browseCase(ownerWindow) {
+    if (!validateProject(projectRoot)) throw new Error('The bundled SAP automation package is missing or incomplete. Reinstall the application.');
+    const testCasesDir = path.join(projectRoot, 'test-cases');
+    const result = await dialog.showOpenDialog(ownerWindow, {
+      title: 'Browse for a test case',
+      defaultPath: fs.existsSync(testCasesDir) ? testCasesDir : undefined,
+      filters: [{ name: 'Test case (Markdown)', extensions: ['md'] }],
+      properties: ['openFile'],
+    });
+    if (result.canceled || !result.filePaths?.[0]) return { canceled: true };
+
+    const filePath = result.filePaths[0];
+    const content = fs.readFileSync(filePath, 'utf8');
+    const headers = parseCaseHeaders(content);
+
+    let caseId;
+    try {
+      caseId = normalizeCaseId(headers['Case id']);
+    } catch {
+      throw new Error(`${path.basename(filePath)} does not have a "- **Case id:** TC-nnn" header, so it can't be recognized as a test case.`);
+    }
+    const lane = laneFromHeader(headers['Lane']);
+    if (!lane) {
+      throw new Error(`${caseId} does not declare a recognized "- **Lane:**" header (expected "sap-gui" or "web"), so it can't be identified.`);
+    }
+
+    let manifestEntry = null;
+    try {
+      manifestEntry = caseManifest(lane).cases?.[caseId] || null;
+    } catch {
+      manifestEntry = null;
+    }
+
+    return {
+      canceled: false,
+      caseId,
+      lane,
+      fileName: path.basename(filePath),
+      filePath,
+      content,
+      summary: String(manifestEntry?.summary || headers['Transaction / app'] || ''),
+      runnable: Boolean(manifestEntry),
+      reason: manifestEntry
+        ? ''
+        : `${caseId} isn't registered in this project's ${lane === 'gui' ? 'config/gui-runs.json' : 'config/runs.json'} yet, so there's no frozen automation script for it — use "Run interactively" to have the AI Assistant drive it live instead.`,
     };
   }
 
@@ -465,8 +829,10 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       }
       return { archiveDirectory: selected };
     },
+    createCase,
     listCases,
     getCaseFile,
+    browseCase,
     prepareCase,
     startConfirmedCase,
     getAuthStatus,
@@ -536,6 +902,73 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
             });
           } catch {
             finish({ connected: false, reason: 'The SAP connection check returned an invalid result.' });
+          }
+        });
+      });
+    },
+    // Opens a brand-new, logged-on SAP GUI session and leaves it running —
+    // the same sap_connect (not sap_connect_existing) every frozen-script
+    // GUI-lane run already does via gui_tests/session.py's GuiSession.login()
+    // (CLAUDE.md rule 2/9). Used before "Run interactively" on a case with no
+    // frozen script, so the AI Assistant has a known-good session to attach
+    // to instead of guessing whether one is already open.
+    openGuiSession(systemId, requestedCredentials = null) {
+      if ([...runs.values()].some((run) => !FINAL_STATUSES.has(run.status))) {
+        throw new Error('Another SAP request is already running. Wait for it to finish or stop it first.');
+      }
+      const system = configuredConnectionCheckSystem(systemId);
+      const username = typeof requestedCredentials?.username === 'string' ? requestedCredentials.username.trim() : '';
+      const password = typeof requestedCredentials?.password === 'string' ? requestedCredentials.password : '';
+      if (!username || !password) throw new Error('Enter an SAP username and password before opening a session.');
+      if (!system.rfc?.applicationServer || !/^\d{2}$/.test(String(system.rfc.systemNumber))) {
+        throw new Error('The selected SAP system has no valid RFC connection metadata.');
+      }
+      const scriptPath = path.join(projectRoot, 'scripts', 'open-gui-session.ps1');
+      if (!fs.existsSync(scriptPath)) {
+        throw new Error('The SAP session opener is missing. Reinstall the application.');
+      }
+
+      return new Promise((resolve) => {
+        let stdout = '';
+        let settled = false;
+        const child = spawn('powershell.exe', [
+          '-NoProfile',
+          '-ExecutionPolicy', 'Bypass',
+          '-File', scriptPath,
+          '-SystemId', String(system.systemId),
+          '-Client', String(system.client),
+          '-LogonDescription', String(system.sapGui.logonDescription),
+          '-ApplicationServer', String(system.rfc.applicationServer),
+          '-SystemNumber', String(system.rfc.systemNumber),
+        ], {
+          cwd: projectRoot,
+          env: {
+            ...process.env,
+            ...(pythonPath ? { FSNXT_PYTHON: pythonPath } : {}),
+            SAP_TEST_USERNAME: username,
+            SAP_TEST_PASSWORD: password,
+            NO_COLOR: '1',
+            FORCE_COLOR: '0',
+          },
+          windowsHide: true,
+          shell: false,
+          stdio: ['ignore', 'pipe', 'pipe'],
+        });
+
+        const finish = (result) => { if (!settled) { settled = true; resolve(result); } };
+
+        child.stdout.on('data', (chunk) => { stdout += chunk.toString('utf8'); });
+        child.once('error', () => finish({ opened: false, reason: 'Could not start the SAP session opener.' }));
+        child.once('close', () => {
+          try {
+            const result = JSON.parse(stdout.trim());
+            finish({
+              opened: result.connected === true,
+              user: typeof result.user === 'string' ? result.user : '',
+              reason: typeof result.reason === 'string' ? result.reason : '',
+            });
+          } catch {
+            finish({ opened: false, reason: 'The SAP session opener returned an invalid result.' });
           }
         });
       });
