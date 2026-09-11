@@ -1,6 +1,5 @@
 const { app, BrowserWindow, dialog, ipcMain, safeStorage, shell } = require('electron');
 const path = require('path');
-const { createAiAgentsManager } = require('./aiAgentsManager');
 const { createGoogleDesktopAuth } = require('./googleDesktopAuth');
 const { createClaudeTokenStore } = require('./claudeTokenStore');
 const { createSapTerminalManager } = require('./sapTerminalManager');
@@ -8,21 +7,8 @@ const { createSapTerminalManager } = require('./sapTerminalManager');
 const isDevelopment = !app.isPackaged;
 const GOOGLE_DESKTOP_CLIENT_ID = process.env.GOOGLE_DESKTOP_CLIENT_ID
   || '418759424186-vhvn6f4g6ckvef5gvjdtqi4g6gvfmvpe.apps.googleusercontent.com';
-let aiAgentsManager;
 let googleDesktopAuth;
 let sapTerminalManager;
-
-function registerAiAgentsHandlers() {
-  aiAgentsManager = createAiAgentsManager(app, dialog);
-  ipcMain.handle('ai-agents:start', (_event, inputs) => aiAgentsManager.start(inputs));
-  ipcMain.handle('ai-agents:get-run', (_event, runId) => aiAgentsManager.getRun(runId));
-  ipcMain.handle('ai-agents:get-logs', (_event, runId) => aiAgentsManager.getLogs(runId));
-  ipcMain.handle('ai-agents:get-artifacts', (_event, runId) => aiAgentsManager.getArtifacts(runId));
-  ipcMain.handle('ai-agents:stop', (_event, runId) => aiAgentsManager.stop(runId));
-  ipcMain.handle('ai-agents:download', (event, runId, artifactPath) => (
-    aiAgentsManager.download(runId, artifactPath, BrowserWindow.fromWebContents(event.sender))
-  ));
-}
 
 async function registerSapTerminalHandlers() {
   const claudeTokenStore = createClaudeTokenStore(app, safeStorage);
@@ -113,7 +99,6 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
-  registerAiAgentsHandlers();
   registerGoogleAuthHandlers();
   await registerSapTerminalHandlers();
   createWindow();
@@ -130,6 +115,5 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
-  aiAgentsManager?.stopAll();
   sapTerminalManager?.stopAll();
 });

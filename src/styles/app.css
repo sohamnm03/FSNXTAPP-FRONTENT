@@ -735,9 +735,28 @@
   width: 100%;
 }
 
+.login-card--google-only {
+  max-width: 430px;
+  padding: 36px 34px 31px;
+}
+
 .login-card__header {
   margin-bottom: 30px;
   text-align: center;
+}
+
+.login-card--google-only .login-card__header {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 24px;
+}
+
+.login-card--google-only .brand-logo--large {
+  border-radius: 12px;
+  height: 54px;
+  margin-bottom: 27px;
+  width: 54px;
 }
 
 .login-card__mobile-logo {
@@ -752,11 +771,21 @@
   margin: 0 0 8px;
 }
 
+.login-card--google-only .login-card__header h2 {
+  font-size: 1.48rem;
+  font-weight: 780;
+  margin-bottom: 5px;
+}
+
 .login-card__header > p:last-child {
   color: var(--color-muted);
   font-size: 0.94rem;
   line-height: 1.4;
   margin: 0;
+}
+
+.login-card--google-only .login-card__header > p:last-child {
+  font-size: 0.9rem;
 }
 
 .login-card .field {
@@ -855,11 +884,25 @@
   height: 1px;
 }
 
+.login-divider--line {
+  background: #d7dde6;
+  display: block;
+  height: 1px;
+  margin: 24px 0 22px;
+  width: 100%;
+}
+
+.login-divider--line::before,
+.login-divider--line::after {
+  content: none;
+}
+
 .login-google {
   display: flex;
   justify-content: center;
   min-height: 44px;
   overflow: hidden;
+  width: 100%;
 }
 
 .login-google__desktop {
@@ -867,7 +910,7 @@
   border-color: #c8d0dc;
   color: #263247;
   min-height: 44px;
-  width: min(100%, 400px);
+  width: 100%;
 }
 
 .login-google__desktop:hover:not(:disabled) {
@@ -888,7 +931,7 @@
   font-size: 0.74rem;
   gap: 8px;
   justify-content: center;
-  margin-top: 24px;
+  margin-top: 0;
 }
 
 .connection-status span {
@@ -1350,107 +1393,36 @@
   }
 }
 
-/* Web Testing agent */
-.web-testing-screen {
-  overflow: hidden;
-}
-
-.web-testing-layout {
-  background:
-    radial-gradient(circle at 92% 8%, rgba(55, 154, 226, 0.1), transparent 27%),
-    var(--color-background);
-  display: grid;
-  gap: 22px;
-  grid-template-columns: minmax(390px, 0.86fr) minmax(430px, 1.14fr);
-  height: calc(100% - 72px);
-  overflow: hidden;
-  padding: 24px;
-}
-
-.web-testing-panel {
-  background: var(--color-white);
-  border: 1px solid var(--color-border);
-  border-radius: 14px;
-  box-shadow: var(--shadow-soft);
-  min-height: 0;
-  overflow-y: auto;
-  padding: 28px;
-}
-
-.web-testing-heading {
+.sap-testing-heading {
   align-items: center;
   display: flex;
   gap: 18px;
   margin-bottom: 24px;
 }
 
-.web-testing-heading .module-placeholder__icon {
+.sap-testing-heading .module-placeholder__icon {
   flex: 0 0 auto;
   height: 72px;
   margin: 0;
   width: 72px;
 }
 
-.web-testing-heading h1,
+.sap-testing-heading h1,
 .run-status-row h2 {
   color: var(--color-text);
   letter-spacing: -0.035em;
   margin: 2px 0 5px;
 }
 
-.web-testing-heading h1 {
+.sap-testing-heading h1 {
   font-size: 1.75rem;
 }
 
-.web-testing-heading p:last-child {
+.sap-testing-heading p:last-child {
   color: var(--color-muted);
   font-size: 0.82rem;
   line-height: 1.5;
   margin: 0;
-}
-
-.web-testing-form .field {
-  margin-bottom: 16px;
-}
-
-.web-testing-routes {
-  background: var(--color-white);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-text);
-  min-height: 86px;
-  outline: 0;
-  padding: 12px 14px;
-  resize: vertical;
-  width: 100%;
-}
-
-.web-testing-routes:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(23, 105, 224, 0.1);
-}
-
-.web-testing-routes:disabled {
-  background: #f4f6f9;
-}
-
-.web-testing-help {
-  color: var(--color-muted);
-  font-size: 0.7rem;
-  line-height: 1.45;
-  margin: 6px 0 0;
-}
-
-.web-testing-form__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 9px;
-  margin-top: 22px;
-}
-
-.web-testing-output {
-  display: flex;
-  flex-direction: column;
 }
 
 .run-status-row {
@@ -1663,16 +1635,16 @@
     width: 320px;
   }
 
-  .sap-chat-sidebar .web-testing-heading {
+  .sap-chat-sidebar .sap-testing-heading {
     margin-bottom: 0;
   }
 
-  .sap-chat-sidebar:hover .web-testing-heading,
-  .sap-chat-sidebar:focus-within .web-testing-heading {
+  .sap-chat-sidebar:hover .sap-testing-heading,
+  .sap-chat-sidebar:focus-within .sap-testing-heading {
     margin-bottom: 24px;
   }
 
-  .sap-chat-sidebar .web-testing-heading > div:last-child,
+  .sap-chat-sidebar .sap-testing-heading > div:last-child,
   .sap-chat-sidebar .sap-connection-section,
   .sap-chat-sidebar .sap-archive-section,
   .sap-chat-sidebar .sap-lane-section,
@@ -1684,13 +1656,13 @@
     width: 276px;
   }
 
-  .sap-chat-sidebar:hover .web-testing-heading > div:last-child,
+  .sap-chat-sidebar:hover .sap-testing-heading > div:last-child,
   .sap-chat-sidebar:hover .sap-connection-section,
   .sap-chat-sidebar:hover .sap-archive-section,
   .sap-chat-sidebar:hover .sap-lane-section,
   .sap-chat-sidebar:hover .sap-case-section,
   .sap-chat-sidebar:hover .sap-sidebar-actions,
-  .sap-chat-sidebar:focus-within .web-testing-heading > div:last-child,
+  .sap-chat-sidebar:focus-within .sap-testing-heading > div:last-child,
   .sap-chat-sidebar:focus-within .sap-connection-section,
   .sap-chat-sidebar:focus-within .sap-archive-section,
   .sap-chat-sidebar:focus-within .sap-lane-section,
@@ -1701,7 +1673,7 @@
     transition-delay: 80ms;
   }
 
-  .sap-chat-sidebar .web-testing-heading .module-placeholder__icon {
+  .sap-chat-sidebar .sap-testing-heading .module-placeholder__icon {
     height: 62px;
     width: 62px;
   }
@@ -1735,17 +1707,17 @@
   background: transparent;
 }
 
-.sap-chat-sidebar .web-testing-heading {
+.sap-chat-sidebar .sap-testing-heading {
   align-items: flex-start;
   flex-direction: column;
 }
 
-.sap-chat-sidebar .web-testing-heading .module-placeholder__icon {
+.sap-chat-sidebar .sap-testing-heading .module-placeholder__icon {
   height: 62px;
   width: 62px;
 }
 
-.sap-chat-sidebar .web-testing-heading h1 { font-size: 1.5rem; }
+.sap-chat-sidebar .sap-testing-heading h1 { font-size: 1.5rem; }
 
 .sap-project-card {
   align-items: center;
@@ -2974,16 +2946,6 @@
 @media (max-width: 1040px) and (hover: hover) and (pointer: fine) {
   .sap-chat-layout { grid-template-columns: 84px minmax(430px, 1fr); }
   .sap-chat-panel { padding: 18px; }
-
-  .web-testing-layout {
-    gap: 15px;
-    grid-template-columns: minmax(360px, 0.9fr) minmax(390px, 1.1fr);
-    padding: 16px;
-  }
-
-  .web-testing-panel {
-    padding: 22px;
-  }
 
   .sap-confirmation-dialog dl > div {
     gap: 6px;

@@ -10,20 +10,21 @@ export const availableModules = Object.freeze([
     description: 'Validate SAP business workflows, integrations, and core enterprise processes.',
     icon: 'building',
   },
-  {
-    id: 'web-testing',
-    name: 'Web Testing',
-    description: 'Build and run reliable functional test scenarios for modern web applications.',
-    icon: 'globe',
-  },
 ]);
+
+const availableModuleIds = new Set(availableModules.map((module) => module.id));
 
 export const packageService = {
   async getInstalledModuleIds() {
-    return storageService.getJson(storageKeys.installedModules, []);
+    const installedIds = await storageService.getJson(storageKeys.installedModules, []);
+    const supportedInstalledIds = installedIds.filter((moduleId) => availableModuleIds.has(moduleId));
+    if (supportedInstalledIds.length !== installedIds.length) {
+      await storageService.setJson(storageKeys.installedModules, supportedInstalledIds);
+    }
+    return supportedInstalledIds;
   },
   async install(moduleId, onProgress) {
-    if (!availableModules.some((module) => module.id === moduleId)) {
+    if (!availableModuleIds.has(moduleId)) {
       throw new Error('The selected module is not available.');
     }
 
@@ -39,7 +40,7 @@ export const packageService = {
     return nextInstalledIds;
   },
   async uninstall(moduleId) {
-    if (!availableModules.some((module) => module.id === moduleId)) {
+    if (!availableModuleIds.has(moduleId)) {
       throw new Error('The selected module is not available.');
     }
 

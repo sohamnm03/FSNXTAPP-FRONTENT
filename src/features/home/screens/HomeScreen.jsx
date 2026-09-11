@@ -25,23 +25,6 @@ const moduleDetails = {
     ],
     version: 'v1.0.0',
   },
-  'web-testing': {
-    features: [
-      'Reliable browser workflow validation',
-      'Reusable functional test scenarios',
-      'Secure credential handling',
-      'Automatic HTML test reports',
-      'Run history and downloadable artifacts',
-    ],
-    lastUpdated: 'Jun 02, 2025',
-    setup: [
-      ['Browser requirements', 'Check supported browsers and drivers', 'globe'],
-      ['Configure target site', 'Add your application URL and routes', 'settings'],
-      ['Test credentials', 'Configure secure test-user credentials', 'user'],
-      ['Advanced settings', 'Customise timeouts and reporting', 'sliders'],
-    ],
-    version: 'v1.3.0',
-  },
 };
 
 const gettingStartedSteps = [
@@ -218,7 +201,7 @@ export default function HomeScreen({ onOpenModule }) {
             <div className="home-package-summary__actions">
               {isSelectedInstalled ? (
                 <>
-                  <AppButton disabled={Boolean(uninstallingModuleId)} icon="play" onClick={() => onOpenModule(selectedModule)} title={selectedModule.id === 'web-testing' ? 'Run Script' : `Open ${selectedModule.name}`} />
+                  <AppButton disabled={Boolean(uninstallingModuleId)} icon="play" onClick={() => onOpenModule(selectedModule)} title={`Open ${selectedModule.name}`} />
                   <AppButton className="package-uninstall-button" icon="trash" loading={uninstallingModuleId === selectedModule.id} onClick={() => handleUninstall(selectedModule)} title="Uninstall package" variant="secondary" />
                 </>
               ) : (

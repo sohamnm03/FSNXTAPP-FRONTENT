@@ -384,7 +384,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
       <main className="sap-chat-layout">
         <aside aria-label="SAP testing controls" className="sap-chat-sidebar">
           <div className="sap-sidebar-content">
-            <div className="web-testing-heading">
+            <div className="sap-testing-heading">
               <div className="module-placeholder__icon"><Icon name="building" size={38} /></div>
               <div>
                 <p className="eyebrow">SAP TESTING</p>
