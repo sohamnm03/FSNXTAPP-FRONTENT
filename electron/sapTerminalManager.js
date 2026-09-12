@@ -178,12 +178,15 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
   // mid-run "confirm this Save" request under the same id this manager
   // already tracks the run by, with no session-id plumbing needed. Omitted
   // for the plain `claude auth status` check below, which never touches SAP.
-  function claudeEnvironment(token, runId = '') {
+  function claudeEnvironment(token, runId = '', caseCreation = null, lane = 'gui') {
     const env = {
       ...(electronApp.isPackaged ? webRuntimeEnvironment(process.resourcesPath) : process.env),
       NO_COLOR: '1', FORCE_COLOR: '0', CLAUDE_CONFIG_DIR: claudeConfigDir,
       FSNXT_ARTIFACT_ARCHIVE_DIR: archiveDir(),
       FSNXT_APP_USERNAME: currentUsername,
+      FSNXT_CASE_CREATION_AUTO_SAVE: caseCreation && lane === 'gui' ? '1' : '0',
+      FSNXT_CASE_DRAFT_DIR: caseCreation ? caseDraftDirectory(lane, caseCreation.systemId) : '',
+      FSNXT_CASE_EXISTING_FILES: JSON.stringify(caseCreation?.existingFiles || []),
     };
     if (pythonPath) env.FSNXT_PYTHON = pythonPath;
     if (runId) env.FSNXT_RUN_ID = runId;
@@ -266,6 +269,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       prompt: run.prompt,
       response: run.response,
       sessionId: run.sessionId,
+      createdCases: run.createdCases || [],
       error: run.error,
       exitCode: run.exitCode,
       source: run.source || 'claude',
@@ -311,10 +315,6 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     return `TC-${match[1].padStart(3, '0')}`;
   }
 
-  function laneLabel(lane) {
-    return lane === 'gui' ? 'SAP GUI' : 'Web';
-  }
-
   function laneCaseFolder(lane) {
     return lane === 'gui' ? 'GUI-TC' : 'Web-TC';
   }
@@ -331,7 +331,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
 
   function readJsonFile(filePath, fallback) {
     try {
-      return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      return JSON.parse(fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, ''));
     } catch {
       return fallback;
     }
@@ -551,11 +551,12 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     const created = [];
     for (const fileName of newFiles) {
       const draftPath = path.join(draftDirectory, fileName);
-      let content;
-      try { content = fs.readFileSync(draftPath, 'utf8'); } catch { continue; }
+      const content = fs.readFileSync(draftPath, 'utf8');
       const headers = parseCaseHeaders(content);
       let caseId;
-      try { caseId = normalizeCaseId(headers['Case id']); } catch { continue; } // not a recognizable case file — leave it in the draft folder, untouched
+      try { caseId = normalizeCaseId(headers['Case id']); } catch {
+        throw new Error(`${fileName} has no valid Case id header. The draft was retained at ${draftPath}.`);
+      }
       const titleLine = content.split('\n').find((line) => line.trim().startsWith('# ')) || '';
       const summary = titleLine.replace(/^#\s*/, '').replace(/^TC-\d{3}\s*[—-]\s*/, '').trim()
         || headers['Transaction / app'] || fileName;
@@ -564,13 +565,13 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       // something else claimed this exact filename in the meantime, keep the
       // existing file rather than silently overwriting it.
       const destinationPath = path.join(destinationDirectory, fileName);
-      if (fs.existsSync(destinationPath)) continue;
-      try {
-        fs.copyFileSync(draftPath, destinationPath);
-      } catch {
-        continue;
+      if (fs.existsSync(destinationPath)) {
+        if (fs.readFileSync(destinationPath, 'utf8') !== content) {
+          throw new Error(`${destinationPath} already exists with different contents. The new draft was retained.`);
+        }
+      } else {
+        fs.copyFileSync(draftPath, destinationPath, fs.constants.COPYFILE_EXCL);
       }
-      try { fs.unlinkSync(draftPath); } catch { /* the draft folder is discarded on the next app launch regardless */ }
 
       const relativeCaseFile = path.relative(externalCasesRoot, destinationPath).split(path.sep).join('/');
       const key = externalCaseKey(lane, caseId);
@@ -591,7 +592,12 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         caseId, lane, summary, writes, source: 'external', externalLabel: 'External created TC', fileName, filePath: destinationPath, storageRoot: externalCasesRoot,
       });
     }
-    if (created.length) writeJsonFile(externalCasesManifestPath, manifest);
+    if (created.length) {
+      writeJsonFile(externalCasesManifestPath, manifest);
+      for (const entry of created) {
+        try { fs.unlinkSync(path.join(draftDirectory, entry.fileName)); } catch { /* Retain a recoverable draft if cleanup fails. */ }
+      }
+    }
     return { created };
   }
 
@@ -1017,13 +1023,15 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       claudeTokenStore.clear();
       return { available: true, loggedIn: false, authMethod: 'oauth_token' };
     },
-    start(prompt, previousSessionId = '', lane = 'gui') {
+    start(prompt, previousSessionId = '', lane = 'gui', options = {}) {
       if (!validateProject(projectRoot)) throw new Error('The bundled SAP automation package is missing or incomplete. Reinstall the application.');
       const oauthToken = claudeTokenStore.get();
       if (!oauthToken) throw new Error('Configure a Claude OAuth token before using the AI Assistant.');
       if (typeof prompt !== 'string' || !prompt.trim()) throw new Error('Type what you want the AI Assistant to do.');
       if (previousSessionId && !/^[0-9a-f-]{36}$/i.test(previousSessionId)) throw new Error('The AI Assistant session is invalid. Start a new chat.');
       if (!['gui', 'web'].includes(lane)) throw new Error('Select SAP GUI or Fiori / WebGUI testing.');
+      const caseCreation = options?.caseCreation || null;
+      if (caseCreation) configuredConnectionCheckSystem(caseCreation.systemId);
 
       const laneGuidance = lane === 'gui'
         ? 'The user selected the SAP GUI lane. Use GUI-lane cases and scripts/run-gui-case.ps1 for runnable tests.'
@@ -1033,8 +1041,11 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         '-p', prompt.trim(),
         '--output-format', 'json',
         '--permission-mode', 'auto',
-        '--append-system-prompt', `${DISPLAY_GUIDANCE} ${laneGuidance}`,
+        '--append-system-prompt', `${DISPLAY_GUIDANCE} ${laneGuidance}${caseCreation ? ` This is an FSNXT testcase creation run on ${caseCreation.systemId}. The user authorizes saving the requested deal as part of creating the testcase. Announce the Save and perform it without asking for another chat confirmation or popup. This authorization satisfies rule 3 for this requested scenario only. Verify the target SAP system before writing. Do not add settlement, posting, or other writes beyond the request. Verify the saved document number from SAP, then write the Markdown testcase to ${caseDraftDirectory(lane, caseCreation.systemId)} before finishing. If blocked, write the observed partial steps and exact failure as a draft; never claim an unverified save or repeat a Save whose outcome is uncertain.` : ''}`,
       ];
+      if (caseCreation) {
+        args.push('--allowedTools', 'mcp__sap-gui__*', 'Write(/.case-drafts/**)', 'Edit(/.case-drafts/**)');
+      }
       if (previousSessionId) args.push('--resume', previousSessionId);
 
       const run = {
@@ -1051,7 +1062,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       };
       const child = spawn(claudePath, args, {
         cwd: projectRoot,
-        env: claudeEnvironment(oauthToken, run.id),
+        env: claudeEnvironment(oauthToken, run.id, caseCreation, lane),
         windowsHide: true,
         shell: false,
         stdio: ['ignore', 'pipe', 'pipe'],
@@ -1075,16 +1086,28 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         // left behind (the process was killed before the hook's own timeout)
         // would otherwise sit in logs/elicitation-requests forever.
         cleanupElicitationFiles(run.id);
-        if (run.status === 'stopping') {
-          run.status = 'stopped';
-          return;
-        }
-        if (run.status === 'failed' && run.error) return;
         const parsed = parseClaudeResult(run.stdout, run.stderr);
         run.response = parsed.response;
         run.sessionId = parsed.sessionId || run.sessionId;
-        run.error = parsed.error || (code === 0 ? '' : 'AI Assistant could not complete the request. Check that you are signed in.');
-        run.status = code === 0 && !run.error ? 'completed' : 'failed';
+        if (run.status === 'stopping') {
+          run.status = 'stopped';
+        } else if (run.status !== 'failed') {
+          run.error = parsed.error || (code === 0 ? '' : 'AI Assistant could not complete the request. Check that you are signed in.');
+          run.status = code === 0 && !run.error ? 'completed' : 'failed';
+        }
+        // Persist drafts in the main process, even if the user left this screen.
+        if (caseCreation) {
+          try {
+            run.createdCases = finalizeCaseCreation(lane, caseCreation.systemId, caseCreation.existingFiles, caseCreation.author).created;
+            if (!run.createdCases.length && run.status === 'completed') {
+              run.status = 'failed';
+              run.error = 'Testcase creation is unfinished: no Markdown file was produced. Continue this testcase in chat; verify the existing SAP deal before retrying any Save.';
+            }
+          } catch (error) {
+            run.error = `Could not store the testcase locally: ${error.message}`;
+            run.status = 'failed';
+          }
+        }
       });
       return publicRun(run);
     },

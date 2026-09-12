@@ -25,7 +25,7 @@ contextBridge.exposeInMainWorld('desktopAPI', Object.freeze({
     prepareCase: (lane, caseId, stage, credentials) => ipcRenderer.invoke('sap-terminal:prepare-case', lane, caseId, stage, credentials),
     startConfirmedCase: (confirmationId) => ipcRenderer.invoke('sap-terminal:start-confirmed-case', confirmationId),
     answerElicitation: (runId, accept) => ipcRenderer.invoke('sap-terminal:answer-elicitation', runId, accept),
-    start: (prompt, sessionId, lane) => ipcRenderer.invoke('sap-terminal:start', prompt, sessionId, lane),
+    start: (prompt, sessionId, lane, options) => ipcRenderer.invoke('sap-terminal:start', prompt, sessionId, lane, options),
     getRun: (runId) => ipcRenderer.invoke('sap-terminal:get-run', runId),
     stop: (runId) => ipcRenderer.invoke('sap-terminal:stop', runId),
   }),

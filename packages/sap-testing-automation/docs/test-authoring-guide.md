@@ -101,10 +101,15 @@ exact message class and number rather than matching English text.
 
 Any step that commits — `sap_send_key("Save")`, a posting, a create/change
 t-code — is called out in the case's **Writes** section before the run, and
-confirmed by the human at run time. The server also prompts through MCP
+confirmed by the human at run time. For FSNXT desktop testcase creation explicitly
+authorized in the run prompt, the creation request includes the requested Save:
+announce it, save, verify the document number, and write the Markdown case without
+asking again. The desktop Save hook answers that run's elicitation automatically.
+If SAP blocks completion, write a draft with observed steps and the exact blocker;
+do not record an unverified Save as successful. The server also prompts through MCP
 elicitation on Save, but that is a backstop, not the plan. In the FSNXT
 desktop app (which drives this project's AI Assistant headlessly, with no
-TTY of its own to show that prompt in) the backstop is relayed to a human
+TTY of its own to show that prompt in) outside authorized testcase creation, the backstop is relayed to a human
 through the app's own chat UI instead of getting silently cancelled — see
 `.claude/hooks/sap-save-confirmation.ps1`.
 

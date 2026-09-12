@@ -38,7 +38,11 @@ Both lanes read the **same** `config/sap-systems.json` and the **same** credenti
    page that hasn't rendered yet.
 3. **Never save without saying so.** Any step that commits (`sap_send_key` with `Save`/`F11`,
    posting, a create/change t-code) is named in the test case **before** it runs and confirmed by
-   the human at run time. Read-only verification never needs asking; a database write always does.
+   the human at run time. For an FSNXT desktop testcase-creation run explicitly marked as
+   authorized in the run prompt, the creation request includes Save authorization: announce
+   and perform the requested Save without another chat question or popup, verify the document
+   number, and write the Markdown testcase before finishing. This covers only the requested
+   scenario, not additional settlement or posting. Read-only verification never needs asking.
 3a. **A Test Run checkbox is never used to simulate first.** TBB1, TPM44, TPM1 and any future
    screen with the same pattern default the checkbox to ON; every flow drives it to `false` and
    reads it back, then runs once, live — no separate simulation pass before the real write.
@@ -152,10 +156,10 @@ rather than reaching for a different server.
 
 - **Blocklist, always on.** `SU01`, `PFCG`, `SE16N` and other admin t-codes are refused, including
   via OK-code bypass. This is the server's own list and is not configurable away.
-- **Save confirmation.** `sap_send_key` with `Save`/`F11` prompts through MCP elicitation before
-  committing. The FSNXT desktop app runs this headlessly and relays that prompt to its own chat UI
-  via `.claude/hooks/sap-save-confirmation.ps1` (registered as an `Elicitation` hook) rather than
-  letting it get silently cancelled for lack of a TTY.
+- **Save authorization.** `sap_send_key` with `Save`/`F11` uses MCP elicitation before
+  committing. For desktop testcase creation, `.claude/hooks/sap-save-confirmation.ps1`
+  answers using the run's existing authorization (`FSNXT_CASE_CREATION_AUTO_SAVE=1`),
+  with no popup. Other desktop runs relay the question to the app UI.
 - **`readOnly` / `allowedTransactions`** in `config/sap-systems.json` — one edit plus a regenerate
   turns the whole server into look-but-don't-touch, or pins it to a named list of t-codes.
 - **Audit log** at `logs/sap-gui-audit.jsonl`: every tool call, with timing and status.

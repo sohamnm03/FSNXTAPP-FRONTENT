@@ -72,8 +72,8 @@ function buildInteractiveRunPrompt(lane, testCase) {
 // Case creation hands the whole job to the live AI Assistant instead of
 // building a file from typed answers with no SAP involved (the old wizard):
 // explore the transaction live, actually drive it through SAP end to end
-// (with human confirmation before every write, same as buildInteractiveRunPrompt
-// above), and only then write the case file(s) — matching how the cases
+// (including the Save authorized by the creation request), then write the case
+// files, matching how the cases
 // already in this project were authored, not a fill-in-the-blanks form.
 // prep comes from sapTerminalService.prepareCaseCreation() and names exactly
 // where the finished file(s) must land so they survive (see that function's
@@ -105,9 +105,9 @@ function buildCaseCreationPrompt(lane, connectionServerName, connectedSystemId, 
     `Each case file's header must include: Case id, Lane (${laneHeader}), Transaction / app, Spec file: "— external documentation-only case (created live via the AI Assistant; no frozen script yet)", `
       + `System: ${connectedSystemId}, Type, Author: "Claude (requested by ${author || 'the user'})", Created: ${createdDate}, `
       + 'Status: draft (never active or frozen — this case has not yet had the two clean regression runs freezing requires), Source: "External created TC", and Writes to the database.',
-    'Before any step that saves, posts, or otherwise commits a database write, stop, tell me exactly what it will write, and wait for my explicit confirmation in this chat before performing it (rule 3) — never write on your own. A Test Run / simulate checkbox (TBB1, TPM44, TPM1, or similar) is never used to simulate first — drive it to off and run once, live (rule 3a).',
+    'My request to create this testcase includes authorization to Save the requested deal. Announce the Save, then perform it without asking me again or waiting for a popup. Verify the SAP system and entered values first. Handle SAP validation messages and verify the saved document number and success status before recording a successful Save. Do not settle or post unless my request includes those steps. If a Save outcome is uncertain, inspect SAP before any retry to avoid duplicate deals.',
     'Record what actually happens at every step, including any deviation from what you expected. Never write down an expected value as observed if you could not read it (rules 5-6). Every assertion in the case file must name a field and the expected value you actually observed — "works correctly" is not an assertion.',
-    'When you are done or blocked, tell me in plain terms: how many case files you created, their ids and filenames, what each one covers, and what each one wrote to SAP.',
+    'Before ending your response, use Write to create the Markdown file in the specified scratch folder and read it back. If SAP blocks completion, still write a draft containing only the observed steps, the blocking message and the unverified assertions; clearly mark the save as failed or unverified. Never stop with only a chat summary. Then report the filenames and the verified SAP document number, or the exact blocker.',
   ].join('\n\n');
 }
 
@@ -191,29 +191,29 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
         setStatus(run.status);
         setActiveSource(run.source || 'claude');
         setPendingElicitation(run.pendingElicitation || null);
+        if (FINAL_STATUSES.has(run.status) && run.sessionId) setSessionId(run.sessionId);
         if (run.status === 'completed') {
-          setSessionId(run.sessionId || '');
           setMessages((current) => [...current, { id: `${run.id}-assistant`, role: run.source === 'direct' ? 'runner' : 'assistant', text: run.response || 'Completed.' }]);
         } else if (run.status === 'failed') {
           setError(run.error || 'AI Assistant could not complete the request.');
+          if (run.response) setMessages((current) => [...current, { id: `${run.id}-assistant`, role: 'assistant', text: run.response }]);
         }
         // A case-creation run (see startCaseCreation) writes its case file(s)
-        // itself during the run — register whatever showed up even if the run
-        // failed or was stopped partway, since an earlier case in the same
-        // run may already have been written and saved live to SAP.
+        // itself during the run. The main process stores those files before
+        // publishing a final status, including partially completed runs.
         if (FINAL_STATUSES.has(run.status) && caseCreationRef.current) {
           const pending = caseCreationRef.current;
-          caseCreationRef.current = null;
           try {
-            const result = await sapTerminalService.finalizeCaseCreation(pending.lane, pending.systemId, pending.existingFiles, pending.author);
+            const result = { created: run.createdCases || [] };
             if (result.created?.length) {
+              caseCreationRef.current = null;
               await loadCasesForLane(pending.lane);
               setSelectedCase(result.created[result.created.length - 1]);
               pushRunnerMessage(result.created.length === 1
                 ? `${result.created[0].caseId} was saved to ${result.created[0].filePath}. It now shows in the left panel tagged "External created TC" — open it and choose "Run interactively" to have the AI Assistant run it again live.`
                 : `${result.created.length} test cases were saved: ${result.created.map((created) => created.caseId).join(', ')}. They now show in the left panel tagged "External created TC".`);
             } else if (run.status === 'completed') {
-              pushRunnerMessage('The AI Assistant finished but I could not find a new test case file to save — check its answer above for what happened.');
+              pushRunnerMessage('No testcase file was created yet. Your next message will continue this testcase with the same local output folder.');
             }
           } catch (finalizeError) {
             pushRunnerMessage(`I could not save the new test case file(s): ${finalizeError.message}`);
@@ -299,7 +299,11 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
         setPendingConfirmation(proposal);
         return;
       }
-      const run = await sapTerminalService.start(nextPrompt, sessionId, lane);
+      const pending = caseCreationRef.current;
+      const continuationPrompt = pending
+        ? `${nextPrompt}\n\nContinue the unfinished testcase. Inspect the existing SAP session before acting; do not recreate a deal that was already saved. Write the Markdown testcase to ${pending.caseDirectory}, using ${pending.nextCaseId} if no file has been created yet. Include the observed Save outcome and document number, or the exact blocker.`
+        : nextPrompt;
+      const run = await sapTerminalService.start(continuationPrompt, sessionId, lane, pending ? { caseCreation: pending } : undefined);
       setActiveSource('claude');
       setRunId(run.id);
       setStatus(run.status);
@@ -455,18 +459,16 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   }
 
   // Hands the whole authoring job to the live AI Assistant: it explores and
-  // drives the transaction in SAP itself (confirming with the user before any
-  // write, per buildCaseCreationPrompt) and writes the case file(s) itself.
+  // drives the transaction including its authorized Save and writes the case file(s).
   // This app's only remaining job is telling it exactly where those files
-  // must land, and registering whatever shows up once the run finishes (see
-  // the run-completion poll above, which calls finalizeCaseCreation).
+  // must land. The main process registers them when the run finishes.
   async function startCaseCreation(userRequest) {
     setIsCreatingCase(true);
     setError('');
     try {
       const prep = await sapTerminalService.prepareCaseCreation(lane, connectedSystemId);
       const author = user?.email || user?.username || '';
-      caseCreationRef.current = { lane, systemId: connectedSystemId, existingFiles: prep.existingFiles || [], author };
+      caseCreationRef.current = { lane, systemId: connectedSystemId, existingFiles: prep.existingFiles || [], author, caseDirectory: prep.caseDirectory, nextCaseId: prep.nextCaseId };
 
       // Match how every frozen-script GUI-lane run already starts (session.py's
       // GuiSession.login(), CLAUDE.md rule 2/9): open a brand-new logged-on
@@ -486,7 +488,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
       }
 
       const casePrompt = buildCaseCreationPrompt(lane, connectionServerName, connectedSystemId, userRequest, prep, author);
-      const run = await sapTerminalService.start(casePrompt, sessionId, lane);
+      const run = await sapTerminalService.start(casePrompt, '', lane, { caseCreation: caseCreationRef.current });
       setActiveSource('claude');
       setRunId(run.id);
       setStatus(run.status);

@@ -30,7 +30,7 @@ async function registerSapTerminalHandlers() {
   ipcMain.handle('sap-terminal:prepare-case', (_event, lane, caseId, stage, credentials) => sapTerminalManager.prepareCase(lane, caseId, stage, credentials));
   ipcMain.handle('sap-terminal:start-confirmed-case', (_event, confirmationId) => sapTerminalManager.startConfirmedCase(confirmationId));
   ipcMain.handle('sap-terminal:answer-elicitation', (_event, runId, accept) => sapTerminalManager.answerElicitation(runId, accept));
-  ipcMain.handle('sap-terminal:start', (_event, prompt, sessionId, lane) => sapTerminalManager.start(prompt, sessionId, lane));
+  ipcMain.handle('sap-terminal:start', (_event, prompt, sessionId, lane, options) => sapTerminalManager.start(prompt, sessionId, lane, options));
   ipcMain.handle('sap-terminal:get-run', (_event, runId) => sapTerminalManager.getRun(runId));
   ipcMain.handle('sap-terminal:stop', (_event, runId) => sapTerminalManager.stop(runId));
 }

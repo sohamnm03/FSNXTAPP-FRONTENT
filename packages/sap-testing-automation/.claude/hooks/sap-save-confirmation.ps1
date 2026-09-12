@@ -1,173 +1,79 @@
 <#
 .SYNOPSIS
-    Elicitation hook for the sap-gui MCP server(s): bridges its "confirm
-    before Save" prompt out to the FSNXT desktop app's own chat UI when this
-    session is being driven by that app, instead of letting it get silently
-    auto-cancelled.
-
+    Answer SAP Save elicitation for desktop testcase creation, or relay it
+    to the desktop UI for other runs. Interactive CLI sessions are unchanged.
 .DESCRIPTION
-    docs/sap-gui-mcp-setup.md § Safety rails: `sap_send_key` with `Save`/`F11`
-    calls the MCP server's own `ctx.elicit(...)` before committing, and that
-    server treats "the client can't answer" as "don't save" (fail closed, not
-    save silently) - see mcp_sap_gui's `_confirm_save`. That is correct for an
-    interactive client. It is also, unavoidably, a dead end for the FSNXT
-    desktop app: it drives `claude -p` headlessly (stdin closed, no TTY - see
-    electron/sapTerminalManager.js start()), so with no hook registered here,
-    every Save is cancelled the instant it's attempted - fields filled in
-    correctly, nothing ever written, and no visible dialog explaining why.
-
-    docs/test-authoring-guide.md § Steps that write is explicit that the MCP
-    elicitation is "a backstop, not the plan" - the actual plan (CLAUDE.md
-    rule 3) is that the AI Assistant stops and gets the human's confirmation
-    in chat *before* ever attempting the write. The FSNXT app already builds
-    that gate into the prompts it sends (buildInteractiveRunPrompt /
-    buildCaseCreationPrompt in SapTestingScreen.jsx) and into its own
-    pre-run "Confirm SAP database writes" dialog. This hook does not bypass
-    the backstop - it relays it to a human through the one channel a headless
-    run actually has: sapTerminalManager.js's existing ~500ms run-status poll,
-    surfaced as a second, distinct confirmation dialog in the chat UI
-    ("Confirm SAP Save") that blocks this hook for a real answer, the same
-    way an interactive elicitation dialog would.
-
-    Talks to sapTerminalManager.js entirely through logs/elicitation-requests/
-    (gitignored - see .gitignore's `logs/` entry), keyed by FSNXT_RUN_ID (set
-    on the claude.exe child's environment by claudeEnvironment() - see
-    sapTerminalManager.js) rather than the MCP session id, so no session-id
-    correlation is needed and two runs can never collide:
-
-      1. Write <runId>.request.json describing what's being asked.
-      2. Poll for <runId>.response.json to appear (sapTerminalManager.js's
-         answerElicitation(), called once the user clicks Confirm/Cancel in
-         the app).
-      3. Translate that answer into this hook's own decision and exit.
-
-    Outside the FSNXT app (FSNXT_RUN_ID unset - a developer's own interactive
-    `claude` session, or `claude -p` run by hand), this hook makes no
-    decision at all (exit 0, no output) and steps out of the way entirely -
-    Claude Code's normal elicitation handling for that session applies
-    unchanged, exactly as if this hook were not registered.
-
-    A hook that cannot read its own input, or that is asked to answer
-    something other than the single yes/no shape sap_send_key's Save
-    confirmation actually uses, also steps out of the way rather than
-    guessing - see the schema check below.
-
-.NOTES
-    Wired up as an Elicitation hook (matcher "^sap-gui") in .claude/settings.json.
-    Give it a generous `timeout` there - it blocks for as long as a human
-    takes to click a button in the app, not a fixed automation step.
+    The desktop app sets FSNXT_CASE_CREATION_AUTO_SAVE=1 only for testcase
+    creation, where the user has authorized saving the requested scenario.
+    Claude Code Elicitation uses requested_schema / mcp_server_name as input
+    and hookSpecificOutput.action / content as output.
 #>
-
 $ErrorActionPreference = 'Stop'
 
-# Any failure path below reaches this: make no decision, let Claude Code's
-# normal (unsupported-client-cancels) elicitation handling apply.
-function StepAside {
-    exit 0
-}
-
 function Respond {
-    param(
-        [Parameter(Mandatory)] [ValidateSet('accept', 'cancel')] [string] $Decision,
-        [string] $SystemMessage
-    )
-    $output = @{
-        hookSpecificOutput = @{
-            hookEventName        = 'Elicitation'
-            elicitationDecision  = $Decision
-            systemMessage        = $SystemMessage
-        }
-    }
+    param([ValidateSet('accept', 'cancel')] [string] $Decision)
+    $output = @{ hookSpecificOutput = @{ hookEventName = 'Elicitation'; action = $Decision } }
     if ($Decision -eq 'accept') {
-        # sap_send_key's Save confirmation always elicits a plain bool
-        # (mcp_sap_gui's `ctx.elicit(..., response_type=bool)`); fastmcp
-        # wraps that as {"type":"object","properties":{"value":{"type":
-        # "boolean"}},"required":["value"]} on the wire (see fastmcp's
-        # ScalarElicitationType / parse_elicit_response_type), so the
-        # response has to match that shape, not a bare boolean.
-        $output.hookSpecificOutput.elicitationResponse = @{ value = $true }
+        # FastMCP wraps response_type=bool in an object with a value field.
+        $output.hookSpecificOutput.content = @{ value = $true }
     }
     Write-Output ($output | ConvertTo-Json -Depth 6 -Compress)
     exit 0
 }
 
 try {
-    $raw = [Console]::In.ReadToEnd()
-    if (-not $raw) { StepAside }
-    $requestEvent = $raw | ConvertFrom-Json
-} catch {
-    StepAside
-}
+    $requestEvent = [Console]::In.ReadToEnd() | ConvertFrom-Json
+} catch { exit 0 }
 
 $runId = $env:FSNXT_RUN_ID
-if (-not $runId) { StepAside }  # not an FSNXT-app-driven session - leave it alone
+if (-not $runId -or $runId -notmatch '^[a-zA-Z0-9-]+$') { exit 0 }
 
-# Only a plain yes/no is something this hook (and the app's dialog) can
-# answer. A future elicitation with a different shape falls through to
-# Claude Code's normal handling rather than being mis-answered.
-try {
-    $schemaProps = $requestEvent.schema.properties
-    if ($schemaProps -and $schemaProps.value -and $schemaProps.value.type -and $schemaProps.value.type -ne 'boolean') {
-        StepAside
-    }
-} catch {
-    StepAside
+# Only answer the known SAP Save question, never arbitrary forms or login prompts.
+if ($requestEvent.hook_event_name -ne 'Elicitation') { exit 0 }
+if ($requestEvent.mcp_server_name -notmatch '^sap-gui(?:$|-)') { exit 0 }
+if ($requestEvent.mode -and $requestEvent.mode -ne 'form') { exit 0 }
+if ($requestEvent.message -notmatch 'triggers Save \(F11\) in SAP') { exit 0 }
+$schema = $requestEvent.requested_schema
+if ($schema.type -ne 'object' -or $schema.properties.value.type -ne 'boolean') { exit 0 }
+if (@($schema.properties.PSObject.Properties).Count -ne 1) { exit 0 }
+
+if ($env:FSNXT_CASE_CREATION_AUTO_SAVE -eq '1' -and $requestEvent.mcp_server_name -eq 'sap-gui') {
+    Respond 'accept'
 }
 
-$root = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)   # .claude\hooks -> .claude -> repo
+$root = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $requestsDir = Join-Path $root 'logs\elicitation-requests'
-try { New-Item -ItemType Directory -Force -Path $requestsDir | Out-Null } catch { StepAside }
-
-$requestPath  = Join-Path $requestsDir "$runId.request.json"
+try { New-Item -ItemType Directory -Force -Path $requestsDir | Out-Null } catch { exit 0 }
+$requestPath = Join-Path $requestsDir "$runId.request.json"
 $responsePath = Join-Path $requestsDir "$runId.response.json"
-$tempPath     = "$requestPath.tmp"
-
+$tempPath = "$requestPath.tmp"
 $request = @{
-    id        = $runId
-    mcpServer = [string]$requestEvent.mcp_server
-    toolName  = [string]$requestEvent.tool_name
-    message   = [string]$requestEvent.message
+    id = $runId
+    mcpServer = [string]$requestEvent.mcp_server_name
+    toolName = 'sap_send_key'
+    message = [string]$requestEvent.message
     createdAt = (Get-Date).ToUniversalTime().ToString('o')
 }
 try {
-    ($request | ConvertTo-Json -Depth 6 -Compress) | Set-Content -LiteralPath $tempPath -Encoding UTF8 -NoNewline
-    # Rename rather than write straight to requestPath so sapTerminalManager's
-    # readPendingElicitation() (fs.existsSync + JSON.parse, no locking on its
-    # side) can never observe a half-written file.
+    ($request | ConvertTo-Json -Compress) | Set-Content -LiteralPath $tempPath -Encoding UTF8 -NoNewline
     Move-Item -LiteralPath $tempPath -Destination $requestPath -Force
 } catch {
-    try { Remove-Item -LiteralPath $tempPath -Force -ErrorAction SilentlyContinue } catch {}
-    StepAside
+    Remove-Item -LiteralPath $tempPath -Force -ErrorAction SilentlyContinue
+    exit 0
 }
 
-# Matches this hook's `timeout` in .claude/settings.json with headroom for
-# the write/cleanup above - a human confirming a live Save may reasonably
-# take a couple of minutes to notice the dialog and read it.
 $deadline = (Get-Date).AddSeconds(290)
 $accepted = $false
-$answered = $false
 while ((Get-Date) -lt $deadline) {
     if (Test-Path -LiteralPath $responsePath) {
         try {
             $response = Get-Content -LiteralPath $responsePath -Raw | ConvertFrom-Json
-            $accepted = [bool]$response.accept
-            $answered = $true
-        } catch {
-            # An unreadable response is treated as "no answer" below, not as
-            # an accept - fail closed, matching the MCP server's own default.
-        }
+            $accepted = $response.accept -is [bool] -and $response.accept
+        } catch { }
         break
     }
     Start-Sleep -Milliseconds 400
 }
-
-try { Remove-Item -LiteralPath $requestPath -Force -ErrorAction SilentlyContinue } catch {}
-try { Remove-Item -LiteralPath $responsePath -Force -ErrorAction SilentlyContinue } catch {}
-
-if ($answered -and $accepted) {
-    Respond -Decision 'accept' -SystemMessage 'The user confirmed this Save in the FSNXT app.'
-} elseif ($answered) {
-    Respond -Decision 'cancel' -SystemMessage 'The user declined this Save in the FSNXT app. Tell them what was not saved and continue without it.'
-} else {
-    Respond -Decision 'cancel' -SystemMessage 'No one answered the Save confirmation in the FSNXT app in time. Tell the user this Save did not happen and ask them to confirm again if they still want it.'
-}
+Remove-Item -LiteralPath $requestPath -Force -ErrorAction SilentlyContinue
+Remove-Item -LiteralPath $responsePath -Force -ErrorAction SilentlyContinue
+if ($accepted) { Respond 'accept' } else { Respond 'cancel' }
