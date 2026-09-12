@@ -30,6 +30,20 @@
           }
         ]
       }
+    ],
+    "Elicitation": [
+      {
+        "matcher": "^sap-gui",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "powershell -ExecutionPolicy Bypass -NoProfile -File \"$env:CLAUDE_PROJECT_DIR\\.claude\\hooks\\sap-save-confirmation.ps1\"",
+            "timeout": 300,
+            "statusMessage": "Waiting for you to confirm this SAP Save..."
+          }
+        ]
+      }
     ]
   }
 }

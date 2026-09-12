@@ -28,3 +28,9 @@ results/*
 evidence/*
 !results/_TEMPLATE.md
 !evidence/.gitkeep
+
+# Scratch area the AI Assistant writes a newly authored case into before the
+# desktop app copies it to the user's persistent external case folder and
+# deletes the draft (SapTestingScreen.jsx startCaseCreation / sapTerminalManager.js
+# finalizeCaseCreation). Should be empty between runs; ignored as a backstop.
+.case-drafts/

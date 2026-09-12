@@ -12,59 +12,9 @@ const LANES = {
   gui: { label: 'GUI Lane', description: 'SAP GUI for Windows' },
   web: { label: 'Web Lane', description: 'Browser-based SAP testing' },
 };
-// Chat-driven test case creation: instead of a form dialog, the AI Assistant
-// terminal collects these fields one message at a time (Claude Code-style),
-// then hands the answers to the same createCase() IPC the old form used.
-const CASE_WIZARD_FIELDS = [
-  { key: 'transaction', question: 'Which SAP transaction or app is this test case for? (e.g., FTR_CREATE)', required: true },
-  { key: 'summary', question: 'Give me a one-line summary of what this test case covers.', required: true },
-  { key: 'purpose', question: 'What does this case prove, and what does it not cover?', required: true },
-  { key: 'preconditions', question: 'List any preconditions, one per line. Say "none" if there are none.', required: false },
-  { key: 'testData', question: 'List the test data / field values needed, one per line. Say "none" if not applicable.', required: false },
-  { key: 'steps', question: 'List the test steps in order, one per line.', required: true },
-  { key: 'assertions', question: 'List the expected results, one per line. Say "none" if not applicable.', required: false },
-  { key: 'writes', question: 'What database writes does this case make? Say "none" if it is read-only.', required: false },
-  { key: 'cleanup', question: 'Any cleanup needed after the run? Say "none" if not required.', required: false },
-];
-
-function isCaseWizardSkip(text) {
-  return /^(skip|none|n\/a|na)$/i.test(text.trim());
-}
-
-function isCaseWizardCancel(text) {
-  return /^(cancel|stop|nevermind|never mind|abort|quit)$/i.test(text.trim());
-}
-
-// Catches "I pasted a whole case file instead of answering the question" —
-// the wizard stores each answer verbatim into one field, so a pasted document
-// (headers, tables, another case's markdown) lands whole inside one bullet or
-// gets mangled line-by-line into a broken table, not a real answer.
-function looksLikePastedDocument(text) {
-  if (/^#{1,6}\s/m.test(text)) return true;
-  if (/-\s*\*\*Case id:\*\*/i.test(text)) return true;
-  if ((text.match(/^\s*\|.*\|\s*$/gm) || []).length >= 2) return true;
-  if (text.length > 1200) return true;
-  return false;
-}
-
 function detectCreateCaseIntent(text) {
   return /\b(create|add|new|make)\b.{0,40}\btest\s*cases?\b/i.test(text)
     || /\btest\s*cases?\b.{0,40}\b(create|add|new|make)\b/i.test(text);
-}
-
-function formatCaseWizardSummary(data) {
-  return [
-    "Here's what I have:",
-    `- Transaction / app: ${data.transaction}`,
-    `- Summary: ${data.summary}`,
-    `- Purpose: ${data.purpose}`,
-    `- Preconditions: ${data.preconditions || 'None specified.'}`,
-    `- Test data: ${data.testData || 'None specified.'}`,
-    `- Steps: ${data.steps}`,
-    `- Assertions: ${data.assertions || 'None specified.'}`,
-    `- Writes: ${data.writes || 'None - read-only case.'}`,
-    `- Cleanup: ${data.cleanup || 'None specified.'}`,
-  ].join('\n');
 }
 
 function statusLabel(status, source) {
@@ -93,9 +43,10 @@ function explicitRunRequest(text) {
   };
 }
 
-// A case with no frozen automation script (chat-wizard-created, or a browsed
-// file that was never registered in config/gui-runs.json or config/runs.json)
-// still has a full Steps section — this hands it to the real AI Assistant
+// A case with no frozen automation script (AI-created via startCaseCreation
+// below, or a browsed file that was never registered in config/gui-runs.json
+// or config/runs.json) still has a full Steps section — this hands it to the
+// real AI Assistant
 // (the same claude.exe the terminal chat already drives) to execute live via
 // its SAP GUI / web MCP tools, instead of leaving the case read-only forever.
 function buildInteractiveRunPrompt(lane, testCase) {
@@ -118,6 +69,48 @@ function buildInteractiveRunPrompt(lane, testCase) {
   ].join('\n\n');
 }
 
+// Case creation hands the whole job to the live AI Assistant instead of
+// building a file from typed answers with no SAP involved (the old wizard):
+// explore the transaction live, actually drive it through SAP end to end
+// (with human confirmation before every write, same as buildInteractiveRunPrompt
+// above), and only then write the case file(s) — matching how the cases
+// already in this project were authored, not a fill-in-the-blanks form.
+// prep comes from sapTerminalService.prepareCaseCreation() and names exactly
+// where the finished file(s) must land so they survive (see that function's
+// comment for why: the project folder Claude Code's cwd sits in is a
+// temporary extraction in the packaged app and is discarded after this run).
+function buildCaseCreationPrompt(lane, connectionServerName, connectedSystemId, userRequest, prep, author) {
+  const laneLabel = lane === 'gui' ? 'SAP GUI for Windows' : 'Fiori / WebGUI';
+  const laneHeader = lane === 'gui' ? 'sap-gui (SAP GUI for Windows)' : 'web (Fiori / WebGUI / UI5)';
+  const sessionNote = lane === 'gui'
+    ? 'A fresh session was just opened and logged on for this run — attach to it with sap_connect_existing rather than opening another (rule 2). '
+    : '';
+  const existingList = prep.existingFiles?.length ? prep.existingFiles.join(', ') : 'none yet';
+  const filenamePattern = lane === 'gui'
+    ? '`TC-<nnn>-<TCODE-or-slug>-gui.md` (e.g. TC-024-FTR_CREATE-term-loan-quarterly-gui.md)'
+    : '`TC-<nnn>-<TCODE-or-slug>.md` (e.g. TC-024-FTR-term-loan-quarterly.md) — no lane suffix in the web lane';
+  const createdDate = new Date().toISOString().slice(0, 10);
+  return [
+    `Create one or more new ${LANES[lane].label} test cases against ${connectionServerName}, for this request: "${userRequest}"`,
+    `This is an authoring task, not a chat answer: work out the transaction for real by driving ${laneLabel} live through the MCP tools first, and only write a case file for what you actually did and observed — never for what the request merely implies should happen.`,
+    `${sessionNote}Confirm the SAP session matches ${connectedSystemId} before touching anything (CLAUDE.md rule 1).`,
+    'Read `.claude/skills/new-test-case/SKILL.md`, `docs/test-authoring-guide.md` and `test-cases/_TEMPLATE.md` in this project before writing anything — every case file must follow that template and match the level of detail in '
+      + (prep.exampleCaseFile ? `the existing case at ${prep.exampleCaseFile}` : 'the existing cases already in this project')
+      + " (full Purpose, Preconditions, Steps, Assertions naming real fields and values, Known deviations) — not the template's placeholder text left unfilled.",
+    "Explore the transaction/app live before writing anything: discover its screens and fields with sap_get_screen_elements (GUI lane) or this project's web-lane screen models — never guess or reuse an element id from another case (rule 4). Work out every meaningful combination of inputs the request implies (e.g. fixed vs variable interest, different periods, different product types) rather than settling for one happy path.",
+    'Create ONE separate test case file per meaningful combination you actually run through SAP — do not combine several scenarios into a single file. '
+      + `The next free case id is ${prep.nextCaseId}; use it for the first file, then increment by one for each additional case you create in this run (never reuse a number, and never reuse a filename already in the folder: ${existingList}). Name each file ${filenamePattern}.`,
+    `Write every case file into this folder inside the project — it already exists, and is a scratch area for this run only: ${prep.caseDirectory}\n`
+      + "Do not write case files anywhere else (not test-cases/GUI-TC or test-cases/Web-TC, which are this project's own reference copies). Do not edit config/runs.json, config/gui-runs.json, or config/suites.json, and do not run scripts/check-suite.ps1 — none of that applies to a case authored this way. Once this run finishes, the app moves whatever you wrote in the scratch folder into the user's permanent test case library and registers it there automatically, the same way it already lists any other \"External created TC\".",
+    `Each case file's header must include: Case id, Lane (${laneHeader}), Transaction / app, Spec file: "— external documentation-only case (created live via the AI Assistant; no frozen script yet)", `
+      + `System: ${connectedSystemId}, Type, Author: "Claude (requested by ${author || 'the user'})", Created: ${createdDate}, `
+      + 'Status: draft (never active or frozen — this case has not yet had the two clean regression runs freezing requires), Source: "External created TC", and Writes to the database.',
+    'Before any step that saves, posts, or otherwise commits a database write, stop, tell me exactly what it will write, and wait for my explicit confirmation in this chat before performing it (rule 3) — never write on your own. A Test Run / simulate checkbox (TBB1, TPM44, TPM1, or similar) is never used to simulate first — drive it to off and run once, live (rule 3a).',
+    'Record what actually happens at every step, including any deviation from what you expected. Never write down an expected value as observed if you could not read it (rules 5-6). Every assertion in the case file must name a field and the expected value you actually observed — "works correctly" is not an assertion.',
+    'When you are done or blocked, tell me in plain terms: how many case files you created, their ids and filenames, what each one covers, and what each one wrote to SAP.',
+  ].join('\n\n');
+}
+
 export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   const { user } = useAuth();
   const [isConfigured, setIsConfigured] = useState(false);
@@ -131,6 +124,14 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   const [activeSource, setActiveSource] = useState('claude');
   const [messages, setMessages] = useState([]);
   const [pendingConfirmation, setPendingConfirmation] = useState(null);
+  // A live Save/F11 the AI Assistant is mid-way through inside SAP itself —
+  // distinct from pendingConfirmation above, which gates *starting* a known,
+  // registered case. This one surfaces the sap-gui MCP server's own
+  // elicitation request (relayed by .claude/hooks/sap-save-confirmation.ps1,
+  // via sapTerminalManager's run-status poll below) for a write the AI
+  // Assistant is about to make right now, mid-conversation.
+  const [pendingElicitation, setPendingElicitation] = useState(null);
+  const [isAnsweringElicitation, setIsAnsweringElicitation] = useState(false);
   const [error, setError] = useState('');
   const [isStarting, setIsStarting] = useState(false);
   const [isStopping, setIsStopping] = useState(false);
@@ -156,8 +157,12 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   const [archiveDirectory, setArchiveDirectory] = useState('');
   const [isChoosingArchiveDirectory, setIsChoosingArchiveDirectory] = useState(false);
   const [isCreatingCase, setIsCreatingCase] = useState(false);
-  const [caseWizard, setCaseWizard] = useState(null);
   const conversationRef = useRef(null);
+  const promptInputRef = useRef(null);
+  // Set while a case-creation run (see startCaseCreation) is in flight, so the
+  // run-completion poll below knows to register whatever new case file(s)
+  // that run wrote instead of treating it as an ordinary chat reply.
+  const caseCreationRef = useRef(null);
 
   useEffect(() => {
     Promise.all([sapTerminalService.getProject(emailPrefix(user)), sapTerminalService.getAuthStatus()])
@@ -185,17 +190,41 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
         if (cancelled) return;
         setStatus(run.status);
         setActiveSource(run.source || 'claude');
+        setPendingElicitation(run.pendingElicitation || null);
         if (run.status === 'completed') {
           setSessionId(run.sessionId || '');
           setMessages((current) => [...current, { id: `${run.id}-assistant`, role: run.source === 'direct' ? 'runner' : 'assistant', text: run.response || 'Completed.' }]);
         } else if (run.status === 'failed') {
           setError(run.error || 'AI Assistant could not complete the request.');
         }
+        // A case-creation run (see startCaseCreation) writes its case file(s)
+        // itself during the run — register whatever showed up even if the run
+        // failed or was stopped partway, since an earlier case in the same
+        // run may already have been written and saved live to SAP.
+        if (FINAL_STATUSES.has(run.status) && caseCreationRef.current) {
+          const pending = caseCreationRef.current;
+          caseCreationRef.current = null;
+          try {
+            const result = await sapTerminalService.finalizeCaseCreation(pending.lane, pending.systemId, pending.existingFiles, pending.author);
+            if (result.created?.length) {
+              await loadCasesForLane(pending.lane);
+              setSelectedCase(result.created[result.created.length - 1]);
+              pushRunnerMessage(result.created.length === 1
+                ? `${result.created[0].caseId} was saved to ${result.created[0].filePath}. It now shows in the left panel tagged "External created TC" — open it and choose "Run interactively" to have the AI Assistant run it again live.`
+                : `${result.created.length} test cases were saved: ${result.created.map((created) => created.caseId).join(', ')}. They now show in the left panel tagged "External created TC".`);
+            } else if (run.status === 'completed') {
+              pushRunnerMessage('The AI Assistant finished but I could not find a new test case file to save — check its answer above for what happened.');
+            }
+          } catch (finalizeError) {
+            pushRunnerMessage(`I could not save the new test case file(s): ${finalizeError.message}`);
+          }
+        }
       } catch (pollError) {
         if (!cancelled) setError(pollError.message);
       }
     }, 500);
     return () => { cancelled = true; window.clearInterval(poll); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadCasesForLane/pushRunnerMessage are plain functions recreated every render; this poll should only restart on runId/status
   }, [runId, status]);
 
   useEffect(() => {
@@ -252,17 +281,10 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     const nextPrompt = prompt.trim();
     if (!nextPrompt) return;
 
-    if (caseWizard) {
-      setMessages((current) => [...current, { id: crypto.randomUUID(), role: 'user', text: nextPrompt }]);
-      setPrompt('');
-      submitWizardAnswer(nextPrompt);
-      return;
-    }
-
     if (!isBusy && connectedSystemId === 'DS4_100_NIIF' && detectCreateCaseIntent(nextPrompt)) {
       setMessages((current) => [...current, { id: crypto.randomUUID(), role: 'user', text: nextPrompt }]);
       setPrompt('');
-      startCaseWizard();
+      startCaseCreation(nextPrompt);
       return;
     }
 
@@ -421,86 +443,59 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     setMessages((current) => [...current, { id: crypto.randomUUID(), role: 'runner', text }]);
   }
 
-  function startCaseWizard() {
+  // Clicking "Create" no longer opens a question-by-question wizard — it just
+  // seeds a starter message so the request goes out as one free-text prompt,
+  // same as if the user had typed it unprompted. sendPrompt's
+  // detectCreateCaseIntent still catches it and calls startCaseCreation below.
+  function seedCaseCreationDraft() {
+    if (isBusy) return;
     setError('');
-    setCaseWizard({ stepIndex: 0, data: {}, awaitingConfirm: false });
-    pushRunnerMessage(
-      `Let's create a new ${LANES[lane].label} test case for ${connectionServerName}. `
-      + `I'll ask a few questions, one at a time — type "cancel" anytime to stop.\n\n${CASE_WIZARD_FIELDS[0].question}`,
-    );
+    setPrompt((current) => (current.trim() ? current : `Create a test case for ${LANES[lane].label} covering `));
+    promptInputRef.current?.focus();
   }
 
-  function cancelCaseWizard(reason = 'Test case creation was cancelled. No file was saved.') {
-    setCaseWizard(null);
-    pushRunnerMessage(reason);
-  }
-
-  async function submitWizardAnswer(rawText) {
-    const text = rawText.trim();
-    if (isCaseWizardCancel(text)) {
-      cancelCaseWizard();
-      return;
-    }
-
-    if (caseWizard.awaitingConfirm) {
-      if (/^(yes|y|confirm|create|go)$/i.test(text)) {
-        await finalizeCaseWizard(caseWizard.data);
-      } else if (/^(no|n)$/i.test(text)) {
-        cancelCaseWizard();
-      } else {
-        pushRunnerMessage('Type "confirm" to create this test case, or "cancel" to discard it.');
-      }
-      return;
-    }
-
-    const field = CASE_WIZARD_FIELDS[caseWizard.stepIndex];
-    let value = text;
-    if (isCaseWizardSkip(text)) {
-      value = field.required ? '' : (field.key === 'writes' ? 'None - read-only case.' : 'None specified.');
-    } else if (looksLikePastedDocument(text)) {
-      pushRunnerMessage(
-        `That looks like a whole document was pasted in rather than a short answer — pasting another case's file in verbatim `
-        + "breaks this one (each answer goes into a single field, not merged in as its own section). Give me a brief answer instead — "
-        + `a sentence or two, or one item per line for a list — and I'll build the file. ${field.question}`,
-      );
-      return;
-    }
-    if (field.required && !value) {
-      pushRunnerMessage(`I need this to create the test case. ${field.question}`);
-      return;
-    }
-
-    const nextData = { ...caseWizard.data, [field.key]: value };
-    const nextIndex = caseWizard.stepIndex + 1;
-
-    if (nextIndex >= CASE_WIZARD_FIELDS.length) {
-      setCaseWizard({ stepIndex: nextIndex, data: nextData, awaitingConfirm: true });
-      pushRunnerMessage(`${formatCaseWizardSummary(nextData)}\n\nType "confirm" to create this test case, or "cancel" to discard it.`);
-      return;
-    }
-
-    setCaseWizard({ stepIndex: nextIndex, data: nextData, awaitingConfirm: false });
-    pushRunnerMessage(CASE_WIZARD_FIELDS[nextIndex].question);
-  }
-
-  async function finalizeCaseWizard(data) {
+  // Hands the whole authoring job to the live AI Assistant: it explores and
+  // drives the transaction in SAP itself (confirming with the user before any
+  // write, per buildCaseCreationPrompt) and writes the case file(s) itself.
+  // This app's only remaining job is telling it exactly where those files
+  // must land, and registering whatever shows up once the run finishes (see
+  // the run-completion poll above, which calls finalizeCaseCreation).
+  async function startCaseCreation(userRequest) {
     setIsCreatingCase(true);
     setError('');
     try {
-      const createdCase = await sapTerminalService.createCase(lane, connectedSystemId, data);
-      await loadCasesForLane(lane);
-      setSelectedCase(createdCase);
-      pushRunnerMessage(
-        `${createdCase.caseId} was created and saved to ${createdCase.filePath || 'your local test case folder'}. `
-        + 'It now shows in the left panel tagged "External created TC" — open it and choose "Run interactively" to have the '
-        + 'AI Assistant drive it live (confirming with you before any write), since it doesn\'t have a frozen automation script yet.',
-      );
-    } catch (createError) {
-      setError(createError.message);
-      pushRunnerMessage(`I couldn't create the test case: ${createError.message}`);
+      const prep = await sapTerminalService.prepareCaseCreation(lane, connectedSystemId);
+      const author = user?.email || user?.username || '';
+      caseCreationRef.current = { lane, systemId: connectedSystemId, existingFiles: prep.existingFiles || [], author };
+
+      // Match how every frozen-script GUI-lane run already starts (session.py's
+      // GuiSession.login(), CLAUDE.md rule 2/9): open a brand-new logged-on
+      // session first, same as runCaseInteractively does before running an
+      // existing case. Best-effort — if it fails, the AI Assistant still tries
+      // to attach to whatever session is already open.
+      if (lane === 'gui' && sapUsername.trim() && sapPassword) {
+        pushRunnerMessage(`Opening a new SAP GUI session on ${connectionServerName}…`);
+        try {
+          const opened = await sapTerminalService.openGuiSession(connectedSystemId, { username: sapUsername.trim(), password: sapPassword });
+          pushRunnerMessage(opened.opened
+            ? `Session opened and logged on as ${opened.user || sapUsername.trim()}. Handing off to the AI Assistant…`
+            : `Couldn't open a new session automatically (${opened.reason || 'unknown reason'}) — the AI Assistant will try to attach to whatever session is already open instead.`);
+        } catch (sessionError) {
+          pushRunnerMessage(`Couldn't open a new session automatically (${sessionError.message}) — the AI Assistant will try to attach to whatever session is already open instead.`);
+        }
+      }
+
+      const casePrompt = buildCaseCreationPrompt(lane, connectionServerName, connectedSystemId, userRequest, prep, author);
+      const run = await sapTerminalService.start(casePrompt, sessionId, lane);
+      setActiveSource('claude');
+      setRunId(run.id);
+      setStatus(run.status);
+    } catch (creationError) {
+      caseCreationRef.current = null;
+      setError(creationError.message);
+      setStatus('failed');
     } finally {
       setIsCreatingCase(false);
-      setCaseWizard(null);
     }
   }
 
@@ -611,6 +606,24 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     setPendingConfirmation(null);
   }
 
+  // Answers the live sap-gui MCP elicitation sap-save-confirmation.ps1 is
+  // blocked on (see pendingElicitation above). accept=false reaches the
+  // AI Assistant as a normal declined elicitation — same as it always has
+  // been for a genuinely interactive MCP client — so it can tell the user
+  // what it skipped and carry on, rather than the run simply failing.
+  async function answerElicitation(accept) {
+    if (!pendingElicitation) return;
+    setIsAnsweringElicitation(true);
+    try {
+      await sapTerminalService.answerElicitation(runId, accept);
+      setPendingElicitation(null);
+    } catch (answerError) {
+      setError(answerError.message);
+    } finally {
+      setIsAnsweringElicitation(false);
+    }
+  }
+
   function newChat() {
     setSessionId('');
     setRunId('');
@@ -618,7 +631,8 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     setActiveSource('claude');
     setMessages([]);
     setPendingConfirmation(null);
-    setCaseWizard(null);
+    setPendingElicitation(null);
+    caseCreationRef.current = null;
     setError('');
     setPrompt('');
   }
@@ -771,9 +785,9 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                         variant="secondary"
                       />
                       <AppButton
-                        disabled={isBusy || Boolean(caseWizard)}
+                        disabled={isBusy}
                         icon="testCase"
-                        onClick={startCaseWizard}
+                        onClick={seedCaseCreationDraft}
                         title="Create"
                         variant="secondary"
                       />
@@ -877,9 +891,9 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
             {isActive ? <div className="sap-thinking"><span /><span /><span /> AI Assistant is working in the SAP project…</div> : null}
           </div>
           <form className="sap-prompt-form" onSubmit={sendPrompt}>
-            <textarea disabled={!isConfigured || (!isAuthenticated && !caseWizard) || isBusy} onChange={(event) => setPrompt(event.target.value)} onKeyDown={(event) => {
+            <textarea disabled={!isConfigured || !isAuthenticated || isBusy} onChange={(event) => setPrompt(event.target.value)} onKeyDown={(event) => {
               if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); }
-            }} placeholder={caseWizard ? 'Type your answer…' : visibleSelectedCase ? `Ask the AI Assistant anything about ${visibleSelectedCase.caseId}…` : 'Ask the AI Assistant about an SAP test…'} value={prompt} />
+            }} placeholder={visibleSelectedCase ? `Ask the AI Assistant anything about ${visibleSelectedCase.caseId}…` : 'Ask the AI Assistant about an SAP test…'} ref={promptInputRef} value={prompt} />
             <div>
               <span>Enter to send · Shift+Enter for a new line</span>
               {isActive ? <AppButton loading={isStopping} onClick={stopRun} title="Stop" variant="secondary" /> : (
@@ -889,7 +903,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                   data-tooltip={!connectionServerName ? 'Connect to SAP to begin testing' : undefined}
                   tabIndex={!connectionServerName ? 0 : undefined}
                 >
-                  <AppButton disabled={!isConfigured || (!isAuthenticated && !caseWizard) || !connectionServerName || !prompt.trim() || isBusy} loading={isStarting || isCreatingCase} title="Send" type="submit" />
+                  <AppButton disabled={!isConfigured || !isAuthenticated || !connectionServerName || !prompt.trim() || isBusy} loading={isStarting || isCreatingCase} title="Send" type="submit" />
                 </div>
               )}
             </div>
@@ -1049,6 +1063,29 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
             <div className="sap-confirmation-actions">
               <AppButton disabled={isStarting} onClick={cancelRun} title="Cancel" variant="secondary" />
               <AppButton loading={isStarting} onClick={confirmRun} title="Confirm & Run" />
+            </div>
+          </section>
+        </div>
+      ) : null}
+      {pendingElicitation ? (
+        <div className="sap-confirmation-backdrop" role="presentation">
+          <section aria-labelledby="sap-elicitation-title" aria-modal="true" className="sap-confirmation-dialog" role="dialog">
+            <p className="eyebrow">HUMAN APPROVAL REQUIRED</p>
+            <h2 id="sap-elicitation-title">Confirm SAP Save</h2>
+            <dl>
+              <div>
+                <dt>Requested by</dt>
+                <dd>The AI Assistant, mid-conversation, via {pendingElicitation.toolName || 'SAP GUI'}</dd>
+              </div>
+              <div>
+                <dt>It says</dt>
+                <dd>{pendingElicitation.message}</dd>
+              </div>
+            </dl>
+            <p className="sap-confirmation-warning">Confirm only if you intend to make this change in the displayed SAP system. Cancel performs no write and lets the AI Assistant continue without saving.</p>
+            <div className="sap-confirmation-actions">
+              <AppButton disabled={isAnsweringElicitation} onClick={() => answerElicitation(false)} title="Cancel" variant="secondary" />
+              <AppButton loading={isAnsweringElicitation} onClick={() => answerElicitation(true)} title="Confirm & Save" />
             </div>
           </section>
         </div>

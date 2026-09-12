@@ -173,7 +173,12 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     }
   }
 
-  function claudeEnvironment(token) {
+  // runId, when given, is read back by .claude/hooks/sap-save-confirmation.ps1
+  // (an Elicitation hook — see .claude/settings.json) so it can file the
+  // mid-run "confirm this Save" request under the same id this manager
+  // already tracks the run by, with no session-id plumbing needed. Omitted
+  // for the plain `claude auth status` check below, which never touches SAP.
+  function claudeEnvironment(token, runId = '') {
     const env = {
       ...(electronApp.isPackaged ? webRuntimeEnvironment(process.resourcesPath) : process.env),
       NO_COLOR: '1', FORCE_COLOR: '0', CLAUDE_CONFIG_DIR: claudeConfigDir,
@@ -181,11 +186,71 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       FSNXT_APP_USERNAME: currentUsername,
     };
     if (pythonPath) env.FSNXT_PYTHON = pythonPath;
+    if (runId) env.FSNXT_RUN_ID = runId;
     delete env.ANTHROPIC_API_KEY;
     delete env.ANTHROPIC_AUTH_TOKEN;
     delete env.CLAUDE_CODE_OAUTH_TOKEN;
     if (token) env.CLAUDE_CODE_OAUTH_TOKEN = token;
     return env;
+  }
+
+  // Bridges the sap-gui MCP server's "confirm before Save" elicitation
+  // (docs/sap-gui-mcp-setup.md § Safety rails, CLAUDE.md rule 3) out to this
+  // app's own UI instead of letting it die silently: the Electron-spawned
+  // `claude -p` run has no TTY, so with no Elicitation hook configured,
+  // Claude Code cancels any MCP elicitation on its own (nobody can answer it)
+  // and the Save reports "cancelled" with the fields already typed and
+  // nothing written — the exact symptom this fixes. sap-save-confirmation.ps1
+  // (registered as an Elicitation hook in .claude/settings.json) drops a
+  // request file here and blocks waiting for a response file; these three
+  // functions are this side of that handshake. Both sides key off run.id
+  // (via FSNXT_RUN_ID above), so no session-id correlation is needed and two
+  // runs can never collide.
+  function elicitationRequestsDir() {
+    return path.join(projectRoot, 'logs', 'elicitation-requests');
+  }
+
+  function cleanupElicitationFiles(runId) {
+    if (!runId) return;
+    for (const suffix of ['request', 'response']) {
+      try { fs.unlinkSync(path.join(elicitationRequestsDir(), `${runId}.${suffix}.json`)); } catch { /* nothing to clean up */ }
+    }
+  }
+
+  // Polled from publicRun() on the same ~500ms cadence the renderer already
+  // polls run status with, so a pending Save shows up as a modal within a
+  // fraction of a second of the hook writing its request file.
+  function readPendingElicitation(runId) {
+    if (!runId) return null;
+    const dir = elicitationRequestsDir();
+    const requestPath = path.join(dir, `${runId}.request.json`);
+    const responsePath = path.join(dir, `${runId}.response.json`);
+    // A response already sitting next to the request means the hook hasn't
+    // caught up and deleted both yet — treat it as already answered, not
+    // pending, so the dialog doesn't flash back open after the user acts.
+    if (!fs.existsSync(requestPath) || fs.existsSync(responsePath)) return null;
+    const parsed = readJsonFile(requestPath, null);
+    if (!parsed || typeof parsed !== 'object') return null;
+    return {
+      id: runId,
+      mcpServer: String(parsed.mcpServer || ''),
+      toolName: String(parsed.toolName || ''),
+      message: String(parsed.message || 'The AI Assistant wants to save changes in SAP.'),
+      createdAt: String(parsed.createdAt || ''),
+    };
+  }
+
+  function answerElicitation(runId, accept) {
+    if (!runId) throw new Error('There is no active AI Assistant request to answer.');
+    const requestPath = path.join(elicitationRequestsDir(), `${runId}.request.json`);
+    if (!fs.existsSync(requestPath)) {
+      throw new Error('This confirmation is no longer waiting for an answer — the AI Assistant may have already timed out or moved on.');
+    }
+    writeJsonFile(path.join(elicitationRequestsDir(), `${runId}.response.json`), {
+      accept: Boolean(accept),
+      answeredAt: new Date().toISOString(),
+    });
+    return { accepted: Boolean(accept) };
   }
 
   function requireRun(runId) {
@@ -204,6 +269,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       error: run.error,
       exitCode: run.exitCode,
       source: run.source || 'claude',
+      pendingElicitation: run.status === 'running' ? readPendingElicitation(run.id) : null,
     };
   }
 
@@ -243,10 +309,6 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     const match = String(caseId || '').toUpperCase().match(/^TC[- ]?0*(\d{1,3})$/);
     if (!match) throw new Error('Enter a valid test case such as TC-015.');
     return `TC-${match[1].padStart(3, '0')}`;
-  }
-
-  function todayIsoDate() {
-    return new Date().toISOString().slice(0, 10);
   }
 
   function laneLabel(lane) {
@@ -305,111 +367,18 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     return match ? Number(match[1]) : 0;
   }
 
-  function nextExternalCaseId(lane) {
-    const builtInManifest = caseManifest(lane);
-    const builtInIds = Object.keys(builtInManifest.cases || {});
-    const externalIds = externalCaseEntries(lane).map((item) => item.entry.caseId);
-    const highest = [...builtInIds, ...externalIds].reduce((max, caseId) => Math.max(max, caseNumber(caseId)), 0);
+  // Ids are unique across BOTH lanes and every system folder (new-test-case
+  // skill) — a GUI case and a Web case must never claim the same number, so
+  // this checks every manifest (built-in and external, both lanes) rather
+  // than just the one the new case is being filed under.
+  function nextExternalCaseId() {
+    const ids = new Set();
+    for (const knownLane of ['gui', 'web']) {
+      try { Object.keys(caseManifest(knownLane).cases || {}).forEach((id) => ids.add(id)); } catch { /* manifest missing/unreadable — ignore */ }
+      externalCaseEntries(knownLane).forEach(({ entry }) => { if (entry.caseId) ids.add(entry.caseId); });
+    }
+    const highest = [...ids].reduce((max, caseId) => Math.max(max, caseNumber(caseId)), 0);
     return `TC-${String(highest + 1).padStart(3, '0')}`;
-  }
-
-  function sanitizeFilePart(value) {
-    return String(value || '')
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-      .slice(0, 72);
-  }
-
-  function sanitizeText(value, fallback = '') {
-    const text = String(value || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
-    return text || fallback;
-  }
-
-  function markdownTableRows(value, blankCount) {
-    const lines = sanitizeText(value).split('\n').map((line) => line.trim()).filter(Boolean);
-    const blanks = Array.from({ length: blankCount }, () => '').join(' | ');
-    if (!lines.length) return `| 1 | ${blanks} |\n`;
-    return lines.map((line, index) => `| ${index + 1} | ${line.replace(/\|/g, '\\|')} | ${blanks} |`).join('\n');
-  }
-
-  function buildExternalCaseMarkdown(lane, systemId, caseId, payload, author) {
-    const summary = sanitizeText(payload.summary, 'User-created SAP test case');
-    const transaction = sanitizeText(payload.transaction, '-');
-    const purpose = sanitizeText(payload.purpose, summary);
-    const writes = sanitizeText(payload.writes, 'Draft - writes not classified yet.');
-    const preconditions = markdownTableRows(payload.preconditions, 1);
-    const testData = markdownTableRows(payload.testData, 2);
-    const steps = markdownTableRows(payload.steps, 2);
-    const assertions = markdownTableRows(payload.assertions, 3);
-    const cleanup = sanitizeText(payload.cleanup, 'None specified.');
-    const system = sanitizeText(systemId, 'DS4_100_NIIF');
-    const caseType = sanitizeText(payload.caseType, 'functional');
-    const status = sanitizeText(payload.status, 'draft');
-    const laneName = lane === 'gui' ? 'sap-gui (SAP GUI for Windows)' : 'web (Fiori / WebGUI / UI5)';
-    return `# ${caseId} - ${transaction}: ${summary}
-
-- **Case id:** ${caseId}
-- **Lane:** ${laneName}
-- **Transaction / app:** ${transaction}
-- **Spec file:** - external documentation-only case
-- **System:** ${system}
-- **Type:** ${caseType}
-- **Author:** ${sanitizeText(author, 'FSNXT app user')}
-- **Created:** ${todayIsoDate()}
-- **Status:** ${status}
-- **Source:** External created TC
-- **Writes to the database:** ${writes}
-
-## Purpose
-
-${purpose}
-
-## Preconditions
-
-| # | Condition | How to check |
-|---|---|---|
-${preconditions}
-
-## Test data
-
-| # | Field | Technical name | Value |
-|---|---|---|---|
-${testData}
-
-## Steps
-
-${lane === 'gui' ? 'GUI lane:' : 'Web lane:'}
-
-| # | Action | Tool / API | Element / argument |
-|---|---|---|---|
-${steps}
-
-## Assertions
-
-| # | Field / source | Technical name | Expected | Read with |
-|---|---|---|---|---|
-${assertions}
-
-## Writes
-
-${writes}
-
-## Cleanup
-
-${cleanup}
-
-## Known deviations
-
-None recorded.
-
-## Run history
-
-| Date | Result | Result file | Notes |
-|---|---|---|---|
-| | | | |
-`;
   }
 
   function findCaseMarkdownFile(lane, caseId, manifestEntry) {
@@ -494,63 +463,59 @@ None recorded.
     };
   }
 
-  function createCase(lane, systemId, payload = {}) {
+  // Where the AI Assistant is told to write a case it is authoring, before
+  // this app relocates it. Deliberately INSIDE projectRoot (the same cwd the
+  // spawned claude.exe process already gets — see start() below), never the
+  // user's persistent externalCasesRoot (Documents\FSNXT SAP Test Cases):
+  // that folder is often outside the sandboxed/packaged process's working
+  // tree, and --permission-mode auto is not something we've verified lets a
+  // headless `claude -p` write to an arbitrary absolute path outside its cwd.
+  // Writing inside cwd is unambiguous — every other file this app already
+  // has Claude Code touch (results/*.md, evidence/*, the case it reads to run
+  // interactively) is cwd-relative too. finalizeCaseCreation() below copies
+  // whatever lands here into the real, persistent folder afterward.
+  function caseDraftDirectory(lane, system) {
+    return path.join(projectRoot, '.case-drafts', lane, system);
+  }
+
+  // Picks the folder a newly authored case belongs in and everything the
+  // live AI Assistant run needs to write real case files there itself —
+  // this app no longer fabricates a case file from typed answers (that
+  // produced documentation for a test that was never actually run). The
+  // assistant explores and drives SAP live, then writes the case file(s)
+  // into the draft folder above using test-cases/_TEMPLATE.md's shape;
+  // finalizeCaseCreation relocates them once the run finishes.
+  function prepareCaseCreation(lane, systemId) {
     if (!['gui', 'web'].includes(lane)) throw new Error('Select SAP GUI or Fiori / WebGUI testing.');
     if (!validateProject(projectRoot)) throw new Error('The bundled SAP automation package is missing or incomplete. Reinstall the application.');
     const system = String(systemId || '').trim() || 'DS4_100_NIIF';
-    const summary = sanitizeText(payload.summary);
-    if (!summary) throw new Error('Enter a test case summary.');
-    const transaction = sanitizeText(payload.transaction);
-    if (!transaction) throw new Error('Enter the SAP transaction or app name.');
-    const purpose = sanitizeText(payload.purpose);
-    if (!purpose) throw new Error('Enter the test purpose.');
-    const steps = sanitizeText(payload.steps);
-    if (!steps) throw new Error('Enter at least one test step.');
+    const draftDirectory = caseDraftDirectory(lane, system);
+    fs.mkdirSync(draftDirectory, { recursive: true });
+    // Should normally be empty (each run's leftovers are deleted once copied
+    // out — see finalizeCaseCreation), but if an earlier run in this same app
+    // session was interrupted before it could clean up, its files must not
+    // look "new" to the next run's diff.
+    const existingFiles = fs.readdirSync(draftDirectory).filter((name) => name.toLowerCase().endsWith('.md'));
 
-    const caseId = nextExternalCaseId(lane);
-    const slug = sanitizeFilePart(`${transaction}-${summary}`) || `external-${caseId.toLowerCase()}`;
-    const fileName = `${caseId}-${slug}-${lane === 'gui' ? 'gui' : 'web'}.md`;
-    const caseDirectory = externalLaneCasesDir(lane, system);
-    const filePath = path.join(caseDirectory, fileName);
-    fs.mkdirSync(caseDirectory, { recursive: true });
-    if (fs.existsSync(filePath)) throw new Error(`${caseId} already exists in the external test case folder.`);
-
-    const author = currentUsername || payload.author || '';
-    const markdown = buildExternalCaseMarkdown(lane, system, caseId, payload, author);
-    fs.writeFileSync(filePath, markdown, 'utf8');
-
-    const manifest = externalManifest();
-    const relativeCaseFile = path.relative(externalCasesRoot, filePath).split(path.sep).join('/');
-    manifest.cases[externalCaseKey(lane, caseId)] = {
-      caseId,
-      lane,
-      system,
-      summary,
-      writes: sanitizeText(payload.writes, 'Draft - writes not classified yet.'),
-      transaction,
-      caseFile: relativeCaseFile,
-      createdAt: new Date().toISOString(),
-      createdBy: author,
-      source: 'external',
-    };
-    writeJsonFile(externalCasesManifestPath, manifest);
+    const builtInDirectory = path.join(laneCasesDir(lane), system);
+    const exampleCaseFile = fs.existsSync(builtInDirectory)
+      ? fs.readdirSync(builtInDirectory).find((name) => name.toLowerCase().endsWith('.md'))
+      : null;
 
     return {
-      caseId,
       lane,
-      summary,
-      writes: manifest.cases[externalCaseKey(lane, caseId)].writes,
-      source: 'external',
-      externalLabel: 'External created TC',
-      fileName,
-      filePath,
-      storageRoot: externalCasesRoot,
+      system,
+      caseDirectory: draftDirectory,
+      existingFiles,
+      nextCaseId: nextExternalCaseId(),
+      exampleCaseFile: exampleCaseFile ? path.join(builtInDirectory, exampleCaseFile) : '',
+      templateFile: path.join(projectRoot, 'test-cases', '_TEMPLATE.md'),
     };
   }
 
   // Parses the "- **Header:** value" bullets every case file (built-in,
   // external, or a random one someone hands us) is written with — see
-  // test-cases/_TEMPLATE.md and buildExternalCaseMarkdown() above.
+  // test-cases/_TEMPLATE.md.
   function parseCaseHeaders(content) {
     const headers = {};
     for (const line of String(content || '').split('\n')) {
@@ -558,6 +523,76 @@ None recorded.
       if (match) headers[match[1].trim()] = match[2].trim();
     }
     return headers;
+  }
+
+  // Runs once a case-creation AI Assistant run finishes: diffs the draft
+  // folder against the file list prepareCaseCreation captured before the run
+  // started, and for whatever new *.md files showed up (there may be several
+  // — one run can produce a case per combination it explored) copies each
+  // into the user's persistent external case folder, registers it, and
+  // deletes the draft. A file the run never got around to writing simply
+  // means nothing new is found; it does not error, since a partial or
+  // interrupted run is a normal outcome, not a bug.
+  function finalizeCaseCreation(lane, systemId, existingFilesBeforeRun = [], author = '') {
+    if (!['gui', 'web'].includes(lane)) throw new Error('Select SAP GUI or Fiori / WebGUI testing.');
+    const system = String(systemId || '').trim() || 'DS4_100_NIIF';
+    const draftDirectory = caseDraftDirectory(lane, system);
+    if (!fs.existsSync(draftDirectory)) return { created: [] };
+
+    const before = new Set(Array.isArray(existingFilesBeforeRun) ? existingFilesBeforeRun : []);
+    const newFiles = fs.readdirSync(draftDirectory)
+      .filter((name) => name.toLowerCase().endsWith('.md') && !before.has(name));
+    if (!newFiles.length) return { created: [] };
+
+    const destinationDirectory = externalLaneCasesDir(lane, system);
+    fs.mkdirSync(destinationDirectory, { recursive: true });
+
+    const manifest = externalManifest();
+    const created = [];
+    for (const fileName of newFiles) {
+      const draftPath = path.join(draftDirectory, fileName);
+      let content;
+      try { content = fs.readFileSync(draftPath, 'utf8'); } catch { continue; }
+      const headers = parseCaseHeaders(content);
+      let caseId;
+      try { caseId = normalizeCaseId(headers['Case id']); } catch { continue; } // not a recognizable case file — leave it in the draft folder, untouched
+      const titleLine = content.split('\n').find((line) => line.trim().startsWith('# ')) || '';
+      const summary = titleLine.replace(/^#\s*/, '').replace(/^TC-\d{3}\s*[—-]\s*/, '').trim()
+        || headers['Transaction / app'] || fileName;
+
+      // The next free id was only a snapshot at prepareCaseCreation time — if
+      // something else claimed this exact filename in the meantime, keep the
+      // existing file rather than silently overwriting it.
+      const destinationPath = path.join(destinationDirectory, fileName);
+      if (fs.existsSync(destinationPath)) continue;
+      try {
+        fs.copyFileSync(draftPath, destinationPath);
+      } catch {
+        continue;
+      }
+      try { fs.unlinkSync(draftPath); } catch { /* the draft folder is discarded on the next app launch regardless */ }
+
+      const relativeCaseFile = path.relative(externalCasesRoot, destinationPath).split(path.sep).join('/');
+      const key = externalCaseKey(lane, caseId);
+      const writes = headers['Writes to the database'] || 'Not classified yet.';
+      manifest.cases[key] = {
+        caseId,
+        lane,
+        system,
+        summary,
+        writes,
+        transaction: headers['Transaction / app'] || '',
+        caseFile: relativeCaseFile,
+        createdAt: new Date().toISOString(),
+        createdBy: author || currentUsername || '',
+        source: 'external',
+      };
+      created.push({
+        caseId, lane, summary, writes, source: 'external', externalLabel: 'External created TC', fileName, filePath: destinationPath, storageRoot: externalCasesRoot,
+      });
+    }
+    if (created.length) writeJsonFile(externalCasesManifestPath, manifest);
+    return { created };
   }
 
   function laneFromHeader(value) {
@@ -829,7 +864,8 @@ None recorded.
       }
       return { archiveDirectory: selected };
     },
-    createCase,
+    prepareCaseCreation,
+    finalizeCaseCreation,
     listCases,
     getCaseFile,
     browseCase,
@@ -1015,7 +1051,7 @@ None recorded.
       };
       const child = spawn(claudePath, args, {
         cwd: projectRoot,
-        env: claudeEnvironment(oauthToken),
+        env: claudeEnvironment(oauthToken, run.id),
         windowsHide: true,
         shell: false,
         stdio: ['ignore', 'pipe', 'pipe'],
@@ -1034,6 +1070,11 @@ None recorded.
       child.once('close', (code) => {
         run.process = null;
         run.exitCode = code;
+        // Whatever sap-save-confirmation.ps1 dropped for this run is done
+        // mattering the moment the run itself ends — an unanswered request
+        // left behind (the process was killed before the hook's own timeout)
+        // would otherwise sit in logs/elicitation-requests forever.
+        cleanupElicitationFiles(run.id);
         if (run.status === 'stopping') {
           run.status = 'stopped';
           return;
@@ -1054,9 +1095,16 @@ None recorded.
       const run = requireRun(runId);
       if (!run.process || FINAL_STATUSES.has(run.status)) throw new Error('AI Assistant has already finished responding.');
       run.status = 'stopping';
+      // Tidy up now rather than relying on the close handler: killing the
+      // process tree does not guarantee sap-save-confirmation.ps1 (a child of
+      // it) dies with it, so it may keep polling out its own timeout with
+      // nothing left to answer it either way — this at least leaves no
+      // request file behind in the meantime.
+      cleanupElicitationFiles(run.id);
       run.process.kill();
       return publicRun(run);
     },
+    answerElicitation,
     stopAll() {
       connectionCheckProcess?.kill();
       runs.forEach((run) => run.process?.kill());

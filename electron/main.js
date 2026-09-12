@@ -24,10 +24,12 @@ async function registerSapTerminalHandlers() {
   ipcMain.handle('sap-terminal:clear-token', () => sapTerminalManager.clearToken());
   ipcMain.handle('sap-terminal:list-cases', (_event, lane) => sapTerminalManager.listCases(lane));
   ipcMain.handle('sap-terminal:get-case-file', (_event, lane, caseId) => sapTerminalManager.getCaseFile(lane, caseId));
-  ipcMain.handle('sap-terminal:create-case', (_event, lane, systemId, payload) => sapTerminalManager.createCase(lane, systemId, payload));
+  ipcMain.handle('sap-terminal:prepare-case-creation', (_event, lane, systemId) => sapTerminalManager.prepareCaseCreation(lane, systemId));
+  ipcMain.handle('sap-terminal:finalize-case-creation', (_event, lane, systemId, existingFiles, author) => sapTerminalManager.finalizeCaseCreation(lane, systemId, existingFiles, author));
   ipcMain.handle('sap-terminal:browse-case', (event) => sapTerminalManager.browseCase(BrowserWindow.fromWebContents(event.sender)));
   ipcMain.handle('sap-terminal:prepare-case', (_event, lane, caseId, stage, credentials) => sapTerminalManager.prepareCase(lane, caseId, stage, credentials));
   ipcMain.handle('sap-terminal:start-confirmed-case', (_event, confirmationId) => sapTerminalManager.startConfirmedCase(confirmationId));
+  ipcMain.handle('sap-terminal:answer-elicitation', (_event, runId, accept) => sapTerminalManager.answerElicitation(runId, accept));
   ipcMain.handle('sap-terminal:start', (_event, prompt, sessionId, lane) => sapTerminalManager.start(prompt, sessionId, lane));
   ipcMain.handle('sap-terminal:get-run', (_event, runId) => sapTerminalManager.getRun(runId));
   ipcMain.handle('sap-terminal:stop', (_event, runId) => sapTerminalManager.stop(runId));

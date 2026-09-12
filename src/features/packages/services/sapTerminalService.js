@@ -32,8 +32,11 @@ export const sapTerminalService = {
   getCaseFile(lane, caseId) {
     return localTerminal().getCaseFile(lane, caseId);
   },
-  createCase(lane, systemId, payload) {
-    return localTerminal().createCase(lane, systemId, payload);
+  prepareCaseCreation(lane, systemId) {
+    return localTerminal().prepareCaseCreation(lane, systemId);
+  },
+  finalizeCaseCreation(lane, systemId, existingFiles, author) {
+    return localTerminal().finalizeCaseCreation(lane, systemId, existingFiles, author);
   },
   browseCase() {
     return localTerminal().browseCase();
@@ -43,6 +46,9 @@ export const sapTerminalService = {
   },
   startConfirmedCase(confirmationId) {
     return localTerminal().startConfirmedCase(confirmationId);
+  },
+  answerElicitation(runId, accept) {
+    return localTerminal().answerElicitation(runId, accept);
   },
   start(prompt, sessionId, lane) {
     return localTerminal().start(prompt, sessionId, lane);

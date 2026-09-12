@@ -102,7 +102,11 @@ exact message class and number rather than matching English text.
 Any step that commits — `sap_send_key("Save")`, a posting, a create/change
 t-code — is called out in the case's **Writes** section before the run, and
 confirmed by the human at run time. The server also prompts through MCP
-elicitation on Save, but that is a backstop, not the plan.
+elicitation on Save, but that is a backstop, not the plan. In the FSNXT
+desktop app (which drives this project's AI Assistant headlessly, with no
+TTY of its own to show that prompt in) the backstop is relayed to a human
+through the app's own chat UI instead of getting silently cancelled — see
+`.claude/hooks/sap-save-confirmation.ps1`.
 
 If a run creates a document, record its number in the result file. An
 untracked document on a dev system is somebody else's confusing afternoon.

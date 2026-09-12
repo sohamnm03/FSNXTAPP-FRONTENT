@@ -151,7 +151,10 @@ attached to is left alone.
 - **`allowedTransactions`** flips to whitelist mode.
 - **Save confirmation** — `sap_send_key` with `Save`/`F11` asks the MCP client to
   confirm. If the client doesn't support elicitation, the call fails rather than
-  saving silently.
+  saving silently. The FSNXT desktop app drives `claude -p` headlessly (no TTY
+  to show an elicitation dialog in), so it registers `.claude/hooks/sap-save-
+  confirmation.ps1` as an `Elicitation` hook to relay the prompt to its own
+  chat UI instead — see that script's header comment for the full mechanism.
 - **Audit log** — `logs/sap-gui-audit.jsonl`, every call with timing and status,
   secrets masked. Gitignored: it can contain business data.
 
@@ -179,5 +182,5 @@ sap_list_connections  con[0] "NIIF - Development", 3 sessions,
 | Scripting works locally, refused on the server | `sapgui/user_scripting` is `FALSE` — Basis change |
 | `sap-gui` missing from `/mcp` | Not in `enabledMcpjsonServers`; rerun the sync script and restart |
 | Element "not found" | Id guessed rather than discovered — call `sap_get_screen_elements` |
-| Save calls fail with an elicitation error | MCP client cannot prompt; use one that supports elicitation |
+| Save calls fail with an elicitation error | MCP client cannot prompt; use one that supports elicitation, or (headless) register an `Elicitation` hook that answers on a human's behalf — see `.claude/hooks/sap-save-confirmation.ps1` |
 | Server won't start | venv missing — `python -m venv tools\mcp-sap-gui\.venv`, then pip install |

@@ -153,7 +153,9 @@ rather than reaching for a different server.
 - **Blocklist, always on.** `SU01`, `PFCG`, `SE16N` and other admin t-codes are refused, including
   via OK-code bypass. This is the server's own list and is not configurable away.
 - **Save confirmation.** `sap_send_key` with `Save`/`F11` prompts through MCP elicitation before
-  committing.
+  committing. The FSNXT desktop app runs this headlessly and relays that prompt to its own chat UI
+  via `.claude/hooks/sap-save-confirmation.ps1` (registered as an `Elicitation` hook) rather than
+  letting it get silently cancelled for lack of a TTY.
 - **`readOnly` / `allowedTransactions`** in `config/sap-systems.json` — one edit plus a regenerate
   turns the whole server into look-but-don't-touch, or pins it to a named list of t-codes.
 - **Audit log** at `logs/sap-gui-audit.jsonl`: every tool call, with timing and status.
