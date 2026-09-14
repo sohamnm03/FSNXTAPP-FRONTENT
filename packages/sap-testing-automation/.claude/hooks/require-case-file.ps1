@@ -4,7 +4,7 @@ if (-not $env:FSNXT_RUN_ID -or -not $env:FSNXT_CASE_DRAFT_DIR) { exit 0 }
 try {
     $event = [Console]::In.ReadToEnd() | ConvertFrom-Json
     if ($event.hook_event_name -ne 'Stop' -or $event.stop_hook_active) { exit 0 }
-    $existing = @($env:FSNXT_CASE_EXISTING_FILES | ConvertFrom-Json)
+    $existing = ConvertFrom-Json -InputObject $env:FSNXT_CASE_EXISTING_FILES
     $files = @(Get-ChildItem -LiteralPath $env:FSNXT_CASE_DRAFT_DIR -Filter '*.md' -File -ErrorAction SilentlyContinue |
         Where-Object { $_.Name -notin $existing })
     foreach ($file in $files) {

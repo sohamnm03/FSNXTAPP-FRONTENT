@@ -18,7 +18,7 @@ function detectCreateCaseIntent(text) {
 }
 
 function statusLabel(status, source) {
-  return ({ idle: 'Ready', running: source === 'direct' ? 'Test is running' : 'AI Assistant is working', completed: 'Ready', failed: 'Needs attention', stopped: 'Stopped', stopping: 'Stopping' })[status] || 'Ready';
+  return ({ idle: 'Ready', running: source === 'direct' ? 'Test is running' : 'AI Assistant is working', completed: 'Ready', failed: 'Needs attention', stopped: 'Stopped', stopping: 'Stopping', finalizing: 'Saving results and uploading archive' })[status] || 'Ready';
 }
 
 // The archive/log API (see gui_tests archive script -> POST /api/logs) wants
@@ -41,32 +41,6 @@ function explicitRunRequest(text) {
     caseId: `TC-${caseMatch[1].padStart(3, '0')}`,
     stage: stageMatch?.[1]?.toLowerCase() || '',
   };
-}
-
-// A case with no frozen automation script (AI-created via startCaseCreation
-// below, or a browsed file that was never registered in config/gui-runs.json
-// or config/runs.json) still has a full Steps section — this hands it to the
-// real AI Assistant
-// (the same claude.exe the terminal chat already drives) to execute live via
-// its SAP GUI / web MCP tools, instead of leaving the case read-only forever.
-function buildInteractiveRunPrompt(lane, testCase) {
-  const laneLabel = lane === 'gui' ? 'SAP GUI for Windows' : 'Fiori / WebGUI';
-  const locate = testCase.filePath
-    ? `Its full text is at ${testCase.filePath} — read it first if you have not already.`
-    : `Look it up as ${testCase.caseId} and read its full text first if you have not already.`;
-  const sessionNote = lane === 'gui'
-    ? 'A fresh session was just opened and logged on for this run — attach to it with sap_connect_existing rather than opening another (rule 2). '
-    : '';
-  return [
-    `Run test case ${testCase.caseId} interactively right now, driving ${laneLabel} live through the MCP tools. `
-    + 'This case has no frozen automation script, so you are the runner for this pass.',
-    locate,
-    `${sessionNote}Confirm the SAP session matches the System named in the case header before touching anything (CLAUDE.md rule 1). Then work through Preconditions, and the Steps in order.`,
-    'Discover every screen element id live as you go (sap_get_screen_elements for the GUI lane) — never guess one or reuse one from another case (rule 4).',
-    'Before any step that saves, posts, or otherwise commits a database write, stop, tell me exactly what it will write, and wait for my explicit confirmation in this chat before performing it (rule 3) — never write on your own.',
-    'Record what actually happens at every step, including any deviation from what the case expected. Never write down an expected value as observed if you could not read it (rules 5-6).',
-    'When you are done or blocked, summarize the outcome.',
-  ].join('\n\n');
 }
 
 // Case creation hands the whole job to the live AI Assistant instead of
@@ -533,27 +507,10 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     setIsStarting(true);
     setError('');
     try {
-      // Match how every frozen-script GUI-lane run already starts (session.py's
-      // GuiSession.login(), CLAUDE.md rule 2/9): open a brand-new logged-on
-      // session first, alongside whatever else is open, rather than asking the
-      // AI Assistant to guess whether one already exists. Best-effort — if the
-      // sidebar has no SAP credentials typed in, or the open fails, the AI
-      // Assistant still tries to attach to whatever session is already open.
-      if (lane === 'gui' && sapUsername.trim() && sapPassword) {
-        pushRunnerMessage(`Opening a new SAP GUI session on ${connectionServerName}…`);
-        try {
-          const opened = await sapTerminalService.openGuiSession(connectedSystemId, { username: sapUsername.trim(), password: sapPassword });
-          pushRunnerMessage(opened.opened
-            ? `Session opened and logged on as ${opened.user || sapUsername.trim()}. Handing off to the AI Assistant…`
-            : `Couldn't open a new session automatically (${opened.reason || 'unknown reason'}) — the AI Assistant will try to attach to whatever session is already open instead.`);
-        } catch (sessionError) {
-          pushRunnerMessage(`Couldn't open a new session automatically (${sessionError.message}) — the AI Assistant will try to attach to whatever session is already open instead.`);
-        }
-      }
-      const run = await sapTerminalService.start(buildInteractiveRunPrompt(lane, testCase), sessionId, lane);
-      setActiveSource('claude');
-      setRunId(run.id);
-      setStatus(run.status);
+      const proposal = await sapTerminalService.prepareCase(lane, testCase.caseId, '', webCredentials(), {
+        filePath: testCase.filePath, systemId: connectedSystemId,
+      });
+      setPendingConfirmation(proposal);
     } catch (runError) {
       setError(runError.message);
       setStatus('failed');
@@ -580,14 +537,19 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     setIsStarting(true);
     setError('');
     try {
+      if (pendingConfirmation.source === 'external' && pendingConfirmation.lane === 'gui' && sapUsername.trim() && sapPassword) {
+        const opened = await sapTerminalService.openGuiSession(pendingConfirmation.systemId, { username: sapUsername.trim(), password: sapPassword });
+        if (!opened.opened) throw new Error(opened.reason || 'Could not open the SAP session for this testcase.');
+      }
       const run = await sapTerminalService.startConfirmedCase(pendingConfirmation.confirmationId);
+      caseCreationRef.current = null;
       setMessages((current) => [...current, {
         id: `${run.id}-approved`,
         role: 'runner',
         text: `${pendingConfirmation.caseId} was approved by the user and started against ${pendingConfirmation.systemLabel}.`,
       }]);
       setPendingConfirmation(null);
-      setActiveSource('direct');
+      setActiveSource(run.source || 'claude');
       setRunId(run.id);
       setStatus(run.status);
     } catch (runError) {
@@ -660,7 +622,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     }
   }
 
-  const isActive = status === 'running' || status === 'stopping';
+  const isActive = status === 'running' || status === 'stopping' || status === 'finalizing';
   const isTestingConnection = connectionStatus === 'checking';
   const isBusy = isActive || isTestingConnection || isCreatingCase;
   const visibleSelectedCase = connectionServerName ? selectedCase : null;
@@ -890,7 +852,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                 <span>{message.role === 'user' ? 'You' : message.role === 'runner' ? 'Test runner' : 'AI Assistant'}</span><div>{message.text}</div>
               </article>
             ))}
-            {isActive ? <div className="sap-thinking"><span /><span /><span /> AI Assistant is working in the SAP project…</div> : null}
+            {isActive ? <div className="sap-thinking"><span /><span /><span /> {status === 'finalizing' ? 'Saving results and uploading the archive…' : 'AI Assistant is working in the SAP project…'}</div> : null}
           </div>
           <form className="sap-prompt-form" onSubmit={sendPrompt}>
             <textarea disabled={!isConfigured || !isAuthenticated || isBusy} onChange={(event) => setPrompt(event.target.value)} onKeyDown={(event) => {
@@ -898,7 +860,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
             }} placeholder={visibleSelectedCase ? `Ask the AI Assistant anything about ${visibleSelectedCase.caseId}…` : 'Ask the AI Assistant about an SAP test…'} ref={promptInputRef} value={prompt} />
             <div>
               <span>Enter to send · Shift+Enter for a new line</span>
-              {isActive ? <AppButton loading={isStopping} onClick={stopRun} title="Stop" variant="secondary" /> : (
+              {isActive ? <AppButton disabled={status === 'finalizing'} loading={isStopping} onClick={stopRun} title="Stop" variant="secondary" /> : (
                 <div
                   aria-label={!connectionServerName ? 'Connect to SAP to begin testing' : undefined}
                   className={`sap-send-action${!connectionServerName ? ' sap-send-action--connection-required' : ''}`}

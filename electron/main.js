@@ -27,7 +27,7 @@ async function registerSapTerminalHandlers() {
   ipcMain.handle('sap-terminal:prepare-case-creation', (_event, lane, systemId) => sapTerminalManager.prepareCaseCreation(lane, systemId));
   ipcMain.handle('sap-terminal:finalize-case-creation', (_event, lane, systemId, existingFiles, author) => sapTerminalManager.finalizeCaseCreation(lane, systemId, existingFiles, author));
   ipcMain.handle('sap-terminal:browse-case', (event) => sapTerminalManager.browseCase(BrowserWindow.fromWebContents(event.sender)));
-  ipcMain.handle('sap-terminal:prepare-case', (_event, lane, caseId, stage, credentials) => sapTerminalManager.prepareCase(lane, caseId, stage, credentials));
+  ipcMain.handle('sap-terminal:prepare-case', (_event, lane, caseId, stage, credentials, externalCase) => sapTerminalManager.prepareCase(lane, caseId, stage, credentials, externalCase));
   ipcMain.handle('sap-terminal:start-confirmed-case', (_event, confirmationId) => sapTerminalManager.startConfirmedCase(confirmationId));
   ipcMain.handle('sap-terminal:answer-elicitation', (_event, runId, accept) => sapTerminalManager.answerElicitation(runId, accept));
   ipcMain.handle('sap-terminal:start', (_event, prompt, sessionId, lane, options) => sapTerminalManager.start(prompt, sessionId, lane, options));

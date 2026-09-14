@@ -12,6 +12,7 @@ electron/sapAutomationKey.generated.js
 web-build/
 expo-env.d.ts
 packages/*/runtime/*
+packages/*/.external-runs/
 !packages/*/runtime/.gitkeep
 
 # Native

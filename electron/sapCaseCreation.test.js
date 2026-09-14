@@ -71,7 +71,7 @@ test('authoring cannot stop without a new Markdown case, and the reminder cannot
   assert.equal(invoke(false), null);
 });
 
-async function managerFixture(context) {
+async function managerFixture(context, isPackaged = false) {
   const root = temporaryDirectory(context);
   const projectRoot = path.join(root, 'project');
   const files = {
@@ -85,11 +85,17 @@ async function managerFixture(context) {
     fs.writeFileSync(file, content);
   }
   const calls = [];
+  const resourcesPath = path.join(root, 'resources');
+  for (const name of ['python/python.exe', 'sap-web-runtime/node.exe', 'sap-web-runtime/browsers/.keep', 'app.asar.unpacked/node_modules/@anthropic-ai/claude-code/bin/claude.exe']) {
+    const file = path.join(resourcesPath, name);
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, '');
+  }
   const filename = path.join(__dirname, 'sapTerminalManager.js');
   const localRequire = createRequire(filename);
   const module = { exports: {} };
   vm.runInNewContext(fs.readFileSync(filename, 'utf8'), {
-    module, __dirname, process, Buffer,
+    module, __dirname, process: { ...process, resourcesPath }, Buffer,
     require(name) {
       if (name === './sapAutomationWorkspace') return { createSapAutomationWorkspace: async () => ({ projectRoot, cleanup() {} }) };
       if (name === 'child_process') return { spawn(command, args, options) {
@@ -103,7 +109,9 @@ async function managerFixture(context) {
       return localRequire(name);
     },
   }, { filename });
-  const manager = await module.exports.createSapTerminalManager({ isPackaged: false, getPath: (name) => path.join(root, name) }, { get: () => 'test-token' }, {});
+  const manager = await module.exports.createSapTerminalManager({ isPackaged, getPath: (name) => path.join(root, name) }, { get: () => 'test-token' }, {
+    showOpenDialog: async () => ({ canceled: false, filePaths: [path.join(root, 'browsed.md')] }),
+  });
   const prep = manager.prepareCaseCreation('gui', 'DS4_100_NIIF');
   return { manager, calls, prep, root, projectRoot, options: { caseCreation: { systemId: 'DS4_100_NIIF', existingFiles: prep.existingFiles, author: 'test-author' } } };
 }
@@ -130,6 +138,109 @@ test('creation carries scoped Save authorization and persists Markdown without r
   manager.start('Explain this case');
   assert.equal(calls.at(-1).options.env.FSNXT_CASE_CREATION_AUTO_SAVE, '0');
   assert.equal(calls.at(-1).args.includes('--allowedTools'), false);
+});
+
+const successfulObservation = {
+  verdict: 'PASS', systemConfirmed: true, writesVerified: true, session: 'DS4 client 100, tester',
+  assertions: [{ expected: 'Loan saved', observed: 'Loan 12345 saved', result: 'pass' }],
+  steps: [{ step: 'Save', outcome: 'ok' }], documents: [{ type: 'Loan', number: '12345', leftInPlace: true }],
+};
+
+for (const isPackaged of [false, true]) {
+  for (const lane of ['gui', 'web']) {
+    test(`external ${lane} case uses confirmed writes and finalizes before completion (packaged=${isPackaged})`, async (context) => {
+      const { manager, calls, root, projectRoot } = await managerFixture(context, isPackaged);
+      const filePath = path.join(root, 'browsed.md');
+      fs.writeFileSync(filePath, markdown.replace('sap-gui', lane === 'gui' ? 'sap-gui' : 'web'));
+      const original = fs.readFileSync(filePath, 'utf8');
+      const proposal = manager.prepareCase(lane, 'TC-001', '', { username: 'tester', password: 'test-only' }, { filePath, systemId: 'DS4_100_NIIF' });
+      assert.equal(proposal.source, 'external');
+      assert.equal(proposal.writes, 'Creates one loan');
+      assert.equal(calls.length, 0);
+      fs.writeFileSync(filePath, 'modified after approval review');
+      const run = manager.startConfirmedCase(proposal.confirmationId);
+      const runner = calls.at(-1);
+      assert.equal(runner.options.env.FSNXT_CASE_CREATION_AUTO_SAVE, '0');
+      assert.equal(runner.options.env.FSNXT_EXTERNAL_RUN_AUTO_SAVE, lane === 'gui' ? '1' : '0');
+      assert.equal(runner.args.includes('--resume'), false);
+      assert.match(runner.args[1], /without another chat confirmation or popup/);
+      assert.equal(fs.readFileSync(path.join(projectRoot, '.external-runs', run.id, 'case.md'), 'utf8'), original);
+      if (isPackaged) {
+        assert.match(runner.command, /app\.asar\.unpacked/);
+        assert.match(runner.options.env.FSNXT_PYTHON, /resources.*python.exe/);
+        assert.match(runner.options.env.PLAYWRIGHT_BROWSERS_PATH, /resources.*browsers/);
+      }
+      if (lane === 'web') assert.equal(runner.options.env.SAP_WEB_USER, 'tester');
+      fs.writeFileSync(runner.options.env.FSNXT_EXTERNAL_RUN_RECORD, JSON.stringify(successfulObservation));
+      runner.child.stdout.emit('data', Buffer.from('{"result":"Saved loan 12345"}'));
+      runner.child.emit('close', 0);
+      const finalizing = manager.getRun(run.id);
+      assert.equal(finalizing.status, 'finalizing');
+      assert.match(finalizing.resultPath, /downloads/);
+      assert.match(fs.readFileSync(finalizing.resultPath, 'utf8'), /\*\*Verdict:\*\* PASS/);
+      assert.throws(() => manager.start('Start another request'), /already running/);
+      const finalizer = calls.at(-1);
+      assert.match(finalizer.args[finalizer.args.indexOf('-File') + 1], /finalize-external-run.ps1$/);
+      assert.equal(finalizer.args[finalizer.args.indexOf('-Lane') + 1], lane);
+      finalizer.child.stdout.emit('data', Buffer.from('Uploaded to Azure Blob\nAzure archive log updated.'));
+      finalizer.child.emit('close', 0);
+      assert.equal(manager.getRun(run.id).status, 'completed');
+      assert.match(manager.getRun(run.id).response, /Azure archive log updated/);
+      assert.throws(() => manager.startConfirmedCase(proposal.confirmationId), /expired/);
+      manager.start('Explain the result');
+      assert.equal(calls.at(-1).options.env.FSNXT_EXTERNAL_RUN_AUTO_SAVE, '0');
+      assert.equal(calls.at(-1).options.env.FSNXT_EXTERNAL_RUN_RECORD, '');
+    });
+  }
+}
+
+test('external failures still retain a result and attempt the archive', async (context) => {
+  const { manager, calls, root } = await managerFixture(context);
+  const filePath = path.join(root, 'browsed.md');
+  fs.writeFileSync(filePath, markdown);
+  const proposal = manager.prepareCase('gui', 'TC-001', '', null, { filePath, systemId: 'DS4_100_NIIF' });
+  const run = manager.startConfirmedCase(proposal.confirmationId);
+  calls.at(-1).child.stdout.emit('data', Buffer.from('{"result":"Disconnected","is_error":true}'));
+  calls.at(-1).child.emit('close', 1);
+  assert.equal(manager.getRun(run.id).status, 'finalizing');
+  calls.at(-1).child.stderr.emit('data', Buffer.from('Disk full'));
+  calls.at(-1).child.emit('close', 1);
+  const finished = manager.getRun(run.id);
+  assert.equal(finished.status, 'failed');
+  assert.match(finished.error, /Disconnected/);
+  assert.match(finished.error, /Disk full/);
+  assert.match(fs.readFileSync(finished.resultPath, 'utf8'), /\*\*Verdict:\*\* FAIL/);
+});
+
+test('external headers are validated and colliding built-in ids cannot select the wrong script', async (context) => {
+  const { manager, root, projectRoot } = await managerFixture(context);
+  const filePath = path.join(root, 'browsed.md');
+  fs.writeFileSync(filePath, markdown);
+  assert.throws(() => manager.prepareCase('web', 'TC-001', '', null, { filePath, systemId: 'DS4_100_NIIF' }), /lane does not match/);
+  fs.writeFileSync(filePath, markdown.replace('DS4_100_NIIF', 'OTHER_SYSTEM'));
+  assert.throws(() => manager.prepareCase('gui', 'TC-001', '', null, { filePath, systemId: 'DS4_100_NIIF' }), /System header/);
+  fs.writeFileSync(filePath, markdown);
+  fs.writeFileSync(path.join(projectRoot, 'config/gui-runs.json'), JSON.stringify({ cases: { 'TC-001': { summary: 'Unrelated built-in test' } } }));
+  const browsed = await manager.browseCase();
+  assert.equal(browsed.runnable, false);
+  assert.equal(browsed.summary, 'FTR_CREATE');
+});
+
+test('confirmed external Save is accepted by the hook without authoring authorization', { skip: process.platform !== 'win32' }, (context) => {
+  const root = temporaryDirectory(context);
+  const result = invokeHook(root, saveEvent, '0', 'external-run', 'sap-save-confirmation.ps1', { FSNXT_EXTERNAL_RUN_AUTO_SAVE: '1' });
+  assert.equal(result.hookSpecificOutput.content.value, true);
+  assert.equal(fs.existsSync(path.join(root, 'logs')), false);
+});
+
+test('external runs get one reminder to record missing observations, including the web lane', { skip: process.platform !== 'win32' }, (context) => {
+  const root = temporaryDirectory(context);
+  const record = path.join(root, 'observations.json');
+  const invoke = (active) => invokeHook(root, { hook_event_name: 'Stop', stop_hook_active: active }, '0', 'external-run', 'require-external-result.ps1', { FSNXT_EXTERNAL_RUN_RECORD: record });
+  assert.equal(invoke(false).decision, 'block');
+  assert.equal(invoke(true), null);
+  fs.writeFileSync(record, JSON.stringify({ verdict: 'BLOCKED', summary: 'No SAP connection' }));
+  assert.equal(invoke(false), null);
 });
 
 test('a follow-up can finish a testcase whose first turn wrote no file', async (context) => {

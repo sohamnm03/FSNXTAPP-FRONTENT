@@ -42,7 +42,12 @@ Both lanes read the **same** `config/sap-systems.json` and the **same** credenti
    authorized in the run prompt, the creation request includes Save authorization: announce
    and perform the requested Save without another chat question or popup, verify the document
    number, and write the Markdown testcase before finishing. This covers only the requested
-   scenario, not additional settlement or posting. Read-only verification never needs asking.
+   scenario, not additional settlement or posting. An external testcase launched through the
+   desktop Confirm & Run flow is also preauthorized for the writes listed in its approved
+   snapshot: announce and execute those writes, including Save, without asking again. Verify
+   the saved document number and record observations in the run-specific JSON file requested
+   by the desktop runner, which generates and archives the result after execution.
+   Read-only verification never needs asking.
 3a. **A Test Run checkbox is never used to simulate first.** TBB1, TPM44, TPM1 and any future
    screen with the same pattern default the checkbox to ON; every flow drives it to `false` and
    reads it back, then runs once, live — no separate simulation pass before the real write.

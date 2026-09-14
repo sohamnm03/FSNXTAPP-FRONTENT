@@ -41,8 +41,8 @@ export const sapTerminalService = {
   browseCase() {
     return localTerminal().browseCase();
   },
-  prepareCase(lane, caseId, stage, credentials) {
-    return localTerminal().prepareCase(lane, caseId, stage, credentials);
+  prepareCase(lane, caseId, stage, credentials, externalCase) {
+    return localTerminal().prepareCase(lane, caseId, stage, credentials, externalCase);
   },
   startConfirmedCase(confirmationId) {
     return localTerminal().startConfirmedCase(confirmationId);

@@ -45,13 +45,15 @@ param(
     [string] $PayloadFile,
     [switch] $NoDetail,
     [switch] $Open,
-    [switch] $NoOpen
+    [switch] $NoOpen,
+    [string] $ResultsDirectory = '',
+    [string] $SystemLabel = 'DS4 / client 100 (DS4_100_NIIF)'
 )
 
 $ErrorActionPreference = 'Stop'
 
 $root         = Split-Path -Parent $PSScriptRoot
-$resultsDir   = Join-Path $root 'results'
+$resultsDir   = if ($ResultsDirectory) { $ResultsDirectory } else { Join-Path $root 'results' }
 $caseDir      = Join-Path $root 'test-cases'
 $templatePath = Join-Path $root 'dashboard\template.html'
 $outHtml      = Join-Path $resultsDir 'dashboard.html'
@@ -424,7 +426,7 @@ else {
     if (-not (Test-Path $resultsDir)) { throw "No results directory: $resultsDir" }
 
     $files = Get-ChildItem -Path $resultsDir -Filter '*.md' |
-             Where-Object { $_.Name -ne '_TEMPLATE.md' } |
+             Where-Object { $_.Name -ne '_TEMPLATE.md' -and $_.Name -ne 'case.md' } |
              Sort-Object Name
 
     if (-not $files) { Write-Warning "No run files under $resultsDir - the dashboard will be empty." }
@@ -481,7 +483,7 @@ else {
 
     $payload = [ordered]@{
         title       = 'SAP test results'
-        system      = 'DS4 / client 100 (DS4_100_NIIF)'
+        system      = $SystemLabel
         generatedAt = (Get-Date).ToString('yyyy-MM-dd HH:mm')
         chips       = @("$($runs.Count) runs", "$(($runs | Select-Object -ExpandProperty case -Unique).Count) test cases")
         runs        = $runs

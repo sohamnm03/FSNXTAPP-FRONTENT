@@ -51,6 +51,7 @@ async function main() {
       '--exclude=*/__pycache__',
       '--exclude=*.pyc',
       '--exclude=*/results',
+      '--exclude=*/.external-runs',
       '--exclude=*/evidence',
       '--exclude=*/logs',
       '--exclude=*/test-results',

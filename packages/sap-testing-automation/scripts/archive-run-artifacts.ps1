@@ -30,14 +30,17 @@ param(
     [ValidateSet('web', 'gui')]
     [string] $Lane = 'web',
     [string] $SystemId = '',
-    [string] $OutputRoot = ''
+    [string] $OutputRoot = '',
+    [string] $ResultsDirectory = '',
+    [string] $EvidenceDirectory = ''
 )
 
 $ErrorActionPreference = 'Stop'
+$StartedAtUtc = $StartedAtUtc.ToUniversalTime()
 
 $root = Split-Path -Parent $PSScriptRoot
-$resultsRoot = Join-Path $root 'results'
-$evidenceRoot = Join-Path $root 'evidence'
+$resultsRoot = if ($ResultsDirectory) { $ResultsDirectory } else { Join-Path $root 'results' }
+$evidenceRoot = if ($EvidenceDirectory) { $EvidenceDirectory } else { Join-Path $root 'evidence' }
 if (-not $OutputRoot) { $OutputRoot = $env:FSNXT_ARTIFACT_ARCHIVE_DIR }
 if (-not $OutputRoot) {
     $downloads = if ($env:USERPROFILE) { Join-Path $env:USERPROFILE 'Downloads' } else { $resultsRoot }
@@ -256,6 +259,14 @@ if (-not (Test-Path -LiteralPath $dashboardPath -PathType Leaf) -and $images.Cou
 
 if (Test-Path -LiteralPath $dashboardPath -PathType Leaf) {
     Copy-Item -LiteralPath $dashboardPath -Destination (Join-Path $stageRoot 'dashboard.html') -Force
+}
+
+# External runs retain their source and observations alongside the normal
+# dashboard/evidence archive so they also survive a packaged workspace cleanup.
+if ($ResultsDirectory) {
+    Get-ChildItem -LiteralPath $resultsRoot -File |
+        Where-Object { $_.Extension -in @('.md', '.json') } |
+        ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $stageRoot -Force }
 }
 
 if ($images.Count -gt 0) {

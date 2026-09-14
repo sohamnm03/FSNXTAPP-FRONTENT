@@ -18,6 +18,11 @@
             "type": "command",
             "shell": "powershell",
             "command": "powershell -ExecutionPolicy Bypass -NoProfile -File \"$env:CLAUDE_PROJECT_DIR\\.claude\\hooks\\require-case-file.ps1\""
+          },
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "powershell -ExecutionPolicy Bypass -NoProfile -File \"$env:CLAUDE_PROJECT_DIR\\.claude\\hooks\\require-external-result.ps1\""
           }
         ]
       }

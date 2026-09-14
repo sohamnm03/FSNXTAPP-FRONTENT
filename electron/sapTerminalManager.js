@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { createSapAutomationWorkspace } = require('./sapAutomationWorkspace');
 const { webRuntimeEnvironment } = require('./sapWebRuntime');
+const { createExternalRun, externalRunPrompt, writeExternalResult } = require('./sapExternalRun');
 
 const FINAL_STATUSES = new Set(['completed', 'failed', 'stopped']);
 const CONFIRMATION_TTL_MS = 10 * 60 * 1000;
@@ -67,6 +68,7 @@ function parseClaudeResult(stdout, stderr) {
 async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
   const runs = new Map();
   const confirmations = new Map();
+  const externalAuthorization = Symbol('confirmed external testcase');
   const claudePath = claudeExecutable(electronApp);
   const pythonPath = bundledPython(electronApp);
   const workspace = await createSapAutomationWorkspace(electronApp);
@@ -178,13 +180,15 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
   // mid-run "confirm this Save" request under the same id this manager
   // already tracks the run by, with no session-id plumbing needed. Omitted
   // for the plain `claude auth status` check below, which never touches SAP.
-  function claudeEnvironment(token, runId = '', caseCreation = null, lane = 'gui') {
+  function claudeEnvironment(token, runId = '', caseCreation = null, lane = 'gui', externalRun = null) {
     const env = {
       ...(electronApp.isPackaged ? webRuntimeEnvironment(process.resourcesPath) : process.env),
       NO_COLOR: '1', FORCE_COLOR: '0', CLAUDE_CONFIG_DIR: claudeConfigDir,
       FSNXT_ARTIFACT_ARCHIVE_DIR: archiveDir(),
       FSNXT_APP_USERNAME: currentUsername,
       FSNXT_CASE_CREATION_AUTO_SAVE: caseCreation && lane === 'gui' ? '1' : '0',
+      FSNXT_EXTERNAL_RUN_AUTO_SAVE: externalRun && lane === 'gui' ? '1' : '0',
+      FSNXT_EXTERNAL_RUN_RECORD: externalRun ? path.join(externalRun.workRoot, 'observations.json') : '',
       FSNXT_CASE_DRAFT_DIR: caseCreation ? caseDraftDirectory(lane, caseCreation.systemId) : '',
       FSNXT_CASE_EXISTING_FILES: JSON.stringify(caseCreation?.existingFiles || []),
     };
@@ -273,6 +277,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       error: run.error,
       exitCode: run.exitCode,
       source: run.source || 'claude',
+      resultPath: run.resultPath || '',
       pendingElicitation: run.status === 'running' ? readPendingElicitation(run.id) : null,
     };
   }
@@ -644,6 +649,9 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     let manifestEntry = null;
     try {
       manifestEntry = caseManifest(lane).cases?.[caseId] || null;
+      // An unrelated external file may reuse a built-in id. Only the exact
+      // registered case contents may dispatch to that frozen script.
+      if (manifestEntry && getCaseFile(lane, caseId).content !== content) manifestEntry = null;
     } catch {
       manifestEntry = null;
     }
@@ -663,11 +671,26 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     };
   }
 
-  function prepareCase(lane, requestedCaseId, requestedStage = '', requestedCredentials = null) {
+  function prepareCase(lane, requestedCaseId, requestedStage = '', requestedCredentials = null, externalCase = null) {
     if (!validateProject(projectRoot)) throw new Error('The bundled SAP automation package is missing or incomplete. Reinstall the application.');
     const caseId = normalizeCaseId(requestedCaseId);
     const manifest = caseManifest(lane);
-    const testCase = manifest.cases?.[caseId];
+    let testCase = manifest.cases?.[caseId];
+    let external = null;
+    if (externalCase) {
+      const content = fs.readFileSync(externalCase.filePath, 'utf8');
+      const headers = parseCaseHeaders(content);
+      if (normalizeCaseId(headers['Case id']) !== caseId || laneFromHeader(headers.Lane) !== lane) {
+        throw new Error('The selected testcase id or lane does not match the file. Reopen the testcase.');
+      }
+      const system = configuredConnectionCheckSystem(externalCase.systemId);
+      if (!String(headers.System || '').split(/[\s`()[\],;]+/).includes(system.id)) {
+        throw new Error('The testcase System header must match the selected SAP system before running.');
+      }
+      if (!headers['Writes to the database']) throw new Error('The testcase must describe its database writes before it can be approved.');
+      external = { content, systemId: system.id };
+      testCase = { summary: headers['Transaction / app'] || caseId, writes: headers['Writes to the database'] };
+    }
     if (!testCase) throw new Error(`${caseId} is not registered in the selected ${lane === 'gui' ? 'SAP GUI' : 'Fiori / WebGUI'} lane.`);
     const stages = Array.isArray(testCase.stages) ? testCase.stages.map(String) : [];
     const stage = String(requestedStage || testCase.defaultStage || '');
@@ -675,7 +698,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       throw new Error(`${caseId} does not have stage '${requestedStage}'. Available stages: ${stages.join(', ') || 'none'}.`);
     }
 
-    const system = configuredDefaultSystem();
+    const system = external ? configuredConnectionCheckSystem(external.systemId) : configuredDefaultSystem();
 
     // Web lane only: a username/password typed into the sidebar overrides the
     // registry's account for this run. The GUI lane logs on through the
@@ -697,6 +720,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       systemId: system.id,
       systemLabel: `${system.label} [${system.id}]`,
       credentials,
+      external,
     };
     confirmations.set(confirmationId, proposal);
     return {
@@ -708,6 +732,8 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       stage: proposal.stage,
       systemLabel: proposal.systemLabel,
       usesCustomCredentials: Boolean(credentials),
+      source: external ? 'external' : 'direct',
+      systemId: system.id,
     };
   }
 
@@ -719,6 +745,12 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     }
     if ([...runs.values()].some((run) => !FINAL_STATUSES.has(run.status))) {
       throw new Error('Another SAP request is already running. Wait for it to finish or stop it first.');
+    }
+
+    if (proposal.external) {
+      return manager.start('Run the approved external testcase.', '', proposal.lane, {
+        [externalAuthorization]: { ...proposal, ...proposal.external, username: currentUsername },
+      });
     }
 
     const scriptName = proposal.lane === 'gui' ? 'run-gui-case.ps1' : 'run-case.ps1';
@@ -823,7 +855,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     });
   }
 
-  return {
+  const manager = {
     getProject(username = '') {
       currentUsername = typeof username === 'string' ? username : '';
       const configured = validateProject(projectRoot);
@@ -1032,6 +1064,13 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       if (!['gui', 'web'].includes(lane)) throw new Error('Select SAP GUI or Fiori / WebGUI testing.');
       const caseCreation = options?.caseCreation || null;
       if (caseCreation) configuredConnectionCheckSystem(caseCreation.systemId);
+      if ([...runs.values()].some((run) => !FINAL_STATUSES.has(run.status))) {
+        throw new Error('Another SAP request is already running. Wait for it to finish or stop it first.');
+      }
+      const id = crypto.randomUUID();
+      const externalRun = options?.[externalAuthorization]
+        ? createExternalRun(projectRoot, archiveDir(), id, options[externalAuthorization]) : null;
+      if (externalRun) prompt = externalRunPrompt(externalRun);
 
       const laneGuidance = lane === 'gui'
         ? 'The user selected the SAP GUI lane. Use GUI-lane cases and scripts/run-gui-case.ps1 for runnable tests.'
@@ -1046,10 +1085,14 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       if (caseCreation) {
         args.push('--allowedTools', 'mcp__sap-gui__*', 'Write(/.case-drafts/**)', 'Edit(/.case-drafts/**)');
       }
+      if (externalRun) {
+        args.push('--allowedTools', ...(lane === 'gui' ? ['mcp__sap-gui__*'] : []),
+          `Write(/${externalRun.relativeRoot}/**)`, `Edit(/${externalRun.relativeRoot}/**)`);
+      }
       if (previousSessionId) args.push('--resume', previousSessionId);
 
       const run = {
-        id: crypto.randomUUID(),
+        id,
         prompt: prompt.trim(),
         status: 'running',
         response: '',
@@ -1062,7 +1105,11 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       };
       const child = spawn(claudePath, args, {
         cwd: projectRoot,
-        env: claudeEnvironment(oauthToken, run.id, caseCreation, lane),
+        env: {
+          ...claudeEnvironment(oauthToken, run.id, caseCreation, lane, externalRun),
+          ...(externalRun ? { SAP_SYSTEM_ID: externalRun.systemId } : {}),
+          ...(externalRun?.credentials && lane === 'web' ? { SAP_WEB_USER: externalRun.credentials.username, SAP_WEB_PASSWORD: externalRun.credentials.password } : {}),
+        },
         windowsHide: true,
         shell: false,
         stdio: ['ignore', 'pipe', 'pipe'],
@@ -1073,7 +1120,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       child.stdout.on('data', (chunk) => { run.stdout += chunk.toString('utf8'); });
       child.stderr.on('data', (chunk) => { run.stderr += chunk.toString('utf8'); });
       child.once('error', (error) => {
-        run.status = 'failed';
+        if (!externalRun) run.status = 'failed';
         run.error = error.code === 'ENOENT'
           ? 'The bundled AI Assistant runtime is missing. Reinstall the application.'
           : error.message;
@@ -1092,7 +1139,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         if (run.status === 'stopping') {
           run.status = 'stopped';
         } else if (run.status !== 'failed') {
-          run.error = parsed.error || (code === 0 ? '' : 'AI Assistant could not complete the request. Check that you are signed in.');
+          run.error = run.error || parsed.error || (code === 0 ? '' : 'AI Assistant could not complete the request. Check that you are signed in.');
           run.status = code === 0 && !run.error ? 'completed' : 'failed';
         }
         // Persist drafts in the main process, even if the user left this screen.
@@ -1108,6 +1155,40 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
             run.status = 'failed';
           }
         }
+        if (externalRun) {
+          const execution = { status: run.status, error: run.error, response: run.response };
+          run.status = 'finalizing';
+          try {
+            const result = writeExternalResult(externalRun, execution);
+            run.resultPath = result.resultPath;
+            run.response += `\n\nTest result: ${result.verdict}\nSaved result: ${result.resultPath}`;
+            run.error = execution.error || result.error;
+            const finish = (error = '') => {
+              run.process = null;
+              if (error) run.error = [run.error, error].filter(Boolean).join('\n');
+              run.status = execution.status === 'stopped' ? 'stopped' : run.error ? 'failed' : 'completed';
+            };
+            const finalizer = spawn('powershell.exe', [
+              '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(projectRoot, 'scripts', 'finalize-external-run.ps1'),
+              '-RunId', run.id, '-StartedAtUtc', externalRun.startedAt, '-Case', externalRun.caseId,
+              '-Lane', lane, '-SystemId', externalRun.systemId, '-ResultsDirectory', externalRun.outputRoot,
+              '-OutputRoot', path.dirname(path.dirname(externalRun.outputRoot)),
+            ], {
+              cwd: projectRoot,
+              env: { ...process.env, ...projectLocalEnv(), FSNXT_APP_USERNAME: externalRun.username },
+              windowsHide: true, shell: false, stdio: ['ignore', 'pipe', 'pipe'],
+            });
+            run.process = finalizer;
+            let archiveError = '';
+            finalizer.stdout.on('data', (chunk) => { run.response += `\n${chunk.toString('utf8').trim()}`; });
+            finalizer.stderr.on('data', (chunk) => { archiveError += chunk.toString('utf8'); });
+            finalizer.once('error', (error) => finish(`Could not archive the test result: ${error.message}. The local result is retained.`));
+            finalizer.once('close', (code) => finish(code === 0 ? '' : `Result archive failed: ${archiveError || `exit code ${code}`}. The local result is retained.`));
+          } catch (error) {
+            run.status = 'failed';
+            run.error = `Could not finalize the external testcase: ${error.message}. Inspect SAP before retrying any Save.`;
+          }
+        }
       });
       return publicRun(run);
     },
@@ -1116,6 +1197,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     },
     stop(runId) {
       const run = requireRun(runId);
+      if (run.status === 'finalizing') throw new Error('The test has finished. Wait for its result archive and upload to finish.');
       if (!run.process || FINAL_STATUSES.has(run.status)) throw new Error('AI Assistant has already finished responding.');
       run.status = 'stopping';
       // Tidy up now rather than relying on the close handler: killing the
@@ -1134,6 +1216,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       workspace.cleanup();
     },
   };
+  return manager;
 }
 
 module.exports = { createSapTerminalManager };

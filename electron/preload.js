@@ -22,7 +22,7 @@ contextBridge.exposeInMainWorld('desktopAPI', Object.freeze({
     prepareCaseCreation: (lane, systemId) => ipcRenderer.invoke('sap-terminal:prepare-case-creation', lane, systemId),
     finalizeCaseCreation: (lane, systemId, existingFiles, author) => ipcRenderer.invoke('sap-terminal:finalize-case-creation', lane, systemId, existingFiles, author),
     browseCase: () => ipcRenderer.invoke('sap-terminal:browse-case'),
-    prepareCase: (lane, caseId, stage, credentials) => ipcRenderer.invoke('sap-terminal:prepare-case', lane, caseId, stage, credentials),
+    prepareCase: (lane, caseId, stage, credentials, externalCase) => ipcRenderer.invoke('sap-terminal:prepare-case', lane, caseId, stage, credentials, externalCase),
     startConfirmedCase: (confirmationId) => ipcRenderer.invoke('sap-terminal:start-confirmed-case', confirmationId),
     answerElicitation: (runId, accept) => ipcRenderer.invoke('sap-terminal:answer-elicitation', runId, accept),
     start: (prompt, sessionId, lane, options) => ipcRenderer.invoke('sap-terminal:start', prompt, sessionId, lane, options),

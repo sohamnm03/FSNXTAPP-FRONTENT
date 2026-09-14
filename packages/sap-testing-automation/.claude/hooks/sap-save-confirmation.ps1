@@ -1,10 +1,11 @@
 <#
 .SYNOPSIS
-    Answer SAP Save elicitation for desktop testcase creation, or relay it
-    to the desktop UI for other runs. Interactive CLI sessions are unchanged.
+    Answer SAP Save elicitation for authorized desktop testcase creation or
+    confirmed external runs; relay other requests to the desktop UI.
 .DESCRIPTION
     The desktop app sets FSNXT_CASE_CREATION_AUTO_SAVE=1 only for testcase
     creation, where the user has authorized saving the requested scenario.
+    FSNXT_EXTERNAL_RUN_AUTO_SAVE=1 is scoped to an external Confirm & Run.
     Claude Code Elicitation uses requested_schema / mcp_server_name as input
     and hookSpecificOutput.action / content as output.
 #>
@@ -37,7 +38,7 @@ $schema = $requestEvent.requested_schema
 if ($schema.type -ne 'object' -or $schema.properties.value.type -ne 'boolean') { exit 0 }
 if (@($schema.properties.PSObject.Properties).Count -ne 1) { exit 0 }
 
-if ($env:FSNXT_CASE_CREATION_AUTO_SAVE -eq '1' -and $requestEvent.mcp_server_name -eq 'sap-gui') {
+if (($env:FSNXT_CASE_CREATION_AUTO_SAVE -eq '1' -or $env:FSNXT_EXTERNAL_RUN_AUTO_SAVE -eq '1') -and $requestEvent.mcp_server_name -eq 'sap-gui') {
     Respond 'accept'
 }
 
