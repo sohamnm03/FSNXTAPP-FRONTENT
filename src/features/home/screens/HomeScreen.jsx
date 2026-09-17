@@ -123,7 +123,7 @@ export default function HomeScreen({ onOpenModule }) {
       <header className="app-header workspace-header">
         <div className="app-header__brand">
           <BrandLogo />
-          <div><strong>FSNXT Testing Application</strong><span>Package workspace</span></div>
+          <div><strong>FS Pilot</strong><span>Package workspace</span></div>
         </div>
         <AppButton disabled={isLoggingOut} icon="logout" onClick={handleLogout} title={isLoggingOut ? 'Logging out…' : 'Logout'} variant="ghost" />
       </header>

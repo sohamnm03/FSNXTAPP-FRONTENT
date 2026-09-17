@@ -1591,7 +1591,7 @@
 
 .sap-chat-layout {
   display: grid;
-  grid-template-columns: 320px minmax(0, 1fr);
+  grid-template-columns: 400px minmax(0, 1fr);
   height: calc(100% - 72px);
   min-height: 0;
   overflow: hidden;
@@ -1615,7 +1615,7 @@
 
   .sap-chat-layout:has(.sap-chat-sidebar:hover),
   .sap-chat-layout:has(.sap-chat-sidebar:focus-within) {
-    grid-template-columns: 320px minmax(0, 1fr);
+    grid-template-columns: 400px minmax(0, 1fr);
   }
 
   .sap-chat-sidebar {
@@ -1632,7 +1632,7 @@
     background: #f5faff;
     box-shadow: 12px 0 28px rgba(8, 28, 64, 0.14);
     padding: 26px 22px;
-    width: 320px;
+    width: 400px;
   }
 
   .sap-chat-sidebar .sap-testing-heading {
@@ -1653,7 +1653,7 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 100ms ease;
-    width: 276px;
+    width: 100%;
   }
 
   .sap-chat-sidebar:hover .sap-testing-heading > div:last-child,
@@ -3169,13 +3169,15 @@
 }
 
 .sap-case-section__header {
+  flex-wrap: wrap;
   gap: 8px;
   justify-content: space-between;
   margin-bottom: 10px;
 }
 
 .sap-case-section__tools {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
   gap: 7px;
 }
 

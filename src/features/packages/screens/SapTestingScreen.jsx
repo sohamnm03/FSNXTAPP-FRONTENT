@@ -184,8 +184,8 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
               await loadCasesForLane(pending.lane);
               setSelectedCase(result.created[result.created.length - 1]);
               pushRunnerMessage(result.created.length === 1
-                ? `${result.created[0].caseId} was saved to ${result.created[0].filePath}. It now shows in the left panel tagged "External created TC" — open it and choose "Run interactively" to have the AI Assistant run it again live.`
-                : `${result.created.length} test cases were saved: ${result.created.map((created) => created.caseId).join(', ')}. They now show in the left panel tagged "External created TC".`);
+                ? `${result.created[0].caseId} was saved to ${result.created[0].filePath}. Ask the AI Assistant to run it again live.`
+                : `${result.created.length} test cases were saved: ${result.created.map((created) => created.caseId).join(', ')}. Ask the AI Assistant to run them again live.`);
             } else if (run.status === 'completed') {
               pushRunnerMessage('No testcase file was created yet. Your next message will continue this testcase with the same local output folder.');
             }
@@ -626,6 +626,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   const isTestingConnection = connectionStatus === 'checking';
   const isBusy = isActive || isTestingConnection || isCreatingCase;
   const visibleSelectedCase = connectionServerName ? selectedCase : null;
+  const sidebarCases = cases.filter((testCase) => testCase.source !== 'external');
 
   return (
     <ScreenContainer className="module-screen sap-testing-screen">
@@ -740,7 +741,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                   <div className="sap-case-section__header">
                     <span className="sap-sidebar-label">{LANES[lane].label} test cases</span>
                     <div className="sap-case-section__tools">
-                      <span className="sap-case-count">{cases.length} test {cases.length === 1 ? 'case' : 'cases'}</span>
+                      <span className="sap-case-count">{sidebarCases.length} test {sidebarCases.length === 1 ? 'case' : 'cases'}</span>
                       <AppButton
                         disabled={isBusy}
                         icon="folder"
@@ -760,9 +761,9 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                   <div className="sap-case-list">
                     {isLoadingCases ? (
                       <p>Loading test cases…</p>
-                    ) : cases.length === 0 ? (
+                    ) : sidebarCases.length === 0 ? (
                       <p>No test cases found for this lane.</p>
-                    ) : cases.map((testCase) => (
+                    ) : sidebarCases.map((testCase) => (
                       <button
                         aria-pressed={selectedCase?.caseId === testCase.caseId}
                         className={selectedCase?.caseId === testCase.caseId ? 'is-active' : ''}
@@ -774,7 +775,6 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                         <span className="sap-case-list__number">{testCase.caseId.replace('TC-', '')}</span>
                         <span>
                           <strong>{testCase.caseId}</strong>
-                          {testCase.source === 'external' ? <em>External created TC</em> : null}
                           <span>{testCase.summary}</span>
                         </span>
                         <Icon className="sap-case-list__chevron" name="chevronRight" size={17} />
@@ -794,7 +794,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
 
         <section className="sap-chat-panel">
           <div className="run-status-row sap-chat-header">
-            <div><p className="eyebrow">AI ASSISTANT TERMINAL</p><h2>SAP automation assistant</h2></div>
+            <div><p className="eyebrow">AI ASSISTANT TERMINAL</p><h2>SAP testing automation</h2></div>
             <div className="sap-chat-header-actions">
               {connectionServerName ? (
                 <span className="sap-server-chip">
@@ -807,7 +807,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                 <AppButton
                   disabled={isBusy}
                   onClick={() => setIsTokenDialogOpen(true)}
-                  title={isAuthenticated ? `OAuth token ••••${tokenEnding}` : 'Connect OAuth token'}
+                  title="OAuth Token"
                   variant="secondary"
                 />
               ) : null}

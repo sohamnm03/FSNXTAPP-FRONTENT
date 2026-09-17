@@ -51,7 +51,7 @@ function createWindow() {
     minHeight: 640,
     backgroundColor: '#f4f7fc',
     show: false,
-    title: 'FSNXT Testing Application',
+    title: 'FS Pilot',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

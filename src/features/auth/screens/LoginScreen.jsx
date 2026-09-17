@@ -55,7 +55,7 @@ export default function LoginScreen() {
         <header className="login-brand__header">
           <BrandLogo large />
           <div>
-            <h1>FSNXT Testing Application</h1>
+            <h1>FS Pilot</h1>
             <p>One platform for intelligent enterprise testing</p>
           </div>
         </header>

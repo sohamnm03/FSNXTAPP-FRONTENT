@@ -41,7 +41,7 @@
   },
   "build": {
     "appId": "com.fsnxt.testing",
-    "productName": "FSNXT Testing Application",
+    "productName": "FS Pilot",
     "asar": true,
     "asarUnpack": [
       "packages/**/*",
