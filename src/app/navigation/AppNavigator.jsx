@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import HomeScreen from '../../features/home/screens/HomeScreen';
 import ModulePlaceholderScreen from '../../features/packages/screens/ModulePlaceholderScreen';
+import SapDevelopmentScreen from '../../features/packages/screens/SapDevelopmentScreen';
 import SapTestingScreen from '../../features/packages/screens/SapTestingScreen';
 
 export default function AppNavigator() {
@@ -9,6 +10,7 @@ export default function AppNavigator() {
 
   if (activeModule) {
     const ModuleScreen = ({
+      'sap-development': SapDevelopmentScreen,
       'sap-testing': SapTestingScreen,
     })[activeModule.id] || ModulePlaceholderScreen;
     return (

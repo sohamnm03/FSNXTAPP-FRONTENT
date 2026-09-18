@@ -16,6 +16,12 @@ const moduleDetails = {
       'Integration with enterprise CI/CD pipelines',
       'Rich reporting and analytics dashboard',
     ],
+    gettingStarted: [
+      ['Open package', 'Launch the package from your installed packages.', 'download'],
+      ['Configure settings', 'Set up your connection and environment.', 'settings'],
+      ['Run a test', 'Execute a sample test case to validate configuration.', 'play'],
+      ['View results', 'Review results and analyse test execution insights.', 'chart'],
+    ],
     lastUpdated: 'Sep 04, 2025',
     setup: [
       ['System requirements', 'Check system and software prerequisites', 'window'],
@@ -25,14 +31,30 @@ const moduleDetails = {
     ],
     version: 'v1.0.0',
   },
+  'sap-development': {
+    features: [
+      'ABAP backend development support',
+      'Custom HTML, CSS, and JavaScript frontend integration (CL_GUI_HTML_VIEWER)',
+      'SAP GUI, Fiori, and RFC development tooling',
+      'Version control and CI/CD integration',
+      'Code quality and debugging tools',
+    ],
+    gettingStarted: [
+      ['Open package', 'Launch the package from your installed packages.', 'download'],
+      ['Configure settings', 'Set up your development environment and connection.', 'settings'],
+      ['Run a build or deploy', 'Build and deploy a sample to validate configuration.', 'play'],
+      ['View logs & output', 'Review build logs and deployment output.', 'chart'],
+    ],
+    lastUpdated: 'Sep 18, 2026',
+    setup: [
+      ['System requirements', 'Check development tools and software prerequisites', 'window'],
+      ['Configure SAP connection', 'Set up your SAP system and authentication', 'settings'],
+      ['Environment variables', 'Configure required development variables', 'toolbox'],
+      ['Advanced settings', 'Customise builds, deployment, logs, and more', 'sliders'],
+    ],
+    version: 'v1.0.0',
+  },
 };
-
-const gettingStartedSteps = [
-  ['Open package', 'Launch the package from your installed packages.', 'download'],
-  ['Configure settings', 'Set up your connection and environment.', 'settings'],
-  ['Run a test', 'Execute a sample test case to validate configuration.', 'play'],
-  ['View results', 'Review results and analyse test execution insights.', 'chart'],
-];
 
 export default function HomeScreen({ onOpenModule }) {
   const { logout, user } = useAuth();
@@ -131,9 +153,9 @@ export default function HomeScreen({ onOpenModule }) {
       <div className="home-package-workspace">
         <aside className="home-catalog-sidebar" aria-labelledby="packages-heading" tabIndex={0}>
           <div className="home-catalog-sidebar__heading">
-            <p className="eyebrow">TESTING WORKSPACE</p>
+            <p className="eyebrow">PACKAGE WORKSPACE</p>
             <h1 id="packages-heading">Packages</h1>
-            <p>Download and manage your testing tools.</p>
+            <p>Download and manage your SAP tools.</p>
           </div>
 
           <label className="home-package-search">
@@ -163,7 +185,7 @@ export default function HomeScreen({ onOpenModule }) {
                     <span className="home-package-card__icon"><Icon name={module.icon} size={23} /></span>
                     <span className="home-package-card__copy">
                       <strong>{module.name}</strong>
-                      <small className={installed ? 'is-installed' : ''}>{installed ? '● Installed' : 'Package locked'}</small>
+                      <small className={installed ? 'is-installed' : ''}>{installed ? '● Installed' : 'Available'}</small>
                       <span>{moduleDetails[module.id].version}</span>
                     </span>
                     <Icon name={selectedModule.id === module.id ? 'chevronRight' : installed ? 'check' : 'lock'} size={18} />
@@ -201,7 +223,12 @@ export default function HomeScreen({ onOpenModule }) {
             <div className="home-package-summary__actions">
               {isSelectedInstalled ? (
                 <>
-                  <AppButton disabled={Boolean(uninstallingModuleId)} icon="play" onClick={() => onOpenModule(selectedModule)} title={`Open ${selectedModule.name}`} />
+                  <AppButton
+                    disabled={Boolean(uninstallingModuleId)}
+                    icon="play"
+                    onClick={() => onOpenModule(selectedModule)}
+                    title={`Open ${selectedModule.name}`}
+                  />
                   <AppButton className="package-uninstall-button" icon="trash" loading={uninstallingModuleId === selectedModule.id} onClick={() => handleUninstall(selectedModule)} title="Uninstall package" variant="secondary" />
                 </>
               ) : (
@@ -213,12 +240,12 @@ export default function HomeScreen({ onOpenModule }) {
           <section className="home-dashboard-section home-getting-started">
             <header><Icon name="flag" size={21} /><div><h3>Getting started</h3><p>Follow these steps to get up and running quickly.</p></div></header>
             <div className="home-step-grid">
-              {gettingStartedSteps.map(([title, description, icon], index) => (
+              {selectedDetails.gettingStarted.map(([title, description, icon], index) => (
                 <article key={title}>
                   <span className="home-step-number">{index + 1}</span>
                   <span className="home-step-icon"><Icon name={icon} size={21} /></span>
                   <div><strong>{title}</strong><p>{description}</p></div>
-                  {index < gettingStartedSteps.length - 1 ? <Icon className="home-step-arrow" name="chevronRight" size={17} /> : null}
+                  {index < selectedDetails.gettingStarted.length - 1 ? <Icon className="home-step-arrow" name="chevronRight" size={17} /> : null}
                 </article>
               ))}
             </div>

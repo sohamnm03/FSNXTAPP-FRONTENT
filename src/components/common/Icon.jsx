@@ -3,6 +3,7 @@ const paths = {
   eyeOff: <><path d="m3 3 18 18"/><path d="M10.6 6.2A11.8 11.8 0 0 1 12 6c6.5 0 10 6 10 6a17.7 17.7 0 0 1-2.3 3.1M6.6 6.6C3.6 8.5 2 12 2 12s3.5 6 10 6c1 0 2-.2 2.8-.4"/></>,
   warning: <><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 17h.01"/></>,
   building: <><path d="M4 21V4h11v17M15 9h5v12M8 8h3M8 12h3M8 16h3M3 21h18"/></>,
+  code: <><path d="m8 9-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></>,
   globe: <><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14 0 18M12 3c-3 3.5-3 14 0 18"/></>,
   download: <><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></>,
   check: <><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16.5 8"/></>,

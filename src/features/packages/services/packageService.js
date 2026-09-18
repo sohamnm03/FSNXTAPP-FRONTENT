@@ -10,6 +10,12 @@ export const availableModules = Object.freeze([
     description: 'Validate SAP business workflows, integrations, and core enterprise processes.',
     icon: 'building',
   },
+  {
+    id: 'sap-development',
+    name: 'SAP Development',
+    description: 'Build and manage SAP ABAP backend logic, custom UI extensions, and integrated frontend components.',
+    icon: 'code',
+  },
 ]);
 
 const availableModuleIds = new Set(availableModules.map((module) => module.id));
