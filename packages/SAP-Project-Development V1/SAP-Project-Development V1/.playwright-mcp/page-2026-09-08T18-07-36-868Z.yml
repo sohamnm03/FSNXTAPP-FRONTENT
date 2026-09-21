@@ -1,0 +1,43 @@
+- generic [ref=f14e2]:
+  - banner [ref=f14e3]:
+    - generic [ref=f14e4]:
+      - generic [ref=f14e8]: Trade Flow Excel Upload
+      - generic [ref=f14e9]: TF UPLOAD
+    - generic [ref=f14e10]:
+      - generic "System connected" [ref=f14e11]
+      - button "Download Template" [ref=f14e12] [cursor=pointer]
+  - main [ref=f14e15]:
+    - generic [ref=f14e16]:
+      - heading "Upload Trade Flow File" [level=1] [ref=f14e19]
+      - generic [ref=f14e20]:
+        - generic [ref=f14e21]:
+          - generic [ref=f14e22]: Upload Context
+          - generic [ref=f14e25]:
+            - generic [ref=f14e26]:
+              - generic [ref=f14e27]: Business Unit*
+              - combobox "Business Unit*" [ref=f14e28]:
+                - option "Select Business Unit" [selected]
+                - option "B01 - GRAINS"
+                - option "B02 - RICE"
+                - option "B03 - COTTON"
+                - option "B05 - EDIBLE OIL"
+                - option "B06 - RUBBER"
+                - option "B10 - FERTILIZER"
+            - generic [ref=f14e29]:
+              - generic [ref=f14e30]: TF Type*
+              - combobox "TF Type*" [ref=f14e31]:
+                - option "Select TF Type" [selected]
+                - option "Container"
+                - option "Bulk"
+        - generic [ref=f14e32]:
+          - generic [ref=f14e33]: Excel File
+          - generic [ref=f14e37]:
+            - generic [ref=f14e41]:
+              - generic [ref=f14e42]: Drop Excel file here
+              - generic [ref=f14e43]:
+                - text: or
+                - button "Browse" [ref=f14e44] [cursor=pointer]
+              - generic [ref=f14e45]: "Supported: .xlsx, .xlsm"
+            - generic [ref=f14e46]:
+              - button "Extract" [disabled] [ref=f14e47]
+              - button "Clear" [ref=f14e48] [cursor=pointer]

@@ -1,0 +1,2357 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>View Pending ICL Requests &amp; Allocate Bank</title>
+<style type="text/css">
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:#fbfdff;
+  color:#1d2d3e;
+  font-family:"Inter","Segoe UI",Arial,sans-serif;
+  font-size:12px;
+}
+*{box-sizing:border-box}
+button,input,select,table,th,td,div,span,label{
+  font-family:"Inter","Segoe UI",Arial,sans-serif;
+}
+button{cursor:pointer}
+button:disabled{cursor:default;opacity:.55}
+.shell{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  background:#fbfdff;
+}
+.topbar{
+  height:48px;
+  flex:0 0 48px;
+  background:#fff;
+  border-bottom:1px solid #d9d9d9;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
+}
+.topbar-inner{
+  height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 18px;
+}
+.title{
+  font-size:16px;
+  font-weight:600;
+  color:#1d2d3e;
+}
+.content{
+  flex:1 1 auto;
+  min-height:0;
+  padding:10px 14px 28px;
+  overflow:hidden;
+}
+.screen{
+  display:none;
+  max-width:1600px;
+  height:100%;
+  margin:0 auto;
+}
+.screen.active{display:block}
+#requestScreen.active,
+#messageScreen.active{
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+}
+.card{
+  margin-bottom:10px;
+  background:#fff;
+  border:1px solid #e1e6ea;
+  border-radius:8px;
+  box-shadow:0 1px 4px rgba(29,45,62,.04);
+}
+.card-head{
+  min-height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:7px 12px;
+  background:#fafcfe;
+  border-bottom:1px solid #e5e9ed;
+  border-radius:8px 8px 0 0;
+}
+.card-title{
+  font-size:12px;
+  font-weight:600;
+  color:#1d2d3e;
+}
+.card-meta{
+  font-size:11px;
+  color:#6a6d70;
+}
+.card-body{padding:12px}
+.form-row{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.field{
+  display:flex;
+  align-items:center;
+  min-height:30px;
+  margin-right:28px;
+  margin-bottom:8px;
+}
+.field label{
+  width:150px;
+  color:#1d2d3e;
+  font-size:12px;
+  font-weight:400;
+}
+.input,.select{
+  height:30px;
+  width:230px;
+  padding:4px 8px;
+  border:1px solid #b8b8b8;
+  border-radius:4px;
+  background:#fff;
+  color:#1d2d3e;
+  font-size:12px;
+}
+.input:focus,.select:focus{
+  outline:0;
+  border-color:#0a6ed1;
+  box-shadow:0 0 0 1px #0a6ed1;
+}
+.range-row{
+  display:flex;
+  align-items:center;
+}
+.range-to{
+  width:28px;
+  text-align:center;
+  color:#6a6d70;
+}
+.input.compact{width:150px}
+.input.date-compact{width:132px}
+.radio-row{
+  display:flex;
+  align-items:center;
+  min-height:30px;
+}
+.radio-item{
+  display:flex;
+  align-items:center;
+  margin-right:26px;
+}
+.radio-item input{margin:0 6px 0 0}
+.actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+}
+.btn{
+  height:30px;
+  margin-left:7px;
+  padding:0 12px;
+  border:1px solid #d1e8ff;
+  border-radius:4px;
+  background:#eaf3fc;
+  color:#004b93;
+  font-size:12px;
+  font-weight:600;
+}
+.btn:first-child{margin-left:0}
+.btn:hover{
+  background:#d1e8ff;
+  border-color:#0a6ed1;
+  color:#0854a0;
+}
+.btn-primary{
+  background:#0a6ed1;
+  border-color:#0a6ed1;
+  color:#fff;
+}
+.btn-primary:hover{
+  background:#0854a0;
+  border-color:#0854a0;
+  color:#fff;
+}
+.btn-ghost{
+  background:#fff;
+  border-color:#d9d9d9;
+  color:#1d2d3e;
+}
+.btn-ghost:hover{
+  background:#f7f8f9;
+  border-color:#b8b8b8;
+  color:#1d2d3e;
+}
+.btn-danger{
+  background:#fff;
+  border-color:#bb0000;
+  color:#bb0000;
+}
+.btn-danger:hover{
+  background:#fff0f0;
+  border-color:#8f0000;
+  color:#8f0000;
+}
+.date-shell{
+  position:relative;
+  display:flex;
+  align-items:center;
+}
+.calendar-btn{
+  width:30px;
+  height:30px;
+  margin-left:4px;
+  padding:0;
+  border:1px solid #b8b8b8;
+  border-radius:4px;
+  background:#fff;
+  position:relative;
+}
+.calendar-btn:hover{
+  background:#f7f8f9;
+  border-color:#0a6ed1;
+}
+.calendar-btn:before{
+  content:"";
+  position:absolute;
+  left:7px;
+  top:8px;
+  width:14px;
+  height:12px;
+  border:1px solid #556b82;
+  border-radius:2px;
+}
+.calendar-btn:after{
+  content:"";
+  position:absolute;
+  left:9px;
+  top:6px;
+  width:10px;
+  height:4px;
+  border-left:2px solid #556b82;
+  border-right:2px solid #556b82;
+}
+.calendar-popup{
+  display:none;
+  position:absolute;
+  z-index:1600;
+  top:34px;
+  left:0;
+  width:252px;
+  padding:10px;
+  background:#fff;
+  border:1px solid #d9d9d9;
+  border-radius:8px;
+  box-shadow:0 8px 22px rgba(0,0,0,.16);
+}
+.calendar-popup.open{display:block}
+.calendar-head{
+  display:flex;
+  align-items:center;
+  margin-bottom:8px;
+}
+.calendar-head select{
+  height:28px;
+  margin-right:6px;
+  padding:3px 6px;
+  border:1px solid #b8b8b8;
+  border-radius:4px;
+  background:#fff;
+  color:#1d2d3e;
+  font-size:11px;
+}
+.calendar-head .month-select{width:125px}
+.calendar-head .year-select{width:82px;margin-right:0}
+.calendar-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  grid-auto-rows:28px;
+}
+.calendar-dow{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#6a6d70;
+  font-size:10px;
+  font-weight:600;
+}
+.calendar-day{
+  border:0;
+  border-radius:4px;
+  background:#fff;
+  color:#1d2d3e;
+  font-size:11px;
+}
+.calendar-day:hover{background:#eaf3fc;color:#004b93}
+.calendar-day.selected{background:#0a6ed1;color:#fff}
+.calendar-day.empty{cursor:default;background:#fff}
+.toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:36px;
+  margin-bottom:8px;
+}
+.toolbar-left,
+.toolbar-right{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.record-count{
+  color:#6a6d70;
+  font-size:11px;
+}
+.table-card{
+  overflow:hidden;
+  min-height:0;
+}
+#resultsArea{
+  display:none;
+  min-height:0;
+  flex:1 1 auto;
+  flex-direction:column;
+}
+#resultsArea.open{display:flex}
+#resultsArea .table-card{
+  min-height:0;
+  flex:1 1 auto;
+  display:flex;
+  flex-direction:column;
+}
+.table-wrap{
+  width:100%;
+  min-height:0;
+  overflow:auto;
+  background:#fff;
+}
+#resultsArea .table-wrap{flex:1 1 auto}
+.data-table{
+  width:100%;
+  min-width:1510px;
+  border-collapse:separate;
+  border-spacing:0;
+  font-size:12px;
+}
+.data-table th{
+  position:sticky;
+  top:0;
+  z-index:2;
+  height:34px;
+  padding:6px 8px;
+  background:#f5f8fa;
+  color:#1d2d3e;
+  border-right:1px solid #d9d9d9;
+  border-bottom:1px solid #c7d4e0;
+  text-align:left;
+  font-weight:600;
+  white-space:nowrap;
+}
+.data-table td{
+  height:34px;
+  padding:4px 8px;
+  background:#fff;
+  border-right:1px solid #e7ebee;
+  border-bottom:1px solid #e7ebee;
+  white-space:nowrap;
+  color:#1d2d3e;
+}
+.data-table tbody tr:hover td{background:#f2f8fd}
+.data-table tbody tr.selected td{background:#eaf3fc}
+.data-table .number{
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+.check-cell{text-align:center}
+.status-cell{text-align:center}
+.status-symbol{
+  display:inline-block;
+  vertical-align:middle;
+  width:12px;
+  height:12px;
+  border:1px solid transparent;
+}
+.status-pending{
+  border-radius:50%;
+  background:#f5c242;
+  border-color:#c89400;
+}
+.status-approved{
+  border-radius:2px;
+  background:#30914c;
+  border-color:#107e3e;
+}
+.status-rejected{
+  border-radius:50%;
+  background:#d93636;
+  border-color:#bb0000;
+}
+.pagination-bar{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  min-height:44px;
+  padding:8px 10px;
+  background:#fff;
+  border-top:1px solid #e5e9ed;
+}
+.page-btn{
+  min-width:30px;
+  height:28px;
+  margin-left:5px;
+  padding:0 8px;
+  border:1px solid #d9d9d9;
+  border-radius:4px;
+  background:#fff;
+  color:#1d2d3e;
+  font-size:11px;
+}
+.page-btn:hover{background:#f7f8f9;border-color:#b8b8b8}
+.page-btn.active{
+  background:#eaf3fc;
+  border-color:#0a6ed1;
+  color:#004b93;
+  font-weight:600;
+}
+.page-btn:disabled{background:#f7f8f9;color:#9aa7b4}
+.modal-bg{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:2000;
+  background:rgba(29,45,62,.30);
+  padding:28px 18px;
+  overflow:auto;
+}
+.modal-bg.open{display:block}
+.modal{
+  max-width:900px;
+  margin:0 auto;
+  background:#fff;
+  border:1px solid #d9d9d9;
+  border-radius:8px;
+  box-shadow:0 8px 24px rgba(0,0,0,.18);
+  overflow:hidden;
+}
+.modal.small{max-width:540px}
+.modal.medium{max-width:700px}
+.modal-head{
+  height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 14px;
+  background:#eaf3fc;
+  border-bottom:1px solid #d1e8ff;
+}
+.modal-title{font-size:13px;font-weight:600}
+.modal-close{
+  width:28px;
+  height:28px;
+  border:1px solid #d9d9d9;
+  border-radius:4px;
+  background:#fff;
+  color:#556b82;
+}
+.modal-body{padding:14px}
+.modal-foot{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  padding:10px 14px;
+  background:#f7f8f9;
+  border-top:1px solid #d9d9d9;
+}
+.modal-form{
+  display:grid;
+  grid-template-columns:170px minmax(0,1fr);
+  grid-auto-rows:minmax(32px,auto);
+  align-items:center;
+  max-width:620px;
+}
+.modal-label{
+  padding:5px 0;
+  color:#556b82;
+}
+.lookup-control{
+  display:flex;
+  align-items:center;
+  max-width:390px;
+  margin:4px 0;
+}
+.lookup-input{
+  height:30px;
+  flex:1 1 auto;
+  min-width:0;
+  padding:4px 8px;
+  border:1px solid #b8b8b8;
+  border-radius:4px 0 0 4px;
+  background:#fff;
+  color:#1d2d3e;
+  font-size:12px;
+}
+.lookup-input[readonly]{background:#f8fafc}
+.lookup-btn{
+  width:34px;
+  height:30px;
+  border:1px solid #b8b8b8;
+  border-left:0;
+  border-radius:0 4px 4px 0;
+  background:#eaf3fc;
+  color:#004b93;
+  font-weight:700;
+}
+.lookup-btn:hover{background:#d1e8ff}
+.read-value{
+  min-height:30px;
+  display:flex;
+  align-items:center;
+  max-width:390px;
+  margin:4px 0;
+  padding:4px 8px;
+  border:1px solid #e1e6ea;
+  border-radius:4px;
+  background:#f8fafc;
+  color:#1d2d3e;
+}
+.search-row{
+  display:flex;
+  align-items:center;
+  margin-bottom:10px;
+}
+.search-input{
+  height:30px;
+  flex:1 1 auto;
+  padding:4px 8px;
+  border:1px solid #b8b8b8;
+  border-radius:4px;
+  font-size:12px;
+}
+.lookup-table{
+  width:100%;
+  min-width:720px;
+  border-collapse:separate;
+  border-spacing:0;
+}
+.lookup-table th{
+  position:sticky;
+  top:0;
+  z-index:2;
+  padding:7px;
+  background:#f5f8fa;
+  border-right:1px solid #d9d9d9;
+  border-bottom:1px solid #c7d4e0;
+  text-align:left;
+  font-weight:600;
+  white-space:nowrap;
+}
+.lookup-table td{
+  padding:7px;
+  background:#fff;
+  border-right:1px solid #e7ebee;
+  border-bottom:1px solid #e7ebee;
+  white-space:nowrap;
+}
+.lookup-table tr:hover td{background:#f2f8fd}
+.lookup-table tr.selected td{background:#eaf3fc}
+.warning-box{
+  padding:11px 12px;
+  border-left:3px solid #e9730c;
+  background:#fff8ef;
+  color:#1d2d3e;
+  line-height:18px;
+}
+.message-wrap{
+  min-height:0;
+  flex:1 1 auto;
+  overflow:auto;
+}
+.message-table{
+  width:100%;
+  min-width:1100px;
+  border-collapse:separate;
+  border-spacing:0;
+  font-size:12px;
+}
+.message-table th{
+  height:34px;
+  padding:6px 8px;
+  background:#f5f8fa;
+  color:#1d2d3e;
+  border-right:1px solid #d9d9d9;
+  border-bottom:1px solid #c7d4e0;
+  text-align:left;
+  font-weight:600;
+  white-space:nowrap;
+}
+.message-table td{
+  height:34px;
+  padding:4px 8px;
+  background:#fff;
+  border-right:1px solid #e7ebee;
+  border-bottom:1px solid #e7ebee;
+  white-space:nowrap;
+}
+.log-ok{
+  display:inline-block;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#30914c;
+  border:1px solid #107e3e;
+}
+.toast-region{
+  position:fixed;
+  right:22px;
+  bottom:28px;
+  z-index:4000;
+  width:350px;
+  max-width:calc(100% - 44px);
+}
+.toast{
+  display:flex;
+  margin-top:8px;
+  padding:12px 14px;
+  background:#f2f4f5;
+  border:1px solid #d9d9d9;
+  border-left:3px solid #a8b3bd;
+  border-radius:4px;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+}
+.toast.success{border-left-color:#107e3e}
+.toast.error{border-left-color:#bb0000}
+.toast.warning{border-left-color:#e9730c}
+.toast-icon{
+  width:24px;
+  height:24px;
+  flex:0 0 24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-right:10px;
+  border-radius:50%;
+  background:#e5e8eb;
+  color:#556b82;
+  font-weight:600;
+}
+.toast.success .toast-icon{background:#ebf5eb;color:#107e3e}
+.toast-title{
+  margin-bottom:2px;
+  font-size:12px;
+  font-weight:600;
+}
+.toast-message{
+  color:#556b82;
+  font-size:12px;
+  line-height:17px;
+}
+.statusbar{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  height:20px;
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+  background:#fff;
+  border-top:1px solid #e1e6ea;
+  color:#6a6d70;
+  font-size:11px;
+  z-index:900;
+}
+.status-dot{
+  width:7px;
+  height:7px;
+  margin-right:6px;
+  border-radius:50%;
+  background:#0a6ed1;
+}
+.empty{
+  padding:28px;
+  text-align:center;
+  color:#6a6d70;
+}
+@media screen and (max-width:980px){
+  .content{padding-left:8px;padding-right:8px}
+  .field{margin-right:12px}
+  .field label{width:130px}
+  .toolbar{align-items:flex-start}
+  .toolbar-left,.toolbar-right{width:100%}
+  .toolbar-right{margin-top:6px}
+  .modal-form{grid-template-columns:145px minmax(0,1fr)}
+}
+@media screen and (max-width:640px){
+  .topbar-inner{padding:0 10px}
+  .field{display:block;width:100%;margin-right:0}
+  .field label{display:block;width:auto;margin-bottom:4px}
+  .range-row{width:100%}
+  .input,.select{width:100%}
+  .input.compact,.input.date-compact{width:calc(50% - 16px)}
+  .radio-row{display:block}
+  .radio-item{margin-bottom:8px}
+  .actions{justify-content:stretch}
+  .actions .btn{flex:1 1 auto;margin-top:6px}
+  .modal-form{display:block}
+  .modal-label{padding-bottom:2px}
+  .lookup-control,.read-value{max-width:none}
+}
+
+.selection-panel{margin-bottom:8px;background:#fff;border:1px solid #e1e6ea;border-radius:8px;overflow:visible}
+.selection-main-row{display:flex;align-items:center;min-height:54px;padding:9px 14px;flex-wrap:nowrap}
+.selection-main-row>*{margin-right:10px}
+.selection-main-row>*:last-child{margin-right:0}
+.selection-date-label{margin-right:2px;color:#1d2d3e;font-size:12px}
+.inline-date-shell{position:relative;display:flex;align-items:center;width:166px;height:30px}
+.inline-date-input{width:166px;height:30px;padding:4px 34px 4px 8px;border:1px solid #b8b8b8;
+border-radius:4px;background:#fff;color:#1d2d3e;font-size:12px}
+.inline-date-input:focus{outline:0;border-color:#0a6ed1;box-shadow:0 0 0 1px #0a6ed1}
+.inline-calendar-btn{position:absolute;right:1px;top:1px;width:30px;height:28px;padding:0;border:0;
+border-left:1px solid #e1e6ea;background:#fff;border-radius:0 3px 3px 0}
+.inline-calendar-btn:hover{background:#f7f8f9}
+.inline-calendar-btn:before{content:"";position:absolute;left:8px;top:6px;width:13px;height:14px;border:1px solid #0a6ed1;
+border-radius:2px;box-shadow:inset 0 4px 0 #eaf3fc}
+.inline-calendar-btn:after{content:"";position:absolute;left:10px;top:12px;width:2px;height:2px;background:#0a6ed1;
+box-shadow:4px 0 #0a6ed1,8px 0 #0a6ed1,0 4px #0a6ed1,4px 4px #0a6ed1,8px 4px #0a6ed1}
+.filter-icon-btn{width:38px;height:30px;padding:0;border:1px solid #8ea2b5;border-radius:4px;background:#fff;position:relative}
+.filter-icon-btn:hover{background:#f7f8f9;border-color:#0a6ed1}
+.filter-icon-btn:before{content:"";position:absolute;left:11px;top:7px;width:0;height:0;
+border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid #556b82}
+.filter-icon-btn:after{content:"";position:absolute;left:16px;top:15px;width:4px;height:7px;background:#556b82;border-radius:0 0 1px 1px}
+.filter-body{display:none;padding:0;border:0;background:transparent;min-width:0}
+.filter-body.open{display:block}
+.filter-grid{display:flex;align-items:flex-end;flex-wrap:nowrap;width:auto}
+.filter-grid>*{margin-right:12px}
+.filter-grid>*:last-child{margin-right:0}
+.filter-caption{height:30px;display:flex;align-items:center;margin-right:2px;font-size:11px;font-weight:600;
+letter-spacing:.4px;color:#1d2d3e;white-space:nowrap}
+.filter-item{display:flex;flex-direction:column;gap:4px;min-width:0}
+.filter-item label{font-size:10px;color:#6a6d70;white-space:nowrap}
+.filter-select{width:160px;height:30px;padding:4px 24px 4px 8px;border:1px solid #b8b8b8;
+border-radius:4px;background:#fff;color:#1d2d3e;font-size:12px}
+.filter-input{height:30px;padding:4px 8px;border:1px solid #b8b8b8;border-radius:4px;
+background:#fff;color:#1d2d3e;font-size:12px}
+.filter-input:focus,.filter-select:focus{outline:0;border-color:#0a6ed1;box-shadow:0 0 0 1px #0a6ed1}
+.filter-txn{width:126px}.filter-request{width:112px}.filter-date-shell{width:154px}.filter-date-input{width:154px}
+#requestScreen.active{display:flex;flex-direction:column;min-height:0}
+#resultsArea{display:flex;min-height:0;flex:1 1 auto;flex-direction:column}
+#resultsArea.open{display:flex}
+#resultsArea .toolbar{margin-bottom:6px;min-height:34px}
+#resultsArea .table-card{margin-bottom:0;min-height:0;flex:1 1 auto;display:flex;flex-direction:column}
+#resultsArea .table-wrap{min-height:0;flex:1 1 auto}
+.status-symbol.status-pending{width:0;height:0;border-left:7px solid transparent;
+border-right:7px solid transparent;border-bottom:13px solid #f5c242;border-top:0;background:transparent;border-radius:0}
+.status-symbol.status-approved{width:12px;height:12px;border-radius:1px;background:#30914c;border:1px solid #107e3e}
+.status-symbol.status-rejected{width:12px;height:12px;border-radius:50%;background:#d93636;border:1px solid #bb0000}
+.modal-bg.open{display:flex;align-items:center;justify-content:center}
+.modal.compact-bank{width:420px;max-width:calc(100% - 28px);margin:0}
+.modal.compact-bank .modal-body{padding:16px 18px 12px}
+.compact-bank-form{display:grid;grid-template-columns:92px minmax(0,1fr);align-items:center;row-gap:10px}
+.compact-bank-form .modal-label{padding:0;color:#556b82}
+.compact-bank-form .lookup-control{max-width:none;margin:0}
+.modal.lookup-small{width:720px;max-width:calc(100% - 28px);margin:0}
+.lookup-table{min-width:650px}
+.message-table{width:100%;min-width:1220px;border-collapse:separate;border-spacing:0;table-layout:auto}
+.message-table th,.message-table td{white-space:nowrap}
+.message-table th:nth-child(1){width:76px}
+.message-table th:nth-child(2){width:240px}
+.message-table th:nth-child(3){width:190px}
+.message-table th:nth-child(4){width:115px}
+.message-table th:nth-child(5),.message-table th:nth-child(6){width:105px}
+.message-table th:nth-child(7){width:155px}
+.message-table th:nth-child(8){width:115px}
+.message-table th:nth-child(9){width:105px}
+@media screen and (max-width:980px){.filter-grid{flex-wrap:wrap}.selection-main-row{padding-left:10px;padding-right:10px;flex-wrap:wrap}}
+@media screen and (max-width:640px){
+.filter-item,.filter-select,.filter-input,.filter-txn,.filter-request,.filter-date-shell,.filter-date-input{width:100%}
+.filter-grid{align-items:stretch}.filter-caption{height:auto}
+}
+
+.calendar-popup{width:294px;padding:0;border:1px solid #9aa7b4;border-radius:5px;background:#fff;overflow:hidden}
+.calendar-top{height:44px;display:flex;align-items:center;padding:0 12px;border-bottom:0;background:#fff}
+.calendar-title-btn{height:30px;padding:0;border:0;background:#fff;color:#1d2d3e;font-size:12px;font-weight:600;position:relative}
+.calendar-title-btn{padding-right:16px}
+.calendar-title-btn:after{content:"";position:absolute;right:2px;top:13px;border-left:4px solid transparent}
+.calendar-title-btn:after{border-right:4px solid transparent;border-top:5px solid #1d2d3e}
+.calendar-navs{margin-left:auto;display:flex;align-items:center}
+.calendar-nav{width:28px;height:28px;margin-left:2px;border:0;background:#fff;position:relative}
+.calendar-nav:hover{background:#f2f8fd}
+.calendar-nav.prev:before{content:"";position:absolute;left:9px;top:10px;border-left:5px solid transparent}
+.calendar-nav.prev:before{border-right:5px solid transparent;border-bottom:8px solid #556b82}
+.calendar-nav.next:before{content:"";position:absolute;left:9px;top:11px;border-left:5px solid transparent}
+.calendar-nav.next:before{border-right:5px solid transparent;border-top:8px solid #556b82}
+.calendar-week{display:grid;grid-template-columns:repeat(7,1fr);padding:0 12px}
+.calendar-week span{height:26px;display:flex;align-items:center;justify-content:center;color:#556b82;font-size:10px;font-weight:600}
+.calendar-days{display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:32px;padding:0 12px 8px}
+.calendar-cell{border:0;border-radius:3px;background:#fff;color:#1d2d3e;font-size:11px}
+.calendar-cell:hover{background:#eaf3fc;color:#004b93}
+.calendar-cell.other{color:#8a9bad}
+.calendar-cell.selected{background:#eaf3fc;box-shadow:inset 0 0 0 2px #0a6ed1;color:#1d2d3e;font-weight:600}
+.calendar-cell.today{font-weight:600;color:#0a6ed1}
+.calendar-foot{height:42px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-top:1px solid #e1e6ea}
+.calendar-foot-btn{border:0;background:#fff;color:#0a6ed1;font-size:11px;font-weight:600;padding:5px 0}
+.calendar-picker{padding:8px 10px 10px}
+.month-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding-bottom:8px;border-bottom:1px solid #e1e6ea}
+.month-btn{height:34px;border:0;border-radius:3px;background:#f2f4f5;color:#1d2d3e;font-size:11px;font-weight:600}
+.month-btn:hover{background:#eaf3fc}
+.month-btn.selected{background:#0a6ed1;color:#fff}
+.year-list{height:128px;margin-top:7px;overflow-y:auto}
+.year-btn{width:100%;height:31px;margin-bottom:2px;border:0;background:#f2f4f5;color:#1d2d3e;text-align:left;padding:0 8px;font-size:11px}
+.year-btn:hover{background:#eaf3fc}
+.year-btn.selected{background:#eaf3fc;color:#004b93;font-weight:600}
+.filter-icon-btn{width:36px;height:30px;border-color:#8ea2b5;border-radius:4px}
+.filter-icon-btn:before{left:10px;top:7px;border-left-width:7px;border-right-width:7px;border-top:9px solid #556b82}
+.filter-icon-btn:after{left:15px;top:15px;width:4px;height:7px;background:#556b82}
+.filter-body{padding:0;background:transparent}
+.filter-grid>*{margin-right:16px}
+#resultsArea{display:none;min-height:0;flex:1 1 auto;flex-direction:column}
+#resultsArea.open{display:flex}
+#rejectBtn{background:#eaf3fc;border-color:#d1e8ff;color:#004b93}
+#rejectBtn:hover{background:#d1e8ff;border-color:#0a6ed1;color:#0854a0}
+.modal.compact-bank{width:360px}
+.modal.compact-bank .modal-body{padding:14px 18px 12px}
+.compact-bank-form{grid-template-columns:88px 170px;justify-content:center;column-gap:8px;row-gap:10px}
+.lookup-field{position:relative;width:150px;height:30px}
+.lookup-field.account{width:170px}
+.lookup-field .lookup-input{width:100%;height:30px;padding:4px 32px 4px 8px;border-radius:4px;background:#fff;cursor:pointer}
+.lookup-field.disabled .lookup-input{background:#f7f8f9;color:#9aa7b4;cursor:default}
+.lookup-cue{position:absolute;right:1px;top:1px;width:28px;height:28px;border-left:1px solid #e1e6ea;pointer-events:none}
+.lookup-cue:before{content:"";position:absolute;left:9px;top:10px;width:7px;height:7px;border-right:1px solid #0a6ed1}
+.lookup-cue:before{border-bottom:1px solid #0a6ed1;transform:rotate(45deg)}
+.modal.lookup-small.house{width:560px}
+.modal.lookup-small.account{width:720px}
+.lookup-table.house-table{min-width:500px;table-layout:fixed}
+.lookup-table.house-table th:nth-child(1){width:70px}
+.lookup-table.house-table th:nth-child(2){width:105px}
+.lookup-table.house-table th:nth-child(3){width:210px}
+.lookup-table.house-table th:nth-child(4){width:80px}
+.lookup-table.account-table{min-width:650px;table-layout:fixed}
+.lookup-table.account-table th:nth-child(1){width:62px}
+.lookup-table.account-table th:nth-child(2){width:82px}
+.lookup-table.account-table th:nth-child(3){width:82px}
+.lookup-table.account-table th:nth-child(4){width:58px}
+.lookup-table.account-table th:nth-child(5){width:140px}
+.lookup-table.account-table th:nth-child(6){width:220px}
+.lookup-table.account-table td{overflow:hidden;text-overflow:ellipsis}
+.data-table th.sortable-head{padding-right:24px;cursor:pointer}
+.sort-arrows{position:absolute;right:8px;top:8px;width:8px;height:17px}
+.sort-up,.sort-down{position:absolute;left:0;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent}
+.sort-up{top:0;border-bottom:5px solid #9aa7b4}
+.sort-down{bottom:0;border-top:5px solid #9aa7b4}
+.data-table th.sort-asc .sort-up{border-bottom-color:#0a6ed1}
+.data-table th.sort-desc .sort-down{border-top-color:#0a6ed1}
+
+.selection-main-row{align-items:center}
+.selection-date-label{height:30px;display:flex;align-items:center}
+.filter-body{height:30px}
+.filter-body.open{display:block}
+.filter-grid{height:30px;align-items:center}
+.filter-item{position:relative;display:block;height:30px}
+.filter-item label{position:absolute;left:0;top:-13px;height:11px;line-height:11px}
+.filter-item>.btn{margin-left:0}
+
+.main-date-item{position:relative;display:flex;height:44px;flex:0 0 auto;align-items:flex-end}
+.main-date-item label{display:flex;height:30px;align-items:center;margin:0 6px 0 0;color:#1d2d3e;font-size:12px;white-space:nowrap}
+.selection-main-row{min-height:62px;padding:9px 14px;align-items:flex-end;overflow:visible}
+.filter-body{height:44px;overflow:visible}
+.filter-grid{height:44px;align-items:flex-end;overflow:visible}
+.filter-item{height:44px;display:flex;flex-direction:column;justify-content:flex-end;overflow:visible}
+.filter-item label{position:static;display:block;height:12px;line-height:12px;margin:0 0 2px;overflow:visible}
+.filter-row-btn{align-self:flex-end;margin-bottom:0}
+.filter-item>.btn{margin-left:0}
+.icl-console-nav{display:flex;align-items:center;gap:2px;height:34px;padding:0 10px;background:#0a3d68;overflow-x:auto}
+.icl-console-nav a{display:inline-flex;align-items:center;height:34px;padding:0 10px;color:#cfe3fb;font-size:11.5px;
+font-weight:600;text-decoration:none;white-space:nowrap}
+.icl-console-nav a:hover{color:#fff;background:rgba(255,255,255,.08)}
+.icl-console-nav a.home{color:#fff;font-weight:700;margin-right:6px}
+.icl-console-nav a.current{color:#fff;background:rgba(255,255,255,.14);cursor:default}
+</style>
+</head>
+<body>
+<div class="icl-console-nav">
+<a class="home" href="index.html">&#8592; ICL Console</a>
+<a href="create-request.html">Create Request</a>
+<a href="deposit-create.html">Create Deposit</a>
+<a class="current" href="alloc-bank.html">Allocate Bank</a>
+<a href="approve-reject.html">Approve / Reject</a>
+</div>
+<div class="shell">
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div id="pageTitle" class="title">View Pending ICL Requests &amp; Allocate Bank</div>
+    </div>
+  </div>
+  <div class="content">
+    <div id="requestScreen" class="screen active">
+      <div class="selection-panel">
+        <div class="selection-main-row">
+          <div class="main-date-item">
+            <label for="uptoRequestDate">Upto Request Date</label>
+            <div class="inline-date-shell">
+              <input id="uptoRequestDate" class="inline-date-input" type="text" placeholder="DD-MM-YYYY">
+              <button id="uptoCalendarBtn" class="inline-calendar-btn" type="button" aria-label="Open calendar"></button>
+              <div id="uptoCalendar" class="calendar-popup"></div>
+            </div>
+          </div>
+          <button id="filterToggle" class="filter-icon-btn filter-row-btn" type="button" title="Filters" aria-label="Filters"></button>
+          <div id="filterBody" class="filter-body">
+            <div class="filter-grid">
+              <div class="filter-item">
+                <label for="requestTypeFilter">Select Type of Requests</label>
+                <select id="requestTypeFilter" class="filter-select">
+                  <option value="Pending">Pending Requests</option>
+                  <option value="Issued">Issued Requests</option>
+                </select>
+              </div>
+              <div class="filter-item">
+                <label for="requestFrom">Request No</label>
+                <input id="requestFrom" class="filter-input filter-request" type="text" placeholder="Request No">
+              </div>
+              <div class="filter-item">
+                <label for="startFrom">Start Date</label>
+                <div class="inline-date-shell filter-date-shell">
+                  <input id="startFrom" class="inline-date-input filter-date-input" type="text" placeholder="DD-MM-YYYY">
+                  <button id="startCalendarBtn" class="inline-calendar-btn" type="button" aria-label="Open calendar"></button>
+                  <div id="startCalendar" class="calendar-popup"></div>
+                </div>
+              </div>
+              <div class="filter-item">
+                <label>&nbsp;</label>
+                <button id="clearFilters" class="btn btn-ghost" type="button">Clear filters</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="resultsArea">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <span id="recordCount" class="record-count"></span>
+          </div>
+          <div class="toolbar-right">
+            <button id="approveBtn" class="btn btn-primary" type="button">Approve ICL Request</button>
+            <button id="rejectBtn" class="btn" type="button">Reject ICL Request</button>
+            <button id="approveAllBtn" class="btn" type="button">Approve All ICL Requests</button>
+          </div>
+        </div>
+        <div class="card table-card">
+          <div class="card-head">
+            <div class="card-title">ICL Requests</div>
+            <div id="selectionCount" class="card-meta">0 selected</div>
+          </div>
+          <div class="table-wrap">
+            <table id="requestTable" class="data-table">
+              <thead id="requestHead"></thead>
+              <tbody id="requestBody"></tbody>
+            </table>
+          </div>
+          <div id="paginationBar" class="pagination-bar"></div>
+        </div>
+      </div>
+    </div>
+    <div id="messageScreen" class="screen">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <button id="backToRequests" class="btn btn-ghost" type="button">Back to ICL Requests</button>
+        </div>
+      </div>
+      <div class="card table-card" style="flex:1 1 auto;display:flex;flex-direction:column">
+        <div class="card-head">
+          <div class="card-title">Log Message</div>
+          <div id="logCount" class="card-meta"></div>
+        </div>
+        <div class="message-wrap">
+          <table class="message-table">
+            <thead id="messageHead"></thead>
+            <tbody id="messageBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="bankAllocationModal" class="modal-bg">
+  <div class="modal compact-bank">
+    <div class="modal-head">
+      <div class="modal-title">Drawdown From External Bank</div>
+      <button id="bankAllocationClose" class="modal-close" type="button">X</button>
+    </div>
+    <div class="modal-body">
+      <div class="compact-bank-form">
+        <div class="modal-label">House Bank</div>
+        <div id="houseBankLookup" class="lookup-field">
+          <input id="houseBankValue" class="lookup-input" type="text" readonly="readonly" placeholder="Select">
+          <span class="lookup-cue"></span>
+        </div>
+        <div class="modal-label">Account ID</div>
+        <div id="accountLookup" class="lookup-field account disabled">
+          <input id="accountIdValue" class="lookup-input" type="text" readonly="readonly" placeholder="Select">
+          <span class="lookup-cue"></span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button id="bankAllocationCancel" class="btn btn-ghost" type="button">Cancel</button>
+      <button id="createIclBtn" class="btn btn-primary" type="button">Create ICL</button>
+    </div>
+  </div>
+</div>
+<div id="houseBankModal" class="modal-bg">
+  <div class="modal lookup-small house">
+    <div class="modal-head">
+      <div class="modal-title">House Bank</div>
+      <button id="houseBankClose" class="modal-close" type="button">X</button>
+    </div>
+    <div class="modal-body">
+      <div class="search-row">
+        <input id="houseBankSearch" class="search-input" type="text" placeholder="Search house bank">
+      </div>
+      <div class="table-wrap" style="max-height:300px">
+        <table class="lookup-table house-table">
+          <thead id="houseBankHead"></thead>
+          <tbody id="houseBankBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button id="houseBankCancel" class="btn btn-ghost" type="button">Cancel</button>
+      <button id="houseBankSelect" class="btn btn-primary" type="button" disabled="disabled">Select</button>
+    </div>
+  </div>
+</div>
+<div id="accountModal" class="modal-bg">
+  <div class="modal lookup-small account">
+    <div class="modal-head">
+      <div class="modal-title">Account ID</div>
+      <button id="accountClose" class="modal-close" type="button">X</button>
+    </div>
+    <div class="modal-body">
+      <div class="search-row">
+        <input id="accountSearch" class="search-input" type="text" placeholder="Search account ID">
+      </div>
+      <div class="table-wrap" style="max-height:300px">
+        <table class="lookup-table account-table">
+          <thead id="accountHead"></thead>
+          <tbody id="accountBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button id="accountCancel" class="btn btn-ghost" type="button">Cancel</button>
+      <button id="accountSelect" class="btn btn-primary" type="button" disabled="disabled">Select</button>
+    </div>
+  </div>
+</div>
+<div id="rejectModal" class="modal-bg">
+  <div class="modal small">
+    <div class="modal-head">
+      <div class="modal-title">Reject ICL Request</div>
+      <button id="rejectClose" class="modal-close" type="button">X</button>
+    </div>
+    <div class="modal-body">
+      <div id="rejectText" class="warning-box"></div>
+    </div>
+    <div class="modal-foot">
+      <button id="rejectCancel" class="btn btn-ghost" type="button">No</button>
+      <button id="rejectConfirm" class="btn btn-danger" type="button">Yes, Reject</button>
+    </div>
+  </div>
+</div>
+<div id="toastRegion" class="toast-region" aria-live="polite"></div>
+<div class="statusbar">
+  <span class="status-dot"></span>
+  <span id="statusText">Enter an Up to Request Date to load ICL requests</span>
+</div>
+<script type="text/javascript">
+(function(){
+var HAS_EXTERNAL_PAYLOAD=typeof ICL_PENDING_REQUESTS_PAYLOAD!=="undefined";
+var DEFAULT_PAYLOAD={
+  "settings":{
+    "pageSize":12,
+    "defaultRequestType":"Pending",
+    "nextIclGivenTransaction":2601001038
+  },
+  "requests":[
+    {
+      "statusCode":"PENDING",
+      "statusDescription":"01 - Pending for Bank Allocation",
+      "requestType":"Pending",
+      "companyCode":"SG03",
+      "companyName":"Olam Global Agri Pte. Ltd",
+      "productType":"26A",
+      "productDescription":"26A - Inter-Co Loan Given",
+      "requestorCompany":"AE13 - Olam International DMCC",
+      "requestNo":"22001595",
+      "amount":995024.88,
+      "currency":"USD",
+      "requestDate":"11-07-2024",
+      "requestedBy":"Karthik Ramaswamy",
+      "startDate":"11-07-2024",
+      "endDate":"07-01-2025",
+      "partnerBankId":"USD1",
+      "iclGivenTxn":"",
+      "ottkNo":"102934",
+      "transactionNo":"2601001038"
+    },
+    {
+      "statusCode":"PENDING",
+      "statusDescription":"01 - Pending for Bank Allocation",
+      "requestType":"Pending",
+      "companyCode":"SG03",
+      "companyName":"Olam Global Agri Pte. Ltd",
+      "productType":"26A",
+      "productDescription":"26A - Inter-Co Loan Given",
+      "requestorCompany":"AE13 - Olam International DMCC",
+      "requestNo":"22001594",
+      "amount":760500.00,
+      "currency":"USD",
+      "requestDate":"10-07-2024",
+      "requestedBy":"Melrone Dsouza",
+      "startDate":"10-07-2024",
+      "endDate":"06-01-2025",
+      "partnerBankId":"",
+      "iclGivenTxn":"",
+      "ottkNo":"102931",
+      "transactionNo":"2601001035"
+    },
+    {
+      "statusCode":"PENDING",
+      "statusDescription":"01 - Pending for Bank Allocation",
+      "requestType":"Pending",
+      "companyCode":"SG03",
+      "companyName":"Olam Global Agri Pte. Ltd",
+      "productType":"26A",
+      "productDescription":"26A - Inter-Co Loan Given",
+      "requestorCompany":"AE11 - Olam Global Agri Pte. Ltd",
+      "requestNo":"22001566",
+      "amount":525000.00,
+      "currency":"USD",
+      "requestDate":"09-07-2024",
+      "requestedBy":"Mansi",
+      "startDate":"09-07-2024",
+      "endDate":"05-01-2025",
+      "partnerBankId":"",
+      "iclGivenTxn":"",
+      "ottkNo":"102928",
+      "transactionNo":"2601001032"
+    },
+    {
+      "statusCode":"PENDING",
+      "statusDescription":"01 - Pending for Bank Allocation",
+      "requestType":"Pending",
+      "companyCode":"SG03",
+      "companyName":"Olam Global Agri Pte. Ltd",
+      "productType":"26A",
+      "productDescription":"26A - Inter-Co Loan Given",
+      "requestorCompany":"AE13 - Olam International DMCC",
+      "requestNo":"26000729",
+      "amount":410250.50,
+      "currency":"USD",
+      "requestDate":"08-07-2024",
+      "requestedBy":"Karthik Ramaswamy",
+      "startDate":"08-07-2024",
+      "endDate":"04-01-2025",
+      "partnerBankId":"",
+      "iclGivenTxn":"",
+      "ottkNo":"102924",
+      "transactionNo":"2601001028"
+    },
+    {
+      "statusCode":"PENDING",
+      "statusDescription":"01 - Pending for Bank Allocation",
+      "requestType":"Pending",
+      "companyCode":"SG03",
+      "companyName":"Olam Global Agri Pte. Ltd",
+      "productType":"26A",
+      "productDescription":"26A - Inter-Co Loan Given",
+      "requestorCompany":"AE13 - Olam International DMCC",
+      "requestNo":"26000728",
+      "amount":380000.00,
+      "currency":"USD",
+      "requestDate":"07-07-2024",
+      "requestedBy":"Sufiyan H",
+      "startDate":"07-07-2024",
+      "endDate":"03-01-2025",
+      "partnerBankId":"",
+      "iclGivenTxn":"",
+      "ottkNo":"102921",
+      "transactionNo":"2601001025"
+    },
+    {
+      "statusCode":"PENDING",
+      "statusDescription":"01 - Pending for Bank Allocation",
+      "requestType":"Pending",
+      "companyCode":"SG03",
+      "companyName":"Olam Global Agri Pte. Ltd",
+      "productType":"26A",
+      "productDescription":"26A - Inter-Co Loan Given",
+      "requestorCompany":"AE11 - Olam Global Agri Pte. Ltd",
+      "requestNo":"26000610",
+      "amount":275800.75,
+      "currency":"USD",
+      "requestDate":"06-07-2024",
+      "requestedBy":"Nithishkumar",
+      "startDate":"06-07-2024",
+      "endDate":"02-01-2025",
+      "partnerBankId":"",
+      "iclGivenTxn":"",
+      "ottkNo":"102918",
+      "transactionNo":"2601001022"
+    },
+    {
+      "statusCode":"PENDING",
+      "statusDescription":"01 - Pending for Bank Allocation",
+      "requestType":"Pending",
+      "companyCode":"SG03",
+      "companyName":"Olam Global Agri Pte. Ltd",
+      "productType":"26A",
+      "productDescription":"26A - Inter-Co Loan Given",
+      "requestorCompany":"AE13 - Olam International DMCC",
+      "requestNo":"22001524",
+      "amount":190450.00,
+      "currency":"USD",
+      "requestDate":"05-07-2024",
+      "requestedBy":"Jayant S",
+      "startDate":"05-07-2024",
+      "endDate":"01-01-2025",
+      "partnerBankId":"",
+      "iclGivenTxn":"",
+      "ottkNo":"102915",
+      "transactionNo":"2601001019"
+    },
+    {
+      "statusCode":"PENDING",
+      "statusDescription":"01 - Pending for Bank Allocation",
+      "requestType":"Pending",
+      "companyCode":"SG03",
+      "companyName":"Olam Global Agri Pte. Ltd",
+      "productType":"26A",
+      "productDescription":"26A - Inter-Co Loan Given",
+      "requestorCompany":"AE13 - Olam International DMCC",
+      "requestNo":"26000724",
+      "amount":150000.00,
+      "currency":"USD",
+      "requestDate":"04-07-2024",
+      "requestedBy":"Anbarasan K",
+      "startDate":"04-07-2024",
+      "endDate":"31-12-2024",
+      "partnerBankId":"",
+      "iclGivenTxn":"",
+      "ottkNo":"102912",
+      "transactionNo":"2601001016"
+    },
+    {
+      "statusCode":"APPROVED",
+      "statusDescription":"02 - Approved by TSF Manager",
+      "requestType":"Issued",
+      "companyCode":"SG03",
+      "companyName":"Olam Global Agri Pte. Ltd",
+      "productType":"26A",
+      "productDescription":"26A - Inter-Co Loan Given",
+      "requestorCompany":"AE13 - Olam International DMCC",
+      "requestNo":"26000604",
+      "amount":225000.00,
+      "currency":"USD",
+      "requestDate":"03-07-2024",
+      "requestedBy":"Karthik Ramaswamy",
+      "startDate":"03-07-2024",
+      "endDate":"30-12-2024",
+      "partnerBankId":"USD1",
+      "iclGivenTxn":"2601001008",
+      "ottkNo":"102906",
+      "transactionNo":"2601001008"
+    },
+    {
+      "statusCode":"APPROVED",
+      "statusDescription":"02 - Approved by TSF Manager",
+      "requestType":"Issued",
+      "companyCode":"SG03",
+      "companyName":"Olam Global Agri Pte. Ltd",
+      "productType":"26A",
+      "productDescription":"26A - Inter-Co Loan Given",
+      "requestorCompany":"AE11 - Olam Global Agri Pte. Ltd",
+      "requestNo":"26000603",
+      "amount":185500.00,
+      "currency":"USD",
+      "requestDate":"02-07-2024",
+      "requestedBy":"Mansi",
+      "startDate":"02-07-2024",
+      "endDate":"29-12-2024",
+      "partnerBankId":"USD1",
+      "iclGivenTxn":"2601001005",
+      "ottkNo":"102903",
+      "transactionNo":"2601001005"
+    }
+  ],
+  "bankAccounts":[
+    {
+      "companyCode":"SG03",
+      "houseBank":"DBS03",
+      "bankKey":"DBSSSGSG",
+      "accountId":"DBS00",
+      "currency":"USD",
+      "bankAccount":"0072003358012",
+      "description":"OGA DBS USD 0072-003358-01-2",
+      "partnerBankId":"USD1"
+    },
+    {
+      "companyCode":"SG03",
+      "houseBank":"DBS03",
+      "bankKey":"DBSSSGSG",
+      "accountId":"DBS03",
+      "currency":"SGD",
+      "bankAccount":"0720362977",
+      "description":"OGA DBS SGD 072-036297-7",
+      "partnerBankId":"SGD1"
+    },
+    {
+      "companyCode":"SG03",
+      "houseBank":"DBS03",
+      "bankKey":"DBSSSGSG",
+      "accountId":"EUR01",
+      "currency":"EUR",
+      "bankAccount":"0720486110",
+      "description":"OGA DBS EUR Operating Account",
+      "partnerBankId":"EUR1"
+    },
+    {
+      "companyCode":"SG03",
+      "houseBank":"DBS03",
+      "bankKey":"DBSSSGSG",
+      "accountId":"GBP01",
+      "currency":"GBP",
+      "bankAccount":"0720529841",
+      "description":"OGA DBS GBP Collection Account",
+      "partnerBankId":"GBP1"
+    },
+    {
+      "companyCode":"SG03",
+      "houseBank":"SCB01",
+      "bankKey":"SCBLSGSG",
+      "accountId":"USD01",
+      "currency":"USD",
+      "bankAccount":"0105944491",
+      "description":"OGA Standard Chartered USD Account",
+      "partnerBankId":"USD2"
+    },
+    {
+      "companyCode":"SG03",
+      "houseBank":"SCB01",
+      "bankKey":"SCBLSGSG",
+      "accountId":"SGD01",
+      "currency":"SGD",
+      "bankAccount":"0105944524",
+      "description":"OGA Standard Chartered SGD Account",
+      "partnerBankId":"SGD2"
+    },
+    {
+      "companyCode":"SG03",
+      "houseBank":"SCB01",
+      "bankKey":"SCBLSGSG",
+      "accountId":"EUR03",
+      "currency":"EUR",
+      "bankAccount":"0105944578",
+      "description":"OGA Standard Chartered EUR Collection Account",
+      "partnerBankId":"EUR3"
+    },
+    {
+      "companyCode":"SG03",
+      "houseBank":"CITI1",
+      "bankKey":"CITISGSGXXX",
+      "accountId":"USD02",
+      "currency":"USD",
+      "bankAccount":"3010228199",
+      "description":"OGA Citi USD Operating Account",
+      "partnerBankId":"USD3"
+    },
+    {
+      "companyCode":"SG03",
+      "houseBank":"CITI1",
+      "bankKey":"CITISGSGXXX",
+      "accountId":"EUR02",
+      "currency":"EUR",
+      "bankAccount":"3010228245",
+      "description":"OGA Citi EUR Collection Account",
+      "partnerBankId":"EUR2"
+    },
+    {
+      "companyCode":"SG03",
+      "houseBank":"JPM01",
+      "bankKey":"CHASUS33XXX",
+      "accountId":"CHA00",
+      "currency":"USD",
+      "bankAccount":"759277681",
+      "description":"OGA JPMorgan Chase USD Main Account",
+      "partnerBankId":"USD4"
+    },
+    {
+      "companyCode":"SG03",
+      "houseBank":"JPM01",
+      "bankKey":"CHASUS33XXX",
+      "accountId":"CHA01",
+      "currency":"EUR",
+      "bankAccount":"759277749",
+      "description":"OGA JPMorgan Chase EUR Collection Account",
+      "partnerBankId":"EUR4"
+    },
+    {
+      "companyCode":"SG03",
+      "houseBank":"JPM01",
+      "bankKey":"CHASUS33XXX",
+      "accountId":"CHA02",
+      "currency":"SGD",
+      "bankAccount":"759277802",
+      "description":"OGA JPMorgan Chase SGD Operating Account",
+      "partnerBankId":"SGD4"
+    },
+    {
+      "companyCode":"SG03",
+      "houseBank":"JPM01",
+      "bankKey":"CHASUS33XXX",
+      "accountId":"CHA03",
+      "currency":"JPY",
+      "bankAccount":"759277845",
+      "description":"OGA JPMorgan Chase JPY Settlement Account",
+      "partnerBankId":"JPY4"
+    },
+    {
+      "companyCode":"SG03",
+      "houseBank":"HSBC1",
+      "bankKey":"HSBCSGSG",
+      "accountId":"USD05",
+      "currency":"USD",
+      "bankAccount":"141302008822",
+      "description":"OGA HSBC USD Settlement Account",
+      "partnerBankId":"USD5"
+    },
+    {
+      "companyCode":"SG03",
+      "houseBank":"HSBC1",
+      "bankKey":"HSBCSGSG",
+      "accountId":"SGD05",
+      "currency":"SGD",
+      "bankAccount":"141302008830",
+      "description":"OGA HSBC SGD Settlement Account",
+      "partnerBankId":"SGD5"
+    },
+    {
+      "companyCode":"SG03",
+      "houseBank":"BOA01",
+      "bankKey":"BOFAUS3NXXX",
+      "accountId":"USD06",
+      "currency":"USD",
+      "bankAccount":"6550091842",
+      "description":"OGA Bank of America USD Account",
+      "partnerBankId":"USD6"
+    },
+    {
+      "companyCode":"SG03",
+      "houseBank":"ICBC1",
+      "bankKey":"ICBKSGSGXXX",
+      "accountId":"USD07",
+      "currency":"USD",
+      "bankAccount":"1098876501",
+      "description":"OGA ICBC Singapore USD Account",
+      "partnerBankId":"USD7"
+    },
+    {
+      "companyCode":"SG03",
+      "houseBank":"MIZU1",
+      "bankKey":"MIZUH0XXXX",
+      "accountId":"USD08",
+      "currency":"USD",
+      "bankAccount":"4412098750",
+      "description":"OGA Mizuho USD Operating Account",
+      "partnerBankId":"USD8"
+    }
+  ]
+};
+var DATA=HAS_EXTERNAL_PAYLOAD?ICL_PENDING_REQUESTS_PAYLOAD:DEFAULT_PAYLOAD;
+var state={
+  page:1,
+  pageSize:Number(DATA.settings&&DATA.settings.pageSize)||12,
+  selected:{},
+  activeRows:[],
+  approvalTargets:[],
+  selectedHouseBank:"",
+  selectedAccountIndex:-1,
+  houseBankPick:"",
+  accountPick:-1,
+  logRows:[],
+  calendar:null,
+  sort:{index:-1,direction:""}
+};
+var columns=[
+  {"key":"statusCode","label":"Status","width":58,"status":true},
+  {"key":"statusDescription","label":"ICL Request Status Description","width":215},
+  {"key":"productDescription","label":"ICL Given Prd Desc","width":170},
+  {"key":"requestorCompany","label":"Requestor Co Name","width":220},
+  {"key":"requestNo","label":"ICL Request No","width":110},
+  {"key":"amount","label":"Amount","width":120,"number":true},
+  {"key":"currency","label":"Currency","width":76},
+  {"key":"requestDate","label":"Request Date","width":100},
+  {"key":"requestedBy","label":"Requested By","width":145},
+  {"key":"startDate","label":"Start Date","width":100},
+  {"key":"endDate","label":"End Date","width":100},
+  {"key":"partnerBankId","label":"Partner Bank ID","width":110},
+  {"key":"iclGivenTxn","label":"ICL Given Txn","width":110},
+  {"key":"ottkNo","label":"OTTK No","width":90}
+];
+function byId(id){return document.getElementById(id)}
+function esc(value){
+  var text=String(value==null?"":value);
+  text=text.replace(/&/g,"&amp;");
+  text=text.replace(/</g,"&lt;");
+  text=text.replace(/>/g,"&gt;");
+  return text.replace(/"/g,"&quot;");
+}
+function money(value){
+  var n=Number(value||0);
+  var parts=n.toFixed(2).split(".");
+  parts[0]=parts[0].replace(/\B(?=(\d{3})+(?!\d))/g,",");
+  return parts.join(".");
+}
+function pad2(value){return ("0"+value).slice(-2)}
+function parseDate(text){
+  var match=String(text||"").match(/^(\d{2})[-.](\d{2})[-.](\d{2}|\d{4})$/);
+  var year;
+  var date;
+  if(!match){return null}
+  year=Number(match[3]);
+  if(year<100){year+=2000}
+  date=new Date(year,Number(match[2])-1,Number(match[1]));
+  if(date.getFullYear()!==year){return null}
+  if(date.getMonth()!==Number(match[2])-1){return null}
+  if(date.getDate()!==Number(match[1])){return null}
+  return date
+}
+function formatInputDate(date){
+  return pad2(date.getDate())+"-"+pad2(date.getMonth()+1)+"-"+date.getFullYear()
+}
+function formatFullDate(date){
+  return pad2(date.getDate())+"-"+pad2(date.getMonth()+1)+"-"+date.getFullYear()
+}
+function normalizeInputDate(id){
+  var input=byId(id);
+  var date=parseDate(input.value);
+  if(date){input.value=formatInputDate(date)}
+  return date
+}
+function compareTextRange(value,from,to){
+  var v=String(value||"");
+  if(from&&v<String(from)){return false}
+  if(to&&v>String(to)){return false}
+  return true
+}
+function compareDateRange(value,from,to){
+  var current=parseDate(value);
+  var fromDate=from?parseDate(from):null;
+  var toDate=to?parseDate(to):null;
+  if(!current){return false}
+  if(fromDate&&current<fromDate){return false}
+  if(toDate&&current>toDate){return false}
+  return true
+}
+function requestType(){
+  return byId("requestTypeFilter").value||"Pending"
+}
+function setStatus(text){byId("statusText").innerHTML=esc(text)}
+function toast(message,kind){
+  var region=byId("toastRegion");
+  var box=document.createElement("div");
+  var icon=document.createElement("div");
+  var body=document.createElement("div");
+  var title=kind==="success"?"Success":kind==="warning"?"Warning":"Information";
+  box.className="toast "+(kind||"");
+  icon.className="toast-icon";
+  icon.innerHTML=kind==="success"?"OK":"i";
+  body.innerHTML='<div class="toast-title">'+title+'</div>';
+  body.innerHTML+='<div class="toast-message">'+esc(message)+'</div>';
+  box.appendChild(icon);
+  box.appendChild(body);
+  region.appendChild(box);
+  window.setTimeout(function(){
+    if(box.parentNode){box.parentNode.removeChild(box)}
+  },4200)
+}
+function showScreen(name){
+  byId("requestScreen").className="screen";
+  byId("messageScreen").className="screen";
+  byId(name+"Screen").className="screen active";
+  byId("pageTitle").innerHTML=name==="message"?"Message Log":"View Pending ICL Requests &amp; Allocate Bank";
+}
+function statusHtml(status){
+  var cls="status-pending";
+  var title="Pending";
+  if(status==="APPROVED"){
+    cls="status-approved";
+    title="Approved";
+  }
+  if(status==="REJECTED"){
+    cls="status-rejected";
+    title="Rejected";
+  }
+  return '<span class="status-symbol '+cls+'" title="'+title+'"></span>'
+}
+function getFilteredRows(){
+  var upTo=parseDate(byId("uptoRequestDate").value);
+  var type=requestType();
+  var requestNo=String(byId("requestFrom").value||"").toLowerCase();
+  var startDate=String(byId("startFrom").value||"");
+  var rows=[];
+  var i;
+  var row;
+  var requestDate;
+  if(!upTo){return rows}
+  for(i=0;i<DATA.requests.length;i++){
+    row=DATA.requests[i];
+    requestDate=parseDate(row.requestDate);
+    if(!requestDate||requestDate>upTo){continue}
+    if(String(row.requestType||"Pending")!==type){continue}
+    if(requestNo&&String(row.requestNo||"").toLowerCase().indexOf(requestNo)<0){continue}
+    if(startDate&&!compareDateRange(row.startDate,startDate,startDate)){continue}
+    rows.push(row)
+  }
+  return rows
+}
+function headerHtml(){
+  var html='<tr><th class="check-cell" style="width:42px">';
+  var i;
+  var column;
+  var cls;
+  html+='<input id="selectAllRows" type="checkbox" aria-label="Select all rows"></th>';
+  for(i=0;i<columns.length;i++){
+    column=columns[i];
+    cls='sortable-head';
+    if(state.sort.index===i){cls+=state.sort.direction==="asc"?' sort-asc':' sort-desc'}
+    html+='<th class="'+cls+'" data-sort-index="'+i+'" style="width:'+column.width+'px">';
+    html+=esc(column.label)+'<span class="sort-arrows"><span class="sort-up"></span>';
+    html+='<span class="sort-down"></span></span></th>'
+  }
+  return html+'</tr>'
+}
+function sortValue(row,column){
+  var value=row[column.key];
+  var date;
+  if(column.number){return Number(value||0)}
+  if(column.key==="requestDate"||column.key==="startDate"||column.key==="endDate"){
+    date=parseDate(value);
+    return date?date.getTime():0
+  }
+  return String(value||"").toLowerCase()
+}
+function applyTableSort(rows){
+  var index=state.sort.index;
+  var direction=state.sort.direction;
+  var column;
+  if(index<0||!direction||!columns[index]){return rows}
+  column=columns[index];
+  rows.sort(function(a,b){
+    var av=sortValue(a,column);
+    var bv=sortValue(b,column);
+    if(av<bv){return direction==="asc"?-1:1}
+    if(av>bv){return direction==="asc"?1:-1}
+    return 0
+  });
+  return rows
+}
+function bindTableSort(){
+  byId("requestHead").onclick=function(e){
+    var target=e.target||e.srcElement;
+    var th=target;
+    var index;
+    while(th&&th.tagName&&th.tagName.toLowerCase()!=="th"){th=th.parentNode}
+    if(!th||th.getAttribute("data-sort-index")===null){return}
+    index=parseInt(th.getAttribute("data-sort-index"),10);
+    if(isNaN(index)){return}
+    if(state.sort.index===index){state.sort.direction=state.sort.direction==="asc"?"desc":"asc"}
+    else{state.sort.index=index;state.sort.direction="asc"}
+    state.page=1;
+    renderTable()
+  }
+}
+function renderPagination(totalRows){
+  var bar=byId("paginationBar");
+  var pages=Math.max(1,Math.ceil(totalRows/state.pageSize));
+  var html='';
+  var start;
+  var end;
+  var p;
+  if(state.page>pages){state.page=pages}
+  html+='<button class="page-btn" data-page="prev" type="button"';
+  html+=state.page===1?' disabled="disabled"':'';
+  html+='>Previous</button>';
+  start=Math.max(1,state.page-1);
+  end=Math.min(pages,start+2);
+  start=Math.max(1,end-2);
+  for(p=start;p<=end;p++){
+    html+='<button class="page-btn'+(p===state.page?' active':'')+'" data-page="'+p+'" type="button">';
+    html+=p+'</button>'
+  }
+  html+='<button class="page-btn" data-page="next" type="button"';
+  html+=state.page===pages?' disabled="disabled"':'';
+  html+='>Next</button>';
+  bar.innerHTML=html
+}
+function renderTable(){
+  var rows=applyTableSort(getFilteredRows());
+  var hasDate=!!parseDate(byId("uptoRequestDate").value);
+  var start;
+  var end;
+  var pageRows;
+  var html='';
+  var i;
+  var j;
+  var row;
+  var column;
+  var checked;
+  state.activeRows=rows;
+  byId("requestHead").innerHTML=headerHtml();
+  start=(state.page-1)*state.pageSize;
+  end=Math.min(start+state.pageSize,rows.length);
+  pageRows=rows.slice(start,end);
+  for(i=0;i<pageRows.length;i++){
+    row=pageRows[i];
+    checked=!!state.selected[row.requestNo];
+    html+='<tr data-request="'+esc(row.requestNo)+'" class="'+(checked?'selected':'')+'">';
+    html+='<td class="check-cell"><input class="row-check" type="checkbox" value="';
+    html+=esc(row.requestNo)+'"'+(checked?' checked="checked"':'')+'></td>';
+    for(j=0;j<columns.length;j++){
+      column=columns[j];
+      if(column.status){html+='<td class="status-cell">'+statusHtml(row.statusCode)+'</td>'}
+      else if(column.number){html+='<td class="number">'+esc(money(row[column.key]))+'</td>'}
+      else{html+='<td>'+esc(row[column.key])+'</td>'}
+    }
+    html+='</tr>'
+  }
+  if(!html){
+    html='<tr><td colspan="'+(columns.length+1)+'" class="empty">';
+    html+=hasDate?'No ICL requests match the current filters.':'Enter Upto Request Date to load ICL requests.';
+    html+='</td></tr>'
+  }
+  byId("requestBody").innerHTML=html;
+  byId("recordCount").innerHTML=hasDate?rows.length+' request'+(rows.length===1?'':'s')+' found':'';
+  renderPagination(rows.length);
+  updateSelectionCount();
+  bindSelectAll();
+  bindTableSort()
+}
+function bindSelectAll(){
+  var box=byId("selectAllRows");
+  var checks=byId("requestBody").getElementsByTagName("input");
+  var i;
+  var all=true;
+  var any=false;
+  if(!box){return}
+  for(i=0;i<checks.length;i++){
+    if(checks[i].className!=="row-check"){continue}
+    any=true;
+    if(!checks[i].checked){all=false}
+  }
+  box.checked=any&&all;
+  box.onclick=function(){
+    var inputs=byId("requestBody").getElementsByTagName("input");
+    var j;
+    var requestNo;
+    for(j=0;j<inputs.length;j++){
+      if(inputs[j].className!=="row-check"){continue}
+      inputs[j].checked=box.checked;
+      requestNo=inputs[j].value;
+      if(box.checked){state.selected[requestNo]=true}else{delete state.selected[requestNo]}
+    }
+    renderTable()
+  }
+}
+function updateSelectionCount(){
+  var count=0;
+  var key;
+  for(key in state.selected){
+    if(state.selected.hasOwnProperty(key)&&state.selected[key]){count++}
+  }
+  byId("selectionCount").innerHTML=count+' selected'
+}
+function selectedRows(){
+  var rows=[];
+  var i;
+  for(i=0;i<DATA.requests.length;i++){
+    if(state.selected[DATA.requests[i].requestNo]){rows.push(DATA.requests[i])}
+  }
+  return rows
+}
+function clearSelection(){state.selected={};updateSelectionCount()}
+function refreshFromInputs(){
+  var raw=byId("uptoRequestDate").value;
+  var date=parseDate(raw);
+  state.page=1;
+  clearSelection();
+  if(!raw){
+    byId("resultsArea").className="";
+    setStatus("Enter an Up to Request Date to load ICL requests");
+    return
+  }
+  if(!date){
+    byId("resultsArea").className="";
+    toast("Enter the date in DD-MM-YYYY format.","warning");
+    setStatus("Invalid Up to Request Date");
+    return
+  }
+  byId("uptoRequestDate").value=formatInputDate(date);
+  byId("resultsArea").className="open";
+  renderTable();
+  setStatus("ICL requests loaded")
+}
+function requestByNo(no){
+  var i;
+  for(i=0;i<DATA.requests.length;i++){
+    if(String(DATA.requests[i].requestNo)===String(no)){return DATA.requests[i]}
+  }
+  return null
+}
+function selectedCompany(targets){
+  var company=targets.length?targets[0].companyCode:"";
+  var i;
+  for(i=1;i<targets.length;i++){
+    if(targets[i].companyCode!==company){return "MULTIPLE"}
+  }
+  return company
+}
+function openApproval(targets){
+  if(!targets.length){return}
+  state.approvalTargets=targets;
+  state.selectedHouseBank="";
+  state.selectedAccountIndex=-1;
+  byId("houseBankValue").value="";
+  byId("accountIdValue").value="";
+  byId("accountLookup").className="lookup-field account disabled";
+  byId("bankAllocationModal").className="modal-bg open"
+}
+function closeModal(id){byId(id).className="modal-bg"}
+function openHouseBankLookup(){
+  state.houseBankPick="";
+  byId("houseBankSearch").value="";
+  byId("houseBankSelect").disabled=true;
+  renderHouseBanks();
+  byId("houseBankModal").className="modal-bg open"
+}
+function uniqueHouseBanks(){
+  var company=selectedCompany(state.approvalTargets);
+  var seen={};
+  var rows=[];
+  var i;
+  var item;
+  for(i=0;i<DATA.bankAccounts.length;i++){
+    item=DATA.bankAccounts[i];
+    if(company!=="MULTIPLE"&&item.companyCode!==company){continue}
+    if(seen[item.companyCode+"|"+item.houseBank]){continue}
+    seen[item.companyCode+"|"+item.houseBank]=true;
+    rows.push(item)
+  }
+  return rows
+}
+function renderHouseBanks(){
+  var q=String(byId("houseBankSearch").value||"").toLowerCase();
+  var rows=uniqueHouseBanks();
+  var html='';
+  var i;
+  var item;
+  byId("houseBankHead").innerHTML='<tr><th>CoCd</th><th>House Bk</th><th>Bank Key</th><th>Crcy</th></tr>';
+  for(i=0;i<rows.length;i++){
+    item=rows[i];
+    if(q&&JSON.stringify(item).toLowerCase().indexOf(q)<0){continue}
+    html+='<tr data-house="'+esc(item.houseBank)+'">';
+    html+='<td>'+esc(item.companyCode)+'</td>';
+    html+='<td>'+esc(item.houseBank)+'</td>';
+    html+='<td>'+esc(item.bankKey)+'</td>';
+    html+='<td>'+esc(item.currency)+'</td></tr>'
+  }
+  if(!html){html='<tr><td colspan="4" class="empty">No house banks found.</td></tr>'}
+  byId("houseBankBody").innerHTML=html
+}
+function selectHouseBank(){
+  if(!state.houseBankPick){return}
+  state.selectedHouseBank=state.houseBankPick;
+  state.selectedAccountIndex=-1;
+  byId("houseBankValue").value=state.selectedHouseBank;
+  byId("accountIdValue").value="";
+  byId("accountLookup").className="lookup-field account";
+  closeModal("houseBankModal")
+}
+function openAccountLookup(){
+  if(!state.selectedHouseBank){
+    toast("Select a House Bank first.","warning");
+    return
+  }
+  state.accountPick=-1;
+  byId("accountSearch").value="";
+  byId("accountSelect").disabled=true;
+  renderAccounts();
+  byId("accountModal").className="modal-bg open"
+}
+function accountRows(){
+  var rows=[];
+  var company=selectedCompany(state.approvalTargets);
+  var i;
+  var item;
+  for(i=0;i<DATA.bankAccounts.length;i++){
+    item=DATA.bankAccounts[i];
+    if(item.houseBank!==state.selectedHouseBank){continue}
+    if(company!=="MULTIPLE"&&item.companyCode!==company){continue}
+    rows.push({"index":i,"item":item})
+  }
+  return rows
+}
+function renderAccounts(){
+  var q=String(byId("accountSearch").value||"").toLowerCase();
+  var rows=accountRows();
+  var html='';
+  var i;
+  var item;
+  var index;
+  var head='<tr><th>CoCd</th><th>House Bk</th><th>Acct ID</th><th>Crcy</th>';
+  head+='<th>Bank Account</th><th>Description</th></tr>';
+  byId("accountHead").innerHTML=head;
+  for(i=0;i<rows.length;i++){
+    item=rows[i].item;
+    index=rows[i].index;
+    if(q&&JSON.stringify(item).toLowerCase().indexOf(q)<0){continue}
+    html+='<tr data-account="'+index+'">';
+    html+='<td>'+esc(item.companyCode)+'</td>';
+    html+='<td>'+esc(item.houseBank)+'</td>';
+    html+='<td>'+esc(item.accountId)+'</td>';
+    html+='<td>'+esc(item.currency)+'</td>';
+    html+='<td>'+esc(item.bankAccount)+'</td>';
+    html+='<td>'+esc(item.description)+'</td></tr>'
+  }
+  if(!html){html='<tr><td colspan="6" class="empty">No account IDs found for this House Bank.</td></tr>'}
+  byId("accountBody").innerHTML=html
+}
+function selectAccount(){
+  var item=DATA.bankAccounts[state.accountPick];
+  if(!item){return}
+  state.selectedAccountIndex=state.accountPick;
+  byId("accountIdValue").value=item.accountId;
+  closeModal("accountModal")
+}
+function nextTransaction(){
+  var value=Number(DATA.settings&&DATA.settings.nextIclGivenTransaction)||2601001038;
+  DATA.settings.nextIclGivenTransaction=value+1;
+  return String(value)
+}
+function approveTargets(){
+  var account=DATA.bankAccounts[state.selectedAccountIndex];
+  var targets=state.approvalTargets;
+  var transactions=[];
+  var i;
+  var row;
+  var message;
+  if(!state.selectedHouseBank){
+    toast("Select a House Bank before creating the ICL.","warning");
+    return
+  }
+  if(!account){
+    toast("Select an Account ID before creating the ICL.","warning");
+    return
+  }
+  for(i=0;i<targets.length;i++){
+    row=targets[i];
+    row.statusCode="APPROVED";
+    row.statusDescription="02 - Approved by TSF Manager";
+    row.partnerBankId=account.partnerBankId;
+    if(!row.iclGivenTxn){row.iclGivenTxn=nextTransaction()}
+    transactions.push(row.iclGivenTxn)
+  }
+  closeModal("bankAllocationModal");
+  clearSelection();
+  renderTable();
+  if(targets.length===1){
+    message="ICL Request "+targets[0].requestNo+" created successfully. Transaction "+transactions[0]+"."
+  }else{
+    message=targets.length+" ICL requests created successfully. Transactions: "+transactions.join(", ")+"."
+  }
+  toast(message,"success");
+  setStatus(message)
+}
+function renderMessageLog(){
+  var html='';
+  var head='';
+  var i;
+  var row;
+  head='<tr><th>Exception</th><th>Company Name</th><th>Product Type Description</th>';
+  head+='<th>Transaction</th><th>Start Date</th><th>End Date</th><th>Msg</th>';
+  head+='<th>ICL Request No</th><th>Request Date</th></tr>';
+  byId("messageHead").innerHTML=head;
+  for(i=0;i<state.logRows.length;i++){
+    row=state.logRows[i];
+    html+='<tr><td class="status-cell"><span class="log-ok"></span></td>';
+    html+='<td>'+esc(row.companyName)+'</td>';
+    html+='<td>'+esc(row.productDescription)+'</td>';
+    html+='<td>'+esc(row.transaction)+'</td>';
+    html+='<td>'+esc(row.startDate)+'</td>';
+    html+='<td>'+esc(row.endDate)+'</td>';
+    html+='<td>'+esc(row.message)+'</td>';
+    html+='<td>'+esc(row.requestNo)+'</td>';
+    html+='<td>'+esc(row.requestDate)+'</td></tr>'
+  }
+  byId("messageBody").innerHTML=html;
+  byId("logCount").innerHTML=state.logRows.length+' entr'+(state.logRows.length===1?'y':'ies')+' found'
+}
+function openReject(){
+  var rows=selectedRows();
+  if(rows.length!==1){
+    toast("Select exactly one ICL request to reject.","warning");
+    return
+  }
+  byId("rejectText").innerHTML='Are you sure you want to reject ICL Request '+esc(rows[0].requestNo)+'?';
+  byId("rejectModal").className="modal-bg open"
+}
+function rejectSelected(){
+  var rows=selectedRows();
+  if(rows.length!==1){closeModal("rejectModal");return}
+  rows[0].statusCode="REJECTED";
+  rows[0].statusDescription="03 - Rejected";
+  closeModal("rejectModal");
+  clearSelection();
+  renderTable();
+  toast("ICL Request "+rows[0].requestNo+" rejected.","success");
+  setStatus("ICL Request rejected")
+}
+function openSingleApproval(){
+  var rows=selectedRows();
+  if(requestType()==="Issued"){return}
+  if(rows.length!==1){
+    toast("Select exactly one ICL request to approve.","warning");
+    return
+  }
+  openApproval(rows)
+}
+function openApproveAll(){
+  var rows=selectedRows();
+  if(requestType()==="Issued"){return}
+  if(!rows.length){rows=state.activeRows.slice(0)}
+  if(!rows.length){
+    toast("There are no ICL requests available to approve.","warning");
+    return
+  }
+  openApproval(rows)
+}
+function updateApprovalButtons(){
+  var issued=requestType()==="Issued";
+  byId("approveBtn").disabled=issued;
+  byId("approveAllBtn").disabled=issued
+}
+function clearFilters(){
+  byId("requestTypeFilter").value=DATA.settings&&DATA.settings.defaultRequestType||"Pending";
+  byId("requestFrom").value="";
+  byId("startFrom").value="";
+  state.page=1;
+  clearSelection();
+  updateApprovalButtons();
+  renderTable()
+}
+var CAL_MONTHS=[
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December"
+];
+var CAL_DAYS=["Su","Mo","Tu","We","Th","Fr","Sa"];
+function sameDate(a,b){
+  return !!a&&!!b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()
+}
+function calendarIso(date){
+  return date.getFullYear()+"-"+pad2(date.getMonth()+1)+"-"+pad2(date.getDate())
+}
+function calendarFromIso(text){
+  var m=String(text||"").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(!m){return null}
+  return new Date(Number(m[1]),Number(m[2])-1,Number(m[3]))
+}
+function calendarApply(targetId){
+  if(targetId==="uptoRequestDate"){
+    refreshFromInputs();
+    return
+  }
+  normalizeInputDate(targetId);
+  if(parseDate(byId("uptoRequestDate").value)){
+    state.page=1;
+    clearSelection();
+    renderTable()
+  }
+}
+function calendarHeader(c){
+  var html='<div class="calendar-top">';
+  html+='<button class="calendar-title-btn" data-cal-action="picker" type="button">';
+  html+=esc(CAL_MONTHS[c.month]+" "+c.year)+'</button>';
+  html+='<div class="calendar-navs">';
+  html+='<button class="calendar-nav prev" data-cal-action="prev" type="button" aria-label="Previous month"></button>';
+  html+='<button class="calendar-nav next" data-cal-action="next" type="button" aria-label="Next month"></button>';
+  html+='</div></div>';
+  return html
+}
+function calendarDayView(c){
+  var input=byId(c.targetId);
+  var selected=parseDate(input.value);
+  var today=new Date();
+  var first=new Date(c.year,c.month,1);
+  var start=new Date(c.year,c.month,1-first.getDay());
+  var html=calendarHeader(c);
+  var i;
+  var d;
+  var cls;
+  html+='<div class="calendar-week">';
+  for(i=0;i<CAL_DAYS.length;i++){html+='<span>'+CAL_DAYS[i]+'</span>'}
+  html+='</div><div class="calendar-days">';
+  for(i=0;i<42;i++){
+    d=new Date(start.getFullYear(),start.getMonth(),start.getDate()+i);
+    cls='calendar-cell';
+    if(d.getMonth()!==c.month){cls+=' other'}
+    if(sameDate(d,selected)){cls+=' selected'}
+    if(sameDate(d,today)){cls+=' today'}
+    html+='<button class="'+cls+'" data-cal-action="day" data-date="'+calendarIso(d)+'" type="button">';
+    html+=d.getDate()+'</button>'
+  }
+  html+='</div><div class="calendar-foot">';
+  html+='<button class="calendar-foot-btn" data-cal-action="clear" type="button">Clear</button>';
+  html+='<button class="calendar-foot-btn" data-cal-action="today" type="button">Today</button>';
+  html+='</div>';
+  return html
+}
+function calendarPickerView(c){
+  var html=calendarHeader(c);
+  var i;
+  var startYear=c.year-6;
+  var endYear=c.year+10;
+  html+='<div class="calendar-picker"><div class="month-grid">';
+  for(i=0;i<12;i++){
+    html+='<button class="month-btn'+(i===c.month?' selected':'')+'" data-cal-action="month" data-month="'+i+'" type="button">';
+    html+=CAL_MONTHS[i].substr(0,3)+'</button>'
+  }
+  html+='</div><div class="year-list">';
+  for(i=startYear;i<=endYear;i++){
+    html+='<button class="year-btn'+(i===c.year?' selected':'')+'" data-cal-action="year" data-year="'+i+'" type="button">';
+    html+=i+'</button>'
+  }
+  html+='</div></div>';
+  return html
+}
+function renderCalendar(){
+  var c=state.calendar;
+  var popup;
+  if(!c){return}
+  popup=byId(c.popupId);
+  popup.innerHTML=c.view==="picker"?calendarPickerView(c):calendarDayView(c);
+  popup.className="calendar-popup open";
+  popup.onclick=calendarClick
+}
+function calendarClick(e){
+  var target=e.target||e.srcElement;
+  var action=target.getAttribute&&target.getAttribute("data-cal-action");
+  var c=state.calendar;
+  var date;
+  if(!c||!action){return}
+  e.stopPropagation();
+  if(action==="picker"){
+    c.view=c.view==="picker"?"days":"picker";
+    renderCalendar();
+    return
+  }
+  if(action==="prev"||action==="next"){
+    date=new Date(c.year,c.month+(action==="prev"?-1:1),1);
+    c.month=date.getMonth();
+    c.year=date.getFullYear();
+    c.view="days";
+    renderCalendar();
+    return
+  }
+  if(action==="month"){
+    c.month=parseInt(target.getAttribute("data-month"),10)||0;
+    renderCalendar();
+    return
+  }
+  if(action==="year"){
+    c.year=parseInt(target.getAttribute("data-year"),10)||c.year;
+    c.view="days";
+    renderCalendar();
+    return
+  }
+  if(action==="day"){
+    date=calendarFromIso(target.getAttribute("data-date"));
+    if(!date){return}
+    byId(c.targetId).value=formatInputDate(date);
+    byId(c.popupId).className="calendar-popup";
+    state.calendar=null;
+    calendarApply(c.targetId);
+    return
+  }
+  if(action==="clear"){
+    byId(c.targetId).value="";
+    byId(c.popupId).className="calendar-popup";
+    state.calendar=null;
+    calendarApply(c.targetId);
+    return
+  }
+  if(action==="today"){
+    byId(c.targetId).value=formatInputDate(new Date());
+    byId(c.popupId).className="calendar-popup";
+    state.calendar=null;
+    calendarApply(c.targetId)
+  }
+}
+function toggleCalendar(buttonId,targetId,popupId,e){
+  var current=parseDate(byId(targetId).value)||new Date();
+  e.stopPropagation();
+  if(state.calendar&&state.calendar.popupId===popupId){
+    byId(popupId).className="calendar-popup";
+    state.calendar=null;
+    return
+  }
+  if(state.calendar){byId(state.calendar.popupId).className="calendar-popup"}
+  state.calendar={
+    "buttonId":buttonId,
+    "targetId":targetId,
+    "popupId":popupId,
+    "month":current.getMonth(),
+    "year":current.getFullYear(),
+    "view":"days"
+  };
+  renderCalendar()
+}
+byId("uptoCalendarBtn").onclick=function(e){
+  toggleCalendar("uptoCalendarBtn","uptoRequestDate","uptoCalendar",e)
+};
+byId("startCalendarBtn").onclick=function(e){
+  toggleCalendar("startCalendarBtn","startFrom","startCalendar",e)
+};
+byId("filterToggle").onclick=function(){
+  var body=byId("filterBody");
+  body.className=body.className.indexOf("open")>=0?"filter-body":"filter-body open"
+};
+byId("uptoRequestDate").onchange=refreshFromInputs;
+byId("requestTypeFilter").onchange=function(){updateApprovalButtons();refreshFromInputs()};
+byId("requestFrom").oninput=refreshFromInputs;
+byId("startFrom").onchange=function(){normalizeInputDate("startFrom");refreshFromInputs()};
+byId("clearFilters").onclick=clearFilters;
+byId("requestBody").onclick=function(e){
+  var target=e.target||e.srcElement;
+  var row=target;
+  var requestNo;
+  var checkbox;
+  while(row&&row.tagName&&row.tagName.toLowerCase()!=="tr"){row=row.parentNode}
+  if(!row){return}
+  requestNo=row.getAttribute("data-request");
+  if(!requestNo){return}
+  checkbox=row.getElementsByTagName("input")[0];
+  if(target!==checkbox&&checkbox){checkbox.checked=!checkbox.checked}
+  if(checkbox&&checkbox.checked){state.selected[requestNo]=true}else{delete state.selected[requestNo]}
+  renderTable()
+};
+byId("paginationBar").onclick=function(e){
+  var target=e.target||e.srcElement;
+  var page=target.getAttribute&&target.getAttribute("data-page");
+  var pages=Math.max(1,Math.ceil(state.activeRows.length/state.pageSize));
+  if(!page||target.disabled){return}
+  if(page==="prev"){state.page=Math.max(1,state.page-1)}
+  else if(page==="next"){state.page=Math.min(pages,state.page+1)}
+  else{state.page=parseInt(page,10)||1}
+  renderTable()
+};
+byId("approveBtn").onclick=openSingleApproval;
+byId("approveAllBtn").onclick=openApproveAll;
+byId("rejectBtn").onclick=openReject;
+byId("bankAllocationClose").onclick=function(){closeModal("bankAllocationModal")};
+byId("bankAllocationCancel").onclick=function(){closeModal("bankAllocationModal")};
+byId("houseBankLookup").onclick=openHouseBankLookup;
+byId("accountLookup").onclick=function(){
+  if(this.className.indexOf("disabled")>=0){return}
+  openAccountLookup()
+};
+byId("createIclBtn").onclick=approveTargets;
+byId("houseBankClose").onclick=function(){closeModal("houseBankModal")};
+byId("houseBankCancel").onclick=function(){closeModal("houseBankModal")};
+byId("houseBankSearch").onkeyup=renderHouseBanks;
+byId("houseBankBody").onclick=function(e){
+  var target=e.target||e.srcElement;
+  var row=target;
+  var trs;
+  var i;
+  while(row&&row.tagName&&row.tagName.toLowerCase()!=="tr"){row=row.parentNode}
+  if(!row||!row.getAttribute("data-house")){return}
+  state.houseBankPick=row.getAttribute("data-house");
+  trs=byId("houseBankBody").getElementsByTagName("tr");
+  for(i=0;i<trs.length;i++){trs[i].className=""}
+  row.className="selected";
+  byId("houseBankSelect").disabled=false
+};
+byId("houseBankBody").ondblclick=function(){if(state.houseBankPick){selectHouseBank()}};
+byId("houseBankSelect").onclick=selectHouseBank;
+byId("accountClose").onclick=function(){closeModal("accountModal")};
+byId("accountCancel").onclick=function(){closeModal("accountModal")};
+byId("accountSearch").onkeyup=renderAccounts;
+byId("accountBody").onclick=function(e){
+  var target=e.target||e.srcElement;
+  var row=target;
+  var index;
+  var trs;
+  var i;
+  while(row&&row.tagName&&row.tagName.toLowerCase()!=="tr"){row=row.parentNode}
+  if(!row||row.getAttribute("data-account")===null){return}
+  index=parseInt(row.getAttribute("data-account"),10);
+  if(isNaN(index)){return}
+  state.accountPick=index;
+  trs=byId("accountBody").getElementsByTagName("tr");
+  for(i=0;i<trs.length;i++){trs[i].className=""}
+  row.className="selected";
+  byId("accountSelect").disabled=false
+};
+byId("accountBody").ondblclick=function(){if(state.accountPick>=0){selectAccount()}};
+byId("accountSelect").onclick=selectAccount;
+byId("rejectClose").onclick=function(){closeModal("rejectModal")};
+byId("rejectCancel").onclick=function(){closeModal("rejectModal")};
+byId("rejectConfirm").onclick=rejectSelected;
+byId("backToRequests").onclick=function(){
+  showScreen("request");
+  if(parseDate(byId("uptoRequestDate").value)){
+    byId("resultsArea").className="open";
+    renderTable()
+  }else{
+    byId("resultsArea").className=""
+  }
+  setStatus("Returned to ICL requests")
+};
+document.onclick=function(e){
+  var target=e.target||e.srcElement;
+  if(state.calendar){
+    var popup=byId(state.calendar.popupId);
+    var btn=byId(state.calendar.buttonId||"uptoCalendarBtn");
+    if(target!==btn&&!popup.contains(target)){
+      popup.className="calendar-popup";
+      state.calendar=null
+    }
+  }
+};
+document.onkeydown=function(e){
+  var event=e||window.event;
+  if(event.keyCode===27){
+    closeModal("bankAllocationModal");
+    closeModal("houseBankModal");
+    closeModal("accountModal");
+    closeModal("rejectModal");
+    byId("uptoCalendar").className="calendar-popup";
+    byId("startCalendar").className="calendar-popup";
+    state.calendar=null
+  }
+  return true
+};
+byId("requestTypeFilter").value=DATA.settings&&DATA.settings.defaultRequestType||"Pending";
+updateApprovalButtons();
+byId("resultsArea").className="";
+})();
+</script>
+</body>
+</html>

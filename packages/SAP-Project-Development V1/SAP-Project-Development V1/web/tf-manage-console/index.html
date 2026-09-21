@@ -1,0 +1,2752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TF: Manage Trade Flows</title>
+<style>
+:root {
+  --page:#f5f7f9;
+  --page2:#f2f4f5;
+  --surface:#ffffff;
+  --surfaceAlt:#f2f4f5;
+  --line:#d5dadd;
+  --lineStrong:#8996a1;
+  --text:#1d2d3e;
+  --muted:#687b8d;
+  --labelInk:#475e75;
+  --blue:#0a6ed1;
+  --blueMid:#35a5dc;
+  --blueDark:#085caf;
+  --blueSoft:#eaf3fc;
+  --blueSoft2:#d1e8ff;
+  --teal:#00897b;
+  --tealDark:#00796b;
+  --tealSoft:#e0f7f4;
+  --green:#107e3e;
+  --greenSoft:#e4f5e9;
+  --orange:#e65100;
+  --orangeMid:#f57c00;
+  --orangeSoft:#fff3e0;
+  --red:#d20a0a;
+  --redSoft:#ffebee;
+  --grayReadOnly:#f2f4f5;
+  --shadow:0 1px 3px rgba(34,53,72,.13);
+  --shadowHover:0 3px 10px rgba(34,53,72,.16);
+  --radius:8px;
+  --radiusSm:4px;
+}
+* { box-sizing:border-box; }
+html, body {
+  margin:0;
+  padding:0;
+  height:100%;
+  background:var(--page);
+  color:var(--text);
+  font-family:"Inter","Segoe UI", Arial, Helvetica, sans-serif;
+  font-size:12px;
+  overflow:auto;
+}
+button { font-family:inherit; }
+.hidden { display:none !important; }
+.app-shell { display:flex; flex-direction:column; min-height:100vh; }
+.app-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:var(--surface);
+  border-bottom:1px solid var(--line);
+  padding:0 18px;
+  height:44px;
+  flex:0 0 44px;
+}
+.app-title { font-size:16px; font-weight:600; color:#1d2d3e; }
+.hdr-btn {
+  border:1px solid var(--lineStrong);
+  background:var(--surface);
+  color:var(--labelInk);
+  border-radius:var(--radiusSm);
+  height:32px;
+  padding:0 11px;
+  font-size:12px;
+  font-weight:400;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+}
+.hdr-btn:hover { background:var(--surfaceAlt); color:var(--text); }
+.hdr-btn:active { transform:translateY(1px); }
+.hdr-btn.primary {
+  background:var(--blue);
+  border-color:var(--blue);
+  color:#fff;
+}
+.hdr-btn.primary:hover { background:var(--blueDark); }
+.hdr-btn:disabled { opacity:.5; cursor:not-allowed; }
+.hdr-btn.icon-btn { width:30px; padding:0; justify-content:center; font-size:13px; }
+.toolbar {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:var(--surfaceAlt);
+  border-bottom:1px solid var(--line);
+  padding:6px 14px;
+  flex-wrap:wrap;
+}
+.toolbar-field { display:flex; align-items:center; gap:6px; }
+.toolbar-field label { font-size:12px; font-weight:400; color:#1d2d3e; }
+.toolbar-field input {
+  height:26px; border:none; border-bottom:1px solid var(--lineStrong); border-radius:0;
+  padding:0 2px; font-size:12px; font-weight:400; width:110px; background:transparent; color:#1d2d3e;
+}
+.toolbar-field input:focus { outline:none; border-bottom-color:var(--blue); }
+.screen { padding:12px 14px; flex:1; }
+.panel-title {
+  font-size:12px; font-weight:600; color:#1d2d3e;
+  margin:0 0 8px 0;
+}
+.table-scroll { overflow-x:auto; border:1px solid var(--line); border-radius:var(--radiusSm); background:var(--surface); }
+table.data-table { width:100%; border-collapse:collapse; font-size:12px; min-width:1400px; }
+table.data-table th {
+  background:var(--page2); color:#1d2d3e; text-align:left; font-size:12px;
+  font-weight:600; padding:7px 8px; border-bottom:1px solid var(--lineStrong); white-space:nowrap;
+}
+table.data-table td { padding:6px 8px; border-bottom:1px solid var(--line); white-space:nowrap; color:#1d2d3e; font-weight:400; }
+table.data-table tbody tr:hover td { background:var(--blueSoft); }
+table.data-table tbody tr.selected-row td { background:var(--blueSoft2) !important; }
+.status-dot {
+  display:inline-block; width:11px; height:11px; border-radius:2px; vertical-align:middle;
+}
+.status-dot.yellow { background:#fdd835; }
+.status-dot.green { background:var(--green); }
+.status-dot.red { background:var(--red); }
+.status-dot.none { background:transparent; }
+.link-text {
+  color:var(--blue); cursor:pointer; text-decoration:underline; background:none; border:none;
+  padding:0; font-size:12px; font-family:inherit; font-weight:400;
+}
+.link-text:hover { color:var(--blueDark); }
+.workspace-header {
+  display:flex; align-items:center; gap:18px; background:#eef6ff;
+  border-bottom:2px solid #86bff3; padding:0 18px; height:56px; flex:0 0 56px;
+}
+.ws-field { display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
+.ws-field label { font-size:12px; font-weight:400; color:#1d2d3e; }
+.ws-field input {
+  height:24px; border:none; border-bottom:1px solid var(--lineStrong); border-radius:0;
+  padding:0 2px; font-size:12px; font-weight:400; background:transparent; color:#1d2d3e; width:100px;
+}
+#wsTfId { width:80px; }
+#wsSplitId { width:32px; }
+.tab-bar { display:flex; gap:2px; border-bottom:1px solid var(--lineStrong); margin-bottom:0; }
+.tab-btn {
+  border:1px solid var(--line); border-bottom:none; background:var(--surfaceAlt);
+  color:var(--labelInk); font-size:12px; font-weight:400; padding:8px 14px;
+  border-radius:var(--radiusSm) var(--radiusSm) 0 0; cursor:pointer;
+}
+.tab-btn:hover { background:var(--blueSoft); color:var(--blueDark); }
+.tab-btn.active { background:var(--surface); color:var(--blueDark); position:relative; top:1px; }
+.tab-panel {
+  background:var(--surface); border:1px solid var(--lineStrong); border-radius:0 var(--radiusSm) var(--radiusSm) var(--radiusSm);
+  padding:14px; min-height:340px;
+}
+.section-box {
+  border:1px solid var(--line); border-radius:var(--radiusSm); margin-bottom:12px; background:var(--surfaceAlt);
+}
+.section-head {
+  background:#f8fafb; color:#1d2d3e; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.08em;
+  padding:7px 11px; border-bottom:1px solid var(--line); border-radius:var(--radiusSm) var(--radiusSm) 0 0;
+  border-left:3px solid var(--blue);
+}
+.section-head-flex { display:flex; align-items:center; justify-content:space-between; }
+.section-head .header-check {
+  display:flex; align-items:center; gap:6px; text-transform:none; letter-spacing:normal; font-weight:600;
+}
+.section-head .header-check label { color:#1d2d3e; font-size:12px; }
+.mc-invoice-row { display:flex; gap:12px; align-items:flex-start; margin-bottom:10px; }
+.mc-invoice-row .section-box { margin-bottom:0; }
+.mc-invoice-row .mc-details-box { flex:0 0 280px; }
+.mc-invoice-row .invoice-details-box { flex:1 1 auto; min-width:0; }
+.section-body { padding:12px 14px; }
+.field-grid {
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:20px; row-gap:14px; align-items:start;
+}
+.field-grid.single { grid-template-columns:minmax(0,1fr); }
+.field-grid.grid2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.field-grid.compact { grid-template-columns:repeat(6,max-content); column-gap:32px; }
+.field-grid.grid3 { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.field-grid.grid4 { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.field-grid.grid5 { grid-template-columns:repeat(5,minmax(0,1fr)); }
+.field-grid.grid6 { grid-template-columns:repeat(6,minmax(0,1fr)); }
+.field-grid label { font-size:12px; font-weight:400; color:#1d2d3e; }
+.field-grid input.wide-text-input { width:100%; max-width:100%; }
+.port-field-group { display:flex; flex-direction:column; align-items:stretch; gap:2px; min-width:0; }
+.port-field-group label { white-space:nowrap; margin:0; }
+.port-field-group input.wide-text-input { width:100%; max-width:none; min-width:0; }
+.field-grid select {
+  height:24px; border:none; border-bottom:1px solid var(--lineStrong); border-radius:0;
+  padding:3px 16px 3px 2px; font-size:12px; font-weight:400; background:transparent; color:#1d2d3e;
+  width:150px; max-width:100%; transition:border-color .15s ease;
+}
+.field-grid input:not([type="checkbox"]):not(.wide-text-input) {
+  height:24px; border:none; border-bottom:1px solid var(--lineStrong); border-radius:0;
+  padding:3px 2px; font-size:12px; font-weight:400; background:transparent; color:#1d2d3e;
+  width:150px; max-width:100%; transition:border-color .15s ease, background-color .15s ease;
+}
+.field-grid input.wide-text-input {
+  height:24px; border:none; border-bottom:1px solid var(--lineStrong); border-radius:0;
+  padding:3px 2px; font-size:12px; font-weight:400; background:transparent; color:#1d2d3e;
+  transition:border-color .15s ease, background-color .15s ease;
+}
+.field-grid input:not([type="checkbox"]):not([readonly]):hover,
+.field-grid select:not(:disabled):hover { border-bottom-color:var(--blueMid); }
+.field-grid input:focus, .field-grid select:focus { outline:none; border-bottom-color:var(--blue); }
+.field-grid input.amt-input, .field-grid input.wide-input {
+  width:150px; max-width:100%; text-align:right;
+}
+.field-grid input.amt-input-sm { width:52px; max-width:52px; }
+.field-grid input[readonly] {
+  color:#1d2d3e; background:#f3f5f7; border-radius:3px 3px 0 0; padding-left:6px; cursor:default;
+}
+.field-pair { display:flex; flex-direction:column; align-items:stretch; gap:3px; min-width:0; }
+.field-pair > div { min-width:0; }
+::placeholder { color:#9aa7b4; font-size:11.5px; font-weight:400; opacity:1; }
+.field-hint { font-size:10px; color:var(--muted); margin-left:4px; }
+.bl-inline-input {
+  width:70px; font-size:12px; font-weight:400; padding:2px 2px; height:20px;
+  border:none; border-bottom:1px solid var(--lineStrong); border-radius:0; box-sizing:border-box;
+  text-align:right; color:#1d2d3e; background:transparent;
+}
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start; }
+.two-col .section-box { margin-bottom:0; }
+table.data-table td.num, table.data-table th.num { text-align:right; }
+.date-field-wrap {
+  position:relative; display:inline-flex; align-items:center; justify-self:start;
+  align-self:flex-start; width:auto; max-width:100%; flex:0 0 auto;
+}
+.date-field-wrap input[type="text"] { padding-right:15px; width:150px; min-width:70px; max-width:100%; }
+#mainKeyDate { width:120px; }
+.date-cal-btn {
+  position:absolute; right:0; top:50%; transform:translateY(-50%);
+  border:none; background:none; cursor:pointer; font-size:11px; color:var(--blueDark);
+  padding:2px 0; line-height:1;
+}
+.date-cal-btn:hover { color:var(--blue); }
+.date-cal-popup {
+  position:fixed; z-index:500;
+  background:var(--surface); border:1px solid var(--lineStrong); border-radius:var(--radiusSm);
+  box-shadow:0 8px 22px rgba(13,42,74,.22); padding:10px; width:236px; font-size:12px;
+}
+.date-cal-popup.hidden { display:none; }
+.date-cal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.date-cal-month { font-weight:700; color:var(--text); font-size:13px; }
+.date-cal-month .cal-caret { color:var(--muted); font-size:10px; margin-left:2px; }
+.date-cal-nav { display:flex; gap:2px; }
+.date-cal-nav button {
+  border:none; background:none; color:var(--labelInk); border-radius:3px;
+  width:20px; height:20px; cursor:pointer; font-size:11px; line-height:1;
+}
+.date-cal-nav button:hover { background:var(--surfaceAlt); }
+.date-cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; text-align:center; }
+.date-cal-grid .dow { font-weight:700; color:var(--labelInk); font-size:10px; padding:2px 0 5px; }
+.date-cal-grid button.day {
+  border:2px solid transparent; background:none; padding:4px 0; border-radius:3px; cursor:pointer;
+  color:var(--text); font-size:11.5px; box-sizing:border-box;
+}
+.date-cal-grid button.day:hover { background:var(--blueSoft); }
+.date-cal-grid button.day.other-month { color:var(--muted); cursor:default; }
+.date-cal-grid button.day.today { border-color:var(--blue); font-weight:700; }
+.date-cal-grid button.day.selected { background:var(--blue); border-color:var(--blue); color:#fff; }
+.date-cal-foot {
+  display:flex; align-items:center; justify-content:space-between; margin-top:8px;
+  padding-top:8px; border-top:1px solid var(--line);
+}
+.date-cal-foot button {
+  border:none; background:none; color:var(--blue); font-size:11.5px; font-weight:600; cursor:pointer; padding:0;
+}
+.date-cal-foot button:hover { color:var(--blueDark); text-decoration:underline; }
+.cal-month-toggle {
+  border:none; background:none; padding:0; font-weight:700; color:var(--text); font-size:13px; cursor:pointer;
+}
+.cal-year-anchor {
+  font-weight:700; color:var(--text); font-size:13px; padding:6px 8px; background:var(--surfaceAlt);
+  border-radius:3px; cursor:pointer; margin-bottom:6px;
+}
+.cal-year-anchor:hover { background:var(--blueSoft); }
+.cal-month-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin-bottom:6px; }
+.cal-month-cell {
+  border:none; background:var(--surfaceAlt); color:var(--text); border-radius:3px; cursor:pointer;
+  font-size:11.5px; font-weight:600; padding:8px 0;
+}
+.cal-month-cell:hover { background:var(--blueSoft); }
+.cal-month-cell.selected { background:var(--blue); color:#fff; }
+.cal-year-list { max-height:120px; overflow-y:auto; border-top:1px solid var(--line); }
+.cal-year-row {
+  display:block; width:100%; border:none; background:var(--surfaceAlt); color:var(--text);
+  text-align:left; padding:6px 8px; font-size:11.5px; font-weight:600; cursor:pointer; margin-top:2px;
+}
+.cal-year-row:hover { background:var(--blueSoft); }
+.field-check { display:flex; align-items:center; gap:5px; }
+.toolstrip { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+.bl-pager-row {
+  display:flex; align-items:center; gap:8px; padding:6px 12px; border-top:1px solid var(--line);
+}
+.toolstrip .ws-field input { width:70px; background:#fff; }
+.toolstrip .ws-field input.amt-input { text-align:right; }
+.toolstrip select {
+  height:30px; border:1px solid var(--lineStrong); border-radius:var(--radiusSm);
+  padding:2px 22px 2px 8px; font-size:11.5px; font-weight:400; background:#fff; color:#000;
+  min-width:110px;
+}
+.toolstrip select:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 1px var(--blue); }
+.filter-by-label {
+  font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:#1d2d3e;
+}
+.main-filter-check { display:flex; align-items:center; gap:5px; font-size:12px; font-weight:400; color:#1d2d3e; }
+.pagebtn-row { display:flex; gap:6px; margin-top:8px; }
+.btn-secondary {
+  border:1px solid var(--lineStrong); background:var(--surface); color:var(--labelInk);
+  border-radius:var(--radiusSm); padding:0 14px; height:32px; font-size:12px; font-weight:400; cursor:pointer;
+}
+.btn-secondary:hover { background:var(--surfaceAlt); }
+.modal-overlay {
+  position:fixed; top:0; left:0; right:0; bottom:0;
+  background:rgba(30,48,66,.36); display:flex; align-items:center; justify-content:center; z-index:200;
+}
+.modal-overlay.hidden { display:none; }
+.modal-dialog {
+  background:var(--surface); border-radius:10px; width:720px; max-width:94vw; max-height:88vh;
+  overflow-y:auto; box-shadow:0 18px 60px rgba(28,50,72,.28); border:1px solid #cbd9e6;
+}
+.modal-dialog.narrow { width:520px; }
+.modal-dialog.wide { width:920px; }
+.modal-head {
+  display:flex; align-items:center; justify-content:space-between; padding:0 18px; height:56px;
+  border-bottom:2px solid #86bff3; background:#eef6ff;
+}
+.modal-title { font-size:16px; font-weight:600; color:#1d2d3e; }
+.modal-close-btn { border:none; background:none; font-size:20px; color:#607d94; cursor:pointer; }
+.modal-body { padding:14px; font-size:12px; line-height:1.5; color:var(--text); }
+.modal-footer {
+  padding:0 18px; height:52px; display:flex; align-items:center; justify-content:flex-end; gap:8px;
+  border-top:1px solid #d8e0e7; background:#f8fafb;
+}
+#assignDealOverlay .modal-head { height:38px; padding:0 16px; }
+.compliance-list { counter-reset:none; margin:0 0 10px 0; padding:0; }
+.compliance-item { margin-bottom:8px; }
+#toastRegion { position:fixed; bottom:16px; right:16px; display:flex; flex-direction:column; gap:8px; z-index:300; }
+.toast {
+  display:flex; align-items:flex-start; gap:8px; min-width:260px; max-width:380px;
+  background:#243b53; color:#fff; padding:10px 14px; border-radius:6px;
+  font-size:11.5px; line-height:1.4; box-shadow:0 6px 24px rgba(0,0,0,.25); border-left:4px solid var(--blueMid);
+}
+.toast.error { background:#7f1d1d; border-left-color:#ffb4ab; }
+.toast.success { background:#14532d; border-left-color:#86efac; }
+.toast.warning { background:#7c4a03; border-left-color:#fdd67d; }
+.toast-title { font-size:11px; font-weight:700; margin-bottom:2px; }
+#screenWorkspace.screen {
+  position:fixed; inset:0; z-index:100; padding:18px; background:rgba(30,48,66,.36);
+  display:flex; align-items:center; justify-content:center; flex:none;
+}
+#screenWorkspace .ws-modal-box {
+  width:min(1180px,calc(100vw - 36px)); max-height:min(800px,calc(100vh - 36px)); background:var(--surface);
+  border:1px solid #cbd9e6; border-radius:10px; box-shadow:0 18px 60px rgba(28,50,72,.28);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+#screenWorkspace .ws-modal-head { flex:none; }
+#screenWorkspace .ws-modal-sub {
+  font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.16em; color:#536d86; margin:0 0 0 18px;
+}
+#screenWorkspace .ws-modal-body { flex:1; overflow-y:auto; padding:14px 18px 18px; }
+#screenWorkspace .tab-panel { min-height:0; }
+</style>
+<style id="ottk-design-system">
+/* ============================================================================
+   OTTK design system
+   Fonts, colour tokens and chrome taken from web/ottk-dttk-console/index.html
+   so every console under web/ reads as one product. Appended last so it wins
+   the cascade over the block above. Presentation only - no ids, handlers or
+   behaviour are touched by anything here.
+
+   This console's palette was already OTTK's hex values under different token
+   names, so the colour work is small; the gap was the font, the 12px type
+   scale, the topbar and the table header.
+   ========================================================================= */
+:root{
+  --page:#f5f7f9;
+  --page2:#f2f4f5;
+  --surface:#ffffff;
+  --surfaceAlt:#f2f4f5;
+  --line:#d5dadd;
+  --lineStrong:#8996a1;
+  --text:#1d2d3e;
+  --muted:#687b8d;
+  --labelInk:#475e75;
+  --blue:#0a6ed1;
+  --blueMid:#35a5dc;
+  --blueDark:#085caf;
+  --blueSoft:#eaf3fc;
+  --blueSoft2:#d1e8ff;
+  --green:#107e3e;
+  --greenSoft:#e4f5e9;
+  --shadow:0 1px 3px rgba(34,53,72,.13);
+  --radius:8px;
+  --ds-font:"72","Segoe UI",Arial,sans-serif;
+  --ds-header:52px;
+}
+
+/* "72" is SAP's UI font and the first face OTTK asks for; the rest of the stack
+   is OTTK's fallback, so a machine without "72" lands on Segoe UI in both
+   consoles rather than on Inter here and Segoe UI there. */
+html,body{font-family:var(--ds-font);font-size:13px;line-height:1.45}
+button,input,select,textarea{font-family:inherit}
+
+/* --- Topbar ------------------------------------------------------------- */
+.app-header{height:var(--ds-header);flex:0 0 var(--ds-header);padding:0 18px}
+.ds-header-left{display:flex;align-items:center;gap:11px;min-width:0}
+.app-title{font-size:17px;font-weight:700;color:var(--text);white-space:nowrap}
+.ds-mark{
+  width:30px;height:30px;border-radius:6px;flex:none;display:grid;place-items:center;
+  background:linear-gradient(145deg,#0a6ed1,#35a5dc);color:#fff;
+  box-shadow:0 2px 7px rgba(10,110,209,.22);
+}
+.ds-mark svg{width:18px;height:18px;fill:currentColor}
+.ds-code{font-size:12px;font-weight:400;color:var(--muted);white-space:nowrap}
+.ds-header-right{display:flex;align-items:center;gap:6px}
+/* Same green dot OTTK uses to say "the page is talking to SAP". */
+.ds-conn{
+  width:8px;height:8px;flex:none;margin:0 6px;border-radius:50%;
+  background:#20a454;box-shadow:0 0 0 3px #d9f3e2;
+}
+
+/* --- Buttons ------------------------------------------------------------- */
+.hdr-btn,.btn-secondary{font-size:13px;font-weight:600;border-radius:4px;color:var(--labelInk)}
+.hdr-btn:active{transform:none}
+.hdr-btn.primary:hover{background:var(--blueDark)}
+
+/* --- The list as an OTTK panel ------------------------------------------- */
+/* OTTK wraps every list in a white card: head with the title, the table, then a
+   foot. The markup below gets that wrapper; these rules give it OTTK's shell. */
+.ds-panel{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.ds-panel > .panel-title{
+  display:flex;align-items:center;gap:8px;height:39px;margin:0;padding:0 11px;
+  border-bottom:1px solid var(--line);font-size:13px;font-weight:700;color:var(--text);
+}
+.ds-panel > .toolstrip{
+  margin:0;padding:7px 11px;background:#f8fafb;border-bottom:1px solid var(--line);
+}
+.ds-panel > .table-scroll{border:0;border-radius:0;box-shadow:none}
+.filter-by-label{
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+}
+/* OTTK boxes the inputs that sit in a panel toolbar and reserves the
+   bottom-border-only field for inside a modal - which is what .ws-field already
+   is in the workspace, so this is scoped to the list toolstrip only. */
+.ds-panel .toolstrip .ws-field{flex-direction:column;align-items:flex-start;gap:3px}
+.ds-panel .toolstrip .ws-field input{
+  height:28px;padding:3px 8px;border:1px solid var(--lineStrong);border-radius:3px;
+  background:#fff;font-size:12px;
+}
+.ds-panel .toolstrip .ws-field input:focus{
+  border-color:var(--blue);box-shadow:0 0 0 1px var(--blue);outline:none;
+}
+.ds-panel .toolstrip .date-field-wrap input[type="text"]{width:150px;padding-right:24px}
+
+/* --- Table --------------------------------------------------------------- */
+table.data-table th{
+  background:var(--surfaceAlt);color:var(--labelInk);font-size:11px;font-weight:700;
+  padding:7px 8px;border-bottom:1px solid var(--line);border-right:1px solid #e6e9eb;
+}
+table.data-table td{
+  padding:6px 8px;border-bottom:1px solid #edf0f2;border-right:1px solid #edf0f2;font-size:12px;
+}
+table.data-table tbody tr:hover td{background:#f7fbff}
+table.data-table tbody tr.selected-row td{background:var(--blueSoft)!important}
+table.data-table td.num,table.data-table th.num{font-variant-numeric:tabular-nums}
+.link-text{color:var(--blue);font-weight:600}
+
+/* --- Fields, tabs, sections ---------------------------------------------- */
+.toolbar-field label,.ws-field label,.field-grid label,.main-filter-check{
+  font-size:12px;font-weight:600;color:var(--labelInk);
+}
+.toolstrip select{height:28px;border-radius:3px;font-size:12px}
+.tab-btn{font-size:12px;font-weight:600}
+.tab-btn.active{color:var(--blueDark);font-weight:700}
+.section-head{color:var(--labelInk);font-size:12px}
+.field-hint{color:var(--muted)}
+.modal-title{font-size:15px;font-weight:700;color:#102a43}
+</style>
+<style>
+/* Fourth Signal logo in the topbar -- the same asset the SLC hub (8771) serves,
+   so every console in web/ carries one identical mark. This is an <img>, and
+   img.mark / img.ds-mark outranks the plain .mark / .ds-mark class rule that
+   painted the old blue gradient square, so the gradient, shadow and radius are
+   switched off here rather than deleted out of the rule they came from. */
+img.mark, img.ds-mark {
+  width: 32px; height: 32px; flex: none;
+  background: none; box-shadow: none; border-radius: 0;
+  object-fit: contain;
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+  <header class="app-header">
+    <div class="ds-header-left">
+      <img class="ds-mark" alt="Fourth Signal" src="https://raw.githubusercontent.com/ryannayak/fs-assets/e82f35a83e28689167b22b4300d4994a249acee0/fs-short-logo.png"/>
+      <div class="app-title">Manage Trade Flows</div>
+      <span class="ds-code">TF</span>
+    </div>
+    <div class="ds-header-right">
+      <span class="ds-conn" id="connIndicator" title="System connected"></span>
+      <button type="button" id="btnRefresh" class="hdr-btn">&#8635; Refresh</button>
+    </div>
+  </header>
+
+  <main class="screen" id="screenMain">
+    <!-- Wrapper only: gives the list OTTK's panel shell (head / body / one card).
+         No id, handler or field inside it moved. -->
+    <section class="ds-panel">
+    <div class="panel-title">List of Trade Flows</div>
+    <div class="toolstrip">
+      <div class="ws-field"><label for="mainKeyDate">Key Date</label>
+        <div class="date-field-wrap">
+          <input type="text" id="mainKeyDate" placeholder="DD-MM-YYYY">
+          <button type="button" class="date-cal-btn" aria-label="Open calendar">&#128197;</button>
+        </div>
+      </div>
+      <button type="button" class="hdr-btn icon-btn" id="btnToggleMainFilters" title="Filters">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M2 3h12l-4.5 5.2v3.6l-3 1.4V8.2z" stroke-linejoin="round" stroke-linecap="round"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="toolstrip hidden" id="mainFiltersRow">
+      <span class="field-hint filter-by-label">Filter by</span>
+      <select id="filterBu"><option value="">All BU</option></select>
+      <select id="filterCommodity"><option value="">All Commodities</option></select>
+      <select id="filterTfStatus"><option value="">All TF Status</option></select>
+      <select id="filterOgbsStatus"><option value="">All OGBS Status</option></select>
+      <select id="filterBlockedStatus"><option value="">All Blocked Status</option></select>
+      <label class="field-check main-filter-check">
+        <input type="checkbox" id="filterIncludeExpired" style="width:auto;">Include Expired TFs</label>
+      <label class="field-check main-filter-check">
+        <input type="checkbox" id="filterIncludeDeleted" style="width:auto;">Include Deleted TFs</label>
+      <button type="button" class="hdr-btn" id="btnClearMainFilters">Clear filters</button>
+    </div>
+    <div class="table-scroll">
+      <table class="data-table" id="tfTable" style="min-width:4200px;">
+        <thead>
+          <tr>
+            <th>Trade Flow ID</th><th>TF Split ID</th><th>TF Upload Date</th>
+            <th>Business Unit Name</th><th>Operator</th><th>BL-Vessel Name</th>
+            <th>BU Commodity</th><th>P - Contract Number</th><th>Purchase Incoterms</th>
+            <th>Payment terms - Purchase Side</th><th>Banks-Purchase Leg-Seller Bank</th>
+            <th>Banks-Purchase Leg-Buyer Bank</th><th>S Contract Number</th><th>Sales Incoterms</th>
+            <th>Payment terms - Sales Side</th><th>Banks-Sale Leg-Seller Bank</th>
+            <th>Banks-Sale Leg-Buyer Bank</th><th>OGA Title From - Date</th><th>OGA Title Till - Date</th>
+            <th class="num">Quantity</th><th class="num">Contract Price</th><th class="num">CMP (MT)</th>
+            <th class="num">Contract Amt(USD)</th><th>Port of Loading</th><th>Port of Destination</th>
+            <th>Sailing Date</th><th>BL Number</th><th class="num">Number of Days</th>
+            <th>ETA at Discharge Port</th><th>Consignee on BL</th><th>Notify Party</th>
+            <th>LC details in BL</th><th>Origin Entity</th><th>Supplier- Olam Destination</th>
+            <th>Buyer- 3P Destination</th><th>Avail 1/3 OB TSF From</th><th>Avail 1/3 OB TSF Till</th>
+            <th>Avail 3/3 OB TSF From</th><th>Avail 3/3 OB TSF Till</th><th>OGBS Remark</th>
+            <th>BL Receipt date</th><th>Blocked Status Desc</th><th>OGBS Status Desc</th>
+            <th>POL Country</th><th>POD Country</th>
+          </tr>
+        </thead>
+        <tbody id="tfTableBody"></tbody>
+      </table>
+    </div>
+    </section>
+  </main>
+
+  <main class="screen hidden" id="screenWorkspace">
+   <div class="ws-modal-box">
+    <div class="ws-modal-head">
+    <div class="workspace-header">
+      <div class="modal-title">TF Workspace</div>
+      <div class="ws-field"><label>TF ID</label><input type="text" id="wsTfId" readonly></div>
+      <div class="ws-field"><label>Split ID</label><input type="text" id="wsSplitId" readonly></div>
+      <div style="margin-left:auto;">
+        <button type="button" class="btn-secondary" id="btnWsCancel">Cancel</button>
+        <button type="button" class="hdr-btn primary" id="btnWsUpdate">Update</button>
+      </div>
+    </div>
+    </div>
+    <div class="ws-modal-body">
+
+    <div class="tab-bar" id="wsTabBar">
+      <button type="button" class="tab-btn active" data-tab="basicData">Basic Data</button>
+      <button type="button" class="tab-btn" data-tab="shippingData">Shipping Data</button>
+      <button type="button" class="tab-btn" data-tab="purchSalesData">Purch-Sales Data</button>
+      <button type="button" class="tab-btn" data-tab="blData1">BL Data 1</button>
+      <button type="button" class="tab-btn" data-tab="blData2">BL Data 2</button>
+      <button type="button" class="tab-btn" data-tab="statusTab">Status</button>
+    </div>
+
+    <div class="tab-panel">
+
+      <div class="tab-content" id="tabPanel-basicData">
+        <div class="section-box">
+          <div class="section-head">Basic Data</div>
+          <div class="section-body field-grid grid6">
+            <label for="bdBu">BU</label><input type="text" id="bdBu" readonly>
+            <label for="bdBuCode">BU Code</label><input type="text" id="bdBuCode" readonly>
+            <label for="bdGtCommod">GT Commodity</label><select id="bdGtCommod"></select>
+            <label for="bdBuCommodity">BU Commodity</label>
+            <div><input type="text" id="bdBuCommodity" readonly><span class="field-hint">(Uploaded)</span></div>
+            <label for="bdChild1">Child Comm: Name&nbsp;1</label>
+            <input type="text" id="bdChild1" placeholder="e.g. Milling Wheat">
+            <label for="bdChild2">Child Comm: Name&nbsp;2</label>
+            <input type="text" id="bdChild2" placeholder="e.g. Grade 2">
+          </div>
+        </div>
+        <div class="section-box">
+          <div class="section-head">Invoice Data</div>
+          <div class="section-body field-grid grid5">
+            <label for="idQty">Qty (MT)</label><input type="text" id="idQty" class="amt-input" readonly>
+            <label for="idContractPrice">Contract Price</label>
+            <input type="text" id="idContractPrice" class="amt-input" placeholder="e.g. 285.50">
+            <label for="idCmp">Current Market Price(MT)</label>
+            <input type="text" id="idCmp" class="amt-input" placeholder="e.g. 292.10">
+            <label for="idContractAmt">Contract Amount</label>
+            <div><input type="text" id="idContractAmt" class="amt-input" readonly>
+              <span class="field-hint">(USD)</span></div>
+            <label for="idCpmtAmt">CPMT Amount</label>
+            <div><input type="text" id="idCpmtAmt" class="amt-input" readonly>
+              <span class="field-hint">(USD)</span></div>
+          </div>
+        </div>
+        <div class="section-box">
+          <div class="section-head">Other Data</div>
+          <div class="section-body field-grid grid5">
+            <label for="odTfType">TF Type</label><select id="odTfType"></select>
+            <label for="odBuContact">BU Contact Person</label>
+            <div><input type="text" id="odBuContact" readonly><span class="field-hint">(Operator)</span></div>
+            <div></div><div></div><div></div><div></div><div></div><div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content hidden" id="tabPanel-shippingData">
+        <div class="section-box">
+          <div class="section-head">Shipping Data</div>
+          <div class="section-body field-grid grid4">
+            <label for="shVessel">Vessel Name</label>
+            <input type="text" id="shVessel" placeholder="e.g. PACIFIC HARVEST">
+            <label for="shBlNumber">BL Number</label>
+            <input type="text" id="shBlNumber" placeholder="e.g. BL.no.02">
+            <label for="shSustain">Sustainability flows</label>
+            <div class="field-check"><input type="checkbox" id="shSustain" style="width:auto;"></div>
+            <div class="port-field-group">
+              <label for="shLoadPort">Load Port</label>
+              <input type="text" id="shLoadPort" class="wide-text-input" placeholder="e.g. NOVOROSSIYSK, RUSSIA">
+            </div>
+            <div class="port-field-group">
+              <label for="shDischargePort">Discharge Port</label>
+              <input type="text" id="shDischargePort" class="wide-text-input" placeholder="e.g. JEBEL ALI, UAE">
+            </div>
+            <label for="shTransit">Transit time</label>
+            <div><input type="text" id="shTransit" class="amt-input amt-input-sm" readonly>
+              <span class="field-hint">(Days)</span></div>
+            <label for="shPolCountry">POL Country</label>
+            <input type="text" id="shPolCountry" placeholder="e.g. Russia">
+            <label for="shPodCountry">POD Country</label>
+            <input type="text" id="shPodCountry" placeholder="e.g. UAE">
+            <label for="shSailingDate">Sailing Date</label>
+            <div class="date-field-wrap">
+              <input type="text" id="shSailingDate" placeholder="DD-MM-YYYY">
+              <button type="button" class="date-cal-btn" aria-label="Open calendar">&#128197;</button>
+            </div>
+            <label for="shReceiptDate">Receipt Date</label>
+            <div><div class="date-field-wrap">
+              <input type="text" id="shReceiptDate" placeholder="DD-MM-YYYY">
+              <button type="button" class="date-cal-btn" aria-label="Open calendar">&#128197;</button>
+            </div><span class="field-hint">(Expected)</span></div>
+            <label for="shEta">ETA at POD</label>
+            <div class="date-field-wrap">
+              <input type="text" id="shEta" placeholder="DD-MM-YYYY">
+              <button type="button" class="date-cal-btn" aria-label="Open calendar">&#128197;</button>
+            </div>
+            <label for="shNotifyParty">Notify Party</label>
+            <input type="text" id="shNotifyParty" placeholder="e.g. TO ORDER">
+          </div>
+        </div>
+        <div class="section-box">
+          <div class="section-head">Title With OIL</div>
+          <div class="section-body field-grid grid4">
+            <label for="shFromDate">From Date</label>
+            <div class="date-field-wrap">
+              <input type="text" id="shFromDate" placeholder="DD-MM-YYYY">
+              <button type="button" class="date-cal-btn" aria-label="Open calendar">&#128197;</button>
+            </div>
+            <label for="shToDate">To Date</label>
+            <div class="date-field-wrap">
+              <input type="text" id="shToDate" placeholder="DD-MM-YYYY">
+              <button type="button" class="date-cal-btn" aria-label="Open calendar">&#128197;</button>
+            </div>
+            <div></div><div></div><div></div><div></div>
+          </div>
+        </div>
+        <div class="section-box">
+          <div class="section-head">BL Data</div>
+          <div class="section-body field-grid grid4">
+            <label for="shBlConsignee">BL Consignee</label>
+            <input type="text" id="shBlConsignee" placeholder="e.g. TO ORDER">
+            <label for="shLcDetails">LC Details</label>
+            <input type="text" id="shLcDetails" placeholder="e.g. LC-88213">
+            <label for="shBl13From">BL 1/3 From</label>
+            <div class="date-field-wrap">
+              <input type="text" id="shBl13From" placeholder="DD-MM-YYYY">
+              <button type="button" class="date-cal-btn" aria-label="Open calendar">&#128197;</button>
+            </div>
+            <label for="shBl13To">BL 1/3 To</label>
+            <div class="date-field-wrap">
+              <input type="text" id="shBl13To" placeholder="DD-MM-YYYY">
+              <button type="button" class="date-cal-btn" aria-label="Open calendar">&#128197;</button>
+            </div>
+            <label for="shBl33From">BL 3/3 From</label>
+            <div class="date-field-wrap">
+              <input type="text" id="shBl33From" placeholder="DD-MM-YYYY">
+              <button type="button" class="date-cal-btn" aria-label="Open calendar">&#128197;</button>
+            </div>
+            <label for="shBl33To">BL 3/3 To</label>
+            <div class="date-field-wrap">
+              <input type="text" id="shBl33To" placeholder="DD-MM-YYYY">
+              <button type="button" class="date-cal-btn" aria-label="Open calendar">&#128197;</button>
+            </div>
+            <div></div><div></div><div></div><div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content hidden" id="tabPanel-purchSalesData">
+       <div class="two-col">
+        <div class="section-box">
+          <div class="section-head">Purchase Leg</div>
+          <div class="section-body field-grid grid3">
+            <label for="plContract">Purch Contract</label>
+            <input type="text" id="plContract" placeholder="e.g. 4800006201">
+            <label for="plIncoterms">Purch Incoterms</label>
+            <input type="text" id="plIncoterms" placeholder="e.g. FOB - NOVOROSSIYSK">
+            <label for="plPayTerms">Purch Pay Terms</label>
+            <input type="text" id="plPayTerms" placeholder="e.g. LC AT SIGHT">
+            <label for="plSellerBank">Purch - Seller Bank</label>
+            <input type="text" id="plSellerBank" placeholder="e.g. SBERBANK">
+            <label for="plBuyerBank">Purch - Buyer Bank</label>
+            <input type="text" id="plBuyerBank" placeholder="e.g. DMCC TRADE BANK">
+            <label for="plSellerLoc">Seller Location</label>
+            <input type="text" id="plSellerLoc" placeholder="e.g. Russia">
+            <label for="plOriginEntity">Origin Entity</label>
+            <input type="text" id="plOriginEntity" placeholder="e.g. E021">
+            <div></div><div></div>
+          </div>
+        </div>
+        <div class="section-box">
+          <div class="section-head">Sales Leg</div>
+          <div class="section-body field-grid grid3">
+            <label for="slContract">Sales Contract</label>
+            <input type="text" id="slContract" placeholder="e.g. 4900007312">
+            <label for="slIncoterms">Sales Incoterms</label>
+            <input type="text" id="slIncoterms" placeholder="e.g. CFR - JEBEL ALI">
+            <label for="slPayTerms">Sales Pay Terms</label>
+            <input type="text" id="slPayTerms" placeholder="e.g. CAD 30 DAYS">
+            <label for="slSellerBank">Sales - Seller Bank</label>
+            <input type="text" id="slSellerBank" placeholder="e.g. DMCC TRADE BANK">
+            <label for="slBuyerBank">Sales - Buyer Bank</label>
+            <input type="text" id="slBuyerBank" placeholder="e.g. GLOBAL TRADE BANK">
+            <label for="slBuyerLoc">Buyer Location</label>
+            <input type="text" id="slBuyerLoc" placeholder="e.g. UAE">
+          </div>
+        </div>
+       </div>
+      </div>
+
+      <div class="tab-content hidden" id="tabPanel-blData1">
+        <div class="section-box" style="max-width:700px;">
+          <div class="section-head">Create BL For Trade Flow</div>
+          <div class="section-body toolstrip">
+            <div class="ws-field"><label for="blRowsInput">BL Rows</label>
+              <input type="text" id="blRowsInput" placeholder="e.g. 1"></div>
+            <button type="button" class="hdr-btn" id="btnCreateBl">&#128196; Create BL</button>
+            <button type="button" class="hdr-btn primary" id="btnAssignDealRelease">
+              Assign Deal ID &amp; Release for Invoicing
+            </button>
+            <button type="button" class="hdr-btn" id="btnBlSplitMain">&#9986; BL Split</button>
+            <div class="ws-field"><label for="blTfQtyDisplay">TF Quantity</label>
+              <input type="text" id="blTfQtyDisplay" class="amt-input" readonly>
+              <span class="field-hint">(MT)</span></div>
+          </div>
+        </div>
+        <div class="section-box">
+          <div class="section-head">BL Details</div>
+          <div class="section-body" style="padding:0;">
+            <div class="table-scroll">
+              <table class="data-table" id="blDetailsTable" style="min-width:1000px;">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>BL ID</th><th>Split</th><th>BL Number</th><th>Vessel Name</th>
+                    <th>Grade/Commodity</th><th class="num">Quantity</th><th class="num">CPMT</th>
+                    <th class="num">Amt</th><th>Deal ID</th><th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="blDetailsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="section-body bl-pager-row">
+            <button type="button" class="hdr-btn icon-btn" id="btnBlPageFirst" title="First Page">&#8676;</button>
+            <button type="button" class="hdr-btn icon-btn" id="btnBlPagePrev" title="Previous Page">&#9664;</button>
+            <span id="blData1PageLabel" class="field-hint">Page 1 of 1</span>
+            <button type="button" class="hdr-btn icon-btn" id="btnBlPageNext" title="Next Page">&#9654;</button>
+            <button type="button" class="hdr-btn icon-btn" id="btnBlPageLast" title="Last Page">&#8677;</button>
+          </div>
+        </div>
+        <div class="toolstrip">
+          <button type="button" class="hdr-btn icon-btn" id="btnBlInsertRow" title="Insert Row">&#10133;</button>
+          <button type="button" class="hdr-btn icon-btn" id="btnBlDeleteRow" title="Delete Row">&#128465;</button>
+          <button type="button" class="hdr-btn" id="btnUploadBlPdf">Upload BL PDF</button>
+          <button type="button" class="hdr-btn" id="btnSubTotal">Sub-Total</button>
+          <div style="margin-left:auto; display:flex; gap:10px;">
+            <button type="button" class="hdr-btn primary" id="btnBlData1Update">&#128190; Update</button>
+            <button type="button" class="btn-secondary" id="btnBlData1Cancel">&#10005; Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content hidden" id="tabPanel-blData2">
+        <div class="section-box">
+          <div class="section-head">Reuse Option</div>
+          <div class="section-body toolstrip">
+            <button type="button" class="hdr-btn primary" id="btnAssignDealReleaseReuse">
+              Assign Deal ID &amp; Release for Invoicing
+            </button>
+            <button type="button" class="hdr-btn" id="btnBlSplitReuse">BL Split</button>
+          </div>
+        </div>
+        <div class="section-box">
+          <div class="section-head">BL Reuse</div>
+          <div class="section-body" style="padding:0;">
+            <div class="table-scroll">
+              <table class="data-table" id="blReuseTable" style="min-width:1000px;">
+                <thead>
+                  <tr>
+                    <th>BL ID</th><th>Split</th><th>Reuse</th><th>BL Number</th><th>Vessel Name</th>
+                    <th>Grade</th><th class="num">Quantity</th><th class="num">CPMT</th>
+                    <th class="num">Amt</th><th>Deal ID</th><th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="blReuseTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content hidden" id="tabPanel-statusTab">
+        <div class="section-box">
+          <div class="section-head">Status Details</div>
+          <div class="section-body field-grid grid5">
+            <label for="stOgbsStatus">OGBS Status</label><select id="stOgbsStatus"></select>
+            <label for="stOgbsRemarks">OGBS Remarks</label>
+            <input type="text" id="stOgbsRemarks" placeholder="e.g. Available for Use">
+            <div></div><div></div><div></div><div></div><div></div><div></div>
+          </div>
+        </div>
+        <div class="section-box">
+          <div class="section-head">Blocked-Allocated Status</div>
+          <div class="section-body field-grid grid5">
+            <label for="stBlockedStatus">Blocked Status</label><select id="stBlockedStatus"></select>
+            <label for="stBlockedAmount">Amount</label>
+            <input type="text" id="stBlockedAmount" class="amt-input" placeholder="e.g. 0.00">
+            <label for="stBlockedFrom">Blocked From</label>
+            <div class="date-field-wrap">
+              <input type="text" id="stBlockedFrom" placeholder="DD-MM-YYYY">
+              <button type="button" class="date-cal-btn" aria-label="Open calendar">&#128197;</button>
+            </div>
+            <label for="stBlockedTo">Blocked To</label>
+            <div class="date-field-wrap">
+              <input type="text" id="stBlockedTo" placeholder="DD-MM-YYYY">
+              <button type="button" class="date-cal-btn" aria-label="Open calendar">&#128197;</button>
+            </div>
+            <label for="stBlockedRemarks">Blocked Remarks</label>
+            <input type="text" id="stBlockedRemarks" placeholder="e.g. Pending OFAC screening">
+            <label for="stTrader">Trader</label>
+            <input type="text" id="stTrader" placeholder="e.g. OTL">
+            <label for="stCpmtAmount">CPMT Amount</label>
+            <input type="text" id="stCpmtAmount" class="amt-input" readonly>
+            <label for="stDealId">Deal ID</label><input type="text" id="stDealId" readonly>
+            <label for="stOttkNo">OTTK No</label>
+            <input type="text" id="stOttkNo" placeholder="e.g. 100012">
+            <label for="stDttkNo">DTTK No</label>
+            <input type="text" id="stDttkNo" placeholder="e.g. 200031">
+          </div>
+        </div>
+        <div class="section-box">
+          <div class="section-head">TF Status Details</div>
+          <div class="section-body field-grid grid5">
+            <label for="stTfStatus">TF Status</label><select id="stTfStatus"></select>
+            <label for="stTfExpired">Tradeflow Expired</label>
+            <div class="field-check"><input type="checkbox" id="stTfExpired" style="width:auto;" disabled></div>
+            <label for="stTfDeleted">Tradeflow Deleted</label>
+            <div class="field-check"><input type="checkbox" id="stTfDeleted" style="width:auto;" disabled></div>
+            <label for="stCreatedBy">Created By</label><input type="text" id="stCreatedBy" readonly>
+            <label for="stCreatedDate">Created Date</label><input type="text" id="stCreatedDate" readonly>
+            <label for="stCreatedTime">Created Time</label><input type="text" id="stCreatedTime" readonly>
+            <label for="stChangedBy">Changed By</label><input type="text" id="stChangedBy" readonly>
+            <label for="stChangedDate">Changed Date</label><input type="text" id="stChangedDate" readonly>
+            <label for="stChangedTime">Changed Time</label><input type="text" id="stChangedTime" readonly>
+            <div></div><div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div>
+   </div>
+  </main>
+
+</div>
+
+<div class="modal-overlay hidden" id="complianceOverlay">
+  <div class="modal-dialog" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <div class="modal-title">BL Compliance Checklist</div>
+      <button type="button" class="modal-close-btn" id="btnComplianceCloseX">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <div class="compliance-list">
+        <div class="compliance-item">1. Port of loading, Port of Discharge, Commodity, shipment date for the
+          selected BL shall match with the requirements of the Master Contract for which the BL is being
+          selected.</div>
+        <div class="compliance-item">2. Load Port, Discharge Port, Origin of goods shall not be from any of
+          Countries in OFAC list.</div>
+        <div class="compliance-item">3. Scanned copies of OBL shall be used for TSF Merchanting book. No Seaway
+          Bils/ Draft BL's are accepted for FX invoicing.</div>
+        <div class="compliance-item">4. Consignee should be 'To Order'. If Consignee is "third party BL" or
+          "Bank", such BL shall not be acceptable unless approved otherwise. If approved, the bank on face of
+          BL, and Bank for TSF transaction (FX+ Document Submission) shall be different. In no case, the BL
+          can be used for FX transaction/ Document Submission at the same bank as that appearing on BL.</div>
+        <div class="compliance-item">5. If the BL has LC details, the bank who is handling the BU
+          documentation shouldn't be same as that of TSF.</div>
+        <div class="compliance-item">6. If BU is routing documents through Bank on Buy or Sell Leg, TSF cannot
+          use these BL for invoicing the FX transaction with these banks.</div>
+        <div class="compliance-item">7. In other words, there cannot be an overlap between BU banks and TSF
+          banks for same BL.</div>
+        <div class="compliance-item">8. Invoice shall be created only on "Current market price" (+/- 5%) on
+          the date of TSF invoicing. Any deviation shall be approved as per Trade flow Policy.</div>
+      </div>
+      <div>Do you want to Proceed</div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" id="btnComplianceExcept">Yes With Exception</button>
+      <button type="button" class="hdr-btn primary" id="btnComplianceYes">Yes</button>
+      <button type="button" class="btn-secondary" id="btnComplianceCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="assignDealOverlay">
+  <div class="modal-dialog wide" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <div class="modal-title">Assign Deal ID</div>
+      <button type="button" class="modal-close-btn" id="btnAssignCloseX">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <div class="section-box">
+        <div class="section-head">Deal Structure</div>
+        <div class="section-body field-grid single">
+          <label for="adDealStructure">Deal Structure</label><select id="adDealStructure"></select>
+        </div>
+      </div>
+      <div class="section-box">
+        <div class="section-head section-head-flex">
+          <span>Assignment Details</span>
+          <span class="field-check header-check">
+            <label for="adAlreadyInvoiced">Already Invoiced</label>
+            <input type="checkbox" id="adAlreadyInvoiced" style="width:auto;">
+          </span>
+        </div>
+        <div class="section-body field-grid grid3">
+          <label for="adDealId">Deal ID</label>
+          <select id="adDealId"><option value="">Select Deal ID</option></select>
+          <label for="adDealStatus">Deal Status</label><select id="adDealStatus"></select>
+          <label for="adDealAmount">Deal Amount</label>
+          <input type="text" id="adDealAmount" class="amt-input" placeholder="e.g. 500,000.00">
+          <label for="adPartiallyInvoiced">Partially Invoiced</label>
+          <input type="text" id="adPartiallyInvoiced" class="amt-input" placeholder="e.g. 0.00">
+          <label for="adTargetAssignAmt">Target Assignment Amt</label>
+          <input type="text" id="adTargetAssignAmt" class="amt-input" placeholder="e.g. 250,000.00">
+          <label for="adSelectedBlAmt">Selected BL Amount</label>
+          <input type="text" id="adSelectedBlAmt" class="amt-input" readonly>
+          <label for="adAssignedEarlier">Assigned Earlier</label>
+          <input type="text" id="adAssignedEarlier" class="amt-input" placeholder="e.g. 0.00">
+          <label for="adTotalAssigned">Total Assigned</label>
+          <input type="text" id="adTotalAssigned" class="amt-input" readonly>
+          <label for="adBalToAssign">Bal to be assigned</label>
+          <input type="text" id="adBalToAssign" class="amt-input" readonly>
+        </div>
+      </div>
+      <div class="mc-invoice-row">
+        <div class="section-box mc-details-box">
+          <div class="section-head">MC Details</div>
+          <div class="section-body field-grid single">
+            <label for="adMcRefNo">MC Ref No</label>
+            <input type="text" id="adMcRefNo" placeholder="e.g. MC-4821093">
+            <label for="adMcCommodity">MC Commodity</label>
+            <input type="text" id="adMcCommodity" placeholder="e.g. Soyabean">
+          </div>
+        </div>
+        <div class="section-box invoice-details-box">
+          <div class="section-head">Invoice Details</div>
+          <div class="section-body field-grid">
+            <label for="adSoPoDate">SO/PO Date</label>
+            <div class="date-field-wrap">
+              <input type="text" id="adSoPoDate" placeholder="DD-MM-YYYY">
+              <button type="button" class="date-cal-btn" aria-label="Open calendar">&#128197;</button>
+            </div>
+            <label for="adProposedInvDate">Proposed Inv Date</label>
+            <div class="date-field-wrap">
+              <input type="text" id="adProposedInvDate" placeholder="DD-MM-YYYY">
+              <button type="button" class="date-cal-btn" aria-label="Open calendar">&#128197;</button>
+            </div>
+            <label for="adInvCommodity">Inv Commodity</label>
+            <input type="text" id="adInvCommodity" placeholder="e.g. Soyabean">
+            <label for="adIncoTerms">Inco Terms</label><select id="adIncoTerms"></select>
+          </div>
+        </div>
+      </div>
+      <div class="section-box">
+        <div class="section-head">Exception Notes</div>
+        <div class="section-body field-grid">
+          <label for="adExceptionChk">Exception Notes</label>
+          <div class="field-check"><input type="checkbox" id="adExceptionChk" style="width:auto;"></div>
+          <label for="adExceptionNotes">Notes</label>
+          <input type="text" id="adExceptionNotes" placeholder="e.g. Approved by Trade Ops on exception basis">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="hdr-btn primary" id="btnAssignConfirm">Assign</button>
+      <button type="button" class="btn-secondary" id="btnAssignCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastRegion" aria-live="polite"></div>
+
+<script>
+var EMPTY_PAYLOAD = {
+  "meta": { "user": "", "currency": "USD", "keyDate": "", "message": "", "messageType": "" },
+  "masterData": {
+    "gtCommodities": [],
+    "tfTypes": [],
+    "dealStructures": [],
+    "dealStatuses": [],
+    "incoTerms": [],
+    "ogbsStatuses": [],
+    "blockedStatuses": [],
+    "tfStatuses": []
+  },
+  "tradeFlows": [],
+  "dealMaster": []
+};
+
+var DUMMY_MASTER_DATA = {
+  gtCommodities: [
+    { key: "C102", text: "WHEAT" }, { key: "C103", text: "SOYABEAN" },
+    { key: "C104", text: "BARLEY" }, { key: "C105", text: "CORN" }, { key: "C106", text: "MAIZE" },
+    { key: "C107", text: "COCOA" }, { key: "C108", text: "RICE" }, { key: "C109", text: "COTTON" }
+  ],
+  tfTypes: [ { key: "BULK", text: "Bulk" }, { key: "BREAKBULK", text: "Break Bulk" } ],
+  dealStructures: [
+    { key: "CT", text: "Corporate Trade" }, { key: "FX", text: "Forex & Options" },
+    { key: "SLC", text: "Structured LCs" }
+  ],
+  dealStatuses: [
+    { key: "01", text: "Create Deal ID" }, { key: "02", text: "Invoices Created" },
+    { key: "03", text: "GT FI Document updated in TRM" }, { key: "04", text: "Partial Invoice created" },
+    { key: "05", text: "LC Issued - Partial" }, { key: "06", text: "LC Issued - Complete" },
+    { key: "08", text: "Discounting Loan Created - Partial" },
+    { key: "09", text: "Discounting Loan Created - Complete" },
+    { key: "10", text: "GT FI Document updated in TRM for Partial Invoice" },
+    { key: "12", text: "Settlement-Execution - Partial" }, { key: "13", text: "Settlement-Execution - Complete" },
+    { key: "16", text: "Settlement-Accounting - Partial" }, { key: "17", text: "Settlement-Accounting - Complete" },
+    { key: "20", text: "Discharge of Obligation - Partial" },
+    { key: "21", text: "Discharge of Obligation - Complete" },
+    { key: "30", text: "Deal ID Complete" }, { key: "40", text: "Deal migrated to OGA" }
+  ],
+  incoTerms: [
+    { key: "CFR", text: "Costs and freight" },
+    { key: "CIF", text: "Costs, insurance & freight" },
+    { key: "CIP", text: "Carriage and insurance paid to" },
+    { key: "CNF", text: "Costs and Freight" },
+    { key: "CPT", text: "Carriage paid to" },
+    { key: "DAF", text: "Delivered at frontier" },
+    { key: "DAP", text: "Delivered at Place" },
+    { key: "DAT", text: "Delivered at Terminal" },
+    { key: "DCT", text: "Delivered Cont. at Terminal" },
+    { key: "DDP", text: "Delivered Duty Paid" },
+    { key: "DDU", text: "Delivered Duty Unpaid" },
+    { key: "DEL", text: "Delivered from Plant" },
+    { key: "DEQ", text: "Delivered ex quay (duty paid)" },
+    { key: "DES", text: "Delivered ex ship" },
+    { key: "DPU", text: "Delivery at Place Unloaded" },
+    { key: "EXB", text: "Ex Buyer's Warehouse" },
+    { key: "EXF", text: "Ex-Farm" },
+    { key: "EXW", text: "Ex Works" },
+    { key: "FAS", text: "Free Alongside Ship" },
+    { key: "FCA", text: "Free Carrier" },
+    { key: "FH", text: "Free house" },
+    { key: "FIS", text: "Free In Store" },
+    { key: "FOB", text: "Free on board" },
+    { key: "FOR", text: "Free on Road" },
+    { key: "FOT", text: "Free on Truck" },
+    { key: "IS0", text: "INSTORE" },
+    { key: "PRC", text: "Preferred Carrier" },
+    { key: "TRK", text: "Track" },
+    { key: "UN", text: "Not Free" },
+    { key: "USP", text: "FOB PREPAID ADD" },
+    { key: "Z01", text: "Transport - 911 Truck" },
+    { key: "Z02", text: "Transport - Trailer" },
+    { key: "Z03", text: "Rented - 911 Truck" },
+    { key: "Z04", text: "Rented - Trailer" },
+    { key: "Z05", text: "Customer - 911 Truck" },
+    { key: "Z06", text: "Customer - Truck" },
+    { key: "Z07", text: "Ghadco Trucks" },
+    { key: "Z08", text: "FOB- FNC Cert" },
+    { key: "Z09", text: "A RETIRAR" },
+    { key: "Z10", text: "Instore Coffee" },
+    { key: "Z12", text: "IN STORE" },
+    { key: "ZEX", text: "ZEX - Reverse charge" }
+  ],
+  ogbsStatuses: [
+    { key: "21", text: "Awaiting details from BU" }, { key: "22", text: "Available to Use" },
+    { key: "23", text: "Fully Used" }, { key: "24", text: "Partially Used" },
+    { key: "25", text: "Cannot be Used" }, { key: "26", text: "Couldn't Use" }
+  ],
+  blockedStatuses: [
+    { key: "11", text: "TF Blocked - Partial" }, { key: "12", text: "TF Blocked - Full" },
+    { key: "14", text: "TF Allocated to Deal ID" }
+  ],
+  tfStatuses: [
+    { key: "01", text: "Uploaded - New" }, { key: "02", text: "In Process" }, { key: "03", text: "Completed" }
+  ]
+};
+
+var DUMMY_DEAL_MASTER = [
+  { dealId: "10000001", dealStatus: "01", dealStructure: "SLC", dealAmount: 500000 },
+  { dealId: "10000002", dealStatus: "02", dealStructure: "CT", dealAmount: 1250000 },
+  { dealId: "10000003", dealStatus: "02", dealStructure: "FX", dealAmount: 875000 },
+  { dealId: "10000004", dealStatus: "01", dealStructure: "CT", dealAmount: 640000 },
+  { dealId: "10000005", dealStatus: "02", dealStructure: "SLC", dealAmount: 2100000 },
+  { dealId: "10000006", dealStatus: "02", dealStructure: "CT", dealAmount: 355000 },
+  { dealId: "10000007", dealStatus: "01", dealStructure: "FX", dealAmount: 980000 },
+  { dealId: "10000008", dealStatus: "02", dealStructure: "SLC", dealAmount: 1475000 }
+];
+
+var DUMMY_TRADEFLOWS = [
+  {
+    tfId: "3000008485", splitId: "01", status: "yellow", ogbs: "", tfType: "BULK", gtCommod: "",
+    tfUpload: "04-07-2024", bu: "Grains", buCode: "B01", operator: "JASON",
+    blVesselName: "STENA CONQUEROR", buCommodity: "Soyabean", quantity: 1000.000, assQty: 0,
+    invQty: 0, contractPrice: 1000.00, currentMarketPriceMt: 1000000.00,
+    childComm1: "", childComm2: "",
+    shipping: {
+      blNumber: "BL.no.01", vesselName: "STENA CONQUEROR", receiptDate: "", sustainabilityFlows: false,
+      loadPort: "SAN LORENZO, ARGENTINA", polCountry: "Mexico", dischargePort: "KUALA TANJUNG, INDONESIA",
+      podCountry: "Brazil", sailingDate: "15-06-2023", etaAtPod: "04-09-2023", fromDate: "25-08-2023",
+      toDate: "05-09-2023", blConsignee: "", notifyParty: "", lcDetails: "", bl13From: "", bl13To: "",
+      bl33From: "", bl33To: ""
+    },
+    purchSales: {
+      purchContract: "4800006163", purchIncoterms: "CIF - BEIRA, MO", purchPayTerms: "CAD",
+      purchSellerBank: "NEDBANK", purchBuyerBank: "NEDBANK/SBSA", sellerLocation: "", originEntity: "",
+      salesContract: "TRANSIT", salesIncoterms: "CIF - BEIR", salesPayTerms: "TBA",
+      salesSellerBank: "NEDBANK/SBSA", salesBuyerBank: "N.A.", buyerLocation: ""
+    },
+    blDetails: [
+      {
+        blId: "4000010953", split: "01", blNumber: "BL.no.01", vesselName: "STENA CONQUEROR",
+        gradeCommodity: "Soyabean", quantity: 1000.000, cpmt: 1000.00, amt: 1000000.00,
+        dealId: "", lotId: "", status: "BL CREATED"
+      }
+    ],
+    blReuse: [],
+    statusDetails: {
+      ogbsStatus: "", ogbsRemarks: "Available for Use", trader: "", blockedStatus: "",
+      blockedAmount: 0, blockedFrom: "", blockedTo: "", blockedRemarks: "", dealId: "",
+      ottkNo: "", dttkNo: "", tfStatus: "01", createdBy: "FS_DEV", createdDate: "04-07-2024",
+      createdTime: "09:00:00", changedBy: "", changedDate: "", changedTime: "00:00:00",
+      tradeflowExpired: false, tradeflowDeleted: false
+    }
+  },
+  {
+    tfId: "3000008486", splitId: "01", status: "green", ogbs: "02", tfType: "BULK", gtCommod: "C102",
+    tfUpload: "12-07-2024", bu: "Grains", buCode: "B01", operator: "MEERA",
+    blVesselName: "PACIFIC HARVEST", buCommodity: "Wheat", quantity: 2500.000, assQty: 1200.000,
+    invQty: 800.000, contractPrice: 285.50, currentMarketPriceMt: 292.10,
+    childComm1: "Milling Wheat", childComm2: "",
+    shipping: {
+      blNumber: "BL.no.02", vesselName: "PACIFIC HARVEST", receiptDate: "20-07-2024", sustainabilityFlows: true,
+      loadPort: "NOVOROSSIYSK, RUSSIA", polCountry: "Russia", dischargePort: "JEBEL ALI, UAE",
+      podCountry: "UAE", sailingDate: "22-06-2024", etaAtPod: "10-07-2024", fromDate: "22-06-2024",
+      toDate: "10-07-2024", blConsignee: "TO ORDER", notifyParty: "DMCC TRADE BANK", lcDetails: "LC-88213",
+      bl13From: "1", bl13To: "3",
+      bl33From: "1", bl33To: "3"
+    },
+    purchSales: {
+      purchContract: "4800006201", purchIncoterms: "FOB - NOVOROSSIYSK", purchPayTerms: "LC AT SIGHT",
+      purchSellerBank: "SBERBANK", purchBuyerBank: "DMCC TRADE BANK", sellerLocation: "Russia",
+      originEntity: "E021",
+      salesContract: "4900007312", salesIncoterms: "CFR - JEBEL ALI", salesPayTerms: "CAD 30 DAYS",
+      salesSellerBank: "DMCC TRADE BANK", salesBuyerBank: "GLOBAL TRADE BANK", buyerLocation: "UAE"
+    },
+    blDetails: [
+      {
+        blId: "4000010960", split: "01", blNumber: "BL.no.02", vesselName: "PACIFIC HARVEST",
+        gradeCommodity: "Wheat", quantity: 1200.000, cpmt: 292.10, amt: 350520.00,
+        dealId: "10000002", lotId: "L01", status: "DEAL ASSIGNED"
+      }
+    ],
+    blReuse: [],
+    statusDetails: {
+      ogbsStatus: "22", ogbsRemarks: "Available for Use", trader: "OTL", blockedStatus: "",
+      blockedAmount: 0, blockedFrom: "", blockedTo: "", blockedRemarks: "", dealId: "10000002",
+      ottkNo: "100012", dttkNo: "", tfStatus: "02", createdBy: "FS_DEV", createdDate: "12-07-2024",
+      createdTime: "10:15:00", changedBy: "MEERA", changedDate: "20-07-2024", changedTime: "14:40:00",
+      tradeflowExpired: false, tradeflowDeleted: false
+    }
+  },
+  {
+    tfId: "3000008487", splitId: "02", status: "red", ogbs: "01", tfType: "BREAKBULK", gtCommod: "C109",
+    tfUpload: "18-07-2024", bu: "Cotton", buCode: "B02", operator: "RAVI",
+    blVesselName: "CAPE ENDEAVOUR", buCommodity: "Cotton", quantity: 800.000, assQty: 0,
+    invQty: 0, contractPrice: 1980.00, currentMarketPriceMt: 1955.00,
+    childComm1: "", childComm2: "",
+    shipping: {
+      blNumber: "BL.no.03", vesselName: "CAPE ENDEAVOUR", receiptDate: "", sustainabilityFlows: false,
+      loadPort: "KARACHI, PAKISTAN", polCountry: "Pakistan", dischargePort: "TANJUNG PELEPAS, MALAYSIA",
+      podCountry: "Malaysia", sailingDate: "01-07-2024", etaAtPod: "19-07-2024", fromDate: "",
+      toDate: "", blConsignee: "BANK", notifyParty: "OLAM TREASURY BANK", lcDetails: "LC-91007",
+      bl13From: "", bl13To: "", bl33From: "",
+      bl33To: ""
+    },
+    purchSales: {
+      purchContract: "4800006250", purchIncoterms: "FOB - KARACHI", purchPayTerms: "LC 60 DAYS",
+      purchSellerBank: "HABIB BANK", purchBuyerBank: "OLAM TREASURY BANK", sellerLocation: "Pakistan",
+      originEntity: "E034",
+      salesContract: "TRANSIT", salesIncoterms: "CFR - TANJUNG PELEPAS", salesPayTerms: "TBA",
+      salesSellerBank: "OLAM TREASURY BANK", salesBuyerBank: "N.A.", buyerLocation: ""
+    },
+    blDetails: [],
+    blReuse: [],
+    statusDetails: {
+      ogbsStatus: "21", ogbsRemarks: "Compliance Hold", trader: "", blockedStatus: "12",
+      blockedAmount: 1564000.00, blockedFrom: "18-07-2024", blockedTo: "18-09-2024",
+      blockedRemarks: "Pending OFAC screening", dealId: "", ottkNo: "", dttkNo: "", tfStatus: "01",
+      createdBy: "FS_DEV", createdDate: "18-07-2024", createdTime: "08:30:00", changedBy: "",
+      changedDate: "", changedTime: "00:00:00", tradeflowExpired: false, tradeflowDeleted: false
+    }
+  },
+  {
+    tfId: "3000008488", splitId: "01", status: "yellow", ogbs: "02", tfType: "BULK", gtCommod: "C105",
+    tfUpload: "25-07-2024", bu: "Grains", buCode: "B01", operator: "JASON",
+    blVesselName: "OCEAN VOYAGER", buCommodity: "Corn", quantity: 3200.000, assQty: 1600.000,
+    invQty: 1600.000, contractPrice: 198.75, currentMarketPriceMt: 201.40,
+    childComm1: "Yellow Corn", childComm2: "Grade 2",
+    shipping: {
+      blNumber: "BL.no.04", vesselName: "OCEAN VOYAGER", receiptDate: "02-08-2024", sustainabilityFlows: false,
+      loadPort: "SANTOS, BRAZIL", polCountry: "Brazil", dischargePort: "DAMMAM, SAUDI ARABIA",
+      podCountry: "Saudi Arabia", sailingDate: "05-07-2024", etaAtPod: "01-08-2024", fromDate: "05-07-2024",
+      toDate: "01-08-2024", blConsignee: "TO ORDER", notifyParty: "SAUDI NATIONAL BANK", lcDetails: "",
+      bl13From: "1", bl13To: "3",
+      bl33From: "", bl33To: ""
+    },
+    purchSales: {
+      purchContract: "4800006288", purchIncoterms: "FOB - SANTOS", purchPayTerms: "CAD",
+      purchSellerBank: "BANCO DO BRASIL", purchBuyerBank: "DMCC TRADE BANK", sellerLocation: "Brazil",
+      originEntity: "E021",
+      salesContract: "4900007355", salesIncoterms: "CFR - DAMMAM", salesPayTerms: "LC 30 DAYS",
+      salesSellerBank: "DMCC TRADE BANK", salesBuyerBank: "SAUDI NATIONAL BANK", buyerLocation: "Saudi Arabia"
+    },
+    blDetails: [
+      {
+        blId: "4000010971", split: "01", blNumber: "BL.no.04", vesselName: "OCEAN VOYAGER",
+        gradeCommodity: "Corn", quantity: 1600.000, cpmt: 201.40, amt: 322240.00,
+        dealId: "10000001", lotId: "L02", status: "BL CREATED"
+      },
+      {
+        blId: "4000010972", split: "02", blNumber: "BL.no.04", vesselName: "OCEAN VOYAGER",
+        gradeCommodity: "Corn", quantity: 1600.000, cpmt: 201.40, amt: 322240.00,
+        dealId: "", lotId: "", status: "BL CREATED"
+      }
+    ],
+    blReuse: [
+      {
+        blId: "4000010901", split: "01", reuse: "Y", blNumber: "BL.no.99", vesselName: "ATLAS STAR",
+        gradeCommodity: "Corn", quantity: 400.000, cpmt: 200.00, amt: 80000.00,
+        dealId: "10000001", status: "REUSED"
+      }
+    ],
+    statusDetails: {
+      ogbsStatus: "22", ogbsRemarks: "Available for Use", trader: "OGA", blockedStatus: "",
+      blockedAmount: 0, blockedFrom: "", blockedTo: "", blockedRemarks: "", dealId: "10000001",
+      ottkNo: "100015", dttkNo: "200031", tfStatus: "02", createdBy: "FS_DEV", createdDate: "25-07-2024",
+      createdTime: "11:05:00", changedBy: "JASON", changedDate: "02-08-2024", changedTime: "16:20:00",
+      tradeflowExpired: false, tradeflowDeleted: false
+    }
+  },
+  {
+    tfId: "3000008489", splitId: "01", status: "green", ogbs: "02", tfType: "BULK", gtCommod: "C107",
+    tfUpload: "30-07-2024", bu: "Cocoa", buCode: "B03", operator: "PRIYA",
+    blVesselName: "IVORY TRADER", buCommodity: "Cocoa", quantity: 600.000, assQty: 0,
+    invQty: 600.000, contractPrice: 3120.00, currentMarketPriceMt: 3305.00,
+    childComm1: "", childComm2: "",
+    shipping: {
+      blNumber: "BL.no.05", vesselName: "IVORY TRADER", receiptDate: "10-08-2024", sustainabilityFlows: true,
+      loadPort: "ABIDJAN, IVORY COAST", polCountry: "Ivory Coast", dischargePort: "AMSTERDAM, NETHERLANDS",
+      podCountry: "Netherlands", sailingDate: "20-07-2024", etaAtPod: "09-08-2024", fromDate: "20-07-2024",
+      toDate: "09-08-2024", blConsignee: "TO ORDER", notifyParty: "ING BANK", lcDetails: "LC-77410",
+      bl13From: "1", bl13To: "3",
+      bl33From: "1", bl33To: "3"
+    },
+    purchSales: {
+      purchContract: "4800006310", purchIncoterms: "FOB - ABIDJAN", purchPayTerms: "LC AT SIGHT",
+      purchSellerBank: "ECOBANK", purchBuyerBank: "OLAM TREASURY BANK", sellerLocation: "Ivory Coast",
+      originEntity: "E034",
+      salesContract: "4900007390", salesIncoterms: "CIF - AMSTERDAM", salesPayTerms: "CAD",
+      salesSellerBank: "OLAM TREASURY BANK", salesBuyerBank: "ING BANK", buyerLocation: "Netherlands"
+    },
+    blDetails: [
+      {
+        blId: "4000010980", split: "01", blNumber: "BL.no.05", vesselName: "IVORY TRADER",
+        gradeCommodity: "Cocoa", quantity: 600.000, cpmt: 3305.00, amt: 1983000.00,
+        dealId: "10000002", lotId: "L03", status: "INVOICED"
+      }
+    ],
+    blReuse: [],
+    statusDetails: {
+      ogbsStatus: "22", ogbsRemarks: "Available for Use", trader: "OTL", blockedStatus: "",
+      blockedAmount: 0, blockedFrom: "", blockedTo: "", blockedRemarks: "", dealId: "10000002",
+      ottkNo: "", dttkNo: "200045", tfStatus: "03", createdBy: "FS_DEV", createdDate: "30-07-2024",
+      createdTime: "09:45:00", changedBy: "PRIYA", changedDate: "10-08-2024", changedTime: "13:10:00",
+      tradeflowExpired: false, tradeflowDeleted: false
+    }
+  }
+];
+
+var appData = null;
+var state = {
+  selectedTfId: "",
+  selectedBlId: "",
+  selectedBlReuseId: "",
+  assignSource: "blData1",
+  activeTab: "basicData",
+  complianceOpenerBtn: null,
+  assignOpenerBtn: null,
+  selectedBlDetailIds: [],
+  blData1Page: 0,
+  pendingDealAssignment: null
+};
+
+function cloneEmptyPayload() { return JSON.parse(JSON.stringify(EMPTY_PAYLOAD)); }
+function cloneObj(o) { return JSON.parse(JSON.stringify(o || {})); }
+function cloneArr(a) { return JSON.parse(JSON.stringify(a || [])); }
+
+function escapeHtml(value) {
+  if (value === null || value === undefined) { return ""; }
+  return String(value)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+function toSafeNumber(value) {
+  var num = parseFloat(String(value === undefined || value === null ? 0 : value).replace(/,/g, ""));
+  if (isNaN(num)) { return 0; }
+  return num;
+}
+
+function normalizeIdForSap(value) {
+  return String(value === undefined || value === null ? "" : value).replace(/^\s+|\s+$/g, "");
+}
+
+function formatQty(value) {
+  var num = toSafeNumber(value);
+  var negative = num < 0;
+  num = Math.abs(num);
+  var fixed = num.toFixed(3);
+  var parts = fixed.split(".");
+  var intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return (negative ? "-" : "") + intPart + "." + parts[1];
+}
+
+function formatAmount(value) {
+  var num = toSafeNumber(value);
+  var negative = num < 0;
+  num = Math.abs(num);
+  var fixed = num.toFixed(2);
+  var parts = fixed.split(".");
+  var intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return (negative ? "-" : "") + intPart + "." + parts[1];
+}
+
+function parseDdMmYyyy(str) {
+  if (!str) { return null; }
+  var m = String(str).match(/^(\d{2})-(\d{2})-(\d{4})$/);
+  if (!m) { return null; }
+  var t = Date.UTC(parseInt(m[3], 10), parseInt(m[2], 10) - 1, parseInt(m[1], 10));
+  return isNaN(t) ? null : t;
+}
+
+function computeTransitDays(sailingDate, etaAtPod) {
+  var t1 = parseDdMmYyyy(sailingDate);
+  var t2 = parseDdMmYyyy(etaAtPod);
+  if (t1 === null || t2 === null) { return ""; }
+  var diff = Math.round((t2 - t1) / 86400000);
+  return diff >= 0 ? String(diff) : "";
+}
+
+function showToast(message, kind) {
+  var region = document.getElementById("toastRegion");
+  if (!region || !message) { return; }
+  var el = document.createElement("div");
+  var body = document.createElement("div");
+  var title = document.createElement("div");
+  var text = document.createElement("div");
+  var normalizedKind = kind || "";
+  el.className = "toast" + (normalizedKind ? (" " + normalizedKind) : "");
+  title.className = "toast-title";
+  text.className = "toast-message";
+  title.textContent = normalizedKind === "success" ? "Success" :
+    normalizedKind === "error" ? "Unable to complete" :
+    normalizedKind === "warning" ? "Attention" : "Information";
+  text.textContent = message;
+  body.appendChild(title);
+  body.appendChild(text);
+  el.appendChild(body);
+  region.appendChild(el);
+  window.setTimeout(function () {
+    if (el.parentNode) { el.parentNode.removeChild(el); }
+  }, normalizedKind === "success" ? 5000 : 4000);
+}
+
+function fillSelectOptions(selectId, list, placeholder, preselect) {
+  var el = document.getElementById(selectId);
+  if (!el) { return; }
+  var html = placeholder ? ("<option value=\"\">" + escapeHtml(placeholder) + "</option>") : "";
+  for (var i = 0; i < (list || []).length; i++) {
+    var item = list[i];
+    html += "<option value=\"" + escapeHtml(item.key) + "\">" +
+      escapeHtml(item.key) + " - " + escapeHtml(item.text) + "</option>";
+  }
+  el.innerHTML = html;
+  el.value = preselect || "";
+}
+
+function findTfById(tfId) {
+  var all = (appData && appData.tradeFlows) ? appData.tradeFlows : [];
+  for (var i = 0; i < all.length; i++) {
+    if (all[i].tfId === tfId) { return all[i]; }
+  }
+  return null;
+}
+
+function statusDotClass(status) {
+  if (status === "yellow") { return "yellow"; }
+  if (status === "green") { return "green"; }
+  if (status === "red") { return "red"; }
+  return "none";
+}
+
+function lookupText(list, key) {
+  if (!key) { return ""; }
+  for (var i = 0; i < (list || []).length; i++) {
+    if (list[i].key === key) { return list[i].text; }
+  }
+  return key;
+}
+
+function tfMatchesKeyDate(tf, keyDateMs) {
+  var sh = tf.shipping || {};
+  var from = parseDdMmYyyy(sh.fromDate);
+  var to = parseDdMmYyyy(sh.toDate);
+  if (from === null || to === null) { return false; }
+  return keyDateMs >= from && keyDateMs <= to;
+}
+
+function tfMatchesMainFilters(tf) {
+  var sd = tf.statusDetails || {};
+  var expiredEl = document.getElementById("filterIncludeExpired");
+  var deletedEl = document.getElementById("filterIncludeDeleted");
+  var includeExpired = expiredEl ? expiredEl.checked : false;
+  var includeDeleted = deletedEl ? deletedEl.checked : false;
+  if (sd.tradeflowExpired && !includeExpired) { return false; }
+  if (sd.tradeflowDeleted && !includeDeleted) { return false; }
+  var buEl = document.getElementById("filterBu");
+  if (buEl && buEl.value && tf.bu !== buEl.value) { return false; }
+  var commodityEl = document.getElementById("filterCommodity");
+  if (commodityEl && commodityEl.value && tf.buCommodity !== commodityEl.value) { return false; }
+  var tfStatusEl = document.getElementById("filterTfStatus");
+  if (tfStatusEl && tfStatusEl.value && sd.tfStatus !== tfStatusEl.value) { return false; }
+  var ogbsEl = document.getElementById("filterOgbsStatus");
+  if (ogbsEl && ogbsEl.value && sd.ogbsStatus !== ogbsEl.value) { return false; }
+  var blockedEl = document.getElementById("filterBlockedStatus");
+  if (blockedEl && blockedEl.value && sd.blockedStatus !== blockedEl.value) { return false; }
+  return true;
+}
+
+function computeUniqueFieldValues(list, getter) {
+  var seen = {};
+  var out = [];
+  for (var i = 0; i < list.length; i++) {
+    var v = getter(list[i]);
+    if (v && !seen[v]) { seen[v] = true; out.push(v); }
+  }
+  out.sort();
+  return out;
+}
+
+function populateMainFilterOptions() {
+  var all = appData.tradeFlows || [];
+  var bus = computeUniqueFieldValues(all, function (tf) { return tf.bu; });
+  var commodities = computeUniqueFieldValues(all, function (tf) { return tf.buCommodity; });
+  var buEl = document.getElementById("filterBu");
+  if (buEl) {
+    var buHtml = "<option value=\"\">All BU</option>";
+    for (var i = 0; i < bus.length; i++) {
+      buHtml += "<option value=\"" + escapeHtml(bus[i]) + "\">" + escapeHtml(bus[i]) + "</option>";
+    }
+    buEl.innerHTML = buHtml;
+  }
+  var commodityEl = document.getElementById("filterCommodity");
+  if (commodityEl) {
+    var commodityHtml = "<option value=\"\">All Commodities</option>";
+    for (var j = 0; j < commodities.length; j++) {
+      commodityHtml += "<option value=\"" + escapeHtml(commodities[j]) + "\">" + escapeHtml(commodities[j]) + "</option>";
+    }
+    commodityEl.innerHTML = commodityHtml;
+  }
+  fillSelectOptions("filterTfStatus", appData.masterData.tfStatuses, "All TF Status", "");
+  fillSelectOptions("filterOgbsStatus", appData.masterData.ogbsStatuses, "All OGBS Status", "");
+  fillSelectOptions("filterBlockedStatus", appData.masterData.blockedStatuses, "All Blocked Status", "");
+}
+
+function renderMainTable() {
+  var all = appData.tradeFlows || [];
+  var html = "";
+  var keyDateEl = document.getElementById("mainKeyDate");
+  var keyDateStr = keyDateEl ? keyDateEl.value : "";
+  var keyDateMs = keyDateStr ? parseDdMmYyyy(keyDateStr) : null;
+  var filtered = [];
+  if (keyDateMs !== null) {
+    for (var f = 0; f < all.length; f++) {
+      if (tfMatchesKeyDate(all[f], keyDateMs) && tfMatchesMainFilters(all[f])) { filtered.push(all[f]); }
+    }
+  }
+  for (var i = 0; i < filtered.length; i++) {
+    var tf = filtered[i];
+    var sh = tf.shipping || {};
+    var ps = tf.purchSales || {};
+    var sd = tf.statusDetails || {};
+    var transitDays = computeTransitDays(sh.sailingDate, sh.etaAtPod);
+    html += "<tr>";
+    html += "<td><button type=\"button\" class=\"link-text tf-link\" data-tfid=\"" +
+      escapeHtml(tf.tfId) + "\">" + escapeHtml(tf.tfId) + "</button></td>";
+    html += "<td>" + escapeHtml(tf.splitId) + "</td>";
+    html += "<td>" + escapeHtml(tf.tfUpload) + "</td>";
+    html += "<td>" + escapeHtml(tf.bu) + "</td>";
+    html += "<td>" + escapeHtml(tf.operator) + "</td>";
+    html += "<td>" + escapeHtml(tf.blVesselName) + "</td>";
+    html += "<td>" + escapeHtml(tf.buCommodity) + "</td>";
+    html += "<td>" + escapeHtml(ps.purchContract) + "</td>";
+    html += "<td>" + escapeHtml(ps.purchIncoterms) + "</td>";
+    html += "<td>" + escapeHtml(ps.purchPayTerms) + "</td>";
+    html += "<td>" + escapeHtml(ps.purchSellerBank) + "</td>";
+    html += "<td>" + escapeHtml(ps.purchBuyerBank) + "</td>";
+    html += "<td>" + escapeHtml(ps.salesContract) + "</td>";
+    html += "<td>" + escapeHtml(ps.salesIncoterms) + "</td>";
+    html += "<td>" + escapeHtml(ps.salesPayTerms) + "</td>";
+    html += "<td>" + escapeHtml(ps.salesSellerBank) + "</td>";
+    html += "<td>" + escapeHtml(ps.salesBuyerBank) + "</td>";
+    html += "<td>" + escapeHtml(sh.fromDate) + "</td>";
+    html += "<td>" + escapeHtml(sh.toDate) + "</td>";
+    html += "<td class=\"num\">" + formatQty(tf.quantity) + "</td>";
+    html += "<td class=\"num\">" + formatAmount(tf.contractPrice) + "</td>";
+    html += "<td class=\"num\">" + formatAmount(tf.currentMarketPriceMt) + "</td>";
+    html += "<td class=\"num\">" + formatAmount(computeContractAmount(tf)) + "</td>";
+    html += "<td>" + escapeHtml(sh.loadPort) + "</td>";
+    html += "<td>" + escapeHtml(sh.dischargePort) + "</td>";
+    html += "<td>" + escapeHtml(sh.sailingDate) + "</td>";
+    html += "<td>" + escapeHtml(sh.blNumber) + "</td>";
+    html += "<td class=\"num\">" + escapeHtml(transitDays) + "</td>";
+    html += "<td>" + escapeHtml(sh.etaAtPod) + "</td>";
+    html += "<td>" + escapeHtml(sh.blConsignee) + "</td>";
+    html += "<td>" + escapeHtml(sh.notifyParty) + "</td>";
+    html += "<td>" + escapeHtml(sh.lcDetails) + "</td>";
+    html += "<td>" + escapeHtml(ps.originEntity) + "</td>";
+    html += "<td>" + escapeHtml(ps.sellerLocation) + "</td>";
+    html += "<td>" + escapeHtml(ps.buyerLocation) + "</td>";
+    html += "<td>" + escapeHtml(sh.bl13From) + "</td>";
+    html += "<td>" + escapeHtml(sh.bl13To) + "</td>";
+    html += "<td>" + escapeHtml(sh.bl33From) + "</td>";
+    html += "<td>" + escapeHtml(sh.bl33To) + "</td>";
+    html += "<td>" + escapeHtml(sd.ogbsRemarks) + "</td>";
+    html += "<td>" + escapeHtml(sh.receiptDate) + "</td>";
+    html += "<td>" + escapeHtml(lookupText(appData.masterData.blockedStatuses, sd.blockedStatus)) + "</td>";
+    html += "<td>" + escapeHtml(lookupText(appData.masterData.ogbsStatuses, sd.ogbsStatus)) + "</td>";
+    html += "<td>" + escapeHtml(sh.polCountry) + "</td>";
+    html += "<td>" + escapeHtml(sh.podCountry) + "</td>";
+    html += "</tr>";
+  }
+  if (filtered.length === 0) {
+    html = keyDateMs === null ?
+      "<tr><td colspan=\"45\">Enter a Key Date above to view applicable trade flows.</td></tr>" :
+      "<tr><td colspan=\"45\">No trade flows found for the selected Key Date/filters.</td></tr>";
+  }
+  document.getElementById("tfTableBody").innerHTML = html;
+  var links = document.getElementsByClassName("tf-link");
+  for (var j = 0; j < links.length; j++) {
+    links[j].addEventListener("click", function () { openWorkspace(this.getAttribute("data-tfid")); });
+  }
+}
+
+function computeContractAmount(tf) { return toSafeNumber(tf.quantity) * toSafeNumber(tf.contractPrice); }
+function computeCpmtAmount(tf) { return toSafeNumber(tf.quantity) * toSafeNumber(tf.currentMarketPriceMt); }
+
+function renderBasicDataTab(tf) {
+  document.getElementById("bdBu").value = tf.bu || "";
+  document.getElementById("bdBuCode").value = tf.buCode || "";
+  fillSelectOptions("bdGtCommod", appData.masterData.gtCommodities, "Select...", tf.gtCommod);
+  document.getElementById("bdBuCommodity").value = tf.buCommodity || "";
+  document.getElementById("bdChild1").value = tf.childComm1 || "";
+  document.getElementById("bdChild2").value = tf.childComm2 || "";
+  document.getElementById("idQty").value = formatQty(tf.quantity);
+  document.getElementById("idContractPrice").value = formatAmount(tf.contractPrice);
+  document.getElementById("idContractAmt").value = formatAmount(computeContractAmount(tf));
+  document.getElementById("idCmp").value = formatAmount(tf.currentMarketPriceMt);
+  document.getElementById("idCpmtAmt").value = formatAmount(computeCpmtAmount(tf));
+  fillSelectOptions("odTfType", appData.masterData.tfTypes, "Select...", tf.tfType);
+  document.getElementById("odBuContact").value = tf.operator || "";
+}
+
+function renderShippingDataTab(tf) {
+  var sh = tf.shipping || {};
+  document.getElementById("shBlNumber").value = sh.blNumber || "";
+  document.getElementById("shVessel").value = sh.vesselName || "";
+  document.getElementById("shReceiptDate").value = sh.receiptDate || "";
+  document.getElementById("shSustain").checked = !!sh.sustainabilityFlows;
+  document.getElementById("shLoadPort").value = sh.loadPort || "";
+  document.getElementById("shPolCountry").value = sh.polCountry || "";
+  document.getElementById("shDischargePort").value = sh.dischargePort || "";
+  document.getElementById("shPodCountry").value = sh.podCountry || "";
+  document.getElementById("shNotifyParty").value = sh.notifyParty || "";
+  document.getElementById("shSailingDate").value = sh.sailingDate || "";
+  document.getElementById("shEta").value = sh.etaAtPod || "";
+  document.getElementById("shTransit").value = computeTransitDays(sh.sailingDate, sh.etaAtPod);
+  document.getElementById("shFromDate").value = sh.fromDate || "";
+  document.getElementById("shToDate").value = sh.toDate || "";
+  document.getElementById("shBlConsignee").value = sh.blConsignee || "";
+  document.getElementById("shLcDetails").value = sh.lcDetails || "";
+  document.getElementById("shBl13From").value = sh.bl13From || "";
+  document.getElementById("shBl13To").value = sh.bl13To || "";
+  document.getElementById("shBl33From").value = sh.bl33From || "";
+  document.getElementById("shBl33To").value = sh.bl33To || "";
+}
+
+function renderPurchSalesTab(tf) {
+  var ps = tf.purchSales || {};
+  document.getElementById("plContract").value = ps.purchContract || "";
+  document.getElementById("plIncoterms").value = ps.purchIncoterms || "";
+  document.getElementById("plPayTerms").value = ps.purchPayTerms || "";
+  document.getElementById("plSellerBank").value = ps.purchSellerBank || "";
+  document.getElementById("plBuyerBank").value = ps.purchBuyerBank || "";
+  document.getElementById("plSellerLoc").value = ps.sellerLocation || "";
+  document.getElementById("plOriginEntity").value = ps.originEntity || "";
+  document.getElementById("slContract").value = ps.salesContract || "";
+  document.getElementById("slIncoterms").value = ps.salesIncoterms || "";
+  document.getElementById("slPayTerms").value = ps.salesPayTerms || "";
+  document.getElementById("slSellerBank").value = ps.salesSellerBank || "";
+  document.getElementById("slBuyerBank").value = ps.salesBuyerBank || "";
+  document.getElementById("slBuyerLoc").value = ps.buyerLocation || "";
+}
+
+var BL_DATA1_PAGE_SIZE = 5;
+
+function renderBlData1Tab(tf) {
+  var rows = tf.blDetails || [];
+  var html = "";
+  var sumQty = 0, sumCpmt = 0, sumAmt = 0;
+  var qtyDisplay = document.getElementById("blTfQtyDisplay");
+  if (qtyDisplay) { qtyDisplay.value = formatQty(tf.quantity); }
+  for (var s = 0; s < rows.length; s++) {
+    sumQty += toSafeNumber(rows[s].quantity);
+    sumCpmt += toSafeNumber(rows[s].cpmt);
+    sumAmt += toSafeNumber(rows[s].amt);
+  }
+  var pageCount = Math.max(1, Math.ceil(rows.length / BL_DATA1_PAGE_SIZE));
+  if (state.blData1Page < 0) { state.blData1Page = 0; }
+  if (state.blData1Page > pageCount - 1) { state.blData1Page = pageCount - 1; }
+  var pageStart = state.blData1Page * BL_DATA1_PAGE_SIZE;
+  var pageRows = rows.slice(pageStart, pageStart + BL_DATA1_PAGE_SIZE);
+  for (var i = 0; i < pageRows.length; i++) {
+    var r = pageRows[i];
+    var isChecked = state.selectedBlDetailIds.indexOf(r.blId) !== -1;
+    html += "<tr class=\"" + (isChecked ? "selected-row" : "") + "\" data-blid=\"" +
+      escapeHtml(r.blId) + "\">";
+    html += "<td><input type=\"checkbox\" class=\"bl-detail-select-checkbox\" data-blid=\"" +
+      escapeHtml(r.blId) + "\"" + (isChecked ? " checked" : "") + "></td>";
+    html += "<td>" + escapeHtml(r.blId) + "</td>";
+    html += "<td>" + escapeHtml(r.split) + "</td>";
+    html += "<td>" + escapeHtml(r.blNumber) + "</td>";
+    html += "<td>" + escapeHtml(r.vesselName) + "</td>";
+    html += "<td>" + escapeHtml(r.gradeCommodity) + "</td>";
+    html += "<td><input type=\"text\" class=\"bl-qty-input bl-inline-input\" data-blid=\"" + escapeHtml(r.blId) +
+      "\" value=\"" + formatQty(r.quantity) + "\"></td>";
+    html += "<td><input type=\"text\" class=\"bl-cpmt-input bl-inline-input\" data-blid=\"" + escapeHtml(r.blId) +
+      "\" value=\"" + formatAmount(r.cpmt) + "\"></td>";
+    html += "<td class=\"bl-amt-cell num\" data-blid=\"" + escapeHtml(r.blId) + "\">" +
+      formatAmount(r.amt) + "</td>";
+    html += "<td>" + escapeHtml(r.dealId) + "</td>";
+    html += "<td>" + escapeHtml(r.status) + "</td>";
+    html += "</tr>";
+  }
+  html += "<tr><td></td><td colspan=\"5\">Total</td><td class=\"num\" id=\"blData1TotalQty\">" +
+    formatQty(sumQty) + "</td><td class=\"num\" id=\"blData1TotalCpmt\">" + formatAmount(sumCpmt) +
+    "</td><td class=\"num\" id=\"blData1TotalAmt\">" + formatAmount(sumAmt) + "</td><td></td><td></td></tr>";
+  if (rows.length === 0) {
+    html = "<tr><td colspan=\"11\">No BL records created yet.</td></tr>";
+  }
+  document.getElementById("blDetailsTableBody").innerHTML = html;
+  var pageLabel = document.getElementById("blData1PageLabel");
+  if (pageLabel) { pageLabel.textContent = "Page " + (state.blData1Page + 1) + " of " + pageCount; }
+  var btnFirst = document.getElementById("btnBlPageFirst");
+  var btnPrev = document.getElementById("btnBlPagePrev");
+  var btnNext = document.getElementById("btnBlPageNext");
+  var btnLast = document.getElementById("btnBlPageLast");
+  var atFirst = state.blData1Page <= 0;
+  var atLast = state.blData1Page >= pageCount - 1;
+  if (btnFirst) { btnFirst.disabled = atFirst; }
+  if (btnPrev) { btnPrev.disabled = atFirst; }
+  if (btnNext) { btnNext.disabled = atLast; }
+  if (btnLast) { btnLast.disabled = atLast; }
+  var qtyInputs = document.querySelectorAll("#blDetailsTableBody .bl-qty-input");
+  var cpmtInputs = document.querySelectorAll("#blDetailsTableBody .bl-cpmt-input");
+  for (var k = 0; k < qtyInputs.length; k++) {
+    qtyInputs[k].addEventListener("input", function () { recalcBlData1RowAmount(this.getAttribute("data-blid")); });
+  }
+  for (var l = 0; l < cpmtInputs.length; l++) {
+    cpmtInputs[l].addEventListener("input", function () { recalcBlData1RowAmount(this.getAttribute("data-blid")); });
+  }
+  var selectCheckboxes = document.querySelectorAll("#blDetailsTableBody .bl-detail-select-checkbox");
+  for (var m = 0; m < selectCheckboxes.length; m++) {
+    selectCheckboxes[m].addEventListener("change", function () {
+      toggleBlDetailSelection(this.getAttribute("data-blid"), this.checked);
+    });
+  }
+}
+
+function toggleBlDetailSelection(blId, isSelected) {
+  if (!blId) { return; }
+  var idx = state.selectedBlDetailIds.indexOf(blId);
+  if (isSelected && idx === -1) {
+    state.selectedBlDetailIds.push(blId);
+  } else if (!isSelected && idx !== -1) {
+    state.selectedBlDetailIds.splice(idx, 1);
+  }
+  state.selectedBlId = (state.selectedBlDetailIds.length === 1) ? state.selectedBlDetailIds[0] : "";
+  renderBlData1Tab(findTfById(state.selectedTfId));
+}
+
+function recalcBlData1RowAmount(blId) {
+  var tf = findTfById(state.selectedTfId);
+  if (!tf) { return; }
+  var rows = tf.blDetails || [];
+  var row = null;
+  for (var i = 0; i < rows.length; i++) {
+    if (rows[i].blId === blId) { row = rows[i]; break; }
+  }
+  if (!row) { return; }
+
+  var qtyInput = document.querySelector('.bl-qty-input[data-blid="' + blId + '"]');
+  var cpmtInput = document.querySelector('.bl-cpmt-input[data-blid="' + blId + '"]');
+  var amtCell = document.querySelector('.bl-amt-cell[data-blid="' + blId + '"]');
+  if (!qtyInput || !cpmtInput) { return; }
+
+  var qty = toSafeNumber(qtyInput.value);
+  var cpmt = toSafeNumber(cpmtInput.value);
+  var amt = qty * cpmt;
+
+  row.quantity = qty;
+  row.cpmt = cpmt;
+  row.amt = amt;
+
+  if (amtCell) { amtCell.textContent = formatAmount(amt); }
+
+  var sumQty = 0, sumCpmt = 0, sumAmt = 0;
+  for (var j = 0; j < rows.length; j++) {
+    sumQty += toSafeNumber(rows[j].quantity);
+    sumCpmt += toSafeNumber(rows[j].cpmt);
+    sumAmt += toSafeNumber(rows[j].amt);
+  }
+  var totalQtyCell = document.getElementById("blData1TotalQty");
+  var totalCpmtCell = document.getElementById("blData1TotalCpmt");
+  var totalAmtCell = document.getElementById("blData1TotalAmt");
+  if (totalQtyCell) { totalQtyCell.textContent = formatQty(sumQty); }
+  if (totalCpmtCell) { totalCpmtCell.textContent = formatAmount(sumCpmt); }
+  if (totalAmtCell) { totalAmtCell.textContent = formatAmount(sumAmt); }
+}
+
+var blNewRowCounter = 1;
+
+function handleInsertBlRow() {
+  var tf = findTfById(state.selectedTfId);
+  if (!tf) { return; }
+  tf.blDetails = tf.blDetails || [];
+  var newBlId = "NEWROW" + blNewRowCounter;
+  blNewRowCounter++;
+  tf.blDetails.push({
+    blId: newBlId, split: "", blNumber: "", vesselName: "", gradeCommodity: "",
+    quantity: 0, cpmt: 0, amt: 0, dealId: "", lotId: "", status: "NEW"
+  });
+  var pageCount = Math.max(1, Math.ceil(tf.blDetails.length / BL_DATA1_PAGE_SIZE));
+  state.blData1Page = pageCount - 1;
+  renderBlData1Tab(tf);
+  showToast("Row inserted.", "success");
+}
+
+function handleDeleteBlRow() {
+  var tf = findTfById(state.selectedTfId);
+  if (!tf) { return; }
+  tf.blDetails = tf.blDetails || [];
+  if (state.selectedBlDetailIds.length === 0) {
+    showToast("Select a BL row to delete.", "error");
+    return;
+  }
+  var toDelete = state.selectedBlDetailIds.slice();
+  tf.blDetails = tf.blDetails.filter(function (r) { return toDelete.indexOf(r.blId) === -1; });
+  state.selectedBlDetailIds = [];
+  state.selectedBlId = "";
+  renderBlData1Tab(tf);
+  showToast("Selected row(s) deleted.", "success");
+}
+
+function goToBlData1Page(target) {
+  var tf = findTfById(state.selectedTfId);
+  if (!tf) { return; }
+  state.blData1Page = target;
+  renderBlData1Tab(tf);
+}
+
+function handleBlPageFirst() { goToBlData1Page(0); }
+function handleBlPagePrev() { goToBlData1Page(state.blData1Page - 1); }
+function handleBlPageNext() { goToBlData1Page(state.blData1Page + 1); }
+function handleBlPageLast() {
+  var tf = findTfById(state.selectedTfId);
+  if (!tf) { return; }
+  var rows = tf.blDetails || [];
+  var pageCount = Math.max(1, Math.ceil(rows.length / BL_DATA1_PAGE_SIZE));
+  goToBlData1Page(pageCount - 1);
+}
+
+function renderBlReuseTab(tf) {
+  var rows = tf.blReuse || [];
+  var html = "";
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    var isSelected = (r.blId === state.selectedBlReuseId);
+    html += "<tr class=\"" + (isSelected ? "selected-row" : "") + "\" data-blreuseid=\"" +
+      escapeHtml(r.blId) + "\">";
+    html += "<td>" + escapeHtml(r.blId) + "</td>";
+    html += "<td>" + escapeHtml(r.split) + "</td>";
+    html += "<td>" + escapeHtml(r.reuse) + "</td>";
+    html += "<td>" + escapeHtml(r.blNumber) + "</td>";
+    html += "<td>" + escapeHtml(r.vesselName) + "</td>";
+    html += "<td>" + escapeHtml(r.gradeCommodity) + "</td>";
+    html += "<td class=\"num\">" + formatQty(r.quantity) + "</td>";
+    html += "<td class=\"num\">" + formatAmount(r.cpmt) + "</td>";
+    html += "<td class=\"num\">" + formatAmount(r.amt) + "</td>";
+    html += "<td>" + escapeHtml(r.dealId) + "</td>";
+    html += "<td>" + escapeHtml(r.status) + "</td>";
+    html += "</tr>";
+  }
+  if (rows.length === 0) {
+    html = "<tr><td colspan=\"11\">No BL records available for reuse.</td></tr>";
+  }
+  document.getElementById("blReuseTableBody").innerHTML = html;
+  var trs = document.querySelectorAll("#blReuseTableBody tr[data-blreuseid]");
+  for (var j = 0; j < trs.length; j++) {
+    trs[j].addEventListener("click", function () {
+      state.selectedBlReuseId = this.getAttribute("data-blreuseid");
+      renderBlReuseTab(findTfById(state.selectedTfId));
+    });
+  }
+}
+
+function renderStatusTab(tf) {
+  var sd = tf.statusDetails || {};
+  fillSelectOptions("stOgbsStatus", appData.masterData.ogbsStatuses, "Select...", sd.ogbsStatus);
+  document.getElementById("stOgbsRemarks").value = sd.ogbsRemarks || "";
+  document.getElementById("stTrader").value = sd.trader || "";
+  document.getElementById("stCpmtAmount").value = formatAmount(computeCpmtAmount(tf));
+  fillSelectOptions("stBlockedStatus", appData.masterData.blockedStatuses, "Select...", sd.blockedStatus);
+  document.getElementById("stBlockedAmount").value = formatAmount(sd.blockedAmount);
+  document.getElementById("stBlockedFrom").value = sd.blockedFrom || "";
+  document.getElementById("stBlockedTo").value = sd.blockedTo || "";
+  document.getElementById("stBlockedRemarks").value = sd.blockedRemarks || "";
+  document.getElementById("stDealId").value = sd.dealId || "";
+  document.getElementById("stOttkNo").value = sd.ottkNo || "";
+  document.getElementById("stDttkNo").value = sd.dttkNo || "";
+  fillSelectOptions("stTfStatus", appData.masterData.tfStatuses, "Select...", sd.tfStatus);
+  document.getElementById("stCreatedBy").value = sd.createdBy || "";
+  document.getElementById("stCreatedDate").value = sd.createdDate || "";
+  document.getElementById("stCreatedTime").value = sd.createdTime || "";
+  document.getElementById("stChangedBy").value = sd.changedBy || "";
+  document.getElementById("stChangedDate").value = sd.changedDate || "";
+  document.getElementById("stChangedTime").value = sd.changedTime || "";
+  document.getElementById("stTfExpired").checked = !!sd.tradeflowExpired;
+  document.getElementById("stTfDeleted").checked = !!sd.tradeflowDeleted;
+}
+
+function renderActiveWorkspaceTabs() {
+  var tf = findTfById(state.selectedTfId);
+  if (!tf) { return; }
+  renderBasicDataTab(tf);
+  renderShippingDataTab(tf);
+  renderPurchSalesTab(tf);
+  renderBlData1Tab(tf);
+  renderBlReuseTab(tf);
+  renderStatusTab(tf);
+}
+
+function switchWorkspaceTab(tabKey) {
+  state.activeTab = tabKey;
+  var tabs = ["basicData", "shippingData", "purchSalesData", "blData1", "blData2", "statusTab"];
+  for (var i = 0; i < tabs.length; i++) {
+    var panel = document.getElementById("tabPanel-" + tabs[i]);
+    panel.classList.toggle("hidden", tabs[i] !== tabKey);
+  }
+  var buttons = document.querySelectorAll("#wsTabBar .tab-btn");
+  for (var j = 0; j < buttons.length; j++) {
+    buttons[j].classList.toggle("active", buttons[j].getAttribute("data-tab") === tabKey);
+  }
+}
+
+function openWorkspace(tfId) {
+  var tf = findTfById(tfId);
+  if (!tf) {
+    showToast("Trade flow " + tfId + " was not found.", "error");
+    return;
+  }
+  state.selectedTfId = tfId;
+  state.selectedBlId = "";
+  state.selectedBlDetailIds = [];
+  state.selectedBlReuseId = "";
+  state.blData1Page = 0;
+  state.pendingDealAssignment = null;
+  document.getElementById("wsTfId").value = tf.tfId;
+  document.getElementById("wsSplitId").value = tf.splitId;
+  document.getElementById("screenMain").classList.add("hidden");
+  document.getElementById("screenWorkspace").classList.remove("hidden");
+  renderActiveWorkspaceTabs();
+  switchWorkspaceTab("basicData");
+}
+
+function closeWorkspace() {
+  document.getElementById("screenWorkspace").classList.add("hidden");
+  document.getElementById("screenMain").classList.remove("hidden");
+  state.selectedTfId = "";
+  state.selectedBlId = "";
+  state.selectedBlDetailIds = [];
+  state.selectedBlReuseId = "";
+  state.blData1Page = 0;
+  state.pendingDealAssignment = null;
+}
+
+function readWorkspaceIntoTf(tf) {
+  tf.bu = document.getElementById("bdBu").value;
+  tf.buCode = document.getElementById("bdBuCode").value;
+  tf.gtCommod = document.getElementById("bdGtCommod").value;
+  tf.buCommodity = document.getElementById("bdBuCommodity").value;
+  tf.childComm1 = document.getElementById("bdChild1").value;
+  tf.childComm2 = document.getElementById("bdChild2").value;
+  tf.contractPrice = toSafeNumber(document.getElementById("idContractPrice").value);
+  tf.currentMarketPriceMt = toSafeNumber(document.getElementById("idCmp").value);
+  tf.tfType = document.getElementById("odTfType").value;
+  tf.shipping = tf.shipping || {};
+  tf.shipping.blNumber = document.getElementById("shBlNumber").value;
+  tf.shipping.vesselName = document.getElementById("shVessel").value;
+  tf.shipping.receiptDate = document.getElementById("shReceiptDate").value;
+  tf.shipping.sustainabilityFlows = document.getElementById("shSustain").checked;
+  tf.shipping.loadPort = document.getElementById("shLoadPort").value;
+  tf.shipping.polCountry = document.getElementById("shPolCountry").value;
+  tf.shipping.dischargePort = document.getElementById("shDischargePort").value;
+  tf.shipping.podCountry = document.getElementById("shPodCountry").value;
+  tf.shipping.notifyParty = document.getElementById("shNotifyParty").value;
+  tf.shipping.sailingDate = document.getElementById("shSailingDate").value;
+  tf.shipping.etaAtPod = document.getElementById("shEta").value;
+  tf.shipping.fromDate = document.getElementById("shFromDate").value;
+  tf.shipping.toDate = document.getElementById("shToDate").value;
+  tf.shipping.blConsignee = document.getElementById("shBlConsignee").value;
+  tf.shipping.lcDetails = document.getElementById("shLcDetails").value;
+  tf.shipping.bl13From = document.getElementById("shBl13From").value;
+  tf.shipping.bl13To = document.getElementById("shBl13To").value;
+  tf.shipping.bl33From = document.getElementById("shBl33From").value;
+  tf.shipping.bl33To = document.getElementById("shBl33To").value;
+  tf.purchSales = tf.purchSales || {};
+  tf.purchSales.purchContract = document.getElementById("plContract").value;
+  tf.purchSales.purchIncoterms = document.getElementById("plIncoterms").value;
+  tf.purchSales.purchPayTerms = document.getElementById("plPayTerms").value;
+  tf.purchSales.purchSellerBank = document.getElementById("plSellerBank").value;
+  tf.purchSales.purchBuyerBank = document.getElementById("plBuyerBank").value;
+  tf.purchSales.sellerLocation = document.getElementById("plSellerLoc").value;
+  tf.purchSales.originEntity = document.getElementById("plOriginEntity").value;
+  tf.purchSales.salesContract = document.getElementById("slContract").value;
+  tf.purchSales.salesIncoterms = document.getElementById("slIncoterms").value;
+  tf.purchSales.salesPayTerms = document.getElementById("slPayTerms").value;
+  tf.purchSales.salesSellerBank = document.getElementById("slSellerBank").value;
+  tf.purchSales.salesBuyerBank = document.getElementById("slBuyerBank").value;
+  tf.purchSales.buyerLocation = document.getElementById("slBuyerLoc").value;
+  tf.statusDetails = tf.statusDetails || {};
+  tf.statusDetails.ogbsStatus = document.getElementById("stOgbsStatus").value;
+  tf.statusDetails.ogbsRemarks = document.getElementById("stOgbsRemarks").value;
+  tf.statusDetails.trader = document.getElementById("stTrader").value;
+  tf.statusDetails.blockedStatus = document.getElementById("stBlockedStatus").value;
+  tf.statusDetails.blockedAmount = toSafeNumber(document.getElementById("stBlockedAmount").value);
+  tf.statusDetails.blockedFrom = document.getElementById("stBlockedFrom").value;
+  tf.statusDetails.blockedTo = document.getElementById("stBlockedTo").value;
+  tf.statusDetails.blockedRemarks = document.getElementById("stBlockedRemarks").value;
+  tf.statusDetails.ottkNo = document.getElementById("stOttkNo").value;
+  tf.statusDetails.dttkNo = document.getElementById("stDttkNo").value;
+  tf.statusDetails.tfStatus = document.getElementById("stTfStatus").value;
+}
+
+function handleRefresh() {
+  appData = cloneEmptyPayload();
+  appData.masterData = cloneObj(DUMMY_MASTER_DATA);
+  appData.tradeFlows = cloneArr(DUMMY_TRADEFLOWS);
+  appData.meta.keyDate = "04-07-2024";
+  renderMainTable();
+  showToast("Trade flow list refreshed.", "success");
+}
+
+function handleWsUpdate() {
+  var tf = findTfById(state.selectedTfId);
+  if (!tf) { return; }
+  applyPendingDealAssignment(tf);
+  readWorkspaceIntoTf(tf);
+  renderActiveWorkspaceTabs();
+  renderMainTable();
+  showToast("Trade flow " + tf.tfId + " updated.", "success");
+}
+
+function handleCreateBl() {
+  var tf = findTfById(state.selectedTfId);
+  if (!tf) { return; }
+  var rowsToCreate = parseInt(document.getElementById("blRowsInput").value, 10);
+  if (!rowsToCreate || rowsToCreate <= 0) {
+    showToast("Enter a valid number of BL Rows to create.", "error");
+    return;
+  }
+  tf.blDetails = tf.blDetails || [];
+  var perRowQty = toSafeNumber(tf.quantity) / rowsToCreate;
+  var perRowCpmt = toSafeNumber(tf.currentMarketPriceMt);
+  var nextIdSeed = 4000010953 + tf.blDetails.length;
+  var createdRows = [];
+  for (var i = 0; i < rowsToCreate; i++) {
+    var newRow = {
+      blId: normalizeIdForSap(nextIdSeed + i), split: (tf.blDetails.length + i + 1 < 10 ? "0" : "") +
+        String(tf.blDetails.length + i + 1),
+      blNumber: (tf.shipping && tf.shipping.blNumber) || "", vesselName: (tf.shipping && tf.shipping.vesselName) ||
+        tf.blVesselName || "",
+      gradeCommodity: tf.buCommodity || "", quantity: perRowQty, cpmt: perRowCpmt,
+      amt: perRowQty * perRowCpmt, dealId: "", lotId: "", status: "BL CREATED"
+    };
+    tf.blDetails.push(newRow);
+    createdRows.push(newRow);
+  }
+  document.getElementById("blRowsInput").value = "";
+  renderBlData1Tab(tf);
+  showToast(rowsToCreate + " BL row(s) created.", "success");
+}
+
+function getBlContext(source) {
+  var tf = findTfById(state.selectedTfId);
+  if (!tf) { return null; }
+  if (source === "blData2") {
+    tf.blReuse = tf.blReuse || [];
+    return { tf: tf, rows: tf.blReuse, selectedId: state.selectedBlReuseId, listKey: "blReuse" };
+  }
+  tf.blDetails = tf.blDetails || [];
+  return { tf: tf, rows: tf.blDetails, selectedId: state.selectedBlId, listKey: "blDetails" };
+}
+
+function handleBlSplit(source) {
+  var ctx = getBlContext(source);
+  if (!ctx) { return; }
+  if (!ctx.selectedId) {
+    showToast("Select a BL row to split.", "error");
+    return;
+  }
+  showToast("BL Split request submitted for " + ctx.selectedId + ".", "success");
+}
+
+function handleUploadBlPdf() {
+  var tf = findTfById(state.selectedTfId);
+  if (!tf) { return; }
+  showToast("Upload BL PDF request submitted.", "success");
+}
+
+function handleSubTotal() {
+  var tf = findTfById(state.selectedTfId);
+  if (!tf) { return; }
+  renderBlData1Tab(tf);
+  showToast("Sub-Total recalculated.", "success");
+}
+
+function openComplianceModal(source) {
+  var ctx = getBlContext(source);
+  if (!ctx) { return; }
+  if (!ctx.selectedId) {
+    showToast("Select a BL row before releasing for invoicing.", "error");
+    return;
+  }
+  state.assignSource = source || "blData1";
+  state.complianceOpenerBtn = document.activeElement;
+  document.getElementById("complianceOverlay").classList.remove("hidden");
+}
+
+function closeComplianceModal() {
+  document.getElementById("complianceOverlay").classList.add("hidden");
+  if (state.complianceOpenerBtn && typeof state.complianceOpenerBtn.focus === "function") {
+    state.complianceOpenerBtn.focus();
+  }
+}
+
+function findBlRow(rows, blId) {
+  for (var i = 0; i < (rows || []).length; i++) {
+    if (rows[i].blId === blId) { return rows[i]; }
+  }
+  return null;
+}
+
+function populateDealIdOptions(preselect) {
+  var el = document.getElementById("adDealId");
+  if (!el) { return; }
+  var list = appData.dealMaster || [];
+  var html = "<option value=\"\">Select Deal ID</option>";
+  var seen = {};
+  for (var i = 0; i < list.length; i++) {
+    var d = list[i];
+    seen[d.dealId] = true;
+    html += "<option value=\"" + escapeHtml(d.dealId) + "\">" + escapeHtml(d.dealId) + "</option>";
+  }
+  if (preselect && !seen[preselect]) {
+    html += "<option value=\"" + escapeHtml(preselect) + "\">" + escapeHtml(preselect) + "</option>";
+  }
+  el.innerHTML = html;
+  el.value = preselect || "";
+}
+
+function openAssignDealModal() {
+  var ctx = getBlContext(state.assignSource);
+  var tf = ctx ? ctx.tf : null;
+  var blRow = ctx ? findBlRow(ctx.rows, ctx.selectedId) : null;
+  if (!tf || !blRow) { return; }
+  fillSelectOptions("adDealStructure", appData.masterData.dealStructures, "Select...", "");
+  fillSelectOptions("adDealStatus", appData.masterData.dealStatuses, "Select...", "");
+  fillSelectOptions("adIncoTerms", appData.masterData.incoTerms, "Select...", "");
+  populateDealIdOptions(blRow.dealId || "");
+  document.getElementById("adAlreadyInvoiced").checked = false;
+  document.getElementById("adDealAmount").value = formatAmount(0);
+  document.getElementById("adPartiallyInvoiced").value = formatAmount(0);
+  document.getElementById("adTargetAssignAmt").value = formatAmount(0);
+  document.getElementById("adSelectedBlAmt").value = formatAmount(blRow.amt);
+  document.getElementById("adAssignedEarlier").value = formatAmount(0);
+  document.getElementById("adTotalAssigned").value = formatAmount(0);
+  document.getElementById("adBalToAssign").value = formatAmount(0);
+  document.getElementById("adMcRefNo").value = "";
+  document.getElementById("adMcCommodity").value = tf.buCommodity || "";
+  document.getElementById("adSoPoDate").value = "";
+  document.getElementById("adProposedInvDate").value = "";
+  document.getElementById("adInvCommodity").value = tf.buCommodity || "";
+  document.getElementById("adExceptionChk").checked = false;
+  document.getElementById("adExceptionNotes").value = "";
+  recalcAssignTotals();
+  document.getElementById("assignDealOverlay").classList.remove("hidden");
+}
+
+function closeAssignDealModal() {
+  document.getElementById("assignDealOverlay").classList.add("hidden");
+  if (state.assignOpenerBtn && typeof state.assignOpenerBtn.focus === "function") {
+    state.assignOpenerBtn.focus();
+  }
+}
+
+function syncTargetAssignAmt() {
+  document.getElementById("adTargetAssignAmt").value = document.getElementById("adDealAmount").value;
+}
+
+function recalcAssignTotals() {
+  var selectedBlAmt = toSafeNumber(document.getElementById("adSelectedBlAmt").value);
+  var assignedEarlier = toSafeNumber(document.getElementById("adAssignedEarlier").value);
+  var targetAssignAmt = toSafeNumber(document.getElementById("adTargetAssignAmt").value);
+  var dealIdEntered = document.getElementById("adDealId").value.replace(/^\s+|\s+$/g, "") !== "";
+  var totalAssigned = assignedEarlier + (dealIdEntered ? selectedBlAmt : 0);
+  var balToAssign = targetAssignAmt - totalAssigned;
+  document.getElementById("adTotalAssigned").value = formatAmount(totalAssigned);
+  document.getElementById("adBalToAssign").value = formatAmount(balToAssign);
+}
+
+function handleAssignConfirm() {
+  var ctx = getBlContext(state.assignSource);
+  var tf = ctx ? ctx.tf : null;
+  var blRow = ctx ? findBlRow(ctx.rows, ctx.selectedId) : null;
+  if (!tf || !blRow) { closeAssignDealModal(); return; }
+  var dealStructure = document.getElementById("adDealStructure").value;
+  if (!dealStructure) {
+    showToast("Select a Deal Structure before assigning.", "error");
+    return;
+  }
+  var newDealId = document.getElementById("adDealId").value.replace(/^\s+|\s+$/g, "");
+  if (!newDealId) {
+    showToast("Enter a Deal ID before assigning.", "error");
+    return;
+  }
+  state.pendingDealAssignment = {
+    tfId: tf.tfId, source: state.assignSource, blId: blRow.blId, newDealId: newDealId
+  };
+  closeAssignDealModal();
+  showToast("Deal ID " + newDealId + " ready for BL " + blRow.blId + ". Click Update to save the assignment.",
+    "success");
+}
+
+function applyPendingDealAssignment(tf) {
+  var pending = state.pendingDealAssignment;
+  if (!pending || pending.tfId !== tf.tfId) { return; }
+  var ctx = getBlContext(pending.source);
+  var blRow = ctx ? findBlRow(ctx.rows, pending.blId) : null;
+  if (!blRow) {
+    state.pendingDealAssignment = null;
+    showToast("Select a BL row before releasing for invoicing.", "error");
+    return;
+  }
+  blRow.dealId = pending.newDealId;
+  blRow.status = "DEAL ASSIGNED";
+  if (pending.source === "blData2") { renderBlReuseTab(tf); } else { renderBlData1Tab(tf); }
+  showToast("Deal ID " + pending.newDealId + " assigned to BL " + blRow.blId + ".", "success");
+  state.pendingDealAssignment = null;
+}
+
+function findDealIdElsewhere(dealId, excludeTfId, excludeBlId) {
+  var flows = appData.tradeFlows || [];
+  for (var i = 0; i < flows.length; i++) {
+    var tf = flows[i];
+    var lists = [tf.blDetails || [], tf.blReuse || []];
+    for (var L = 0; L < lists.length; L++) {
+      var rows = lists[L];
+      for (var j = 0; j < rows.length; j++) {
+        var r = rows[j];
+        if (r.dealId === dealId && !(tf.tfId === excludeTfId && r.blId === excludeBlId)) {
+          return { tfId: tf.tfId, blId: r.blId };
+        }
+      }
+    }
+  }
+  return null;
+}
+
+function handleDealIdLookup() {
+  var ctx = getBlContext(state.assignSource);
+  var tf = ctx ? ctx.tf : null;
+  var blRow = ctx ? findBlRow(ctx.rows, ctx.selectedId) : null;
+  if (!tf || !blRow) { return; }
+  var typedDealId = document.getElementById("adDealId").value.replace(/^\s+|\s+$/g, "");
+  if (!typedDealId) { return; }
+
+  var master = null;
+  var list = appData.dealMaster || [];
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].dealId === typedDealId) { master = list[i]; break; }
+  }
+  var elsewhere = findDealIdElsewhere(typedDealId, tf.tfId, blRow.blId);
+
+  updateDealLookupUI({
+    dealId: typedDealId,
+    found: !!master,
+    dealStatus: master ? master.dealStatus : "",
+    dealStructure: master ? master.dealStructure : "",
+    dealAmount: master ? master.dealAmount : 0,
+    alreadyAssigned: !!elsewhere,
+    assignedTfId: elsewhere ? elsewhere.tfId : "",
+    assignedBlId: elsewhere ? elsewhere.blId : ""
+  });
+}
+
+function updateDealLookupUI(result) {
+  if (result.found) {
+    var statusEl = document.getElementById("adDealStatus");
+    if (statusEl.value.trim() === "" && result.dealStatus) { statusEl.value = result.dealStatus; }
+
+    var structureEl = document.getElementById("adDealStructure");
+    if (structureEl.value.trim() === "" && result.dealStructure) { structureEl.value = result.dealStructure; }
+
+    var amountEl = document.getElementById("adDealAmount");
+    if (toSafeNumber(amountEl.value) === 0 && result.dealAmount) {
+      amountEl.value = formatAmount(result.dealAmount);
+      syncTargetAssignAmt();
+    }
+    recalcAssignTotals();
+  }
+
+  if (result.alreadyAssigned) {
+    showToast("Deal ID " + result.dealId + " is already assigned to BL " + result.assignedBlId +
+      " under Trade Flow " + result.assignedTfId + ". Assigning it here again will move it.", "warning");
+  } else if (result.found) {
+    showToast("Deal " + result.dealId + " found.", "success");
+  } else {
+    showToast("Deal ID " + result.dealId + " was not found.", "warning");
+  }
+}
+
+function parseDdMmYyyyParts(str) {
+  var m = String(str || "").match(/^(\d{2})-(\d{2})-(\d{4})$/);
+  if (!m) { return null; }
+  return { d: parseInt(m[1], 10), m: parseInt(m[2], 10) - 1, y: parseInt(m[3], 10) };
+}
+
+function formatDdMmYyyyParts(y, m, d) {
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  return pad(d) + "-" + pad(m + 1) + "-" + y;
+}
+
+function closeAllDatePopups() {
+  var popups = document.querySelectorAll(".date-cal-popup");
+  for (var i = 0; i < popups.length; i++) { popups[i].classList.add("hidden"); }
+}
+
+document.addEventListener("click", function (e) {
+  if (e.target && e.target.closest &&
+      (e.target.closest(".date-cal-popup") || e.target.closest(".date-cal-btn"))) {
+    return;
+  }
+  closeAllDatePopups();
+});
+
+function buildCalendarPopup(inputEl) {
+  var popup = document.createElement("div");
+  popup.className = "date-cal-popup hidden";
+  var initial = parseDdMmYyyyParts(inputEl.value);
+  var now = new Date();
+  var viewYear = initial ? initial.y : now.getFullYear();
+  var viewMonth = initial ? initial.m : now.getMonth();
+  var mode = "day";
+  var monthShortNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  function render() {
+    if (mode === "monthYear") { renderMonthYearView(); } else { renderDayView(); }
+  }
+
+  function renderDayView() {
+    var monthNames = ["January", "February", "March", "April", "May", "June", "July",
+      "August", "September", "October", "November", "December"];
+    var firstOfMonth = new Date(viewYear, viewMonth, 1);
+    var startDow = firstOfMonth.getDay();
+    var daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+    var daysInPrevMonth = new Date(viewYear, viewMonth, 0).getDate();
+    var selected = parseDdMmYyyyParts(inputEl.value);
+    var today = new Date();
+
+    var html = "";
+    html += "<div class=\"date-cal-head\">";
+    html += "<button type=\"button\" class=\"cal-month-toggle\" data-action=\"open-monthyear\">" +
+      monthNames[viewMonth] + " " + viewYear + " <span class=\"cal-caret\">&#9662;</span></button>";
+    html += "<span class=\"date-cal-nav\">";
+    html += "<button type=\"button\" data-nav=\"prev\">&#9650;</button>";
+    html += "<button type=\"button\" data-nav=\"next\">&#9660;</button>";
+    html += "</span>";
+    html += "</div>";
+    html += "<div class=\"date-cal-grid\">";
+    var dows = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+    for (var i = 0; i < 7; i++) { html += "<div class=\"dow\">" + dows[i] + "</div>"; }
+    for (var i = 0; i < startDow; i++) {
+      var pd = daysInPrevMonth - startDow + 1 + i;
+      html += "<button type=\"button\" class=\"day other-month\" disabled>" + pd + "</button>";
+    }
+    for (var d = 1; d <= daysInMonth; d++) {
+      var isToday = (today.getFullYear() === viewYear && today.getMonth() === viewMonth && today.getDate() === d);
+      var isSelected = !!(selected && selected.y === viewYear && selected.m === viewMonth && selected.d === d);
+      var cls = "day" + (isToday ? " today" : "") + (isSelected ? " selected" : "");
+      html += "<button type=\"button\" class=\"" + cls + "\" data-day=\"" + d + "\">" + d + "</button>";
+    }
+    var totalCells = startDow + daysInMonth;
+    var trailing = (7 - (totalCells % 7)) % 7;
+    for (var t = 1; t <= trailing; t++) {
+      html += "<button type=\"button\" class=\"day other-month\" disabled>" + t + "</button>";
+    }
+    html += "</div>";
+    html += "<div class=\"date-cal-foot\">";
+    html += "<button type=\"button\" data-action=\"clear\">Clear</button>";
+    html += "<button type=\"button\" data-action=\"today\">Today</button>";
+    html += "</div>";
+    popup.innerHTML = html;
+    if (popup.parentNode) { positionCalendarPopup(popup, inputEl.parentNode); }
+
+    popup.querySelector('[data-action="open-monthyear"]').addEventListener("click", function (e) {
+      e.stopPropagation();
+      mode = "monthYear";
+      render();
+    });
+    popup.querySelector('[data-nav="prev"]').addEventListener("click", function (e) {
+      e.stopPropagation();
+      viewMonth--; if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+      render();
+    });
+    popup.querySelector('[data-nav="next"]').addEventListener("click", function (e) {
+      e.stopPropagation();
+      viewMonth++; if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+      render();
+    });
+    var dayButtons = popup.querySelectorAll("button.day[data-day]");
+    for (var j = 0; j < dayButtons.length; j++) {
+      dayButtons[j].addEventListener("click", function (e) {
+        e.stopPropagation();
+        var day = parseInt(this.getAttribute("data-day"), 10);
+        inputEl.value = formatDdMmYyyyParts(viewYear, viewMonth, day);
+        popup.classList.add("hidden");
+        inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+        inputEl.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+    }
+    popup.querySelector('[data-action="clear"]').addEventListener("click", function (e) {
+      e.stopPropagation();
+      inputEl.value = "";
+      popup.classList.add("hidden");
+      inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+      inputEl.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    popup.querySelector('[data-action="today"]').addEventListener("click", function (e) {
+      e.stopPropagation();
+      var t = new Date();
+      inputEl.value = formatDdMmYyyyParts(t.getFullYear(), t.getMonth(), t.getDate());
+      popup.classList.add("hidden");
+      inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+      inputEl.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  }
+
+  function renderMonthYearView() {
+    var html = "";
+    html += "<div class=\"cal-year-anchor\" data-action=\"close-monthyear\">" + viewYear + "</div>";
+    html += "<div class=\"cal-month-grid\">";
+    for (var m = 0; m < 12; m++) {
+      var cls = "cal-month-cell" + (m === viewMonth ? " selected" : "");
+      html += "<button type=\"button\" class=\"" + cls + "\" data-month=\"" + m + "\">" +
+        monthShortNames[m] + "</button>";
+    }
+    html += "</div>";
+    html += "<div class=\"cal-year-list\">";
+    for (var y = viewYear + 1; y <= viewYear + 14; y++) {
+      html += "<button type=\"button\" class=\"cal-year-row\" data-year=\"" + y + "\">" + y + "</button>";
+    }
+    html += "</div>";
+    popup.innerHTML = html;
+    if (popup.parentNode) { positionCalendarPopup(popup, inputEl.parentNode); }
+
+    popup.querySelector('[data-action="close-monthyear"]').addEventListener("click", function (e) {
+      e.stopPropagation();
+      mode = "day";
+      render();
+    });
+    var monthCells = popup.querySelectorAll(".cal-month-cell");
+    for (var i = 0; i < monthCells.length; i++) {
+      monthCells[i].addEventListener("click", function (e) {
+        e.stopPropagation();
+        viewMonth = parseInt(this.getAttribute("data-month"), 10);
+        mode = "day";
+        render();
+      });
+    }
+    var yearRows = popup.querySelectorAll(".cal-year-row");
+    for (var k = 0; k < yearRows.length; k++) {
+      yearRows[k].addEventListener("click", function (e) {
+        e.stopPropagation();
+        viewYear = parseInt(this.getAttribute("data-year"), 10);
+        render();
+      });
+    }
+  }
+
+  render();
+  return popup;
+}
+
+function positionCalendarPopup(popup, wrap) {
+  var rect = wrap.getBoundingClientRect();
+  var popupWidth = popup.offsetWidth || 236;
+  var popupHeight = popup.offsetHeight || 300;
+  var margin = 8;
+  var left = rect.left;
+  if (left + popupWidth > window.innerWidth - margin) { left = window.innerWidth - popupWidth - margin; }
+  if (left < margin) { left = margin; }
+  var top = rect.bottom + 4;
+  if (top + popupHeight > window.innerHeight - margin) {
+    var altTop = rect.top - popupHeight - 4;
+    top = (altTop < margin) ? margin : altTop;
+  }
+  popup.style.left = left + "px";
+  popup.style.top = top + "px";
+}
+
+function formatDateDigits(raw) {
+  var digits = String(raw || "").replace(/[^\d]/g, "").slice(0, 8);
+  var parts = [];
+  if (digits.length > 0) { parts.push(digits.slice(0, 2)); }
+  if (digits.length > 2) { parts.push(digits.slice(2, 4)); }
+  if (digits.length > 4) { parts.push(digits.slice(4, 8)); }
+  return parts.join("-");
+}
+
+function initDatePicker(inputId) {
+  var input = document.getElementById(inputId);
+  if (!input) { return; }
+  var wrap = input.parentNode;
+  if (!wrap || !wrap.classList || !wrap.classList.contains("date-field-wrap")) { return; }
+  var btn = wrap.querySelector(".date-cal-btn");
+  if (!btn) { return; }
+  var popupEl = null;
+
+  input.addEventListener("input", function () {
+    var digits = this.value.replace(/[^\d]/g, "");
+    if (digits.length === 0) { return; }
+    var formatted = formatDateDigits(digits);
+    if (formatted !== this.value) { this.value = formatted; }
+  });
+
+  btn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    var reopening = !popupEl || popupEl.classList.contains("hidden");
+    closeAllDatePopups();
+    if (popupEl && popupEl.parentNode) { popupEl.parentNode.removeChild(popupEl); }
+    popupEl = null;
+    if (reopening) {
+      popupEl = buildCalendarPopup(input);
+      document.body.appendChild(popupEl);
+      popupEl.classList.remove("hidden");
+      positionCalendarPopup(popupEl, wrap);
+    }
+  });
+}
+
+function normalizeKeyDateFormat(str) {
+  var m = String(str || "").match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  return m ? (m[1] + "-" + m[2] + "-" + m[3]) : str;
+}
+
+function handleKeyDateChange() {
+  var el = document.getElementById("mainKeyDate");
+  appData.meta.keyDate = el ? el.value : "";
+  renderMainTable();
+}
+
+function attachStaticListeners() {
+  document.getElementById("btnRefresh").addEventListener("click", handleRefresh);
+  initDatePicker("mainKeyDate");
+  document.getElementById("mainKeyDate").addEventListener("input", handleKeyDateChange);
+  document.getElementById("btnToggleMainFilters").addEventListener("click", function () {
+    document.getElementById("mainFiltersRow").classList.toggle("hidden");
+  });
+  document.getElementById("filterBu").addEventListener("change", renderMainTable);
+  document.getElementById("filterCommodity").addEventListener("change", renderMainTable);
+  document.getElementById("filterTfStatus").addEventListener("change", renderMainTable);
+  document.getElementById("filterOgbsStatus").addEventListener("change", renderMainTable);
+  document.getElementById("filterBlockedStatus").addEventListener("change", renderMainTable);
+  document.getElementById("filterIncludeExpired").addEventListener("change", renderMainTable);
+  document.getElementById("filterIncludeDeleted").addEventListener("change", renderMainTable);
+  document.getElementById("btnClearMainFilters").addEventListener("click", function () {
+    document.getElementById("filterBu").value = "";
+    document.getElementById("filterCommodity").value = "";
+    document.getElementById("filterTfStatus").value = "";
+    document.getElementById("filterOgbsStatus").value = "";
+    document.getElementById("filterBlockedStatus").value = "";
+    document.getElementById("filterIncludeExpired").checked = false;
+    document.getElementById("filterIncludeDeleted").checked = false;
+    renderMainTable();
+  });
+  document.getElementById("btnWsCancel").addEventListener("click", closeWorkspace);
+  document.getElementById("btnWsUpdate").addEventListener("click", handleWsUpdate);
+  document.getElementById("screenWorkspace").addEventListener("click", function (evt) {
+    if (evt.target === this) { closeWorkspace(); }
+  });
+  var tabButtons = document.querySelectorAll("#wsTabBar .tab-btn");
+  for (var i = 0; i < tabButtons.length; i++) {
+    tabButtons[i].addEventListener("click", function () {
+      switchWorkspaceTab(this.getAttribute("data-tab"));
+    });
+  }
+  document.getElementById("btnUploadBlPdf").addEventListener("click", handleUploadBlPdf);
+  document.getElementById("btnSubTotal").addEventListener("click", handleSubTotal);
+  document.getElementById("btnAssignDealRelease").addEventListener("click", function () {
+    state.complianceOpenerBtn = this;
+    openComplianceModal("blData1");
+  });
+  document.getElementById("btnBlSplitMain").addEventListener("click", function () { handleBlSplit("blData1"); });
+  document.getElementById("btnCreateBl").addEventListener("click", handleCreateBl);
+  document.getElementById("btnBlInsertRow").addEventListener("click", handleInsertBlRow);
+  document.getElementById("btnBlDeleteRow").addEventListener("click", handleDeleteBlRow);
+  document.getElementById("btnBlPageFirst").addEventListener("click", handleBlPageFirst);
+  document.getElementById("btnBlPagePrev").addEventListener("click", handleBlPagePrev);
+  document.getElementById("btnBlPageNext").addEventListener("click", handleBlPageNext);
+  document.getElementById("btnBlPageLast").addEventListener("click", handleBlPageLast);
+  document.getElementById("btnBlData1Update").addEventListener("click", handleWsUpdate);
+  document.getElementById("btnBlData1Cancel").addEventListener("click", closeWorkspace);
+  document.getElementById("btnBlSplitReuse").addEventListener("click", function () { handleBlSplit("blData2"); });
+  document.getElementById("btnAssignDealReleaseReuse").addEventListener("click", function () {
+    state.complianceOpenerBtn = this;
+    openComplianceModal("blData2");
+  });
+  document.getElementById("btnComplianceCancel").addEventListener("click", closeComplianceModal);
+  document.getElementById("btnComplianceCloseX").addEventListener("click", closeComplianceModal);
+  document.getElementById("btnComplianceYes").addEventListener("click", function () {
+    closeComplianceModal();
+    state.assignOpenerBtn = state.complianceOpenerBtn;
+    openAssignDealModal();
+  });
+  document.getElementById("btnComplianceExcept").addEventListener("click", function () {
+    closeComplianceModal();
+    state.assignOpenerBtn = state.complianceOpenerBtn;
+    openAssignDealModal();
+  });
+  document.getElementById("btnAssignCancel").addEventListener("click", closeAssignDealModal);
+  document.getElementById("btnAssignCloseX").addEventListener("click", closeAssignDealModal);
+  document.getElementById("btnAssignConfirm").addEventListener("click", handleAssignConfirm);
+  document.getElementById("adDealId").addEventListener("input", recalcAssignTotals);
+  document.getElementById("adDealId").addEventListener("blur", handleDealIdLookup);
+  document.getElementById("adDealId").addEventListener("change", handleDealIdLookup);
+  initDatePicker("adSoPoDate");
+  initDatePicker("adProposedInvDate");
+  initDatePicker("shReceiptDate");
+  initDatePicker("shSailingDate");
+  initDatePicker("shEta");
+  initDatePicker("shFromDate");
+  initDatePicker("shToDate");
+  initDatePicker("shBl13From");
+  initDatePicker("shBl13To");
+  initDatePicker("shBl33From");
+  initDatePicker("shBl33To");
+  initDatePicker("stBlockedFrom");
+  initDatePicker("stBlockedTo");
+  document.getElementById("adAssignedEarlier").addEventListener("input", recalcAssignTotals);
+  document.getElementById("adTargetAssignAmt").addEventListener("input", recalcAssignTotals);
+  document.getElementById("adDealAmount").addEventListener("input", function () {
+    syncTargetAssignAmt();
+    recalcAssignTotals();
+  });
+  document.getElementById("idContractPrice").addEventListener("input", function () {
+    var tf = findTfById(state.selectedTfId);
+    if (!tf) { return; }
+    tf.contractPrice = toSafeNumber(this.value);
+    document.getElementById("idContractAmt").value = formatAmount(computeContractAmount(tf));
+  });
+  document.getElementById("idCmp").addEventListener("input", function () {
+    var tf = findTfById(state.selectedTfId);
+    if (!tf) { return; }
+    tf.currentMarketPriceMt = toSafeNumber(this.value);
+    document.getElementById("idCpmtAmt").value = formatAmount(computeCpmtAmount(tf));
+  });
+  document.getElementById("shSailingDate").addEventListener("input", function () {
+    var tf = findTfById(state.selectedTfId);
+    if (!tf || !tf.shipping) { return; }
+    tf.shipping.sailingDate = this.value;
+    document.getElementById("shTransit").value = computeTransitDays(tf.shipping.sailingDate, tf.shipping.etaAtPod);
+  });
+  document.getElementById("shEta").addEventListener("input", function () {
+    var tf = findTfById(state.selectedTfId);
+    if (!tf || !tf.shipping) { return; }
+    tf.shipping.etaAtPod = this.value;
+    document.getElementById("shTransit").value = computeTransitDays(tf.shipping.sailingDate, tf.shipping.etaAtPod);
+  });
+  document.getElementById("complianceOverlay").addEventListener("click", function (evt) {
+    if (evt.target === this) { closeComplianceModal(); }
+  });
+  document.getElementById("assignDealOverlay").addEventListener("click", function (evt) {
+    if (evt.target === this) { closeAssignDealModal(); }
+  });
+  document.addEventListener("keydown", function (evt) {
+    if (evt.key !== "Escape") { return; }
+    if (!document.getElementById("assignDealOverlay").classList.contains("hidden")) { closeAssignDealModal(); }
+    else if (!document.getElementById("complianceOverlay").classList.contains("hidden")) { closeComplianceModal(); }
+  });
+}
+
+function applyAppData(newAppData) {
+  appData = newAppData;
+  if (!appData.masterData || !appData.masterData.gtCommodities ||
+    appData.masterData.gtCommodities.length === 0) {
+    appData.masterData = cloneObj(DUMMY_MASTER_DATA);
+  }
+  if (!appData.tradeFlows || appData.tradeFlows.length === 0) {
+    appData.tradeFlows = cloneArr(DUMMY_TRADEFLOWS);
+  }
+  if (!appData.dealMaster || appData.dealMaster.length === 0) {
+    appData.dealMaster = cloneArr(DUMMY_DEAL_MASTER);
+  }
+  populateMainFilterOptions();
+  var keyDateEl = document.getElementById("mainKeyDate");
+  if (keyDateEl) { keyDateEl.value = normalizeKeyDateFormat(appData.meta.keyDate || ""); }
+  renderMainTable();
+  if (appData.meta.message) {
+    showToast(appData.meta.message, String(appData.meta.messageType || "").toLowerCase());
+  }
+}
+
+function stackFieldGridLabels() {
+  var grids = document.querySelectorAll(".field-grid");
+  for (var g = 0; g < grids.length; g++) {
+    var grid = grids[g];
+    var children = Array.prototype.slice.call(grid.children);
+    var i = 0;
+    while (i < children.length) {
+      var el = children[i];
+      if (el.classList && el.classList.contains("port-field-group")) {
+        i += 1;
+        continue;
+      }
+      var next = children[i + 1];
+      if (!next) { break; }
+      var pair = document.createElement("div");
+      pair.className = "field-pair";
+      grid.insertBefore(pair, el);
+      pair.appendChild(el);
+      pair.appendChild(next);
+      i += 2;
+    }
+  }
+}
+
+function init() {
+  var initialData = (typeof TF_MANAGE_PAYLOAD !== "undefined") ? TF_MANAGE_PAYLOAD : cloneEmptyPayload();
+  try { applyAppData(initialData); } catch (e) {
+    if (window.console && console.error) { console.error("TF UI applyAppData failed", e); }
+  }
+  try { attachStaticListeners(); } catch (e) {
+    if (window.console && console.error) { console.error("TF UI attachStaticListeners failed", e); }
+  }
+  try { stackFieldGridLabels(); } catch (e) {
+    if (window.console && console.error) { console.error("TF UI stackFieldGridLabels failed", e); }
+  }
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+
+</body>
+</html>

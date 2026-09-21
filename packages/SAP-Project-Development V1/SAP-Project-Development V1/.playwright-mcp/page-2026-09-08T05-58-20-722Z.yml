@@ -1,0 +1,228 @@
+- generic [ref=f8e1]:
+  - dialog [ref=f8e3]:
+    - generic [ref=f8e4]:
+      - generic [ref=f8e5]:
+        - generic [ref=f8e7]:
+          - heading "Display Distribution Ticket" [level=2] [ref=f8e8]
+          - paragraph [ref=f8e9]: Loading DTTK…
+        - generic [ref=f8e10]:
+          - generic [ref=f8e11]: Created By
+          - button "Close modal" [active] [ref=f8e13] [cursor=pointer]: ×
+      - generic [ref=f8e14]:
+        - generic [ref=f8e15]:
+          - generic [ref=f8e16]: Transaction Details
+          - generic [ref=f8e17]:
+            - generic [ref=f8e18]:
+              - generic [ref=f8e19]: DTTK Type 1
+              - combobox "DTTK Type 1" [disabled] [ref=f8e20]:
+                - option "Select" [selected]
+                - option "01 Discounting & Confirmation"
+                - option "02 Discounting Only"
+                - option "03 Confirmation Only"
+            - generic [ref=f8e21]:
+              - generic [ref=f8e22]: DTTK Type 2
+              - combobox "DTTK Type 2" [disabled] [ref=f8e23]:
+                - option "01 New" [selected]
+                - option "02 With Ref OTTK"
+            - generic [ref=f8e24]:
+              - generic [ref=f8e25]: Structure
+              - combobox "Structure" [disabled] [ref=f8e26]:
+                - option "Select structure" [selected]
+                - option "DSX — Deposit Set Off - Cross Border"
+                - option "LCP — LC Prepayment"
+                - option "CC DSX — Cross Currency DSX"
+                - option "CC LCP — Cross Currency LCP"
+            - generic [ref=f8e27]:
+              - generic [ref=f8e28]: Entity String
+              - combobox "Entity String" [disabled] [ref=f8e29]:
+                - option "Select entity" [selected]
+        - generic [ref=f8e30]:
+          - generic [ref=f8e31]: Trade Details
+          - generic [ref=f8e32]:
+            - generic [ref=f8e33]:
+              - generic [ref=f8e34]: Origination Bank
+              - combobox "Origination Bank" [disabled] [ref=f8e35]:
+                - option "Select bank" [selected]
+            - generic [ref=f8e36]:
+              - generic [ref=f8e37]: OTTK Trade Value
+              - generic [ref=f8e38]:
+                - 'textbox "Enter a number or use K, M, B, T (example: 1.5M)" [disabled] [ref=f8e39]':
+                  - /placeholder: e.g. 1.5M
+                - combobox [disabled] [ref=f8e40]:
+                  - option "USD" [selected]
+                  - option "EUR"
+                  - option "GBP"
+                  - option "INR"
+                  - option "AED"
+                  - option "SGD"
+                  - option "AUD"
+            - generic [ref=f8e41]:
+              - generic [ref=f8e42]: DTTK Trade Value
+              - generic [ref=f8e43]:
+                - 'textbox "Enter a number or use K, M, B, T (example: 1.5M)" [disabled] [ref=f8e44]':
+                  - /placeholder: e.g. 1.5M
+                - combobox [disabled] [ref=f8e45]:
+                  - option "USD" [selected]
+                  - option "EUR"
+                  - option "GBP"
+                  - option "INR"
+                  - option "AED"
+                  - option "SGD"
+                  - option "AUD"
+            - generic [ref=f8e46]:
+              - generic [ref=f8e47]:
+                - generic [ref=f8e48]: Expected LC Date
+                - textbox "Expected LC Date" [disabled] [ref=f8e49]
+              - generic [ref=f8e50]:
+                - generic [ref=f8e51]: Expected LC Tenor
+                - generic [ref=f8e52]:
+                  - textbox "Expected LC Tenor" [disabled] [ref=f8e53]:
+                    - /placeholder: "0"
+                  - generic [ref=f8e54]: days
+            - generic [ref=f8e55]:
+              - generic [ref=f8e56]:
+                - generic [ref=f8e57]: LC Applicant
+                - textbox [disabled] [ref=f8e58]
+              - generic [ref=f8e59]:
+                - generic [ref=f8e60]: LC Beneficiary
+                - textbox [disabled] [ref=f8e61]
+            - generic [ref=f8e62]:
+              - generic [ref=f8e63]: Company Code
+              - generic [ref=f8e64]:
+                - textbox [disabled] [ref=f8e65]
+                - textbox "(auto)" [disabled] [ref=f8e66]
+            - generic [ref=f8e67]:
+              - generic [ref=f8e68]: Business Area
+              - generic [ref=f8e69]:
+                - textbox "(auto)" [disabled] [ref=f8e70]
+                - textbox "(auto)" [disabled] [ref=f8e71]
+            - generic [ref=f8e72]:
+              - generic [ref=f8e73]: RMA With Orig. Bank
+              - combobox "RMA With Orig. Bank" [disabled] [ref=f8e74]:
+                - option "Select" [selected]
+                - option "Y Yes"
+                - option "N No"
+        - generic [ref=f8e75]:
+          - generic [ref=f8e76]: Discounting Loan Details
+          - generic [ref=f8e77]:
+            - generic [ref=f8e78]:
+              - generic [ref=f8e79]: Discounting Bank
+              - combobox "Discounting Bank" [disabled] [ref=f8e80]:
+                - option "Select bank" [selected]
+            - generic [ref=f8e81]:
+              - generic [ref=f8e82]: Disc. Calc Method
+              - combobox "Disc. Calc Method" [disabled] [ref=f8e83]:
+                - option "Select" [selected]
+                - option "DTY — Discounted Value"
+                - option "STR — Full Value"
+            - generic [ref=f8e84]:
+              - generic [ref=f8e85]: Discounting Loan Amt
+              - generic [ref=f8e86]:
+                - textbox "e.g. 700K" [disabled] [ref=f8e87]
+                - combobox [disabled] [ref=f8e88]:
+                  - option "USD" [selected]
+                  - option "EUR"
+                  - option "GBP"
+                  - option "INR"
+                  - option "AED"
+                  - option "SGD"
+                  - option "AUD"
+            - generic [ref=f8e89]:
+              - generic [ref=f8e90]: Discounting Rate
+              - combobox "Discounting Rate" [disabled] [ref=f8e91]:
+                - option "01 Fixed" [selected]
+                - option "02 Floating"
+            - generic [ref=f8e92]:
+              - generic [ref=f8e93]: Interest Rate
+              - textbox "0.00" [disabled] [ref=f8e94]
+            - generic [ref=f8e95]:
+              - generic [ref=f8e96]: Interest Frequency
+              - combobox "Interest Frequency" [disabled] [ref=f8e97]:
+                - option "Select" [selected]
+                - option "01 Upfront"
+                - option "02 Monthly"
+                - option "03 Quarterly"
+                - option "04 Half-yearly"
+                - option "05 Rear-end"
+                - option "06 NA"
+            - generic [ref=f8e98]:
+              - generic [ref=f8e99]: Negotiation Fee
+              - textbox "0.00" [disabled] [ref=f8e100]
+            - generic [ref=f8e101]:
+              - generic [ref=f8e102]: Other Charges
+              - textbox "Grand total from the Charges breakdown" [disabled] [ref=f8e104]:
+                - /placeholder: "0.00"
+            - generic [ref=f8e105]:
+              - generic [ref=f8e106]: Discounting Trader
+              - combobox "Discounting Trader" [disabled] [ref=f8e107]:
+                - option "Select trader" [selected]
+            - generic [ref=f8e108]:
+              - generic [ref=f8e109]: Region
+              - textbox [disabled] [ref=f8e110]
+            - generic [ref=f8e111]:
+              - generic [ref=f8e112]: Discounting / Flow Remark
+              - textbox [disabled] [ref=f8e113]
+        - generic [ref=f8e114]:
+          - generic [ref=f8e115]: Confirmation Bank
+          - generic [ref=f8e116]:
+            - generic [ref=f8e117]:
+              - generic [ref=f8e118]: No Confirmation Bank
+              - checkbox "No Confirmation Bank" [disabled] [ref=f8e119]
+            - generic [ref=f8e120]:
+              - generic [ref=f8e121]: Confirmation Bank
+              - combobox "Confirmation Bank" [disabled] [ref=f8e122]:
+                - option "Select bank" [selected]
+            - generic [ref=f8e123]:
+              - generic [ref=f8e124]: Conf. Fee From
+              - combobox "Conf. Fee From" [disabled] [ref=f8e125]:
+                - option "Select" [selected]
+                - option "01 Issuance Date"
+                - option "02 Confirmation Date"
+            - generic [ref=f8e126]:
+              - generic [ref=f8e127]: Conf. Fee Till
+              - combobox "Conf. Fee Till" [disabled] [ref=f8e128]:
+                - option "Select" [selected]
+                - option "01 LC Maturity Date"
+                - option "02 Document Presentation Date"
+            - generic [ref=f8e129]:
+              - generic [ref=f8e130]: Confirmation Trader
+              - combobox "Confirmation Trader" [disabled] [ref=f8e131]:
+                - option "Select trader" [selected]
+            - generic [ref=f8e132]:
+              - generic [ref=f8e133]: Confirmation Fee
+              - textbox "Grand total from the Confirmation Fee breakdown" [disabled] [ref=f8e135]:
+                - /placeholder: "0.00"
+            - generic [ref=f8e136]:
+              - generic [ref=f8e137]: Confirmation Remark
+              - textbox [disabled] [ref=f8e138]
+        - generic [ref=f8e139]:
+          - generic [ref=f8e140]: Additional Information
+          - generic [ref=f8e141]:
+            - generic [ref=f8e142]:
+              - generic [ref=f8e143]: Bank Contact
+              - textbox [disabled] [ref=f8e144]
+            - generic [ref=f8e145]:
+              - generic [ref=f8e146]: Bank Contact Details
+              - textbox [disabled] [ref=f8e147]
+            - generic [ref=f8e148]:
+              - generic [ref=f8e149]: Commitment End Date
+              - textbox [disabled] [ref=f8e150]
+            - generic [ref=f8e151]:
+              - generic [ref=f8e152]: Commitment Fee
+              - textbox "0.00" [disabled] [ref=f8e153]
+            - generic [ref=f8e154]:
+              - generic [ref=f8e155]: Reservation Start Date
+              - textbox [disabled] [ref=f8e156]
+            - generic [ref=f8e157]:
+              - generic [ref=f8e158]: LC Issuance Latest Date
+              - textbox [disabled] [ref=f8e159]
+            - generic [ref=f8e160]:
+              - generic [ref=f8e161]: Doc Pres. Latest Date
+              - textbox [disabled] [ref=f8e162]
+            - generic [ref=f8e163]:
+              - generic [ref=f8e164]: Repay. of Prev LC Date
+              - textbox [disabled] [ref=f8e165]
+      - generic [ref=f8e166]:
+        - generic [ref=f8e167]: "* Company Code is required before creation."
+        - button "Close" [ref=f8e169] [cursor=pointer]
+  - status

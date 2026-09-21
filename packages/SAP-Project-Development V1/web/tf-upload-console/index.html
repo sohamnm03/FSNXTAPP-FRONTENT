@@ -1,0 +1,3133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trade Flow Excel Upload</title>
+<style>
+:root {
+  --page:#f5f6f7;
+  --surface:#ffffff;
+  --surface-alt:#f7f8f9;
+  --line:#d9d9d9;
+  --line-strong:#b8b8b8;
+  --text:#1d2d3e;
+  --text-secondary:#556b82;
+  --muted:#6a6d70;
+  --blue:#0a6ed1;
+  --blue-hover:#0854a0;
+  --blue-active:#004b93;
+  --blue-soft:#eaf3fc;
+  --blue-soft-2:#d1e8ff;
+  --green:#107e3e;
+  --green-soft:#ebf5eb;
+  --red:#bb0000;
+  --red-soft:#ffebeb;
+  --orange:#e9730c;
+  --orange-soft:#fff3e8;
+  --shadow:0 2px 8px rgba(0,0,0,.10);
+  --radius:8px;
+}
+* {
+  box-sizing:border-box;
+  font-family:"Inter",Arial,Helvetica,sans-serif;
+}
+html,body {
+  margin:0;
+  min-height:100%;
+  background:var(--page);
+  color:var(--text);
+  font-size:12px;
+  line-height:1.45;
+}
+body {
+  min-height:100vh;
+}
+button,input,select {
+  font:inherit;
+}
+button {
+  cursor:pointer;
+}
+.hidden {
+  display:none!important;
+}
+.app-shell {
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+.app-header {
+  height:48px;
+  min-height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:0 20px;
+  background:var(--surface);
+  border-bottom:1px solid var(--line);
+  box-shadow:0 1px 3px rgba(0,0,0,.08);
+}
+.app-title {
+  font-size:16px;
+  font-weight:600;
+  color:var(--text);
+}
+.app-subtitle {
+  margin-left:10px;
+  color:var(--muted);
+  font-size:11px;
+}
+.header-left {
+  display:flex;
+  align-items:baseline;
+  min-width:0;
+}
+.header-right {
+  color:var(--muted);
+  font-size:11px;
+  white-space:nowrap;
+}
+.page {
+  width:100%;
+  max-width:1460px;
+  margin:0 auto;
+  padding:20px;
+}
+.screen-heading {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:14px;
+}
+.screen-title {
+  margin:0;
+  font-size:20px;
+  line-height:1.2;
+  font-weight:600;
+  color:var(--text);
+}
+.screen-copy {
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:12px;
+}
+.card {
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+.upload-layout {
+  display:grid;
+  grid-template-columns:minmax(280px,360px) minmax(0,1fr);
+  gap:14px;
+  align-items:stretch;
+}
+.card-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  min-height:46px;
+  padding:11px 14px;
+  border-bottom:1px solid var(--line);
+}
+.card-title {
+  font-size:13px;
+  font-weight:600;
+  color:var(--text);
+}
+.card-subtitle {
+  margin-top:2px;
+  color:var(--muted);
+  font-size:10px;
+}
+.card-body {
+  padding:14px;
+}
+.section-line {
+  height:3px;
+  width:36px;
+  margin:0 0 12px;
+  border-radius:2px;
+  background:var(--blue);
+}
+.field {
+  margin-bottom:14px;
+}
+.field:last-child {
+  margin-bottom:0;
+}
+.field label {
+  display:block;
+  margin:0 0 5px;
+  color:var(--text-secondary);
+  font-size:11px;
+  font-weight:600;
+}
+.req {
+  color:var(--red);
+  margin-left:2px;
+}
+select,input[type="text"] {
+  width:100%;
+  height:34px;
+  padding:4px 34px 4px 10px;
+  background:var(--surface);
+  border:1px solid var(--line-strong);
+  border-radius:4px;
+  color:var(--text);
+  font-size:12px;
+}
+select:focus,input[type="text"]:focus {
+  border-color:var(--blue);
+  box-shadow:0 0 0 1px var(--blue);
+  outline:none;
+}
+.field-hint {
+  margin-top:5px;
+  color:var(--muted);
+  font-size:10px;
+}
+.info-box {
+  margin-top:16px;
+  padding:10px 11px;
+  background:var(--blue-soft);
+  border:1px solid var(--blue-soft-2);
+  border-radius:4px;
+  color:var(--text-secondary);
+  font-size:10px;
+}
+.btn {
+  min-height:32px;
+  padding:0 13px;
+  border:1px solid var(--line-strong);
+  border-radius:4px;
+  background:var(--surface);
+  color:var(--text);
+  font-size:12px;
+  font-weight:600;
+}
+.btn:hover {
+  background:#f2f4f5;
+}
+.btn.primary {
+  background:var(--blue);
+  border-color:var(--blue);
+  color:#fff;
+}
+.btn.primary:hover {
+  background:var(--blue-hover);
+  border-color:var(--blue-hover);
+}
+.btn.soft {
+  background:var(--blue-soft);
+  border-color:var(--blue-soft-2);
+  color:var(--blue-active);
+}
+.btn.soft:hover {
+  background:var(--blue-soft-2);
+  border-color:#9dc9f1;
+}
+.btn:disabled {
+  opacity:.46;
+  cursor:not-allowed;
+}
+.upload-card .card-body {
+  display:flex;
+  flex-direction:column;
+  min-height:390px;
+}
+.drop-zone {
+  min-height:230px;
+  flex:1 1 auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  border:1px dashed #9fb7ca;
+  border-radius:6px;
+  background:#fbfdff;
+  text-align:center;
+  transition:border-color .15s,background .15s;
+}
+.drop-zone.drag-over {
+  border-color:var(--blue);
+  background:var(--blue-soft);
+}
+.upload-glyph {
+  width:50px;
+  height:50px;
+  margin:0 auto 12px;
+  position:relative;
+  border:1px solid var(--blue-soft-2);
+  border-radius:10px;
+  background:var(--blue-soft);
+}
+.upload-glyph:before {
+  content:"";
+  position:absolute;
+  left:23px;
+  top:11px;
+  width:2px;
+  height:22px;
+  background:var(--blue);
+}
+.upload-glyph:after {
+  content:"";
+  position:absolute;
+  left:17px;
+  top:11px;
+  width:12px;
+  height:12px;
+  border-left:2px solid var(--blue);
+  border-top:2px solid var(--blue);
+  transform:rotate(45deg);
+}
+.drop-title {
+  color:var(--text);
+  font-size:13px;
+  font-weight:600;
+}
+.drop-copy {
+  margin-top:5px;
+  color:var(--muted);
+  font-size:11px;
+}
+.drop-copy .browse-link {
+  border:0;
+  padding:0;
+  background:transparent;
+  color:var(--blue);
+  font-weight:600;
+  text-decoration:underline;
+}
+.file-note {
+  margin-top:8px;
+  color:var(--muted);
+  font-size:10px;
+}
+.selected-file {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:10px;
+  padding:9px 10px;
+  border:1px solid var(--line);
+  border-radius:4px;
+  background:var(--surface-alt);
+}
+.file-main {
+  min-width:0;
+}
+.file-name {
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--text);
+  font-weight:600;
+}
+.file-meta {
+  margin-top:2px;
+  color:var(--muted);
+  font-size:10px;
+}
+.file-remove {
+  border:0;
+  background:transparent;
+  color:var(--blue);
+  font-size:11px;
+  font-weight:600;
+}
+.upload-actions {
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:12px;
+}
+.progress-card {
+  margin-top:12px;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:4px;
+  background:var(--surface-alt);
+}
+.progress-top {
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+}
+.progress-label {
+  font-weight:600;
+  color:var(--text);
+}
+.progress-pct {
+  color:var(--blue-active);
+  font-weight:600;
+}
+.progress-track {
+  height:6px;
+  overflow:hidden;
+  border-radius:4px;
+  background:#e5e8eb;
+}
+.progress-bar {
+  width:0;
+  height:100%;
+  background:var(--blue);
+  transition:width .25s ease;
+}
+.progress-steps {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  margin-top:9px;
+}
+.progress-step {
+  color:var(--muted);
+  font-size:9px;
+}
+.progress-step.active {
+  color:var(--blue-active);
+  font-weight:600;
+}
+.progress-step.done {
+  color:var(--green);
+}
+.message {
+  margin-top:10px;
+  padding:9px 10px;
+  border-radius:4px;
+  font-size:11px;
+}
+.message.error {
+  background:var(--red-soft);
+  border:1px solid #f0b2b2;
+  color:var(--red);
+}
+.message.success {
+  background:var(--green-soft);
+  border:1px solid #b5d9b5;
+  color:var(--green);
+}
+
+.upload-toast {
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:2000;
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  width:350px;
+  max-width:calc(100vw - 24px);
+  padding:12px 14px;
+  background:#f2f4f5;
+  border:1px solid #d9d9d9;
+  border-left:3px solid var(--green);
+  border-radius:4px;
+  color:#1d2d3e;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+}
+.upload-toast-icon {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:28px;
+  height:28px;
+  flex:0 0 28px;
+  border-radius:50%;
+  background:#e5e8eb;
+  color:#556b82;
+  font-size:15px;
+  font-weight:600;
+}
+.upload-toast-content {
+  min-width:0;
+}
+.upload-toast-title {
+  margin-bottom:3px;
+  color:#1d2d3e;
+  font-size:12px;
+  font-weight:600;
+}
+.upload-toast-message {
+  color:#556b82;
+  font-size:11px;
+  font-weight:400;
+}
+.recent-topbar {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+.back-btn {
+  min-width:82px;
+}
+.summary-grid {
+  display:grid;
+  grid-template-columns:minmax(240px,1.7fr) repeat(4,minmax(120px,1fr));
+  gap:10px;
+  margin-bottom:12px;
+}
+.summary-item {
+  min-width:0;
+  padding:11px 12px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:6px;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
+}
+.summary-label {
+  color:var(--muted);
+  font-size:10px;
+}
+.summary-value {
+  margin-top:3px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--text);
+  font-size:13px;
+  font-weight:600;
+}
+.table-card {
+  overflow:hidden;
+}
+.table-toolbar {
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 12px;
+  border-bottom:1px solid var(--line);
+  background:var(--surface);
+}
+.toolbar-group {
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+}
+.toolbar-field {
+  min-width:190px;
+}
+.toolbar-field label {
+  display:block;
+  margin-bottom:3px;
+  color:var(--muted);
+  font-size:10px;
+}
+.toolbar-field input,
+.toolbar-field select {
+  height:30px;
+}
+.table-meta {
+  color:var(--muted);
+  font-size:10px;
+  white-space:nowrap;
+}
+.table-wrap {
+  width:100%;
+  max-height:58vh;
+  overflow:auto;
+  background:var(--surface);
+}
+.preview-table {
+  width:max-content;
+  min-width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  font-size:11px;
+}
+.preview-table th {
+  position:sticky;
+  top:0;
+  z-index:4;
+  min-width:140px;
+  max-width:260px;
+  padding:8px 10px;
+  background:#f2f4f5;
+  color:var(--text-secondary);
+  border-right:1px solid #e4e6e8;
+  border-bottom:1px solid var(--line);
+  text-align:left;
+  font-weight:600;
+  white-space:nowrap;
+}
+.preview-table td {
+  max-width:260px;
+  padding:8px 10px;
+  background:var(--surface);
+  color:var(--text);
+  border-right:1px solid #eef0f2;
+  border-bottom:1px solid #eef0f2;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.preview-table tbody tr:hover td {
+  background:#f7fbff;
+}
+.preview-table .num {
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+.preview-table th.sticky-1,
+.preview-table td.sticky-1 {
+  position:sticky;
+  left:0;
+  z-index:3;
+}
+.preview-table th.sticky-2,
+.preview-table td.sticky-2 {
+  position:sticky;
+  left:140px;
+  z-index:3;
+}
+.preview-table th.sticky-1,
+.preview-table th.sticky-2 {
+  z-index:6;
+}
+.pagination {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:9px 12px;
+  border-top:1px solid var(--line);
+  background:var(--surface);
+}
+.page-info {
+  color:var(--muted);
+  font-size:10px;
+}
+.page-actions {
+  display:flex;
+  gap:5px;
+}
+.page-btn {
+  min-width:30px;
+  height:28px;
+  padding:0 8px;
+  border:1px solid var(--line);
+  border-radius:4px;
+  background:var(--surface);
+  color:var(--text);
+  font-size:10px;
+}
+.page-btn:hover:not(:disabled) {
+  background:var(--blue-soft);
+  border-color:var(--blue-soft-2);
+  color:var(--blue-active);
+}
+.page-btn:disabled {
+  opacity:.4;
+  cursor:not-allowed;
+}
+.empty-preview {
+  padding:36px;
+  text-align:center;
+  color:var(--muted);
+}
+::-webkit-scrollbar {
+  width:8px;
+  height:8px;
+}
+::-webkit-scrollbar-track {
+  background:#f0f2f4;
+}
+::-webkit-scrollbar-thumb {
+  background:#a8b3bd;
+  border:2px solid #f0f2f4;
+  border-radius:8px;
+}
+@media(max-width:1000px) {
+  .upload-layout {
+    grid-template-columns:1fr;
+  }
+  .summary-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .summary-item:first-child {
+    grid-column:1/-1;
+  }
+}
+@media(max-width:680px) {
+  .page {
+    padding:12px;
+  }
+  .app-header {
+    height:auto;
+    min-height:48px;
+    padding:9px 12px;
+    flex-wrap:wrap;
+  }
+  .app-subtitle {
+    display:none;
+  }
+  .screen-heading,
+  .recent-topbar,
+  .table-toolbar {
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .summary-grid {
+    grid-template-columns:1fr;
+  }
+  .summary-item:first-child {
+    grid-column:auto;
+  }
+  .toolbar-group {
+    flex-wrap:wrap;
+  }
+  .toolbar-field {
+    min-width:0;
+    flex:1 1 180px;
+  }
+  .progress-steps {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+</style>
+
+<style id="trade-flow-v3-layout">
+.page {
+  max-width:none;
+  padding:10px 14px 14px;
+}
+.compact-heading {
+  align-items:center;
+  margin-bottom:10px;
+}
+.compact-heading .screen-title {
+  font-size:18px;
+}
+.template-link {
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:4px 2px;
+  border:0;
+  border-bottom:1px solid rgba(233,115,12,.35);
+  background:transparent;
+  color:var(--orange);
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+.template-link:hover {
+  color:#c65f07;
+  border-bottom-color:var(--orange);
+}
+.download-mark {
+  position:relative;
+  width:14px;
+  height:15px;
+  display:inline-block;
+}
+.download-mark:before {
+  content:"";
+  position:absolute;
+  left:6px;
+  top:0;
+  width:2px;
+  height:9px;
+  background:currentColor;
+}
+.download-mark:after {
+  content:"";
+  position:absolute;
+  left:3px;
+  top:5px;
+  width:6px;
+  height:6px;
+  border-right:2px solid currentColor;
+  border-bottom:2px solid currentColor;
+  transform:rotate(45deg);
+}
+.intake-layout {
+  display:grid;
+  grid-template-columns:minmax(430px,36%) minmax(0,64%);
+  gap:10px;
+  margin-bottom:10px;
+  align-items:stretch;
+}
+.compact-card-head {
+  min-height:40px;
+  padding:8px 12px;
+}
+.context-body {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  padding:10px 12px 12px;
+  align-items:end;
+}
+.compact-field {
+  margin:0;
+}
+.compact-field label {
+  margin-bottom:4px;
+}
+.compact-upload-card .card-body {
+  min-height:0;
+}
+.compact-upload-body {
+  padding:10px 12px;
+}
+.upload-file-row {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 84px;
+  gap:10px;
+  align-items:stretch;
+}
+.compact-drop-zone {
+  min-height:64px;
+  padding:8px 12px;
+  text-align:left;
+}
+.drop-inline {
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+}
+.compact-upload-glyph {
+  width:30px;
+  height:30px;
+  margin:0;
+  border-radius:6px;
+  flex:0 0 30px;
+}
+.compact-upload-glyph:before {
+  left:14px;
+  top:6px;
+  height:15px;
+}
+.compact-upload-glyph:after {
+  left:10px;
+  top:6px;
+  width:9px;
+  height:9px;
+}
+.drop-text-wrap {
+  min-width:0;
+}
+.drop-title {
+  font-size:12px;
+}
+.drop-copy {
+  display:inline;
+  margin:0 0 0 4px;
+}
+.file-note {
+  margin-top:3px;
+  font-size:9px;
+}
+.extract-actions {
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:7px;
+}
+.extract-actions .btn {
+  width:100%;
+}
+.selected-file {
+  margin-top:7px;
+  padding:6px 9px;
+}
+.progress-card {
+  margin-top:7px;
+  padding:7px 9px;
+}
+.progress-top {
+  margin-bottom:5px;
+}
+.progress-steps {
+  display:none;
+}
+.message {
+  margin-top:8px;
+}
+.preview-headbar {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-height:45px;
+  padding:8px 12px;
+  border-bottom:1px solid var(--line);
+  background:var(--surface);
+}
+.preview-heading-wrap {
+  min-width:0;
+}
+.preview-summary {
+  margin-top:2px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--muted);
+  font-size:10px;
+}
+.final-upload-btn {
+  min-width:88px;
+}
+.table-toolbar {
+  padding:7px 10px;
+}
+.search-field {
+  min-width:260px;
+}
+.table-wrap {
+  height:calc(100vh - 290px);
+  min-height:340px;
+  max-height:none;
+}
+.preview-table {
+  font-size:10.5px;
+}
+.preview-table th {
+  min-width:118px;
+  max-width:190px;
+  padding:7px 8px;
+}
+.preview-table td {
+  max-width:190px;
+  padding:7px 8px;
+}
+.preview-table th.sticky-2,
+.preview-table td.sticky-2 {
+  left:118px;
+}
+.pagination {
+  padding:7px 10px;
+}
+.page-number-group {
+  display:flex;
+  gap:4px;
+}
+.page-number-group .page-btn.active {
+  background:var(--blue-soft);
+  border-color:var(--blue);
+  color:var(--blue-active);
+  font-weight:600;
+}
+@media(max-width:900px) {
+  .intake-layout {
+    grid-template-columns:1fr;
+  }
+  .context-body {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .table-wrap {
+    height:calc(100vh - 420px);
+    min-height:300px;
+  }
+}
+@media(max-width:680px) {
+  .context-body {
+    grid-template-columns:1fr;
+  }
+  .compact-heading {
+    flex-direction:row;
+    align-items:flex-start;
+  }
+  .upload-file-row {
+    grid-template-columns:1fr;
+  }
+  .extract-actions {
+    flex-direction:row;
+    justify-content:flex-end;
+  }
+  .extract-actions .btn {
+    width:auto;
+    min-width:88px;
+  }
+  .preview-headbar,
+  .table-toolbar,
+  .pagination {
+    align-items:stretch;
+    flex-direction:column;
+  }
+  .page-actions {
+    flex-wrap:wrap;
+  }
+  .table-wrap {
+    height:55vh;
+    min-height:300px;
+  }
+}
+</style>
+<style id="trade-flow-v4-polish">
+.template-link {
+  color:var(--blue)!important;
+  border-bottom-color:rgba(10,110,209,.28)!important;
+}
+.template-link:hover {
+  color:var(--blue-hover)!important;
+  border-bottom-color:var(--blue)!important;
+}
+#progressCard {
+  display:none!important;
+}
+.file-meta,
+.file-remove {
+  display:none!important;
+}
+.selected-file {
+  min-height:38px;
+  padding:8px 10px;
+}
+.search-field {
+  width:230px!important;
+  min-width:230px!important;
+  max-width:230px!important;
+  flex:0 0 230px!important;
+}
+.search-field input {
+  width:100%;
+}
+.page-actions {
+  margin-left:auto;
+}
+@media(max-width:680px) {
+  .search-field {
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    flex:1 1 auto!important;
+  }
+  .toolbar-group {
+    width:100%;
+  }
+  .page-actions {
+    margin-left:0;
+  }
+}
+</style>
+
+<style id="trade-flow-v11-layout">
+.compact-card-head {
+  min-height:34px;
+  padding:6px 12px;
+}
+.context-card {
+  display:flex;
+  flex-direction:column;
+}
+.context-body {
+  flex:1 1 auto;
+  align-content:center;
+  padding:8px 12px;
+}
+.compact-upload-body {
+  padding:8px 12px;
+}
+.compact-drop-zone {
+  min-height:56px;
+  padding:6px 10px;
+}
+.drop-zone.has-file .drop-inline {
+  display:none;
+}
+.drop-zone .selected-file {
+  width:100%;
+  min-height:42px;
+  margin:0;
+  padding:8px 10px;
+  border-color:var(--line);
+  background:var(--surface-alt);
+}
+.drop-zone.has-file .selected-file {
+  display:flex!important;
+}
+.table-wrap {
+  height:calc(100vh - 260px);
+}
+@media(max-width:900px) {
+  .table-wrap {
+    height:calc(100vh - 390px);
+  }
+}
+@media(max-width:680px) {
+  .table-wrap {
+    height:55vh;
+  }
+}
+</style>
+
+<style id="trade-flow-v12-table-pagination">
+.table-wrap {
+  height:auto!important;
+  min-height:0!important;
+  max-height:calc(100vh - 260px)!important;
+}
+.page-actions {
+  align-items:center;
+  gap:4px;
+}
+.page-number-group {
+  display:flex;
+  gap:4px;
+}
+.page-btn {
+  min-width:30px;
+  padding:0 8px;
+}
+@media(max-width:900px) {
+  .table-wrap {
+    max-height:calc(100vh - 390px)!important;
+  }
+}
+@media(max-width:680px) {
+  .table-wrap {
+    max-height:55vh!important;
+  }
+}
+</style>
+
+<style id="tf-upload-status">
+.tf-status {
+  display:inline-flex;
+  align-items:center;
+  padding:2px 8px;
+  border-radius:10px;
+  font-size:10px;
+  font-weight:600;
+  white-space:nowrap;
+}
+.tf-status-pending {
+  background:var(--surface-alt);
+  color:var(--muted);
+}
+.tf-status-success {
+  background:var(--green-soft);
+  color:var(--green);
+}
+.tf-status-error {
+  background:var(--red-soft);
+  color:var(--red);
+  cursor:help;
+}
+</style>
+<style id="ottk-design-system">
+/* ============================================================================
+   OTTK design system
+   Fonts, colour tokens and chrome taken from web/ottk-dttk-console/index.html
+   so every console under web/ reads as one product. Appended last on purpose:
+   this file carries six earlier <style> layers and the alignment has to win the
+   cascade over all of them. Presentation only - no ids, handlers or behaviour
+   are touched by anything in this block.
+   ========================================================================= */
+
+/* OTTK's palette mapped onto this console's own token names, so every existing
+   rule picks the new colours up without being rewritten one at a time. */
+:root{
+  --page:#f5f7f9;
+  --surface:#ffffff;
+  --surface-alt:#f2f4f5;
+  --line:#d5dadd;
+  --line-strong:#8996a1;
+  --text:#1d2d3e;
+  --text-secondary:#475e75;
+  --muted:#687b8d;
+  --blue:#0a6ed1;
+  --blue-hover:#085caf;
+  --blue-active:#004b93;
+  --blue-soft:#eaf3fc;
+  --blue-soft-2:#d1e8ff;
+  --green:#107e3e;
+  --green-soft:#e4f5e9;
+  --red:#bb0000;
+  --red-soft:#ffebeb;
+  --shadow:0 1px 3px rgba(34,53,72,.13);
+  --radius:8px;
+  --ds-font:"72","Segoe UI",Arial,sans-serif;
+  --ds-header:52px;
+}
+
+/* "72" is SAP's UI font and the first face OTTK asks for; the rest of the stack
+   is the fallback OTTK uses, so a machine without "72" lands on Segoe UI in both
+   consoles rather than on Inter here and Segoe UI there. */
+*{font-family:var(--ds-font)}
+html,body{font-size:13px;line-height:1.45;background:var(--page);color:var(--text)}
+
+/* --- Topbar ------------------------------------------------------------- */
+.app-header{
+  height:var(--ds-header);min-height:var(--ds-header);padding:0 18px;
+  background:var(--surface);border-bottom:1px solid var(--line);box-shadow:none;
+}
+.header-left{display:flex;align-items:center;gap:11px;min-width:0}
+.app-title{font-size:17px;font-weight:700;color:var(--text);white-space:nowrap}
+.ds-mark{
+  width:30px;height:30px;border-radius:6px;flex:none;display:grid;place-items:center;
+  background:linear-gradient(145deg,#0a6ed1,#35a5dc);color:#fff;
+  box-shadow:0 2px 7px rgba(10,110,209,.22);
+}
+.ds-mark svg{width:18px;height:18px;fill:currentColor}
+.ds-code{font-size:12px;font-weight:400;color:var(--muted);white-space:nowrap}
+.header-right{display:flex;align-items:center;gap:6px;font-size:13px}
+/* Same green dot OTTK uses to say "the page is talking to SAP". */
+.ds-conn{
+  width:8px;height:8px;flex:none;margin:0 6px;border-radius:50%;
+  background:#20a454;box-shadow:0 0 0 3px #d9f3e2;
+}
+
+/* --- Buttons ------------------------------------------------------------- */
+.btn,.template-link{
+  height:32px;padding:0 11px;border:1px solid var(--line-strong);border-radius:4px;
+  background:var(--surface);color:var(--text-secondary);font-size:13px;font-weight:600;
+  display:inline-flex;align-items:center;gap:7px;text-decoration:none;
+}
+.btn:hover,.template-link:hover{background:var(--surface-alt);color:var(--text);text-decoration:none}
+/* The v4-polish layer paints .template-link blue with !important; now that it is
+   a real .btn in the topbar it has to read as one, so the colour is forced back. */
+.template-link{color:var(--text-secondary)!important;border-bottom-color:var(--line-strong)!important}
+.template-link:hover{color:var(--text)!important;border-bottom-color:var(--line-strong)!important}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover{background:var(--blue-hover)}
+.btn.soft{background:var(--blue-soft);border-color:#a7cff5;color:var(--blue)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn:disabled:hover{background:var(--surface)}
+.btn.primary:disabled:hover{background:var(--blue)}
+
+/* --- Page + panels ------------------------------------------------------- */
+.page{max-width:1560px;padding:12px 14px}
+/* The topbar already names the app, so the in-page heading drops to a section
+   label instead of competing with it at 20px. */
+.screen-title{font-size:14px;font-weight:700;color:var(--text)}
+.screen-copy{font-size:11px;color:var(--muted)}
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+.card-head{min-height:39px;padding:0 11px;border-bottom:1px solid var(--line)}
+.card-title{font-size:13px;font-weight:700;color:var(--text)}
+.card-subtitle,.preview-summary,.table-meta,.page-info{font-size:11px;font-weight:500;color:var(--muted)}
+.preview-headbar{min-height:39px;padding:0 11px;border-bottom:1px solid var(--line)}
+.section-line{background:var(--blue)}
+
+/* --- Fields -------------------------------------------------------------- */
+.field label,.toolbar-field label{font-size:12px;font-weight:600;color:var(--text-secondary)}
+.req{color:var(--red)}
+select,input[type="text"]{
+  height:28px;border:1px solid var(--line-strong);border-radius:3px;background:#fff;
+  color:var(--text);font-size:13px;padding:3px 8px;
+}
+select{padding-right:28px}
+select:focus,input[type="text"]:focus{
+  border-color:var(--blue);box-shadow:0 0 0 1px var(--blue);outline:none;
+}
+
+/* --- Table --------------------------------------------------------------- */
+.table-toolbar{background:#f8fafb;border-bottom:1px solid var(--line);padding:7px 11px}
+.preview-table th{
+  background:var(--surface-alt);color:var(--text-secondary);font-size:11px;font-weight:700;
+  text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);
+  border-right:1px solid #e6e9eb;white-space:nowrap;
+}
+.preview-table td{
+  padding:6px 8px;border-bottom:1px solid #edf0f2;border-right:1px solid #edf0f2;
+  font-size:12px;color:var(--text);background:#fff;
+}
+.preview-table tbody tr:hover td{background:#f7fbff}
+.preview-table .num{text-align:right;font-variant-numeric:tabular-nums}
+.empty-preview{font-size:12px;color:var(--muted)}
+
+/* --- Pager (OTTK's .panel-foot) ------------------------------------------ */
+.pagination{
+  min-height:33px;padding:0 10px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:11px;
+}
+.page-btn,.page-number-group button{
+  min-width:24px;height:23px;padding:0 5px;border:1px solid var(--line);border-radius:3px;
+  background:#fff;color:var(--text-secondary);font-size:11px;font-weight:600;
+}
+.page-btn:hover:not(:disabled),.page-number-group button:hover{background:var(--surface-alt)}
+.page-btn:disabled{opacity:.4;cursor:default}
+.page-number-group button.active{background:var(--blue);border-color:var(--blue);color:#fff}
+
+/* --- Status pills, messages, toast --------------------------------------- */
+.tf-status{padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600}
+.tf-status-success{background:var(--green-soft);color:var(--green)}
+.tf-status-pending{background:#fff4cc;color:#9b6b00}
+.tf-status-error{background:var(--red-soft);color:var(--red)}
+.message{font-size:12px;border-radius:4px}
+/* OTTK's toast is a dark slab bottom-right; the icon and two text lines this
+   console already renders keep their slots inside it. */
+.upload-toast{
+  background:#243b53;border:0;border-left:0;border-radius:6px;color:#fff;
+  box-shadow:0 6px 24px rgba(0,0,0,.25);padding:11px 14px;
+}
+.upload-toast-icon{background:rgba(255,255,255,.14);color:#8fe0ab}
+.upload-toast-title{color:#fff;font-size:12px;font-weight:700}
+.upload-toast-message{color:#c6d4e1;font-size:11px}
+
+/* --- Drop zone ----------------------------------------------------------- */
+.drop-zone{border-radius:6px;border-color:var(--line-strong);background:#fbfcfd}
+.drop-zone.drag-over{border-color:var(--blue);background:var(--blue-soft)}
+.drop-title{font-size:13px;font-weight:700;color:var(--text)}
+.drop-copy,.file-note{font-size:11px;color:var(--muted)}
+.browse-link{color:var(--blue);font-weight:600}
+</style>
+<style>
+/* Fourth Signal logo in the topbar -- the same asset the SLC hub (8771) serves,
+   so every console in web/ carries one identical mark. This is an <img>, and
+   img.mark / img.ds-mark outranks the plain .mark / .ds-mark class rule that
+   painted the old blue gradient square, so the gradient, shadow and radius are
+   switched off here rather than deleted out of the rule they came from. */
+img.mark, img.ds-mark {
+  width: 32px; height: 32px; flex: none;
+  background: none; box-shadow: none; border-radius: 0;
+  object-fit: contain;
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+<header class="app-header">
+  <div class="header-left">
+    <img class="ds-mark" alt="Fourth Signal" src="https://raw.githubusercontent.com/ryannayak/fs-assets/e82f35a83e28689167b22b4300d4994a249acee0/fs-short-logo.png"/>
+    <div class="app-title">Trade Flow Excel Upload</div>
+    <span class="ds-code">TF UPLOAD</span>
+  </div>
+  <div class="header-right">
+    <span class="ds-conn" id="connIndicator" title="System connected"></span>
+    <button type="button" class="btn template-link" id="downloadTemplateBtn" title="Download the Trade Flow Excel template">
+      <span class="download-mark" aria-hidden="true"></span>
+      <span>Download Template</span>
+    </button>
+  </div>
+</header>
+<main>
+<section class="page" id="uploadScreen">
+  <div class="screen-heading compact-heading">
+    <div>
+      <h1 class="screen-title">Upload Trade Flow File</h1>
+    </div>
+  </div>
+  <div class="intake-layout">
+    <section class="card context-card">
+      <div class="card-head compact-card-head">
+        <div>
+          <div class="card-title">Upload Context</div>
+        </div>
+      </div>
+      <div class="card-body context-body">
+        <div class="field compact-field">
+          <label for="businessUnitSelect">Business Unit<span class="req">*</span></label>
+          <select id="businessUnitSelect" required></select>
+        </div>
+        <div class="field compact-field">
+          <label for="tfTypeSelect">TF Type<span class="req">*</span></label>
+          <select id="tfTypeSelect" required></select>
+        </div>
+      </div>
+    </section>
+    <section class="card upload-card compact-upload-card">
+      <div class="card-head compact-card-head">
+        <div>
+          <div class="card-title">Excel File</div>
+        </div>
+      </div>
+      <div class="card-body compact-upload-body">
+        <div class="upload-file-row">
+          <div class="drop-zone compact-drop-zone" id="dropZone" tabindex="0">
+            <div class="drop-inline">
+              <div class="upload-glyph compact-upload-glyph" aria-hidden="true"></div>
+              <div class="drop-text-wrap">
+                <div class="drop-title">Drop Excel file here</div>
+                <div class="drop-copy">
+                  or <button type="button" class="browse-link" id="browseBtn">Browse</button>
+                </div>
+                <div class="file-note" id="fileRuleText"></div>
+              </div>
+            </div>
+            <div class="selected-file hidden" id="selectedFileCard">
+              <div class="file-main">
+                <div class="file-name" id="selectedFileName"></div>
+              </div>
+            </div>
+          </div>
+          <div class="extract-actions">
+            <button type="button" class="btn primary" id="extractBtn" disabled>Extract</button>
+            <button type="button" class="btn" id="clearBtn">Clear</button>
+          </div>
+        </div>
+        <input type="file" id="fileInput" accept=".xlsx,.xlsm" hidden>
+        <div class="message error hidden" id="uploadError"></div>
+      </div>
+    </section>
+  </div>
+  <section class="card table-card hidden" id="previewSection">
+    <div class="preview-headbar">
+      <div class="preview-heading-wrap">
+        <div class="card-title">Extracted Excel Preview</div>
+        <div class="preview-summary" id="previewSummary"></div>
+      </div>
+      <button type="button" class="btn primary final-upload-btn" id="finalUploadBtn">Upload</button>
+    </div>
+    <div class="table-toolbar">
+      <div class="toolbar-group">
+        <div class="toolbar-field search-field">
+          <label for="tableSearch">Search rows</label>
+          <input type="text" id="tableSearch" placeholder="Search any displayed value">
+        </div>
+      </div>
+      <div class="table-meta" id="tableMeta"></div>
+    </div>
+    <div class="table-wrap" id="tableWrap">
+      <table class="preview-table" id="previewTable">
+        <thead id="previewHead"></thead>
+        <tbody id="previewBody"></tbody>
+      </table>
+      <div class="empty-preview hidden" id="emptyPreview">No rows match the current search.</div>
+    </div>
+    <div class="pagination">
+      <div class="page-info" id="pageInfo"></div>
+      <div class="page-actions">
+        <button type="button" class="page-btn" id="prevPageBtn" aria-label="Previous page">&lt;</button>
+        <div class="page-number-group" id="pageNumberBtns"></div>
+        <button type="button" class="page-btn" id="nextPageBtn" aria-label="Next page">&gt;</button>
+      </div>
+    </div>
+  </section>
+</section>
+<div class="upload-toast hidden" id="uploadToast" role="status" aria-live="polite">
+  <div class="upload-toast-icon">&#10003;</div>
+  <div class="upload-toast-content">
+    <div class="upload-toast-title">Success</div>
+    <div class="upload-toast-message">Uploaded successfully.</div>
+  </div>
+</div>
+</main>
+</div>
+<script type="application/json" id="tradeFlowPayload">
+{
+  "meta": {
+    "title": "Trade Flow Excel Upload",
+    "version": "v12",
+    "sourceWorkbook": "RICE TF (1).XLSX",
+    "generatedDate": "2026-09-08"
+  },
+  "uiConfig": {
+    "maxFileMb": 50,
+    "defaultPageSize": 10
+  },
+  "masterData": {
+    "businessUnits": [
+      {
+        "code": "B01",
+        "name": "GRAINS"
+      },
+      {
+        "code": "B02",
+        "name": "RICE"
+      },
+      {
+        "code": "B03",
+        "name": "COTTON"
+      },
+      {
+        "code": "B05",
+        "name": "EDIBLE OIL"
+      },
+      {
+        "code": "B06",
+        "name": "RUBBER"
+      },
+      {
+        "code": "B10",
+        "name": "FERTILIZER"
+      }
+    ],
+    "tfTypes": [
+      {
+        "code": "CONTAINER",
+        "name": "Container"
+      },
+      {
+        "code": "BULK",
+        "name": "Bulk"
+      }
+    ]
+  },
+  "template": {
+    "fileName": "Trade_Flow_Template.xlsx",
+    "sheetName": "Sheet1",
+    "headers": [
+      "Trade Flow ID",
+      "TF Split ID",
+      "TF Upload Date",
+      "Business Unit Name",
+      "Operator",
+      "BL- Vessel Name",
+      "BU Commodity",
+      "P - Contract Number",
+      "Purchase Incoterms",
+      "Payment terms - Purchase Side",
+      "Banks-Purchase Leg-Seller Ba",
+      "Banks-Purchase Leg-Buyer Bank",
+      "S Contract Number",
+      "Sales Incoterms",
+      "Payment terms - Sales Side",
+      "Banks-Sale Leg-Seller Bank",
+      "Banks-Sale Leg-Buyer Bank",
+      "OGA Title From - Date",
+      "OGA Title Till - Date",
+      "Quantity",
+      "Contract Price",
+      "CMP (MT)",
+      "Contract Amt(USD)",
+      "Port of Loading",
+      "Port of Destination",
+      "Sailing Date",
+      "BL Number",
+      "Number of Days",
+      "ETA at Discharge Port",
+      "Consignee on BL",
+      "Notify Party",
+      "LC details in BL",
+      "Origin Entity",
+      "Supplier- Olam Destination",
+      "Buyer- 3P Destination",
+      "Avail 1/3 OB TSF From",
+      "Avail 1/3 OB TSF Till",
+      "Avail 3/3 OB TSF From",
+      "Avail 3/3 OB TSF Till",
+      "OGBS Remark",
+      "BL Receipt date",
+      "Blocked Status Desc",
+      "OGBS Status Desc",
+      "POL Country",
+      "POD Country"
+    ],
+    "columns": [
+      {
+        "index": 0,
+        "name": "Trade Flow ID",
+        "type": "text"
+      },
+      {
+        "index": 1,
+        "name": "TF Split ID",
+        "type": "text"
+      },
+      {
+        "index": 2,
+        "name": "TF Upload Date",
+        "type": "date"
+      },
+      {
+        "index": 3,
+        "name": "Business Unit Name",
+        "type": "text"
+      },
+      {
+        "index": 4,
+        "name": "Operator",
+        "type": "text"
+      },
+      {
+        "index": 5,
+        "name": "BL- Vessel Name",
+        "type": "text"
+      },
+      {
+        "index": 6,
+        "name": "BU Commodity",
+        "type": "text"
+      },
+      {
+        "index": 7,
+        "name": "P - Contract Number",
+        "type": "text"
+      },
+      {
+        "index": 8,
+        "name": "Purchase Incoterms",
+        "type": "text"
+      },
+      {
+        "index": 9,
+        "name": "Payment terms - Purchase Side",
+        "type": "text"
+      },
+      {
+        "index": 10,
+        "name": "Banks-Purchase Leg-Seller Ba",
+        "type": "text"
+      },
+      {
+        "index": 11,
+        "name": "Banks-Purchase Leg-Buyer Bank",
+        "type": "text"
+      },
+      {
+        "index": 12,
+        "name": "S Contract Number",
+        "type": "text"
+      },
+      {
+        "index": 13,
+        "name": "Sales Incoterms",
+        "type": "text"
+      },
+      {
+        "index": 14,
+        "name": "Payment terms - Sales Side",
+        "type": "text"
+      },
+      {
+        "index": 15,
+        "name": "Banks-Sale Leg-Seller Bank",
+        "type": "text"
+      },
+      {
+        "index": 16,
+        "name": "Banks-Sale Leg-Buyer Bank",
+        "type": "text"
+      },
+      {
+        "index": 17,
+        "name": "OGA Title From - Date",
+        "type": "date"
+      },
+      {
+        "index": 18,
+        "name": "OGA Title Till - Date",
+        "type": "date"
+      },
+      {
+        "index": 19,
+        "name": "Quantity",
+        "type": "number"
+      },
+      {
+        "index": 20,
+        "name": "Contract Price",
+        "type": "number"
+      },
+      {
+        "index": 21,
+        "name": "CMP (MT)",
+        "type": "number"
+      },
+      {
+        "index": 22,
+        "name": "Contract Amt(USD)",
+        "type": "number"
+      },
+      {
+        "index": 23,
+        "name": "Port of Loading",
+        "type": "text"
+      },
+      {
+        "index": 24,
+        "name": "Port of Destination",
+        "type": "text"
+      },
+      {
+        "index": 25,
+        "name": "Sailing Date",
+        "type": "date"
+      },
+      {
+        "index": 26,
+        "name": "BL Number",
+        "type": "text"
+      },
+      {
+        "index": 27,
+        "name": "Number of Days",
+        "type": "text"
+      },
+      {
+        "index": 28,
+        "name": "ETA at Discharge Port",
+        "type": "date"
+      },
+      {
+        "index": 29,
+        "name": "Consignee on BL",
+        "type": "text"
+      },
+      {
+        "index": 30,
+        "name": "Notify Party",
+        "type": "text"
+      },
+      {
+        "index": 31,
+        "name": "LC details in BL",
+        "type": "text"
+      },
+      {
+        "index": 32,
+        "name": "Origin Entity",
+        "type": "text"
+      },
+      {
+        "index": 33,
+        "name": "Supplier- Olam Destination",
+        "type": "text"
+      },
+      {
+        "index": 34,
+        "name": "Buyer- 3P Destination",
+        "type": "text"
+      },
+      {
+        "index": 35,
+        "name": "Avail 1/3 OB TSF From",
+        "type": "date"
+      },
+      {
+        "index": 36,
+        "name": "Avail 1/3 OB TSF Till",
+        "type": "date"
+      },
+      {
+        "index": 37,
+        "name": "Avail 3/3 OB TSF From",
+        "type": "date"
+      },
+      {
+        "index": 38,
+        "name": "Avail 3/3 OB TSF Till",
+        "type": "date"
+      },
+      {
+        "index": 39,
+        "name": "OGBS Remark",
+        "type": "text"
+      },
+      {
+        "index": 40,
+        "name": "BL Receipt date",
+        "type": "date"
+      },
+      {
+        "index": 41,
+        "name": "Blocked Status Desc",
+        "type": "text"
+      },
+      {
+        "index": 42,
+        "name": "OGBS Status Desc",
+        "type": "text"
+      },
+      {
+        "index": 43,
+        "name": "POL Country",
+        "type": "text"
+      },
+      {
+        "index": 44,
+        "name": "POD Country",
+        "type": "text"
+      }
+    ],
+    "fileBase64Chunks": [
+      "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"
+    ]
+  },
+  "referenceWorkbook": {
+    "fileName": "RICE TF (1).XLSX",
+    "sheetName": "Sheet1",
+    "headers": [
+      "Trade Flow ID",
+      "TF Split ID",
+      "TF Upload Date",
+      "Business Unit Name",
+      "Operator",
+      "BL- Vessel Name",
+      "BU Commodity",
+      "P - Contract Number",
+      "Purchase Incoterms",
+      "Payment terms - Purchase Side",
+      "Banks-Purchase Leg-Seller Ba",
+      "Banks-Purchase Leg-Buyer Bank",
+      "S Contract Number",
+      "Sales Incoterms",
+      "Payment terms - Sales Side",
+      "Banks-Sale Leg-Seller Bank",
+      "Banks-Sale Leg-Buyer Bank",
+      "OGA Title From - Date",
+      "OGA Title Till - Date",
+      "Quantity",
+      "Contract Price",
+      "CMP (MT)",
+      "Contract Amt(USD)",
+      "Port of Loading",
+      "Port of Destination",
+      "Sailing Date",
+      "BL Number",
+      "Number of Days",
+      "ETA at Discharge Port",
+      "Consignee on BL",
+      "Notify Party",
+      "LC details in BL",
+      "Origin Entity",
+      "Supplier- Olam Destination",
+      "Buyer- 3P Destination",
+      "Avail 1/3 OB TSF From",
+      "Avail 1/3 OB TSF Till",
+      "Avail 3/3 OB TSF From",
+      "Avail 3/3 OB TSF Till",
+      "OGBS Remark",
+      "BL Receipt date",
+      "Blocked Status Desc",
+      "OGBS Status Desc",
+      "POL Country",
+      "POD Country"
+    ],
+    "columns": [
+      {
+        "index": 0,
+        "name": "Trade Flow ID",
+        "type": "text"
+      },
+      {
+        "index": 1,
+        "name": "TF Split ID",
+        "type": "text"
+      },
+      {
+        "index": 2,
+        "name": "TF Upload Date",
+        "type": "date"
+      },
+      {
+        "index": 3,
+        "name": "Business Unit Name",
+        "type": "text"
+      },
+      {
+        "index": 4,
+        "name": "Operator",
+        "type": "text"
+      },
+      {
+        "index": 5,
+        "name": "BL- Vessel Name",
+        "type": "text"
+      },
+      {
+        "index": 6,
+        "name": "BU Commodity",
+        "type": "text"
+      },
+      {
+        "index": 7,
+        "name": "P - Contract Number",
+        "type": "text"
+      },
+      {
+        "index": 8,
+        "name": "Purchase Incoterms",
+        "type": "text"
+      },
+      {
+        "index": 9,
+        "name": "Payment terms - Purchase Side",
+        "type": "text"
+      },
+      {
+        "index": 10,
+        "name": "Banks-Purchase Leg-Seller Ba",
+        "type": "text"
+      },
+      {
+        "index": 11,
+        "name": "Banks-Purchase Leg-Buyer Bank",
+        "type": "text"
+      },
+      {
+        "index": 12,
+        "name": "S Contract Number",
+        "type": "text"
+      },
+      {
+        "index": 13,
+        "name": "Sales Incoterms",
+        "type": "text"
+      },
+      {
+        "index": 14,
+        "name": "Payment terms - Sales Side",
+        "type": "text"
+      },
+      {
+        "index": 15,
+        "name": "Banks-Sale Leg-Seller Bank",
+        "type": "text"
+      },
+      {
+        "index": 16,
+        "name": "Banks-Sale Leg-Buyer Bank",
+        "type": "text"
+      },
+      {
+        "index": 17,
+        "name": "OGA Title From - Date",
+        "type": "date"
+      },
+      {
+        "index": 18,
+        "name": "OGA Title Till - Date",
+        "type": "date"
+      },
+      {
+        "index": 19,
+        "name": "Quantity",
+        "type": "number"
+      },
+      {
+        "index": 20,
+        "name": "Contract Price",
+        "type": "number"
+      },
+      {
+        "index": 21,
+        "name": "CMP (MT)",
+        "type": "number"
+      },
+      {
+        "index": 22,
+        "name": "Contract Amt(USD)",
+        "type": "number"
+      },
+      {
+        "index": 23,
+        "name": "Port of Loading",
+        "type": "text"
+      },
+      {
+        "index": 24,
+        "name": "Port of Destination",
+        "type": "text"
+      },
+      {
+        "index": 25,
+        "name": "Sailing Date",
+        "type": "date"
+      },
+      {
+        "index": 26,
+        "name": "BL Number",
+        "type": "text"
+      },
+      {
+        "index": 27,
+        "name": "Number of Days",
+        "type": "text"
+      },
+      {
+        "index": 28,
+        "name": "ETA at Discharge Port",
+        "type": "date"
+      },
+      {
+        "index": 29,
+        "name": "Consignee on BL",
+        "type": "text"
+      },
+      {
+        "index": 30,
+        "name": "Notify Party",
+        "type": "text"
+      },
+      {
+        "index": 31,
+        "name": "LC details in BL",
+        "type": "text"
+      },
+      {
+        "index": 32,
+        "name": "Origin Entity",
+        "type": "text"
+      },
+      {
+        "index": 33,
+        "name": "Supplier- Olam Destination",
+        "type": "text"
+      },
+      {
+        "index": 34,
+        "name": "Buyer- 3P Destination",
+        "type": "text"
+      },
+      {
+        "index": 35,
+        "name": "Avail 1/3 OB TSF From",
+        "type": "date"
+      },
+      {
+        "index": 36,
+        "name": "Avail 1/3 OB TSF Till",
+        "type": "date"
+      },
+      {
+        "index": 37,
+        "name": "Avail 3/3 OB TSF From",
+        "type": "date"
+      },
+      {
+        "index": 38,
+        "name": "Avail 3/3 OB TSF Till",
+        "type": "date"
+      },
+      {
+        "index": 39,
+        "name": "OGBS Remark",
+        "type": "text"
+      },
+      {
+        "index": 40,
+        "name": "BL Receipt date",
+        "type": "date"
+      },
+      {
+        "index": 41,
+        "name": "Blocked Status Desc",
+        "type": "text"
+      },
+      {
+        "index": 42,
+        "name": "OGBS Status Desc",
+        "type": "text"
+      },
+      {
+        "index": 43,
+        "name": "POL Country",
+        "type": "text"
+      },
+      {
+        "index": 44,
+        "name": "POD Country",
+        "type": "text"
+      }
+    ],
+    "rows": [
+      [
+        "3000045645",
+        "01",
+        "2024-12-18",
+        "Rice",
+        "",
+        "MV SUPRA BARON V.24001",
+        "THAI WHITE RICE 5% BROKEN DOUBLE POLISHED",
+        "",
+        "FOB",
+        "LCUUC",
+        "KASIKORNBANK PCL",
+        "WELLS FARGO BANK, NA",
+        "",
+        "CIF",
+        "DPB",
+        "SCB",
+        "NO BANK",
+        "2024-11-25",
+        "2024-12-12",
+        3000,
+        494.99,
+        494.99,
+        1484970,
+        "KOHSICHANG, THAILAND",
+        "MAPUTO, MOZAMBIQUE",
+        "2024-11-25",
+        "",
+        "",
+        "2024-12-17",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "0001-01-02",
+        "0001-01-02",
+        "0001-01-02",
+        "0001-01-02",
+        "ALLOCATED TO BDB/BCI SOFISA DEAL",
+        "2024-12-13",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "3000045645",
+        "02",
+        "2024-12-18",
+        "Rice",
+        "",
+        "MV SUPRA BARON V.24001",
+        "THAI WHITE RICE 5% BROKEN DOUBLE POLISHED",
+        "",
+        "FOB",
+        "LCUUC",
+        "KASIKORNBANK PCL",
+        "WELLS FARGO BANK, NA",
+        "",
+        "CIF",
+        "DPB",
+        "SCB",
+        "NO BANK",
+        "2024-11-25",
+        "2024-12-12",
+        3000,
+        494.99,
+        494.99,
+        1484970,
+        "KOHSICHANG, THAILAND",
+        "MAPUTO, MOZAMBIQUE",
+        "2024-11-25",
+        "",
+        "",
+        "2024-12-17",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "0001-01-02",
+        "0001-01-02",
+        "0001-01-02",
+        "0001-01-02",
+        "ALLOCATED TO BDB/BCI SOFISA DEAL",
+        "2024-12-13",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "3000045624",
+        "01",
+        "2024-12-09",
+        "Rice",
+        "",
+        "MV HPC ATLANTIC",
+        "INDIAN WHITE RICE 100 PCT BROKEN, SORTEXED, SILKY POLISHED",
+        "",
+        "FOB",
+        "PPMT",
+        "NO BANK",
+        "NO BANK",
+        "",
+        "CIF",
+        "DP",
+        "NO BANK",
+        "NO BANK",
+        "2024-12-03",
+        "2024-12-18",
+        2000,
+        400,
+        400,
+        800000,
+        "KAKINADA, INDIA",
+        "ABIDJAN, COTE D'IVOIRE",
+        "2024-11-18",
+        "",
+        "",
+        "2024-12-18",
+        "TO ORDER",
+        "NO",
+        "",
+        "",
+        "",
+        "",
+        "0001-01-02",
+        "0001-01-02",
+        "0001-01-02",
+        "0001-01-02",
+        "ALLOCATED TO SOFISA/BDB/BCI",
+        "2024-12-27",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "3000045647",
+        "01",
+        "2024-12-18",
+        "Rice",
+        "",
+        "MV LAGO DI LEDRO",
+        "INDIAN PARBOILED RICE 5 PCT BROKEN",
+        "",
+        "FOB",
+        "LCUUC",
+        "HDFC BANK",
+        "WELLS FARGO BANK, NA",
+        "",
+        "CFR",
+        "CAD",
+        "SCB",
+        "NO BANK",
+        "2024-12-08",
+        "2024-12-23",
+        3000,
+        445,
+        445,
+        1335000,
+        "VISAKHAPATNAM, INDIA",
+        "FREE TOWN, SIERRE LEONE",
+        "2024-11-23",
+        "",
+        "",
+        "2024-12-24",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "0001-01-02",
+        "0001-01-02",
+        "0001-01-02",
+        "0001-01-02",
+        "ALLOCATED TO SOFIA/BDB/BCI",
+        "2024-12-13",
+        "",
+        "",
+        "",
+        ""
+      ]
+    ]
+  }
+}
+</script>
+<script>
+var appPayload = JSON.parse(document.getElementById("tradeFlowPayload").textContent);
+var uploadState = {
+  file:null,
+  currentUpload:null,
+  currentPage:1,
+  pageSize:appPayload.uiConfig.defaultPageSize,
+  filteredRows:[],
+  filteredIndexes:[],
+  extracted:false,
+  uploaded:false
+};
+
+/* ---------- ZFS_SB_TRDFLOW_O4_API wiring ----------
+   The proxy (proxy.py) injects Basic Auth + the SAP CSRF token so the browser page never
+   handles either - same pattern as every other console in web/. */
+var API_BASE = {tf:"/api/tf"};
+async function apiRequest(path,opts) {
+  var res;
+  try { res = await fetch(path,opts); }
+  catch (netErr) { throw new Error("Cannot reach the local proxy - is proxy.py running?"); }
+  var text = await res.text();
+  var data = null;
+  if (text) { try { data = JSON.parse(text); } catch (e) { data = null; } }
+  if (!res.ok) {
+    var msg = (data && data.error && data.error.message && (data.error.message.value || data.error.message))
+      || (data && data.SAP__Messages && data.SAP__Messages[0] && data.SAP__Messages[0].message)
+      || res.statusText || ("HTTP " + res.status);
+    throw new Error(msg);
+  }
+  return {data:data,res:res};
+}
+async function apiFetch(path,opts) { return (await apiRequest(path,opts)).data; }
+// Runs a few rows at a time instead of firing every PATCH at once - unthrottled concurrent
+// requests against proxy.py can exhaust the browser's connection pool (see L-278 in the
+// lessons ledger, hit previously in web/deal-id-console).
+async function runLimited(tasks,limit) {
+  limit = limit || 3;
+  var results = new Array(tasks.length);
+  var next = 0;
+  await Promise.all(Array.from({length:Math.min(limit,tasks.length)},async function(){
+    while (next < tasks.length) {
+      var i = next++;
+      try { results[i] = {status:"fulfilled",value:await tasks[i]()}; }
+      catch (reason) { results[i] = {status:"rejected",reason:reason}; }
+    }
+  }));
+  return results;
+}
+// Excel-serial or ISO-text -> "YYYY-MM-DD" for the OData Edm.Date fields. Returns null (field
+// omitted from the payload, not cleared) for anything unrecognized.
+function toIsoDate(value) {
+  if (value === null || value === undefined || value === "") { return null; }
+  if (typeof value === "number") {
+    var millis = Date.UTC(1899,11,30) + Math.round(value * 86400000);
+    var d = new Date(millis);
+    return d.getUTCFullYear() + "-" + pad2(d.getUTCMonth() + 1) + "-" + pad2(d.getUTCDate());
+  }
+  var text = String(value).trim();
+  var match = text.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return match ? match[0] : null;
+}
+// ZtfNo/ZtfSplit are stored zero-padded (e.g. "0000000022", "01") - Excel often stores the
+// number without the leading zeros, so a plain "22" would target a key that doesn't exist.
+// Only pads values that are already purely numeric; anything else is passed through untouched.
+function padKey(value,length) {
+  var text = String(value === null || value === undefined ? "" : value).trim();
+  if (/^\d+$/.test(text) && text.length < length) { text = text.padStart(length,"0"); }
+  return text;
+}
+// Column index -> OData field, mapped by each field's real DDIC label (dd04t), not by its
+// (frequently misleading) technical name - e.g. the table's own ZUNIT column is actually
+// labeled "Contract Price" and ZCPRICE is actually "CMP (MT)". Confirmed against
+// ZFS_C_TrdFlowTP field-by-field before writing this map. Index 0/1 (ZtfNo/ZtfSplit) are the
+// key, read separately in uploadRow() - never sent inside the PATCH body.
+var TF_FIELD_MAP = [
+  {field:"ZtfNo",type:"text"},
+  {field:"ZtfSplit",type:"text"},
+  {field:"ZtfDate",type:"date"},
+  {field:"Zbu",type:"text"},
+  {field:"Zoprtr",type:"text"},
+  {field:"ZblVsslName",type:"text"},
+  {field:"Zcmmd",type:"text"},
+  {field:"ZconNum1",type:"text"},
+  {field:"ZpurInc",type:"text"},
+  {field:"Zpaypur",type:"text"},
+  {field:"Zbplsb",type:"text"},
+  {field:"Zbplbb",type:"text"},
+  {field:"ZconNum2",type:"text"},
+  {field:"Zsalesinc",type:"text"},
+  {field:"Zptss",type:"text"},
+  {field:"Zbslsb",type:"text"},
+  {field:"Zbslbb",type:"text"},
+  {field:"Zotfd",type:"date"},
+  {field:"Zottd",type:"date"},
+  {field:"Zquantity",type:"number"},
+  {field:"Zunit",type:"number"},
+  {field:"Zcprice",type:"number"},
+  {field:"Zttv",type:"number"},
+  {field:"Zpol",type:"text"},
+  {field:"Zpod",type:"text"},
+  {field:"Zsldate",type:"date"},
+  {field:"Zblno",type:"text"},
+  {field:"Zdays",type:"text"},
+  {field:"ZetaDsPort",type:"date"},
+  {field:"Zcob",type:"text"},
+  {field:"Znotify",type:"text"},
+  {field:"Zlc",type:"text"},
+  {field:"Zoentity",type:"text"},
+  {field:"Zsod",type:"text"},
+  {field:"Zbod",type:"text"},
+  {field:"Zaobf13",type:"date"},
+  {field:"Zaobt13",type:"date"},
+  {field:"Zaobf33",type:"date"},
+  {field:"Zaobt33",type:"date"},
+  {field:"Zremark",type:"text"},
+  {field:"ZblRcpdt",type:"date"},
+  {field:"ZflwSts",type:"text"},
+  {field:"ZpolCtry",type:"text"},
+  {field:"ZpodCtry",type:"text"},
+  {field:"ZogbsStatId",type:"text"}
+];
+// ZTFTYPE is CHAR(2); the domain's own fixed values (dd07v) are 01=Container/02=Bulk - human
+// confirmed 2026-09-08 to use these over the informal codes ("Bu") seen in some live rows.
+var TF_TYPE_CODES = {CONTAINER:"01",BULK:"02"};
+// Loaded once from ZFS_I_ChComm (exposed 2026-09-09 alongside TrdFlow in the same service, no
+// republish needed - L-255) and matched against the "BU Commodity" cell exactly like
+// ZSGTSF_RTF_UPLOAD's own READ TABLE gt_com WITH KEY zch_name1 = ... / zch_name2 = ... .
+var chCommRows = [];
+async function loadChComm() {
+  try { var d = await apiFetch(API_BASE.tf + "/ChComm"); chCommRows = d.value || []; }
+  catch (e) { chCommRows = []; }
+}
+function lookupCommodity(zcmmd) {
+  if (!zcmmd) { return null; }
+  var hit = chCommRows.find(function(r){ return r.ZchName1 === zcmmd; })
+    || chCommRows.find(function(r){ return r.ZchName2 === zcmmd; });
+  return hit || null;
+}
+// Builds the request body for one row. Only fields with a non-blank Excel value are included, so
+// on UPDATE an empty cell leaves that field untouched on the SAP side rather than clearing it
+// (human confirmed 2026-09-08: safer than ZSGTSF_RTF_UPLOAD's own full-overwrite behavior). The
+// commodity enrichment (ZtrmComId/ZtrmComDesc/ZchName1/ZchName2) mirrors that same program's
+// lookup and is applied whenever "BU Commodity" matches something in ZFS_I_ChComm, on both
+// create and update, exactly like its own READ TABLE gt_com logic runs in both new_data and the
+// update branch of user_command.
+function buildRowPayload(row,buCode,tfTypeCode,isCreate) {
+  var body = {};
+  for (var i = 2; i < TF_FIELD_MAP.length; i++) {
+    var col = TF_FIELD_MAP[i];
+    var raw = row[i];
+    if (raw === null || raw === undefined || raw === "") { continue; }
+    if (col.type === "date") {
+      var iso = toIsoDate(raw);
+      if (iso) { body[col.field] = iso; }
+    } else if (col.type === "number") {
+      var num = Number(raw);
+      if (isFinite(num)) { body[col.field] = num; }
+    } else {
+      body[col.field] = String(raw);
+    }
+  }
+  if (buCode) { body.ZbuId = buCode; }
+  if (tfTypeCode) { body.ZtfType = tfTypeCode; }
+  // On create, NEW_DATA always resolves the Business Unit's real name from the master list by
+  // the selected code, ignoring whatever text is in the Excel's own "Business Unit Name" column.
+  // On update, that column's own text is used as-is (matching the update branch of user_command).
+  if (isCreate && buCode) {
+    var buItem = (appPayload.masterData.businessUnits || []).find(function(b){ return b.code === buCode; });
+    if (buItem) { body.Zbu = buItem.name; }
+  }
+  var commodity = lookupCommodity(body.Zcmmd);
+  if (commodity) {
+    body.ZtrmComId = commodity.ZcommId;
+    body.ZtrmComDesc = commodity.ZcommDesc;
+    body.ZchName1 = commodity.ZchName1;
+    body.ZchName2 = commodity.ZchName2;
+  }
+  return body;
+}
+// A blank Trade Flow ID means a genuinely new row (matching ZSGTSF_RTF_UPLOAD's own
+// "IF <fs_data>-ztf_no IS INITIAL" branch) - POST it and let the backend generate the number
+// (ZFS_TUP_D) and hardcode split '01' + today's date, exactly like that program's NEW_DATA form.
+// Otherwise it's an update to an existing row, addressed by its zero-padded key.
+async function uploadRow(row,buCode,tfTypeCode) {
+  var isCreate = !String(row[0] || "").trim();
+  var body = buildRowPayload(row,buCode,tfTypeCode,isCreate);
+  if (isCreate) {
+    await apiFetch(API_BASE.tf + "/TrdFlow",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(body)
+    });
+    return;
+  }
+  var ztfNo = padKey(row[0],10);
+  var ztfSplit = padKey(row[1],2);
+  if (!ztfSplit) { throw new Error("Missing TF Split ID"); }
+  var key = "TrdFlow(ZtfNo='" + encodeURIComponent(ztfNo) + "',ZtfSplit='" + encodeURIComponent(ztfSplit) + "')";
+  await apiFetch(API_BASE.tf + "/" + key,{
+    method:"PATCH",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(body)
+  });
+}
+function getResponsivePageSize() {
+  var height = window.innerHeight || 800;
+  var width = window.innerWidth || 1200;
+  if (width <= 680) { return Math.max(7,Math.min(10,Math.floor((height - 300) / 34))); }
+  if (width <= 900) { return Math.max(8,Math.min(12,Math.floor((height - 390) / 34))); }
+  return Math.max(10,Math.min(18,Math.floor((height - 300) / 34)));
+}
+function escapeHtml(value) {
+  var text = value === null || value === undefined ? "" : String(value);
+  return text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/\"/g,"&quot;").replace(/'/g,"&#39;");
+}
+function formatBytes(bytes) {
+  if (!bytes) { return "0 KB"; }
+  var units = ["B","KB","MB","GB"];
+  var index = Math.floor(Math.log(bytes) / Math.log(1024));
+  index = Math.min(index, units.length - 1);
+  var value = bytes / Math.pow(1024, index);
+  return value.toFixed(index === 0 ? 0 : 1) + " " + units[index];
+}
+function pad2(value) {
+  return value < 10 ? "0" + value : String(value);
+}
+function formatDateTime(dateValue) {
+  var d = dateValue instanceof Date ? dateValue : new Date(dateValue);
+  if (isNaN(d.getTime())) { return String(dateValue || ""); }
+  return pad2(d.getDate()) + "-" + pad2(d.getMonth() + 1) + "-" + d.getFullYear() +
+    " " + pad2(d.getHours()) + ":" + pad2(d.getMinutes());
+}
+function isoToDisplay(value) {
+  var text = String(value || "").trim();
+  var match = text.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) { return text; }
+  return match[3] + "-" + match[2] + "-" + match[1];
+}
+function excelSerialToDisplay(serial) {
+  var num = Number(serial);
+  if (!isFinite(num)) { return String(serial || ""); }
+  var millis = Date.UTC(1899,11,30) + Math.round(num * 86400000);
+  var d = new Date(millis);
+  return pad2(d.getUTCDate()) + "-" + pad2(d.getUTCMonth() + 1) + "-" +
+    d.getUTCFullYear();
+}
+function isDateColumn(index) {
+  var cols = appPayload.template.columns || [];
+  return cols[index] && cols[index].type === "date";
+}
+function isNumberColumn(index) {
+  var cols = appPayload.template.columns || [];
+  return cols[index] && cols[index].type === "number";
+}
+function displayCell(value,index) {
+  if (value === null || value === undefined || value === "") { return ""; }
+  if (isDateColumn(index)) {
+    if (typeof value === "number") { return excelSerialToDisplay(value); }
+    return isoToDisplay(value);
+  }
+  if (isNumberColumn(index) && typeof value === "number") {
+    return value.toLocaleString("en-IN",{maximumFractionDigits:4});
+  }
+  return String(value);
+}
+function populateSelect(selectId,placeholder,items) {
+  var select = document.getElementById(selectId);
+  var html = "<option value=\"\">" + escapeHtml(placeholder) + "</option>";
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    var label = selectId === "tfTypeSelect" ? item.name : (item.code ? item.code + " - " + item.name : item.name);
+    html += "<option value=\"" + escapeHtml(item.code || item.name) + "\">";
+    html += escapeHtml(label) + "</option>";
+  }
+  select.innerHTML = html;
+}
+function initScreen() {
+  populateSelect("businessUnitSelect","Select Business Unit",appPayload.masterData.businessUnits);
+  populateSelect("tfTypeSelect","Select TF Type",appPayload.masterData.tfTypes);
+  document.getElementById("fileRuleText").textContent = "Supported: .xlsx, .xlsm";
+  updateExtractButton();
+  loadChComm();
+}
+function contextReady() {
+  return !!document.getElementById("businessUnitSelect").value &&
+    !!document.getElementById("tfTypeSelect").value;
+}
+function updateExtractButton() {
+  document.getElementById("extractBtn").disabled = !uploadState.file || !contextReady();
+}
+function setFile(file) {
+  hideError();
+  if (!contextReady()) {
+    showError("Select Business Unit and TF Type before choosing an Excel file.");
+    document.getElementById("fileInput").value = "";
+    return;
+  }
+  if (!file) { clearFile(); return; }
+  var name = String(file.name || "");
+  var lower = name.toLowerCase();
+  if (!(lower.endsWith(".xlsx") || lower.endsWith(".xlsm"))) {
+    showError("Please select an .xlsx or .xlsm Excel workbook.");
+    clearFile();
+    return;
+  }
+  var maxBytes = appPayload.uiConfig.maxFileMb * 1024 * 1024;
+  if (file.size > maxBytes) {
+    showError("The selected file exceeds the maximum allowed size.");
+    clearFile();
+    return;
+  }
+  uploadState.file = file;
+  document.getElementById("selectedFileName").textContent = name;
+  document.getElementById("selectedFileCard").classList.remove("hidden");
+  document.getElementById("dropZone").classList.add("has-file");
+  resetPreview();
+  updateExtractButton();
+}
+function resetPreview() {
+  uploadState.currentUpload = null;
+  uploadState.filteredRows = [];
+  uploadState.currentPage = 1;
+  uploadState.extracted = false;
+  uploadState.uploaded = false;
+  document.getElementById("previewSection").classList.add("hidden");
+  document.getElementById("tableSearch").value = "";
+  document.getElementById("finalUploadBtn").disabled = false;
+  document.getElementById("finalUploadBtn").textContent = "Upload";
+}
+function clearFile() {
+  uploadState.file = null;
+  document.getElementById("fileInput").value = "";
+  document.getElementById("selectedFileCard").classList.add("hidden");
+  document.getElementById("selectedFileName").textContent = "";
+  document.getElementById("dropZone").classList.remove("has-file");
+  resetPreview();
+  updateExtractButton();
+}
+function clearAll() {
+  clearFile();
+  document.getElementById("businessUnitSelect").value = "";
+  document.getElementById("tfTypeSelect").value = "";
+  hideError();
+  updateExtractButton();
+}
+function showError(message) {
+  var el = document.getElementById("uploadError");
+  el.textContent = message;
+  el.classList.remove("hidden");
+}
+function hideError() {
+  var el = document.getElementById("uploadError");
+  el.textContent = "";
+  el.classList.add("hidden");
+}
+function downloadTemplate() {
+  var chunks = appPayload.template.fileBase64Chunks || [];
+  var binary = atob(chunks.join(""));
+  var bytes = new Uint8Array(binary.length);
+  for (var i = 0; i < binary.length; i++) { bytes[i] = binary.charCodeAt(i); }
+  var blob = new Blob([bytes],{
+    type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  });
+  var url = URL.createObjectURL(blob);
+  var link = document.createElement("a");
+  link.href = url;
+  link.download = appPayload.template.fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.setTimeout(function(){ URL.revokeObjectURL(url); },1000);
+}
+function findEocd(view) {
+  var start = Math.max(0,view.byteLength - 65557);
+  for (var pos = view.byteLength - 22; pos >= start; pos--) {
+    if (view.getUint32(pos,true) === 0x06054b50) { return pos; }
+  }
+  return -1;
+}
+function decodeUtf8(bytes) {
+  return new TextDecoder("utf-8").decode(bytes);
+}
+function readZipEntries(buffer) {
+  var view = new DataView(buffer);
+  var eocd = findEocd(view);
+  if (eocd < 0) { throw new Error("Invalid Excel archive."); }
+  var count = view.getUint16(eocd + 10,true);
+  var offset = view.getUint32(eocd + 16,true);
+  var entries = {};
+  var pos = offset;
+  for (var i = 0; i < count; i++) {
+    if (view.getUint32(pos,true) !== 0x02014b50) { break; }
+    var method = view.getUint16(pos + 10,true);
+    var compSize = view.getUint32(pos + 20,true);
+    var uncompSize = view.getUint32(pos + 24,true);
+    var nameLen = view.getUint16(pos + 28,true);
+    var extraLen = view.getUint16(pos + 30,true);
+    var commentLen = view.getUint16(pos + 32,true);
+    var localOffset = view.getUint32(pos + 42,true);
+    var nameBytes = new Uint8Array(buffer,pos + 46,nameLen);
+    var name = decodeUtf8(nameBytes);
+    entries[name] = {
+      method:method,
+      compSize:compSize,
+      uncompSize:uncompSize,
+      localOffset:localOffset
+    };
+    pos += 46 + nameLen + extraLen + commentLen;
+  }
+  return entries;
+}
+async function extractZipText(buffer,entries,name) {
+  var entry = entries[name];
+  if (!entry) { return ""; }
+  var view = new DataView(buffer);
+  var pos = entry.localOffset;
+  if (view.getUint32(pos,true) !== 0x04034b50) {
+    throw new Error("Invalid Excel file entry.");
+  }
+  var nameLen = view.getUint16(pos + 26,true);
+  var extraLen = view.getUint16(pos + 28,true);
+  var dataStart = pos + 30 + nameLen + extraLen;
+  var compressed = new Uint8Array(buffer,dataStart,entry.compSize);
+  if (entry.method === 0) { return decodeUtf8(compressed); }
+  if (entry.method !== 8) { throw new Error("Unsupported Excel compression method."); }
+  if (typeof DecompressionStream === "undefined") {
+    throw new Error("This browser cannot read Excel files locally. Use a current browser.");
+  }
+  var stream = new Blob([compressed]).stream();
+  var decompressed = stream.pipeThrough(new DecompressionStream("deflate-raw"));
+  var out = await new Response(decompressed).arrayBuffer();
+  return decodeUtf8(new Uint8Array(out));
+}
+function nodeText(node) {
+  return node ? node.textContent || "" : "";
+}
+function parseSharedStrings(xmlText) {
+  if (!xmlText) { return []; }
+  var doc = new DOMParser().parseFromString(xmlText,"application/xml");
+  var items = doc.getElementsByTagName("si");
+  var out = [];
+  for (var i = 0; i < items.length; i++) {
+    var tNodes = items[i].getElementsByTagName("t");
+    var text = "";
+    for (var j = 0; j < tNodes.length; j++) { text += nodeText(tNodes[j]); }
+    out.push(text);
+  }
+  return out;
+}
+function columnIndexFromRef(ref) {
+  var letters = String(ref || "").match(/^[A-Z]+/i);
+  if (!letters) { return -1; }
+  var text = letters[0].toUpperCase();
+  var index = 0;
+  for (var i = 0; i < text.length; i++) {
+    index = index * 26 + text.charCodeAt(i) - 64;
+  }
+  return index - 1;
+}
+function readCellValue(cell,shared) {
+  var type = cell.getAttribute("t") || "";
+  if (type === "inlineStr") {
+    var inlineNodes = cell.getElementsByTagName("t");
+    var inlineText = "";
+    for (var k = 0; k < inlineNodes.length; k++) { inlineText += nodeText(inlineNodes[k]); }
+    return inlineText;
+  }
+  var valueNode = cell.getElementsByTagName("v")[0];
+  var raw = nodeText(valueNode);
+  if (type === "s") { return shared[Number(raw)] || ""; }
+  if (type === "b") { return raw === "1" ? "TRUE" : "FALSE"; }
+  if (type === "str" || type === "e") { return raw; }
+  if (raw === "") { return ""; }
+  var numeric = Number(raw);
+  return isFinite(numeric) ? numeric : raw;
+}
+function parseSheetRows(xmlText,shared) {
+  var doc = new DOMParser().parseFromString(xmlText,"application/xml");
+  var rowNodes = doc.getElementsByTagName("row");
+  var allRows = [];
+  var maxCols = appPayload.template.headers.length;
+  for (var i = 0; i < rowNodes.length; i++) {
+    var cells = rowNodes[i].getElementsByTagName("c");
+    var row = new Array(maxCols);
+    var hasValue = false;
+    for (var z = 0; z < maxCols; z++) { row[z] = ""; }
+    for (var j = 0; j < cells.length; j++) {
+      var index = columnIndexFromRef(cells[j].getAttribute("r"));
+      if (index < 0 || index >= maxCols) { continue; }
+      var value = readCellValue(cells[j],shared);
+      row[index] = value;
+      if (value !== "") { hasValue = true; }
+    }
+    if (hasValue) { allRows.push(row); }
+  }
+  return allRows;
+}
+function normalizeHeader(value) {
+  return String(value === null || value === undefined ? "" : value).trim();
+}
+function validateHeaders(actual) {
+  var expected = appPayload.template.headers;
+  if (actual.length !== expected.length) {
+    return "Column count mismatch. Expected " + expected.length + " columns but found " + actual.length + ".";
+  }
+  var mismatches = [];
+  for (var i = 0; i < expected.length; i++) {
+    if (normalizeHeader(actual[i]) !== normalizeHeader(expected[i])) {
+      mismatches.push((i + 1) + ": " + normalizeHeader(expected[i]));
+      if (mismatches.length === 3) { break; }
+    }
+  }
+  if (mismatches.length) {
+    return "Template mismatch. Check these expected columns: " + mismatches.join(" | ") + ".";
+  }
+  return "";
+}
+async function parseExcelFile(file) {
+  var buffer = await file.arrayBuffer();
+  var entries = readZipEntries(buffer);
+  var sharedText = await extractZipText(buffer,entries,"xl/sharedStrings.xml");
+  var sheetText = await extractZipText(buffer,entries,"xl/worksheets/sheet1.xml");
+  if (!sheetText) { throw new Error("The first worksheet could not be read."); }
+  var shared = parseSharedStrings(sharedText);
+  var allRows = parseSheetRows(sheetText,shared);
+  if (!allRows.length) { throw new Error("The workbook does not contain a header row."); }
+  var headers = allRows[0].slice(0,appPayload.template.headers.length);
+  var error = validateHeaders(headers);
+  if (error) { throw new Error(error); }
+  var rows = [];
+  for (var i = 1; i < allRows.length; i++) {
+    if (allRows[i].some(function(value){ return value !== ""; })) { rows.push(allRows[i]); }
+  }
+  return {headers:headers,rows:rows};
+}
+function businessUnitLabel(code) {
+  var items = appPayload.masterData.businessUnits || [];
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].code === code) { return items[i].code + " - " + items[i].name; }
+  }
+  return code;
+}
+function tfTypeLabel(code) {
+  var items = appPayload.masterData.tfTypes || [];
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].code === code) { return items[i].name; }
+  }
+  return code;
+}
+async function handleExtract() {
+  hideError();
+  if (!contextReady()) {
+    showError("Select Business Unit and TF Type before extracting.");
+    return;
+  }
+  if (!uploadState.file) { showError("Select an Excel file before extracting."); return; }
+  var bu = document.getElementById("businessUnitSelect").value;
+  var tf = document.getElementById("tfTypeSelect").value;
+  document.getElementById("extractBtn").disabled = true;
+  try {
+    var parsed = await parseExcelFile(uploadState.file);
+    uploadState.currentUpload = {
+      fileName:uploadState.file.name,
+      fileSize:uploadState.file.size,
+      extractedAt:new Date(),
+      businessUnit:bu,
+      tfType:tf,
+      headers:parsed.headers,
+      rows:parsed.rows
+    };
+    uploadState.extracted = true;
+    uploadState.uploaded = false;
+    renderPreviewSummary();
+    uploadState.currentPage = 1;
+    filterRows();
+    document.getElementById("previewSection").classList.remove("hidden");
+  } catch (error) {
+    showError(error && error.message ? error.message : "Unable to read the selected Excel file.");
+    document.getElementById("extractBtn").disabled = false;
+  }
+}
+function renderPreviewSummary() {
+  var data = uploadState.currentUpload;
+  if (!data) { return; }
+  var parts = [data.fileName];
+  if (data.businessUnit) { parts.push(businessUnitLabel(data.businessUnit)); }
+  if (data.tfType) { parts.push(tfTypeLabel(data.tfType)); }
+  parts.push(data.rows.length + " rows");
+  parts.push(data.headers.length + " columns");
+  document.getElementById("previewSummary").textContent = parts.join(" | ");
+}
+var uploadToastTimer = null;
+function showUploadToast(title,message,isError) {
+  var toast = document.getElementById("uploadToast");
+  if (!toast) { return; }
+  toast.style.borderLeftColor = isError ? "var(--red)" : "var(--green)";
+  var titleEl = toast.querySelector(".upload-toast-title");
+  var msgEl = toast.querySelector(".upload-toast-message");
+  if (titleEl) { titleEl.textContent = title || "Success"; }
+  if (msgEl) { msgEl.textContent = message || "Uploaded successfully."; }
+  if (uploadToastTimer) { window.clearTimeout(uploadToastTimer); }
+  toast.classList.remove("hidden");
+  uploadToastTimer = window.setTimeout(function(){
+    toast.classList.add("hidden");
+  },5200);
+}
+// A row with a Trade Flow ID updates that existing row (PATCH); a row with a blank Trade Flow ID
+// creates a new one (POST), matching ZSGTSF_RTF_UPLOAD's own IS INITIAL branch - human confirmed
+// 2026-09-09 after the real sample file turned out to rely on exactly this (blank IDs, backend-
+// generated via ZFS_TUP_D). Business Unit and TF Type come from the context selectors above the
+// drop zone and are applied to every row in this batch (see buildRowPayload()).
+async function handleFinalUpload() {
+  if (!uploadState.extracted || !uploadState.currentUpload) {
+    showError("Extract the selected Excel file before uploading.");
+    return;
+  }
+  hideError();
+  var data = uploadState.currentUpload;
+  var buCode = document.getElementById("businessUnitSelect").value;
+  var tfTypeName = document.getElementById("tfTypeSelect").value;
+  var tfTypeCode = TF_TYPE_CODES[tfTypeName] || "";
+  var button = document.getElementById("finalUploadBtn");
+  button.disabled = true;
+  data.results = data.rows.map(function(){ return {status:"pending",message:""}; });
+  var total = data.rows.length;
+  var done = 0;
+  button.textContent = "Uploading 0/" + total + "...";
+  var tasks = data.rows.map(function(row,idx){
+    return async function(){
+      try {
+        await uploadRow(row,buCode,tfTypeCode);
+        data.results[idx] = {status:"success",message:"Updated"};
+      } catch (e) {
+        data.results[idx] = {status:"error",message:(e && e.message) ? e.message : "Failed"};
+      } finally {
+        done++;
+        button.textContent = "Uploading " + done + "/" + total + "...";
+      }
+    };
+  });
+  await runLimited(tasks,3);
+  uploadState.uploaded = true;
+  data.uploadedAt = new Date();
+  var successCount = data.results.filter(function(r){ return r.status === "success"; }).length;
+  var failCount = total - successCount;
+  button.disabled = false;
+  button.textContent = failCount === 0 ? "Uploaded" : "Retry Upload";
+  if (failCount === 0) {
+    showUploadToast("Success",successCount + " of " + total + " row(s) updated.",false);
+  } else {
+    showUploadToast("Completed with errors",
+      successCount + " of " + total + " row(s) updated, " + failCount + " failed. See the Status column.",true);
+  }
+  renderTable();
+}
+function normalizeSearchText(value) {
+  return String(value === null || value === undefined ? "" : value)
+    .toLowerCase().replace(/[\s,/.:-]+/g,"");
+}
+function filterRows() {
+  var data = uploadState.currentUpload;
+  if (!data) { return; }
+  var rawQuery = document.getElementById("tableSearch").value.trim();
+  var query = rawQuery.toLowerCase();
+  var compactQuery = normalizeSearchText(rawQuery);
+  // Track each surviving row's ORIGINAL index (not just the filtered row itself) so the Status
+  // column can still look up the right result in data.results after a search narrows the list.
+  var indexes = [];
+  for (var idx = 0; idx < data.rows.length; idx++) {
+    if (!query) { indexes.push(idx); continue; }
+    var row = data.rows[idx];
+    var matched = false;
+    for (var i = 0; i < data.headers.length; i++) {
+      var raw = String(row[i] === null || row[i] === undefined ? "" : row[i]);
+      var shown = displayCell(row[i],i);
+      if (shown.toLowerCase().indexOf(query) !== -1 ||
+          raw.toLowerCase().indexOf(query) !== -1 ||
+          normalizeSearchText(shown).indexOf(compactQuery) !== -1 ||
+          normalizeSearchText(raw).indexOf(compactQuery) !== -1) { matched = true; break; }
+    }
+    if (matched) { indexes.push(idx); }
+  }
+  uploadState.filteredIndexes = indexes;
+  uploadState.filteredRows = indexes.map(function(i){ return data.rows[i]; });
+  uploadState.currentPage = 1;
+  renderTable();
+}
+function statusPillHtml(result) {
+  if (!result || result.status === "pending") { return '<span class="tf-status tf-status-pending">Pending</span>'; }
+  if (result.status === "success") { return '<span class="tf-status tf-status-success">Updated</span>'; }
+  return '<span class="tf-status tf-status-error" title="' + escapeHtml(result.message || "") + '">Failed</span>';
+}
+function renderTable() {
+  var data = uploadState.currentUpload;
+  if (!data) { return; }
+  var headHtml = "<tr>";
+  for (var i = 0; i < data.headers.length; i++) {
+    var sticky = i === 0 ? " sticky-1" : (i === 1 ? " sticky-2" : "");
+    headHtml += "<th class=\"" + sticky.trim() + "\" title=\"";
+    headHtml += escapeHtml(data.headers[i]) + "\">" + escapeHtml(data.headers[i]) + "</th>";
+  }
+  headHtml += "<th>Status</th>";
+  headHtml += "</tr>";
+  document.getElementById("previewHead").innerHTML = headHtml;
+  var total = uploadState.filteredRows.length;
+  uploadState.pageSize = getResponsivePageSize();
+  var pageSize = uploadState.pageSize;
+  var totalPages = Math.max(1,Math.ceil(total / pageSize));
+  if (uploadState.currentPage > totalPages) { uploadState.currentPage = totalPages; }
+  var start = (uploadState.currentPage - 1) * pageSize;
+  var end = Math.min(start + pageSize,total);
+  var bodyHtml = "";
+  for (var r = start; r < end; r++) {
+    bodyHtml += "<tr>";
+    var row = uploadState.filteredRows[r];
+    var originalIdx = uploadState.filteredIndexes[r];
+    for (var c = 0; c < data.headers.length; c++) {
+      var stickyCell = c === 0 ? " sticky-1" : (c === 1 ? " sticky-2" : "");
+      var numClass = isNumberColumn(c) ? " num" : "";
+      var text = displayCell(row[c],c);
+      bodyHtml += "<td class=\"" + (stickyCell + numClass).trim() + "\" title=\"";
+      bodyHtml += escapeHtml(text) + "\">" + escapeHtml(text) + "</td>";
+    }
+    bodyHtml += "<td>" + statusPillHtml(data.results && data.results[originalIdx]) + "</td>";
+    bodyHtml += "</tr>";
+  }
+  document.getElementById("previewBody").innerHTML = bodyHtml;
+  var empty = document.getElementById("emptyPreview");
+  empty.classList.toggle("hidden",total !== 0);
+  document.getElementById("previewTable").classList.toggle("hidden",total === 0);
+  document.getElementById("tableMeta").textContent =
+    total + " row" + (total === 1 ? "" : "s") + " | " + data.headers.length + " columns";
+  var pageText = total === 0 ? "0 rows" :
+    "Showing " + (start + 1) + "-" + end + " of " + total + " rows";
+  document.getElementById("pageInfo").textContent = pageText;
+  document.getElementById("prevPageBtn").disabled = uploadState.currentPage <= 1;
+  document.getElementById("nextPageBtn").disabled = uploadState.currentPage >= totalPages;
+  renderPageNumbers(totalPages);
+}
+function changePage(delta) {
+  var total = uploadState.filteredRows.length;
+  var totalPages = Math.max(1,Math.ceil(total / uploadState.pageSize));
+  uploadState.currentPage = Math.max(1,Math.min(totalPages,uploadState.currentPage + delta));
+  renderTable();
+}
+function renderPageNumbers(totalPages) {
+  var container = document.getElementById("pageNumberBtns");
+  var start = uploadState.currentPage;
+  var end = Math.min(totalPages,start + 1);
+  if (start === totalPages && totalPages > 1) { start = totalPages - 1; }
+  var html = "";
+  for (var page = start; page <= end; page++) {
+    var active = page === uploadState.currentPage ? " active" : "";
+    html += '<button type="button" class="page-btn' + active + '" data-page="';
+    html += page + '">' + page + '</button>';
+  }
+  container.innerHTML = html;
+  var buttons = container.querySelectorAll("[data-page]");
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener("click",function(){
+      uploadState.currentPage = Number(this.getAttribute("data-page")) || 1;
+      renderTable();
+    });
+  }
+}
+function wireEvents() {
+  var input = document.getElementById("fileInput");
+  var zone = document.getElementById("dropZone");
+  document.getElementById("browseBtn").addEventListener("click",function(){
+    if (!contextReady()) {
+      showError("Select Business Unit and TF Type before choosing an Excel file.");
+      return;
+    }
+    input.click();
+  });
+  zone.addEventListener("click",function(event){
+    if (event.target.id === "browseBtn") { return; }
+    if (!contextReady()) {
+      showError("Select Business Unit and TF Type before choosing an Excel file.");
+      return;
+    }
+    input.click();
+  });
+  zone.addEventListener("keydown",function(event){
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      if (!contextReady()) {
+        showError("Select Business Unit and TF Type before choosing an Excel file.");
+        return;
+      }
+      input.click();
+    }
+  });
+  input.addEventListener("change",function(){
+    if (this.files && this.files[0]) { setFile(this.files[0]); }
+  });
+  ["dragenter","dragover"].forEach(function(name){
+    zone.addEventListener(name,function(event){
+      event.preventDefault();
+      event.stopPropagation();
+      zone.classList.add("drag-over");
+    });
+  });
+  ["dragleave","drop"].forEach(function(name){
+    zone.addEventListener(name,function(event){
+      event.preventDefault();
+      event.stopPropagation();
+      zone.classList.remove("drag-over");
+    });
+  });
+  zone.addEventListener("drop",function(event){
+    if (!contextReady()) {
+      showError("Select Business Unit and TF Type before choosing an Excel file.");
+      return;
+    }
+    var files = event.dataTransfer ? event.dataTransfer.files : null;
+    if (files && files[0]) { setFile(files[0]); }
+  });
+  document.getElementById("businessUnitSelect").addEventListener("change",function(){
+    resetPreview();
+    updateExtractButton();
+  });
+  document.getElementById("tfTypeSelect").addEventListener("change",function(){
+    resetPreview();
+    updateExtractButton();
+  });
+  document.getElementById("clearBtn").addEventListener("click",clearAll);
+  document.getElementById("downloadTemplateBtn").addEventListener("click",downloadTemplate);
+  document.getElementById("extractBtn").addEventListener("click",handleExtract);
+  document.getElementById("finalUploadBtn").addEventListener("click",handleFinalUpload);
+  document.getElementById("tableSearch").addEventListener("input",filterRows);
+  document.getElementById("prevPageBtn").addEventListener("click",function(){ changePage(-1); });
+  document.getElementById("nextPageBtn").addEventListener("click",function(){ changePage(1); });
+  window.addEventListener("resize",function(){
+    if (!uploadState.extracted) { return; }
+    var nextSize = getResponsivePageSize();
+    if (nextSize === uploadState.pageSize) { return; }
+    uploadState.pageSize = nextSize;
+    uploadState.currentPage = 1;
+    renderTable();
+  });
+}
+initScreen();
+wireEvents();
+</script>
+</body>
+</html>

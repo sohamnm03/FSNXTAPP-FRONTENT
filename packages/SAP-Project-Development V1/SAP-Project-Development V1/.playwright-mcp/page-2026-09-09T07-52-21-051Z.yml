@@ -1,0 +1,179 @@
+- generic [active] [ref=f57e1]:
+  - banner [ref=f57e2]:
+    - generic [ref=f57e3]:
+      - img "Fourth Signal" [ref=f57e4]
+      - generic [ref=f57e5]:
+        - heading "SLC" [level=1] [ref=f57e6]
+        - paragraph [ref=f57e7]: FS • VISTA
+    - generic "SAP TRM connected" [ref=f57e8]
+  - main [ref=f57e9]:
+    - generic [ref=f57e10]: SLC
+    - generic [ref=f57e11]: Trade Flows
+    - generic [ref=f57e12]:
+      - generic [ref=f57e13] [cursor=pointer]:
+        - generic [ref=f57e17]: Trade Flow Upload
+        - generic [ref=f57e18]: Upload trade flows from the Excel template and validate them before posting.
+        - generic [ref=f57e19]:
+          - generic [ref=f57e20]: Console
+          - generic [ref=f57e21]: →
+      - generic [ref=f57e22] [cursor=pointer]:
+        - generic [ref=f57e26]: Manage Trade Flows
+        - generic [ref=f57e27]: Review, amend and maintain trade flows that are already posted.
+        - generic [ref=f57e28]:
+          - generic [ref=f57e29]: Console
+          - generic [ref=f57e30]: →
+    - generic [ref=f57e31]: Front Office
+    - generic [ref=f57e32]:
+      - generic [ref=f57e33] [cursor=pointer]:
+        - generic [ref=f57e37]: Origination Ticket (OTTK)
+        - generic [ref=f57e38]: Capture and maintain origination tickets, their structures and pricing details.
+        - generic [ref=f57e39]:
+          - generic [ref=f57e40]: Console
+          - generic [ref=f57e41]: →
+      - generic [ref=f57e42] [cursor=pointer]:
+        - generic [ref=f57e46]: Distribution Ticket (DTTK)
+        - generic [ref=f57e47]: Capture and maintain distribution tickets against an origination ticket.
+        - generic [ref=f57e48]:
+          - generic [ref=f57e49]: Console
+          - generic [ref=f57e50]: →
+      - generic [ref=f57e51] [cursor=pointer]:
+        - generic [ref=f57e55]: Deal ID Creation
+        - generic [ref=f57e56]: Create a deal ID and link its origination and distribution ticket legs.
+        - generic [ref=f57e57]:
+          - generic [ref=f57e58]: Console
+          - generic [ref=f57e59]: →
+    - generic [ref=f57e60]: Mid Office
+    - generic [ref=f57e61]:
+      - generic [ref=f57e62] [cursor=pointer]:
+        - generic [ref=f57e66]: Manage Deal ID & Trade Ticket
+        - generic [ref=f57e67]: Not set up yet.
+        - generic [ref=f57e68]:
+          - generic [ref=f57e69]: Folder
+          - generic [ref=f57e70]: →
+      - generic [ref=f57e71] [cursor=pointer]:
+        - generic [ref=f57e75]: Manage Trade Invoices
+        - generic [ref=f57e76]: Not set up yet.
+        - generic [ref=f57e77]:
+          - generic [ref=f57e78]: Folder
+          - generic [ref=f57e79]: →
+      - generic [ref=f57e80] [cursor=pointer]:
+        - generic [ref=f57e84]: Manage ICLs
+        - generic [ref=f57e85]: Not set up yet.
+        - generic [ref=f57e86]:
+          - generic [ref=f57e87]: Folder
+          - generic [ref=f57e88]: →
+      - generic [ref=f57e89] [cursor=pointer]:
+        - generic [ref=f57e93]: Manage Deposits
+        - generic [ref=f57e94]: Not set up yet.
+        - generic [ref=f57e95]:
+          - generic [ref=f57e96]: Folder
+          - generic [ref=f57e97]: →
+      - generic [ref=f57e98] [cursor=pointer]:
+        - generic [ref=f57e102]: Manage LCs
+        - generic [ref=f57e103]: 4 folders in this area.
+        - generic [ref=f57e104]:
+          - generic [ref=f57e105]: Folder
+          - generic [ref=f57e106]: →
+      - generic [ref=f57e107] [cursor=pointer]:
+        - generic [ref=f57e111]: Manage Discounting Loans
+        - generic [ref=f57e112]: Not set up yet.
+        - generic [ref=f57e113]:
+          - generic [ref=f57e114]: Folder
+          - generic [ref=f57e115]: →
+      - generic [ref=f57e116] [cursor=pointer]:
+        - generic [ref=f57e120]: Manage IRS
+        - generic [ref=f57e121]: Not set up yet.
+        - generic [ref=f57e122]:
+          - generic [ref=f57e123]: Folder
+          - generic [ref=f57e124]: →
+      - generic [ref=f57e125] [cursor=pointer]:
+        - generic [ref=f57e129]: Manage Prepayments
+        - generic [ref=f57e130]: Not set up yet.
+        - generic [ref=f57e131]:
+          - generic [ref=f57e132]: Folder
+          - generic [ref=f57e133]: →
+      - generic [ref=f57e134] [cursor=pointer]:
+        - generic [ref=f57e138]: Manage SBLCs
+        - generic [ref=f57e139]: Not set up yet.
+        - generic [ref=f57e140]:
+          - generic [ref=f57e141]: Folder
+          - generic [ref=f57e142]: →
+      - generic [ref=f57e143] [cursor=pointer]:
+        - generic [ref=f57e147]: Special Cases
+        - generic [ref=f57e148]: Not set up yet.
+        - generic [ref=f57e149]:
+          - generic [ref=f57e150]: Folder
+          - generic [ref=f57e151]: →
+      - generic [ref=f57e152] [cursor=pointer]:
+        - generic [ref=f57e156]: Manage Limits
+        - generic [ref=f57e157]: Not set up yet.
+        - generic [ref=f57e158]:
+          - generic [ref=f57e159]: Folder
+          - generic [ref=f57e160]: →
+    - generic [ref=f57e161]: BG Process
+    - generic [ref=f57e162]:
+      - generic [ref=f57e163] [cursor=pointer]:
+        - generic [ref=f57e167]: BG Issuance Process
+        - generic [ref=f57e168]: 4 screens in this sub-process.
+        - generic [ref=f57e169]:
+          - generic [ref=f57e170]: Folder
+          - generic [ref=f57e171]: →
+      - generic [ref=f57e172] [cursor=pointer]:
+        - generic [ref=f57e176]: BG Amendment Process
+        - generic [ref=f57e177]: 2 screens in this sub-process.
+        - generic [ref=f57e178]:
+          - generic [ref=f57e179]: Folder
+          - generic [ref=f57e180]: →
+      - generic [ref=f57e181] [cursor=pointer]:
+        - generic [ref=f57e185]: BG Termination Process
+        - generic [ref=f57e186]: 2 screens in this sub-process.
+        - generic [ref=f57e187]:
+          - generic [ref=f57e188]: Folder
+          - generic [ref=f57e189]: →
+    - generic [ref=f57e190]: Accounting
+    - generic [ref=f57e192] [cursor=pointer]:
+      - generic [ref=f57e196]: Posting of Fees
+      - generic [ref=f57e197]: Post accrued LC / BG fees and charges to the ledger.
+      - generic [ref=f57e198]:
+        - generic [ref=f57e199]: Process
+        - generic [ref=f57e200]: →
+    - generic [ref=f57e201]: Dashboard Reporting
+    - generic [ref=f57e202]:
+      - generic [ref=f57e203] [cursor=pointer]:
+        - generic [ref=f57e207]: Limit Utilization Tracker
+        - generic [ref=f57e208]: Track sanctioned limit usage across facilities in real time.
+        - generic [ref=f57e209]:
+          - generic [ref=f57e210]: Dashboard
+          - generic [ref=f57e211]: →
+      - generic [ref=f57e212] [cursor=pointer]:
+        - generic [ref=f57e216]: Fees Tracker
+        - generic [ref=f57e217]: Monitor fee accrual and posting status across all requests.
+        - generic [ref=f57e218]:
+          - generic [ref=f57e219]: Dashboard
+          - generic [ref=f57e220]: →
+    - generic [ref=f57e221]: Reporting
+    - generic [ref=f57e222]:
+      - generic [ref=f57e223] [cursor=pointer]:
+        - generic [ref=f57e227]: LC Register
+        - generic [ref=f57e228]: Full register of LC requests across all statuses.
+        - generic [ref=f57e229]:
+          - generic [ref=f57e230]: Report
+          - generic [ref=f57e231]: →
+      - generic [ref=f57e232] [cursor=pointer]:
+        - generic [ref=f57e236]: Facility Register
+        - generic [ref=f57e237]: Full register of sanctioned facilities and their utilization.
+        - generic [ref=f57e238]:
+          - generic [ref=f57e239]: Report
+          - generic [ref=f57e240]: →
+      - generic [ref=f57e241] [cursor=pointer]:
+        - generic [ref=f57e245]: LC Amendment Register
+        - generic [ref=f57e246]: Full register of LC amendments, pending and processed.
+        - generic [ref=f57e247]:
+          - generic [ref=f57e248]: Report
+          - generic [ref=f57e249]: →
+      - generic [ref=f57e250] [cursor=pointer]:
+        - generic [ref=f57e254]: Fees & Chargers Register
+        - generic [ref=f57e255]: Full register of posted fees and charges.
+        - generic [ref=f57e256]:
+          - generic [ref=f57e257]: Report
+          - generic [ref=f57e258]: →

@@ -1,0 +1,11 @@
+HTTP/1.1 200 OK
+set-cookie: sap-usercontext=sap-client=100; path=/
+set-cookie: SAP_SESSIONID_DS4_100=O00ckRmL59mUaZu-vgQR6QFEAbGd_xHxgABSVAAf56I%3d; path=/; secure; HttpOnly
+content-type: application/json;odata.metadata=minimal;charset=utf-8
+content-length: 87
+x-csrf-token: oKo6hFI-uCcBv945-ydarg==
+odata-version: 4.0
+cache-control: max-age=0
+sap-server: true
+sap-perf-fesrec: 53392.000000
+

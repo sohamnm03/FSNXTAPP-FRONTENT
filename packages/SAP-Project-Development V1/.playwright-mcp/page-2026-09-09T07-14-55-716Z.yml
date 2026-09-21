@@ -1,0 +1,137 @@
+- generic [active] [ref=f36e1]:
+  - banner [ref=f36e2]:
+    - generic [ref=f36e3]:
+      - img "Fourth Signal" [ref=f36e4]
+      - generic [ref=f36e5]:
+        - heading "SLC" [level=1] [ref=f36e6]
+        - paragraph [ref=f36e7]: FS • VISTA
+    - generic "SAP TRM connected" [ref=f36e8]
+  - main [ref=f36e9]:
+    - generic [ref=f36e10]: SLC
+    - generic [ref=f36e11]: Trade Flows
+    - generic [ref=f36e12]:
+      - generic [ref=f36e13] [cursor=pointer]:
+        - generic [ref=f36e17]: Trade Flow Upload
+        - generic [ref=f36e18]: Upload trade flows from the Excel template and validate them before posting.
+        - generic [ref=f36e19]:
+          - generic [ref=f36e20]: Console
+          - generic [ref=f36e21]: →
+      - generic [ref=f36e22] [cursor=pointer]:
+        - generic [ref=f36e26]: Manage Trade Flows
+        - generic [ref=f36e27]: Review, amend and maintain trade flows that are already posted.
+        - generic [ref=f36e28]:
+          - generic [ref=f36e29]: Console
+          - generic [ref=f36e30]: →
+    - generic [ref=f36e31]: Front Office
+    - generic [ref=f36e32]:
+      - generic [ref=f36e33] [cursor=pointer]:
+        - generic [ref=f36e37]: Origination Ticket (OTTK)
+        - generic [ref=f36e38]: Capture and maintain origination tickets, their structures and pricing details.
+        - generic [ref=f36e39]:
+          - generic [ref=f36e40]: Console
+          - generic [ref=f36e41]: →
+      - generic [ref=f36e42] [cursor=pointer]:
+        - generic [ref=f36e46]: Distribution Ticket (DTTK)
+        - generic [ref=f36e47]: Capture and maintain distribution tickets against an origination ticket.
+        - generic [ref=f36e48]:
+          - generic [ref=f36e49]: Console
+          - generic [ref=f36e50]: →
+      - generic [ref=f36e51] [cursor=pointer]:
+        - generic [ref=f36e55]: Deal ID Creation
+        - generic [ref=f36e56]: Create a deal ID and link its origination and distribution ticket legs.
+        - generic [ref=f36e57]:
+          - generic [ref=f36e58]: Console
+          - generic [ref=f36e59]: →
+    - generic [ref=f36e60]: LC Process
+    - generic [ref=f36e61]:
+      - generic [ref=f36e62] [cursor=pointer]:
+        - generic [ref=f36e66]: LC Issuance Process
+        - generic [ref=f36e67]: 4 screens in this sub-process.
+        - generic [ref=f36e68]:
+          - generic [ref=f36e69]: Folder
+          - generic [ref=f36e70]: →
+      - generic [ref=f36e71] [cursor=pointer]:
+        - generic [ref=f36e75]: LC Acceptance & Presentation
+        - generic [ref=f36e76]: 4 screens in this sub-process.
+        - generic [ref=f36e77]:
+          - generic [ref=f36e78]: Folder
+          - generic [ref=f36e79]: →
+      - generic [ref=f36e80] [cursor=pointer]:
+        - generic [ref=f36e84]: LC Amendment Process
+        - generic [ref=f36e85]: 2 screens in this sub-process.
+        - generic [ref=f36e86]:
+          - generic [ref=f36e87]: Folder
+          - generic [ref=f36e88]: →
+      - generic [ref=f36e89] [cursor=pointer]:
+        - generic [ref=f36e93]: LC Termination Process
+        - generic [ref=f36e94]: 2 screens in this sub-process.
+        - generic [ref=f36e95]:
+          - generic [ref=f36e96]: Folder
+          - generic [ref=f36e97]: →
+    - generic [ref=f36e98]: BG Process
+    - generic [ref=f36e99]:
+      - generic [ref=f36e100] [cursor=pointer]:
+        - generic [ref=f36e104]: BG Issuance Process
+        - generic [ref=f36e105]: 4 screens in this sub-process.
+        - generic [ref=f36e106]:
+          - generic [ref=f36e107]: Folder
+          - generic [ref=f36e108]: →
+      - generic [ref=f36e109] [cursor=pointer]:
+        - generic [ref=f36e113]: BG Amendment Process
+        - generic [ref=f36e114]: 2 screens in this sub-process.
+        - generic [ref=f36e115]:
+          - generic [ref=f36e116]: Folder
+          - generic [ref=f36e117]: →
+      - generic [ref=f36e118] [cursor=pointer]:
+        - generic [ref=f36e122]: BG Termination Process
+        - generic [ref=f36e123]: 2 screens in this sub-process.
+        - generic [ref=f36e124]:
+          - generic [ref=f36e125]: Folder
+          - generic [ref=f36e126]: →
+    - generic [ref=f36e127]: Accounting
+    - generic [ref=f36e129] [cursor=pointer]:
+      - generic [ref=f36e133]: Posting of Fees
+      - generic [ref=f36e134]: Post accrued LC / BG fees and charges to the ledger.
+      - generic [ref=f36e135]:
+        - generic [ref=f36e136]: Process
+        - generic [ref=f36e137]: →
+    - generic [ref=f36e138]: Dashboard Reporting
+    - generic [ref=f36e139]:
+      - generic [ref=f36e140] [cursor=pointer]:
+        - generic [ref=f36e144]: Limit Utilization Tracker
+        - generic [ref=f36e145]: Track sanctioned limit usage across facilities in real time.
+        - generic [ref=f36e146]:
+          - generic [ref=f36e147]: Dashboard
+          - generic [ref=f36e148]: →
+      - generic [ref=f36e149] [cursor=pointer]:
+        - generic [ref=f36e153]: Fees Tracker
+        - generic [ref=f36e154]: Monitor fee accrual and posting status across all requests.
+        - generic [ref=f36e155]:
+          - generic [ref=f36e156]: Dashboard
+          - generic [ref=f36e157]: →
+    - generic [ref=f36e158]: Reporting
+    - generic [ref=f36e159]:
+      - generic [ref=f36e160] [cursor=pointer]:
+        - generic [ref=f36e164]: LC Register
+        - generic [ref=f36e165]: Full register of LC requests across all statuses.
+        - generic [ref=f36e166]:
+          - generic [ref=f36e167]: Report
+          - generic [ref=f36e168]: →
+      - generic [ref=f36e169] [cursor=pointer]:
+        - generic [ref=f36e173]: Facility Register
+        - generic [ref=f36e174]: Full register of sanctioned facilities and their utilization.
+        - generic [ref=f36e175]:
+          - generic [ref=f36e176]: Report
+          - generic [ref=f36e177]: →
+      - generic [ref=f36e178] [cursor=pointer]:
+        - generic [ref=f36e182]: LC Amendment Register
+        - generic [ref=f36e183]: Full register of LC amendments, pending and processed.
+        - generic [ref=f36e184]:
+          - generic [ref=f36e185]: Report
+          - generic [ref=f36e186]: →
+      - generic [ref=f36e187] [cursor=pointer]:
+        - generic [ref=f36e191]: Fees & Chargers Register
+        - generic [ref=f36e192]: Full register of posted fees and charges.
+        - generic [ref=f36e193]:
+          - generic [ref=f36e194]: Report
+          - generic [ref=f36e195]: →

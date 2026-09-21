@@ -1,0 +1,38 @@
+{
+  "_comment": [
+    "Non-secret config for the Inv console (Amend Selected BLs / Finalise Trade Invoices) proxy. No password here: the password is",
+    "read from the environment variable named below, falling back to the gitignored",
+    ".claude/settings.local.json 'env' block at the repo root (same value the MCP servers use).",
+    "Mirrors config/sap-systems.json -> systems[id=DS4_100_NIIF].",
+    "The 'services' block is deliberately IDENTICAL across every web/*-console: each console's",
+    "proxy exposes all four services at /api/ottk/*, /api/dttk/*, /api/dealid/* and /api/tf/*,",
+    "so a page can reach any of them without its console being re-wired first. A console using",
+    "only some of them is normal -- an unused route costs nothing (no session is opened until",
+    "the first call to that key).",
+    "Port 8769 keeps this server clear of ottk-dttk-console (8765), dttk-console (8766), deal-id-console (8767), tf-upload-console (8768), tf-manage-console (8770)."
+  ],
+  "systemId": "DS4_100_NIIF",
+  "user": "FS_DEV3",
+  "passwordEnvVar": "SAP_DS4_100_NIIF_PASSWORD",
+  "tlsVerify": false,
+  "port": 8769,
+  "indexFile": "index.html",
+  "services": {
+    "ottk": {
+      "base": "https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_slcottkdetail_o4_api/srvd_a2x/sap/zfs_sd_slcottkdetail/0001",
+      "client": "100"
+    },
+    "dttk": {
+      "base": "https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_slcdttkdetail_o4_api/srvd_a2x/sap/zfs_sd_slcdttkdetail/0001",
+      "client": "100"
+    },
+    "dealid": {
+      "base": "https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dealid_o4_api/srvd_a2x/sap/zfs_sd_dealid/0001",
+      "client": "100"
+    },
+    "tf": {
+      "base": "https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trdflow_o4_api/srvd_a2x/sap/zfs_sd_trdflow/0001",
+      "client": "100"
+    }
+  }
+}

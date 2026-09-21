@@ -1,0 +1,93 @@
+- generic [active] [ref=f12e1]:
+  - generic [ref=f12e2]:
+    - banner [ref=f12e3]:
+      - generic [ref=f12e4]: Deal ID CreationZFS_SB_DEALID_O4_API
+      - generic [ref=f12e9]:
+        - generic "System connected" [ref=f12e10]
+        - button "Refresh" [ref=f12e11] [cursor=pointer]
+    - complementary [ref=f12e15]:
+      - generic [ref=f12e16]: DTTK Details
+      - generic [ref=f12e17]:
+        - generic [ref=f12e18]: DTTK No *
+        - textbox "DTTK No *" [ref=f12e19]:
+          - /placeholder: Type or pick from the grid
+      - generic [ref=f12e20]:
+        - generic [ref=f12e21]: DTTK Trade Value
+        - textbox [ref=f12e22]
+        - textbox [ref=f12e23]
+      - generic [ref=f12e24]:
+        - generic [ref=f12e25]: DTTK Assigned
+        - textbox [ref=f12e26]
+      - generic [ref=f12e27]:
+        - generic [ref=f12e28]: DTTK Balance
+        - textbox [ref=f12e29]
+      - generic [ref=f12e30]: OTTK Details
+      - generic [ref=f12e31]:
+        - generic [ref=f12e32]: OTTK No *
+        - generic [ref=f12e33]:
+          - textbox "OTTK No *" [ref=f12e34]:
+            - /placeholder: Type or search
+          - button "🔍" [ref=f12e35] [cursor=pointer]
+      - generic [ref=f12e36]:
+        - generic [ref=f12e37]: OTTK Trade Value
+        - textbox [ref=f12e38]
+        - textbox [ref=f12e39]
+      - generic [ref=f12e40]:
+        - generic [ref=f12e41]: OTTK Assigned
+        - textbox [ref=f12e42]
+      - generic [ref=f12e43]:
+        - generic [ref=f12e44]: OTTK Balance
+        - textbox [ref=f12e45]
+      - generic [ref=f12e46]:
+        - generic [ref=f12e47]: Entity ID
+        - textbox [ref=f12e48]
+      - generic [ref=f12e49]:
+        - generic [ref=f12e50]: Structure
+        - textbox [ref=f12e51]
+      - generic [ref=f12e52]: Deal ID Details
+      - generic [ref=f12e53]:
+        - generic [ref=f12e54]: Deal ID Amt *
+        - textbox "Deal ID Amt *" [ref=f12e55]:
+          - /placeholder: "0.00"
+      - generic [ref=f12e56]:
+        - generic [ref=f12e57]: Deal ID Desc
+        - textbox "Deal ID Desc" [ref=f12e58]
+      - generic [ref=f12e59]:
+        - generic [ref=f12e60]: Status
+        - textbox "Status" [ref=f12e61]:
+          - /placeholder: e.g. 01
+      - button "Create Deal ID" [ref=f12e62] [cursor=pointer]
+    - main [ref=f12e63]:
+      - generic [ref=f12e64]:
+        - generic [ref=f12e65]:
+          - generic [ref=f12e66]: Open Origination Tickets (OTTK) 0 records
+          - textbox "Search OTTK…" [ref=f12e68]
+        - table [ref=f12e70]:
+          - rowgroup [ref=f12e71]:
+            - row [ref=f12e72]:
+              - columnheader "OTTK No" [ref=f12e73]
+              - columnheader "Structure" [ref=f12e74]
+              - columnheader "Entity String" [ref=f12e75]
+              - columnheader "Trade Value" [ref=f12e76]
+              - columnheader "Crcy" [ref=f12e77]
+              - columnheader "Balance" [ref=f12e78]
+              - columnheader "Bank" [ref=f12e79]
+              - columnheader "Status" [ref=f12e80]
+          - rowgroup
+      - generic [ref=f12e82]:
+        - generic [ref=f12e83]:
+          - generic [ref=f12e84]: Open Distribution Tickets (DTTK) 0 records
+          - textbox "Search DTTK…" [ref=f12e86]
+        - table [ref=f12e88]:
+          - rowgroup [ref=f12e89]:
+            - row [ref=f12e90]:
+              - columnheader "DTTK No" [ref=f12e91]
+              - columnheader "Related OTTK" [ref=f12e92]
+              - columnheader "Structure" [ref=f12e93]
+              - columnheader "Entity String" [ref=f12e94]
+              - columnheader "DTTK Value" [ref=f12e95]
+              - columnheader "Crcy" [ref=f12e96]
+              - columnheader "Balance" [ref=f12e97]
+              - columnheader "Status" [ref=f12e98]
+          - rowgroup
+  - status

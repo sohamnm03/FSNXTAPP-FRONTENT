@@ -1,0 +1,116 @@
+- generic [active] [ref=f10e1]:
+  - generic [ref=f10e2]:
+    - banner [ref=f10e3]:
+      - generic [ref=f10e4]: Deal ID CreationZFS_SB_DEALID_O4_API
+      - generic [ref=f10e9]:
+        - generic "System connected" [ref=f10e10]
+        - button "Refresh" [ref=f10e11] [cursor=pointer]
+    - complementary [ref=f10e15]:
+      - generic [ref=f10e16]: DTTK Details
+      - generic [ref=f10e17]:
+        - generic [ref=f10e18]: DTTK No *
+        - textbox "DTTK No *" [ref=f10e19]:
+          - /placeholder: Type or pick from the grid
+      - generic [ref=f10e20]:
+        - generic [ref=f10e21]: DTTK Trade Value
+        - textbox [ref=f10e22]
+        - textbox [ref=f10e23]
+      - generic [ref=f10e24]:
+        - generic [ref=f10e25]: DTTK Assigned
+        - textbox [ref=f10e26]
+      - generic [ref=f10e27]:
+        - generic [ref=f10e28]: DTTK Balance
+        - textbox [ref=f10e29]
+      - generic [ref=f10e30]: OTTK Details
+      - generic [ref=f10e31]:
+        - generic [ref=f10e32]: OTTK No *
+        - generic [ref=f10e33]:
+          - textbox "OTTK No *" [ref=f10e34]:
+            - /placeholder: Type or search
+          - button "🔍" [ref=f10e35] [cursor=pointer]
+      - generic [ref=f10e36]:
+        - generic [ref=f10e37]: OTTK Trade Value
+        - textbox [ref=f10e38]
+        - textbox [ref=f10e39]
+      - generic [ref=f10e40]:
+        - generic [ref=f10e41]: OTTK Assigned
+        - textbox [ref=f10e42]
+      - generic [ref=f10e43]:
+        - generic [ref=f10e44]: OTTK Balance
+        - textbox [ref=f10e45]
+      - generic [ref=f10e46]:
+        - generic [ref=f10e47]: Entity ID
+        - textbox [ref=f10e48]
+      - generic [ref=f10e49]:
+        - generic [ref=f10e50]: Structure
+        - textbox [ref=f10e51]
+      - generic [ref=f10e52]: Deal ID Details
+      - generic [ref=f10e53]:
+        - generic [ref=f10e54]: Deal ID Amt *
+        - textbox "Deal ID Amt *" [ref=f10e55]:
+          - /placeholder: e.g. 1.5M
+        - textbox "Defaults to the selected OTTK's currency" [ref=f10e56]
+      - generic [ref=f10e57]:
+        - generic [ref=f10e58]: Deal ID Desc
+        - textbox "Deal ID Desc" [ref=f10e59]
+      - generic [ref=f10e60]:
+        - generic [ref=f10e61]: Status
+        - textbox "Status" [ref=f10e62]:
+          - /placeholder: e.g. 01
+      - button "Create Deal ID" [ref=f10e63] [cursor=pointer]
+    - main [ref=f10e64]:
+      - generic [ref=f10e65]:
+        - generic [ref=f10e66]:
+          - generic [ref=f10e67]: Open Origination Tickets (OTTK) 0 records
+          - generic [ref=f10e68]:
+            - textbox "Search OTTK…" [ref=f10e69]
+            - button "Filter" [ref=f10e70] [cursor=pointer]
+        - table [ref=f10e74]:
+          - rowgroup [ref=f10e75]:
+            - row [ref=f10e76]:
+              - columnheader "OTTK No" [ref=f10e77]
+              - columnheader "Type" [ref=f10e78]
+              - columnheader "Structure" [ref=f10e79]
+              - columnheader "Entity ID" [ref=f10e80]
+              - columnheader "Entity String" [ref=f10e81]
+              - columnheader "LC Issuing Bank" [ref=f10e82]
+              - columnheader "Trade Value" [ref=f10e83]
+              - columnheader "Crcy" [ref=f10e84]
+              - columnheader "Balance" [ref=f10e85]
+              - columnheader "Expected LC Date" [ref=f10e86]
+              - columnheader "Tenor" [ref=f10e87]
+              - columnheader "LC Applicant" [ref=f10e88]
+              - columnheader "LC Beneficiary" [ref=f10e89]
+              - columnheader "CoCode" [ref=f10e90]
+              - columnheader "Deposit Amt" [ref=f10e91]
+              - columnheader "Interest" [ref=f10e92]
+              - columnheader "Status" [ref=f10e93]
+          - rowgroup
+      - generic [ref=f10e95]:
+        - generic [ref=f10e96]:
+          - generic [ref=f10e97]: Open Distribution Tickets (DTTK) 0 records
+          - generic [ref=f10e98]:
+            - textbox "Search DTTK…" [ref=f10e99]
+            - button "Filter" [ref=f10e100] [cursor=pointer]
+        - table [ref=f10e104]:
+          - rowgroup [ref=f10e105]:
+            - row [ref=f10e106]:
+              - columnheader "DTTK No" [ref=f10e107]
+              - columnheader "Type 1" [ref=f10e108]
+              - columnheader "Type 2" [ref=f10e109]
+              - columnheader "Related OTTK" [ref=f10e110]
+              - columnheader "Structure" [ref=f10e111]
+              - columnheader "Entity String" [ref=f10e112]
+              - columnheader "DTTK Value" [ref=f10e113]
+              - columnheader "Crcy" [ref=f10e114]
+              - columnheader "Balance" [ref=f10e115]
+              - columnheader "Discounting Bank" [ref=f10e116]
+              - columnheader "Expected LC Date" [ref=f10e117]
+              - columnheader "Tenor" [ref=f10e118]
+              - columnheader "LC Applicant" [ref=f10e119]
+              - columnheader "LC Beneficiary" [ref=f10e120]
+              - columnheader "CoCode" [ref=f10e121]
+              - columnheader "Interest" [ref=f10e122]
+              - columnheader "Status" [ref=f10e123]
+          - rowgroup
+  - status

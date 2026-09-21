@@ -1,0 +1,205 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]: Deal ID CreationZFS_SB_DEALID_O4_API
+      - generic [ref=e9]:
+        - generic "System connected" [ref=e10]
+        - button "Deal ID list" [ref=e11] [cursor=pointer]
+        - button "Refresh" [ref=e15] [cursor=pointer]
+    - complementary [ref=e19]:
+      - generic [ref=e20]: DTTK Details
+      - generic [ref=e21]:
+        - generic [ref=e22]: DTTK No *
+        - textbox "DTTK No *" [ref=e23]:
+          - /placeholder: Type or pick from the grid
+      - generic [ref=e24]:
+        - generic [ref=e25]: DTTK Trade Value
+        - textbox [ref=e26]
+        - textbox [ref=e27]
+      - generic [ref=e28]:
+        - generic [ref=e29]: DTTK Assigned
+        - textbox [ref=e30]
+      - generic [ref=e31]:
+        - generic [ref=e32]: DTTK Balance
+        - textbox [ref=e33]
+      - generic [ref=e34]: OTTK Details
+      - generic [ref=e35]:
+        - generic [ref=e36]: OTTK No *
+        - generic [ref=e37]:
+          - textbox "OTTK No *" [ref=e38]:
+            - /placeholder: Type or search
+          - button "🔍" [active] [ref=e39] [cursor=pointer]
+      - generic [ref=e40]:
+        - generic [ref=e41]: OTTK Trade Value
+        - textbox [ref=e42]
+        - textbox [ref=e43]
+      - generic [ref=e44]:
+        - generic [ref=e45]: OTTK Assigned
+        - textbox [ref=e46]
+      - generic [ref=e47]:
+        - generic [ref=e48]: OTTK Balance
+        - textbox [ref=e49]
+      - generic [ref=e50]:
+        - generic [ref=e51]: Entity ID
+        - textbox [ref=e52]
+      - generic [ref=e53]:
+        - generic [ref=e54]: Structure
+        - textbox [ref=e55]
+      - generic [ref=e56]: Deal ID Details
+      - generic [ref=e57]:
+        - generic [ref=e58]: Deal ID Amt *
+        - textbox "Deal ID Amt *" [ref=e59]:
+          - /placeholder: e.g. 1.5M
+        - textbox "Defaults to the selected OTTK's currency" [ref=e60]
+      - generic [ref=e61]:
+        - generic [ref=e62]: Deal ID Desc
+        - textbox "Deal ID Desc" [ref=e63]
+      - generic [ref=e64]:
+        - generic [ref=e65]: Status
+        - textbox "Status" [ref=e66]:
+          - /placeholder: e.g. 01
+      - button "Create Deal ID" [ref=e67] [cursor=pointer]
+    - main [ref=e68]:
+      - generic [ref=e69]:
+        - generic [ref=e70]:
+          - generic [ref=e71]: Open Origination Tickets (OTTK) 2 records
+          - generic [ref=e72]:
+            - textbox "Search OTTK…" [ref=e73]
+            - button "Filter" [ref=e74] [cursor=pointer]
+        - table [ref=e78]:
+          - rowgroup [ref=e79]:
+            - row [ref=e80]:
+              - columnheader "OTTK No" [ref=e81]
+              - columnheader "Type" [ref=e82]
+              - columnheader "Structure" [ref=e83]
+              - columnheader "Entity ID" [ref=e84]
+              - columnheader "Entity String" [ref=e85]
+              - columnheader "LC Issuing Bank" [ref=e86]
+              - columnheader "Trade Value" [ref=e87]
+              - columnheader "Crcy" [ref=e88]
+              - columnheader "Balance" [ref=e89]
+              - columnheader "Expected LC Date" [ref=e90]
+              - columnheader "Tenor" [ref=e91]
+              - columnheader "LC Applicant" [ref=e92]
+              - columnheader "LC Beneficiary" [ref=e93]
+              - columnheader "CoCode" [ref=e94]
+              - columnheader "Deposit Amt" [ref=e95]
+              - columnheader "Interest" [ref=e96]
+              - columnheader "Status" [ref=e97]
+          - rowgroup [ref=e129]:
+            - row [ref=e130]:
+              - cell "100049" [ref=e131] [cursor=pointer]
+              - cell "01 New" [ref=e132]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=e133]
+              - cell "E024" [ref=e134]
+              - cell "DMCC-OGA-PAN" [ref=e135]
+              - cell "660000680 — STANDARD CHARTERED BANK SINGAPORE" [ref=e136]
+              - cell "2,000,000.00" [ref=e137]
+              - cell "USD" [ref=e138]
+              - cell "1,000,000.00" [ref=e139]
+              - cell "08.09.2026" [ref=e140]
+              - cell "180" [ref=e141]
+              - cell "OGA" [ref=e142]
+              - cell "DMCC" [ref=e143]
+              - cell "SG03" [ref=e144]
+              - cell "2,000,000.00" [ref=e145]
+              - cell "Fixed 10.00%" [ref=e146]
+              - cell "05 - Partially Assigned to Deal ID" [ref=e147]
+            - row [ref=e149]:
+              - cell "100050" [ref=e150] [cursor=pointer]
+              - cell "01 New" [ref=e151]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=e152]
+              - cell "E024" [ref=e153]
+              - cell "DMCC-OGA-PAN" [ref=e154]
+              - cell "660000680 — STANDARD CHARTERED BANK SINGAPORE" [ref=e155]
+              - cell "1,000,000.00" [ref=e156]
+              - cell "USD" [ref=e157]
+              - cell "1,000,000.00" [ref=e158]
+              - cell "08.09.2026" [ref=e159]
+              - cell "180" [ref=e160]
+              - cell "OGA" [ref=e161]
+              - cell "DMCC" [ref=e162]
+              - cell "SG03" [ref=e163]
+              - cell "1,000,000.00" [ref=e164]
+              - cell "Variable 0.00%" [ref=e165]
+              - cell "01 - Create New" [ref=e166]
+        - generic [ref=e98]: Showing 2 of 2
+      - generic [ref=e99]:
+        - generic [ref=e100]:
+          - generic [ref=e101]: Open Distribution Tickets (DTTK) 1 records
+          - generic [ref=e102]:
+            - textbox "Search DTTK…" [ref=e103]
+            - button "Filter" [ref=e104] [cursor=pointer]
+        - table [ref=e108]:
+          - rowgroup [ref=e109]:
+            - row [ref=e110]:
+              - columnheader "DTTK No" [ref=e111]
+              - columnheader "Type 1" [ref=e112]
+              - columnheader "Type 2" [ref=e113]
+              - columnheader "Related OTTK" [ref=e114]
+              - columnheader "Structure" [ref=e115]
+              - columnheader "Entity String" [ref=e116]
+              - columnheader "DTTK Value" [ref=e117]
+              - columnheader "Crcy" [ref=e118]
+              - columnheader "Balance" [ref=e119]
+              - columnheader "Discounting Bank" [ref=e120]
+              - columnheader "Expected LC Date" [ref=e121]
+              - columnheader "Tenor" [ref=e122]
+              - columnheader "LC Applicant" [ref=e123]
+              - columnheader "LC Beneficiary" [ref=e124]
+              - columnheader "CoCode" [ref=e125]
+              - columnheader "Interest" [ref=e126]
+              - columnheader "Status" [ref=e127]
+          - rowgroup [ref=e168]:
+            - row [ref=e169]:
+              - cell "100043" [ref=e170] [cursor=pointer]
+              - cell "02 Discounting Only" [ref=e171]
+              - cell "02 With Ref DTTK" [ref=e172]
+              - cell "100049" [ref=e173]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=e174]
+              - cell "DMCC-OGA-PAN" [ref=e175]
+              - cell "2,000,000.00" [ref=e176]
+              - cell "USD" [ref=e177]
+              - cell "1,000,000.00" [ref=e178]
+              - cell "660000645 — DBS BANK LTD" [ref=e179]
+              - cell "08.09.2026" [ref=e180]
+              - cell "180" [ref=e181]
+              - cell "OGA" [ref=e182]
+              - cell "DMCC" [ref=e183]
+              - cell "SG03" [ref=e184]
+              - cell "Fixed 10.00%" [ref=e185]
+              - cell "05 - Partially Assigned to Deal ID" [ref=e186]
+        - generic [ref=e128]: Showing 1 of 1
+  - dialog [ref=e188]:
+    - generic [ref=e189]:
+      - generic [ref=e190]:
+        - heading "Search OTTK" [level=2] [ref=e191]
+        - button "Close" [ref=e192] [cursor=pointer]: ×
+      - generic [ref=e193]:
+        - textbox "Search OTTK No, Entity or Bank…" [ref=e194]
+        - table [ref=e196]:
+          - rowgroup [ref=e197]:
+            - row [ref=e198]:
+              - columnheader "OTTK No" [ref=e199]
+              - columnheader "Structure" [ref=e200]
+              - columnheader "Entity String" [ref=e201]
+              - columnheader "Trade Value" [ref=e202]
+              - columnheader "Balance" [ref=e203]
+              - columnheader "Status" [ref=e204]
+          - rowgroup [ref=e205]:
+            - row [ref=e206] [cursor=pointer]:
+              - cell "100049" [ref=e207]
+              - cell "DSX" [ref=e208]
+              - cell "DMCC-OGA-PAN" [ref=e209]
+              - cell "2,000,000.00" [ref=e210]
+              - cell "1,000,000.00" [ref=e211]
+              - cell "05 - Partially Assigned to Deal ID" [ref=e212]
+            - row [ref=e214] [cursor=pointer]:
+              - cell "100050" [ref=e215]
+              - cell "DSX" [ref=e216]
+              - cell "DMCC-OGA-PAN" [ref=e217]
+              - cell "1,000,000.00" [ref=e218]
+              - cell "1,000,000.00" [ref=e219]
+              - cell "01 - Create New" [ref=e220]
+      - button "Cancel" [ref=e223] [cursor=pointer]
+  - status

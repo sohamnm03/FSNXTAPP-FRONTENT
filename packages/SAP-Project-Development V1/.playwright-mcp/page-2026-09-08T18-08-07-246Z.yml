@@ -1,0 +1,656 @@
+- generic [active] [ref=f16e1]:
+  - generic [ref=f16e2]:
+    - table [ref=f16e4]:
+      - rowgroup [ref=f16e5]:
+        - row [ref=f16e6]:
+          - cell "Amend BLs & Finalise Trade Invoices INVOICE" [ref=f16e7]:
+            - generic [ref=f16e8]:
+              - generic [ref=f16e12]: Amend BLs & Finalise Trade Invoices
+              - generic [ref=f16e13]: INVOICE
+          - cell "System connected" [ref=f16e14]
+    - generic [ref=f16e17]:
+      - generic [ref=f16e18]:
+        - button "Confirm Invoice Generation" [ref=f16e19] [cursor=pointer]
+        - button "Reverse Confirm Invoice Generation" [ref=f16e20] [cursor=pointer]
+        - button "View List of BL's" [ref=f16e21] [cursor=pointer]
+        - button "Refresh" [ref=f16e22] [cursor=pointer]
+        - button "P&L" [ref=f16e23] [cursor=pointer]
+        - button "Save Data" [ref=f16e24] [cursor=pointer]
+        - button "Amendment" [ref=f16e25] [cursor=pointer]
+        - button "Amendment Confirm" [ref=f16e26] [cursor=pointer]
+        - button "SBLC Fee Details" [ref=f16e27] [cursor=pointer]
+        - button "Print Form" [ref=f16e28] [cursor=pointer]
+        - button "Merge PDF" [ref=f16e29] [cursor=pointer]
+      - generic [ref=f16e30]:
+        - table [ref=f16e32]:
+          - rowgroup [ref=f16e33]:
+            - row [ref=f16e34]:
+              - cell "Basic Selection" [ref=f16e35]
+        - table [ref=f16e37]:
+          - rowgroup [ref=f16e38]:
+            - row [ref=f16e39]:
+              - cell [ref=f16e40]:
+                - table [ref=f16e41]:
+                  - rowgroup [ref=f16e42]:
+                    - row [ref=f16e43]:
+                      - cell "Deal ID" [ref=f16e44]
+                      - cell "10000010" [ref=f16e45]:
+                        - combobox [ref=f16e46]:
+                          - option "Select Deal ID"
+                          - option "10000000"
+                          - option "10000001"
+                          - option "10000004"
+                          - option "10000009"
+                          - option "10000010" [selected]
+                          - option "1200001"
+                    - row [ref=f16e47]:
+                      - cell "Entity ID" [ref=f16e48]
+                      - cell [ref=f16e49]:
+                        - textbox [ref=f16e50]: E021 - OGA-DMCC-PAN
+                    - row [ref=f16e51]:
+                      - cell "Business Area" [ref=f16e52]
+                      - cell [ref=f16e53]:
+                        - textbox [ref=f16e54]: none
+              - cell [ref=f16e55]:
+                - table [ref=f16e56]:
+                  - rowgroup [ref=f16e57]:
+                    - row [ref=f16e58]:
+                      - cell "SLC Structure" [ref=f16e59]
+                      - cell [ref=f16e60]:
+                        - textbox [ref=f16e61]: LCP LC Prepayment
+                    - row [ref=f16e62]:
+                      - cell "Deal ID Status" [ref=f16e63]
+                      - cell [ref=f16e64]:
+                        - textbox [ref=f16e65]: 01 - Open
+      - table [ref=f16e66]:
+        - rowgroup [ref=f16e67]:
+          - row [ref=f16e68]:
+            - cell [ref=f16e69]:
+              - generic [ref=f16e70]:
+                - table [ref=f16e72]:
+                  - rowgroup [ref=f16e73]:
+                    - row [ref=f16e74]:
+                      - cell "OTTK Pricing Details" [ref=f16e75]
+                - table [ref=f16e77]:
+                  - rowgroup [ref=f16e78]:
+                    - row [ref=f16e79]:
+                      - cell "OTTK No" [ref=f16e80]
+                      - cell [ref=f16e81]:
+                        - textbox [ref=f16e82]: "100019"
+                    - row [ref=f16e83]:
+                      - cell "LC Tenor" [ref=f16e84]
+                      - cell [ref=f16e85]:
+                        - textbox [ref=f16e86]: "360"
+                    - row [ref=f16e87]:
+                      - cell "Interest Category" [ref=f16e88]
+                      - cell [ref=f16e89]:
+                        - textbox [ref=f16e90]: Fixed
+                    - row [ref=f16e91]:
+                      - cell "Interest Rate" [ref=f16e92]
+                      - cell [ref=f16e93]:
+                        - textbox [ref=f16e94]: "2.0000000"
+            - cell [ref=f16e95]:
+              - generic [ref=f16e96]:
+                - table [ref=f16e98]:
+                  - rowgroup [ref=f16e99]:
+                    - row [ref=f16e100]:
+                      - cell "DTTK Pricing Details" [ref=f16e101]
+                - table [ref=f16e103]:
+                  - rowgroup [ref=f16e104]:
+                    - row [ref=f16e105]:
+                      - cell "DTTK No" [ref=f16e106]
+                      - cell [ref=f16e107]:
+                        - textbox [ref=f16e108]: "100017"
+                    - row [ref=f16e109]:
+                      - cell "LC Tenor" [ref=f16e110]
+                      - cell [ref=f16e111]:
+                        - textbox [ref=f16e112]: "360"
+                    - row [ref=f16e113]:
+                      - cell "Interest Category" [ref=f16e114]
+                      - cell [ref=f16e115]:
+                        - textbox [ref=f16e116]: Fixed
+                    - row [ref=f16e117]:
+                      - cell "Ref. Int. Rate + Sprd" [ref=f16e118]
+                      - cell [ref=f16e119]:
+                        - textbox [ref=f16e120]: "2.0000000"
+      - generic [ref=f16e121]:
+        - table [ref=f16e123]:
+          - rowgroup [ref=f16e124]:
+            - row [ref=f16e125]:
+              - cell "Adjusted Price / Qty" [ref=f16e126]
+        - generic [ref=f16e128]:
+          - button "Calculate" [ref=f16e129] [cursor=pointer]
+          - button "Download" [ref=f16e130] [cursor=pointer]
+          - button "Refresh table" [ref=f16e131] [cursor=pointer]: ↻
+        - table [ref=f16e133]:
+          - rowgroup [ref=f16e134]:
+            - row [ref=f16e135]:
+              - columnheader [ref=f16e136] [cursor=pointer]
+              - columnheader [ref=f16e140] [cursor=pointer]
+              - columnheader [ref=f16e144] [cursor=pointer]
+              - columnheader [ref=f16e148] [cursor=pointer]
+              - columnheader [ref=f16e152] [cursor=pointer]
+              - columnheader [ref=f16e156] [cursor=pointer]
+              - columnheader [ref=f16e160] [cursor=pointer]
+              - columnheader [ref=f16e164] [cursor=pointer]
+              - columnheader [ref=f16e168] [cursor=pointer]
+              - columnheader [ref=f16e172] [cursor=pointer]
+              - columnheader [ref=f16e176] [cursor=pointer]
+              - columnheader [ref=f16e180] [cursor=pointer]
+              - columnheader [ref=f16e184] [cursor=pointer]
+              - columnheader [ref=f16e188] [cursor=pointer]
+              - columnheader [ref=f16e192] [cursor=pointer]
+              - columnheader [ref=f16e196] [cursor=pointer]
+              - columnheader [ref=f16e200] [cursor=pointer]
+              - columnheader [ref=f16e204] [cursor=pointer]
+              - columnheader [ref=f16e208] [cursor=pointer]
+              - columnheader [ref=f16e212] [cursor=pointer]
+              - columnheader [ref=f16e216] [cursor=pointer]
+              - columnheader [ref=f16e220] [cursor=pointer]
+              - columnheader [ref=f16e224] [cursor=pointer]
+              - columnheader [ref=f16e228] [cursor=pointer]
+              - columnheader [ref=f16e232] [cursor=pointer]
+              - columnheader [ref=f16e236] [cursor=pointer]
+              - columnheader [ref=f16e240] [cursor=pointer]
+              - columnheader [ref=f16e244] [cursor=pointer]
+              - columnheader [ref=f16e248] [cursor=pointer]
+              - columnheader [ref=f16e252] [cursor=pointer]
+              - columnheader [ref=f16e256] [cursor=pointer]
+              - columnheader [ref=f16e260] [cursor=pointer]
+              - columnheader [ref=f16e264] [cursor=pointer]
+              - columnheader [ref=f16e268] [cursor=pointer]
+              - columnheader [ref=f16e272] [cursor=pointer]
+              - columnheader [ref=f16e276] [cursor=pointer]
+              - columnheader [ref=f16e280] [cursor=pointer]
+              - columnheader [ref=f16e284] [cursor=pointer]
+              - columnheader [ref=f16e288] [cursor=pointer]
+              - columnheader [ref=f16e292] [cursor=pointer]
+              - columnheader [ref=f16e296] [cursor=pointer]
+              - columnheader [ref=f16e300] [cursor=pointer]
+              - columnheader [ref=f16e304] [cursor=pointer]
+              - columnheader [ref=f16e308] [cursor=pointer]
+              - columnheader [ref=f16e312] [cursor=pointer]
+              - columnheader [ref=f16e316] [cursor=pointer]
+              - columnheader [ref=f16e320] [cursor=pointer]
+              - columnheader [ref=f16e324] [cursor=pointer]
+              - columnheader [ref=f16e328] [cursor=pointer]
+              - columnheader [ref=f16e332] [cursor=pointer]
+              - columnheader [ref=f16e336] [cursor=pointer]
+              - columnheader [ref=f16e340] [cursor=pointer]
+              - columnheader [ref=f16e344] [cursor=pointer]
+          - rowgroup [ref=f16e348]:
+            - row [ref=f16e349]:
+              - cell "I01" [ref=f16e350]
+              - cell "1,484,970.00" [ref=f16e351]
+              - cell "T1" [ref=f16e352]
+              - cell "Review" [ref=f16e353]
+              - cell "1,484,970.00" [ref=f16e354]
+              - cell "100" [ref=f16e355]
+              - cell "10000010" [ref=f16e356]
+              - cell "10000010-T1" [ref=f16e357]
+              - cell "I01" [ref=f16e358]
+              - cell [ref=f16e359]:
+                - textbox [ref=f16e360]: PT-10000010-1
+              - cell [ref=f16e361]:
+                - textbox [ref=f16e362]: 03.09.2026
+              - cell [ref=f16e363]:
+                - textbox [ref=f16e364]: 03.09.2026
+              - cell [ref=f16e365]:
+                - textbox [ref=f16e366]: 03.09.2026
+              - cell [ref=f16e367]
+              - cell [ref=f16e368]:
+                - textbox [ref=f16e369]: THAI WHITE RICE 5% BROKEN DOUBLE POLISHED
+              - cell "RICE5" [ref=f16e370]
+              - cell [ref=f16e371]:
+                - textbox [ref=f16e372]: Complete
+              - cell "02.09.2026" [ref=f16e373]
+              - cell [ref=f16e374]:
+                - textbox [ref=f16e375]: FOB
+              - cell "OGA" [ref=f16e376]
+              - cell "DMCC" [ref=f16e377]
+              - cell [ref=f16e378]:
+                - textbox [ref=f16e379]: MC-P-0010-1
+              - cell [ref=f16e380]:
+                - textbox [ref=f16e381]: MC-S-0010-1
+              - cell [ref=f16e382]:
+                - textbox [ref=f16e383]: MC-REF-0010-1
+              - cell [ref=f16e384]:
+                - textbox [ref=f16e385]: 3,000.00
+              - cell [ref=f16e386]:
+                - textbox [ref=f16e387]: "494.99"
+              - cell "494.99" [ref=f16e388]
+              - cell "1,484,970.00" [ref=f16e389]
+              - cell [ref=f16e390]:
+                - textbox [ref=f16e391]: "0.00"
+              - cell "1,484,970.00" [ref=f16e392]
+              - cell "USD" [ref=f16e393]
+              - cell [ref=f16e394]:
+                - textbox [ref=f16e395]: "1.0000000"
+              - cell [ref=f16e396]:
+                - textbox [ref=f16e397]: "1.0000000"
+              - cell "No" [ref=f16e398]
+              - cell [ref=f16e399]:
+                - textbox [ref=f16e400]: 360 days from LC Negotiation Date
+              - cell "AE11" [ref=f16e401]
+              - cell "0" [ref=f16e402]
+              - cell [ref=f16e403]:
+                - textbox [ref=f16e404]: DMCC
+              - cell [ref=f16e405]:
+                - textbox [ref=f16e406]: HB111
+              - cell [ref=f16e407]:
+                - textbox [ref=f16e408]: ACC0101
+              - cell [ref=f16e409]:
+                - textbox [ref=f16e410]: BD0101
+              - cell [ref=f16e411]:
+                - textbox [ref=f16e412]: "0.00"
+              - cell "1,484,970.00" [ref=f16e413]
+              - cell [ref=f16e414]:
+                - textbox [ref=f16e415]: "2.2500"
+              - cell [ref=f16e416]:
+                - textbox [ref=f16e417]: 01.09.2026
+              - cell [ref=f16e418]:
+                - textbox [ref=f16e419]: 1,484,970.00
+              - cell "SESHAIAHB" [ref=f16e420]
+              - cell "08.09.2026" [ref=f16e421]
+              - cell "15:20:00" [ref=f16e422]
+              - cell [ref=f16e423]
+              - cell [ref=f16e424]
+              - cell "00:00:00" [ref=f16e425]
+              - cell [ref=f16e426]:
+                - textbox [ref=f16e427]
+            - row [ref=f16e428]:
+              - cell [ref=f16e429]
+              - cell [ref=f16e430]
+              - cell "T1-T" [ref=f16e431]
+              - cell [ref=f16e432]
+              - cell [ref=f16e433]
+              - cell "100" [ref=f16e434]
+              - cell "10000010" [ref=f16e435]
+              - cell "10000010-T1" [ref=f16e436]
+              - cell [ref=f16e437]
+              - cell [ref=f16e438]:
+                - textbox [ref=f16e439]
+              - cell [ref=f16e440]:
+                - textbox [ref=f16e441]: 03.09.2026
+              - cell [ref=f16e442]:
+                - textbox [ref=f16e443]: 03.09.2026
+              - cell [ref=f16e444]:
+                - textbox [ref=f16e445]: 03.09.2026
+              - cell [ref=f16e446]
+              - cell [ref=f16e447]:
+                - textbox [ref=f16e448]
+              - cell [ref=f16e449]
+              - cell [ref=f16e450]:
+                - textbox [ref=f16e451]
+              - cell [ref=f16e452]
+              - cell [ref=f16e453]:
+                - textbox [ref=f16e454]
+              - cell [ref=f16e455]
+              - cell [ref=f16e456]
+              - cell [ref=f16e457]:
+                - textbox [ref=f16e458]
+              - cell [ref=f16e459]:
+                - textbox [ref=f16e460]
+              - cell [ref=f16e461]:
+                - textbox [ref=f16e462]
+              - cell [ref=f16e463]:
+                - textbox [ref=f16e464]: "0.00"
+              - cell [ref=f16e465]:
+                - textbox [ref=f16e466]: "0.00"
+              - cell "494.99" [ref=f16e467]
+              - cell "1,484,970.00" [ref=f16e468]
+              - cell [ref=f16e469]:
+                - textbox [ref=f16e470]: "0.00"
+              - cell "1,484,970.00" [ref=f16e471]
+              - cell "USD" [ref=f16e472]
+              - cell [ref=f16e473]:
+                - textbox [ref=f16e474]: "1.0000000"
+              - cell [ref=f16e475]:
+                - textbox [ref=f16e476]: "1.0000000"
+              - cell "No" [ref=f16e477]
+              - cell [ref=f16e478]:
+                - textbox [ref=f16e479]
+              - cell "AE11" [ref=f16e480]
+              - cell "0" [ref=f16e481]
+              - cell [ref=f16e482]:
+                - textbox [ref=f16e483]
+              - cell [ref=f16e484]:
+                - textbox [ref=f16e485]
+              - cell [ref=f16e486]:
+                - textbox [ref=f16e487]
+              - cell [ref=f16e488]:
+                - textbox [ref=f16e489]
+              - cell [ref=f16e490]:
+                - textbox [ref=f16e491]: "0.00"
+              - cell "1,484,970.00" [ref=f16e492]
+              - cell [ref=f16e493]:
+                - textbox [ref=f16e494]
+              - cell [ref=f16e495]:
+                - textbox [ref=f16e496]
+              - cell [ref=f16e497]:
+                - textbox [ref=f16e498]
+              - cell "SESHAIAHB" [ref=f16e499]
+              - cell "08.09.2026" [ref=f16e500]
+              - cell "15:20:00" [ref=f16e501]
+              - cell [ref=f16e502]
+              - cell [ref=f16e503]
+              - cell "00:00:00" [ref=f16e504]
+              - cell [ref=f16e505]:
+                - textbox [ref=f16e506]
+            - row [ref=f16e507]:
+              - cell "I01" [ref=f16e508]
+              - cell "1,449,747.00" [ref=f16e509]
+              - cell "T2" [ref=f16e510]
+              - cell "Approved" [ref=f16e511]
+              - cell "1,449,747.00" [ref=f16e512]
+              - cell "100" [ref=f16e513]
+              - cell "10000010" [ref=f16e514]
+              - cell "10000010-T2" [ref=f16e515]
+              - cell "I01" [ref=f16e516]
+              - cell [ref=f16e517]:
+                - textbox [ref=f16e518]: PT-10000010-2
+              - cell [ref=f16e519]:
+                - textbox [ref=f16e520]: 03.09.2026
+              - cell [ref=f16e521]:
+                - textbox [ref=f16e522]: 03.09.2026
+              - cell [ref=f16e523]:
+                - textbox [ref=f16e524]: 03.09.2026
+              - cell [ref=f16e525]
+              - cell [ref=f16e526]:
+                - textbox [ref=f16e527]: THAI WHITE RICE 5% BROKEN DOUBLE POLISHED
+              - cell "RICE5" [ref=f16e528]
+              - cell [ref=f16e529]:
+                - textbox [ref=f16e530]: Complete
+              - cell "02.09.2026" [ref=f16e531]
+              - cell [ref=f16e532]:
+                - textbox [ref=f16e533]: FOB
+              - cell "DMCC" [ref=f16e534]
+              - cell "PAN" [ref=f16e535]
+              - cell [ref=f16e536]:
+                - textbox [ref=f16e537]: MC-P-0010-2
+              - cell [ref=f16e538]:
+                - textbox [ref=f16e539]: MC-S-0010-2
+              - cell [ref=f16e540]:
+                - textbox [ref=f16e541]: MC-REF-0010-2
+              - cell [ref=f16e542]:
+                - textbox [ref=f16e543]: 2,925.00
+              - cell [ref=f16e544]:
+                - textbox [ref=f16e545]: "495.64"
+              - cell "495.64" [ref=f16e546]
+              - cell "1,449,747.00" [ref=f16e547]
+              - cell [ref=f16e548]:
+                - textbox [ref=f16e549]: "0.00"
+              - cell "1,449,747.00" [ref=f16e550]
+              - cell "USD" [ref=f16e551]
+              - cell [ref=f16e552]:
+                - textbox [ref=f16e553]: "1.0000000"
+              - cell [ref=f16e554]:
+                - textbox [ref=f16e555]: "1.0000000"
+              - cell "No" [ref=f16e556]
+              - cell [ref=f16e557]:
+                - textbox [ref=f16e558]: CAD
+              - cell "AE11" [ref=f16e559]
+              - cell "1" [ref=f16e560]
+              - cell [ref=f16e561]:
+                - textbox [ref=f16e562]: PAN
+              - cell [ref=f16e563]:
+                - textbox [ref=f16e564]: HB112
+              - cell [ref=f16e565]:
+                - textbox [ref=f16e566]: ACC0102
+              - cell [ref=f16e567]:
+                - textbox [ref=f16e568]: BD0102
+              - cell [ref=f16e569]:
+                - textbox [ref=f16e570]: "250.00"
+              - cell "1,449,497.00" [ref=f16e571]
+              - cell [ref=f16e572]:
+                - textbox [ref=f16e573]: "2.2500"
+              - cell [ref=f16e574]:
+                - textbox [ref=f16e575]: 01.09.2026
+              - cell [ref=f16e576]:
+                - textbox [ref=f16e577]: 1,449,747.00
+              - cell "SESHAIAHB" [ref=f16e578]
+              - cell "08.09.2026" [ref=f16e579]
+              - cell "15:20:00" [ref=f16e580]
+              - cell [ref=f16e581]
+              - cell [ref=f16e582]
+              - cell "00:00:00" [ref=f16e583]
+              - cell [ref=f16e584]:
+                - textbox [ref=f16e585]
+            - row [ref=f16e586]:
+              - cell [ref=f16e587]
+              - cell [ref=f16e588]
+              - cell "T2-T" [ref=f16e589]
+              - cell [ref=f16e590]
+              - cell [ref=f16e591]
+              - cell "100" [ref=f16e592]
+              - cell "10000010" [ref=f16e593]
+              - cell "10000010-T2" [ref=f16e594]
+              - cell [ref=f16e595]
+              - cell [ref=f16e596]:
+                - textbox [ref=f16e597]
+              - cell [ref=f16e598]:
+                - textbox [ref=f16e599]: 03.09.2026
+              - cell [ref=f16e600]:
+                - textbox [ref=f16e601]: 03.09.2026
+              - cell [ref=f16e602]:
+                - textbox [ref=f16e603]: 03.09.2026
+              - cell [ref=f16e604]
+              - cell [ref=f16e605]:
+                - textbox [ref=f16e606]
+              - cell [ref=f16e607]
+              - cell [ref=f16e608]:
+                - textbox [ref=f16e609]
+              - cell [ref=f16e610]
+              - cell [ref=f16e611]:
+                - textbox [ref=f16e612]
+              - cell [ref=f16e613]
+              - cell [ref=f16e614]
+              - cell [ref=f16e615]:
+                - textbox [ref=f16e616]
+              - cell [ref=f16e617]:
+                - textbox [ref=f16e618]
+              - cell [ref=f16e619]:
+                - textbox [ref=f16e620]
+              - cell [ref=f16e621]:
+                - textbox [ref=f16e622]: "0.00"
+              - cell [ref=f16e623]:
+                - textbox [ref=f16e624]: "0.00"
+              - cell "495.64" [ref=f16e625]
+              - cell "1,449,747.00" [ref=f16e626]
+              - cell [ref=f16e627]:
+                - textbox [ref=f16e628]: "0.00"
+              - cell "1,449,747.00" [ref=f16e629]
+              - cell "USD" [ref=f16e630]
+              - cell [ref=f16e631]:
+                - textbox [ref=f16e632]: "1.0000000"
+              - cell [ref=f16e633]:
+                - textbox [ref=f16e634]: "1.0000000"
+              - cell "No" [ref=f16e635]
+              - cell [ref=f16e636]:
+                - textbox [ref=f16e637]
+              - cell "AE11" [ref=f16e638]
+              - cell "1" [ref=f16e639]
+              - cell [ref=f16e640]:
+                - textbox [ref=f16e641]
+              - cell [ref=f16e642]:
+                - textbox [ref=f16e643]
+              - cell [ref=f16e644]:
+                - textbox [ref=f16e645]
+              - cell [ref=f16e646]:
+                - textbox [ref=f16e647]
+              - cell [ref=f16e648]:
+                - textbox [ref=f16e649]: "250.00"
+              - cell "1,449,497.00" [ref=f16e650]
+              - cell [ref=f16e651]:
+                - textbox [ref=f16e652]
+              - cell [ref=f16e653]:
+                - textbox [ref=f16e654]
+              - cell [ref=f16e655]:
+                - textbox [ref=f16e656]
+              - cell "SESHAIAHB" [ref=f16e657]
+              - cell "08.09.2026" [ref=f16e658]
+              - cell "15:20:00" [ref=f16e659]
+              - cell [ref=f16e660]
+              - cell [ref=f16e661]
+              - cell "00:00:00" [ref=f16e662]
+              - cell [ref=f16e663]:
+                - textbox [ref=f16e664]
+            - row [ref=f16e665]:
+              - cell "I01" [ref=f16e666]
+              - cell "1,414,426.50" [ref=f16e667]
+              - cell "T3" [ref=f16e668]
+              - cell "Review" [ref=f16e669]
+              - cell "1,414,426.50" [ref=f16e670]
+              - cell "100" [ref=f16e671]
+              - cell "10000010" [ref=f16e672]
+              - cell "10000010-T3" [ref=f16e673]
+              - cell "I01" [ref=f16e674]
+              - cell [ref=f16e675]:
+                - textbox [ref=f16e676]: PT-10000010-3
+              - cell [ref=f16e677]:
+                - textbox [ref=f16e678]: 03.09.2026
+              - cell [ref=f16e679]:
+                - textbox [ref=f16e680]: 03.09.2026
+              - cell [ref=f16e681]:
+                - textbox [ref=f16e682]: 03.09.2026
+              - cell [ref=f16e683]
+              - cell [ref=f16e684]:
+                - textbox [ref=f16e685]: THAI WHITE RICE 5% BROKEN DOUBLE POLISHED
+              - cell "RICE5" [ref=f16e686]
+              - cell [ref=f16e687]:
+                - textbox [ref=f16e688]: Partial
+              - cell "02.09.2026" [ref=f16e689]
+              - cell [ref=f16e690]:
+                - textbox [ref=f16e691]: FOB
+              - cell "PAN" [ref=f16e692]
+              - cell "OGA" [ref=f16e693]
+              - cell [ref=f16e694]:
+                - textbox [ref=f16e695]: MC-P-0010-3
+              - cell [ref=f16e696]:
+                - textbox [ref=f16e697]: MC-S-0010-3
+              - cell [ref=f16e698]:
+                - textbox [ref=f16e699]: MC-REF-0010-3
+              - cell [ref=f16e700]:
+                - textbox [ref=f16e701]: 2,850.00
+              - cell [ref=f16e702]:
+                - textbox [ref=f16e703]: "496.29"
+              - cell "496.29" [ref=f16e704]
+              - cell "1,414,426.50" [ref=f16e705]
+              - cell [ref=f16e706]:
+                - textbox [ref=f16e707]: "125.00"
+              - cell "1,414,551.50" [ref=f16e708]
+              - cell "USD" [ref=f16e709]
+              - cell [ref=f16e710]:
+                - textbox [ref=f16e711]: "1.0000000"
+              - cell [ref=f16e712]:
+                - textbox [ref=f16e713]: "1.0000000"
+              - cell "No" [ref=f16e714]
+              - cell [ref=f16e715]:
+                - textbox [ref=f16e716]: CAD
+              - cell "AE11" [ref=f16e717]
+              - cell "2" [ref=f16e718]
+              - cell [ref=f16e719]:
+                - textbox [ref=f16e720]: OGA
+              - cell [ref=f16e721]:
+                - textbox [ref=f16e722]: HB113
+              - cell [ref=f16e723]:
+                - textbox [ref=f16e724]: ACC0103
+              - cell [ref=f16e725]:
+                - textbox [ref=f16e726]: BD0103
+              - cell [ref=f16e727]:
+                - textbox [ref=f16e728]: "0.00"
+              - cell "1,414,426.50" [ref=f16e729]
+              - cell [ref=f16e730]:
+                - textbox [ref=f16e731]: "2.2500"
+              - cell [ref=f16e732]:
+                - textbox [ref=f16e733]: 01.09.2026
+              - cell [ref=f16e734]:
+                - textbox [ref=f16e735]: 1,414,426.50
+              - cell "SESHAIAHB" [ref=f16e736]
+              - cell "08.09.2026" [ref=f16e737]
+              - cell "15:20:00" [ref=f16e738]
+              - cell [ref=f16e739]
+              - cell [ref=f16e740]
+              - cell "00:00:00" [ref=f16e741]
+              - cell [ref=f16e742]:
+                - textbox [ref=f16e743]
+            - row [ref=f16e744]:
+              - cell [ref=f16e745]
+              - cell [ref=f16e746]
+              - cell "T3-T" [ref=f16e747]
+              - cell [ref=f16e748]
+              - cell [ref=f16e749]
+              - cell "100" [ref=f16e750]
+              - cell "10000010" [ref=f16e751]
+              - cell "10000010-T3" [ref=f16e752]
+              - cell [ref=f16e753]
+              - cell [ref=f16e754]:
+                - textbox [ref=f16e755]
+              - cell [ref=f16e756]:
+                - textbox [ref=f16e757]: 03.09.2026
+              - cell [ref=f16e758]:
+                - textbox [ref=f16e759]: 03.09.2026
+              - cell [ref=f16e760]:
+                - textbox [ref=f16e761]: 03.09.2026
+              - cell [ref=f16e762]
+              - cell [ref=f16e763]:
+                - textbox [ref=f16e764]
+              - cell [ref=f16e765]
+              - cell [ref=f16e766]:
+                - textbox [ref=f16e767]
+              - cell [ref=f16e768]
+              - cell [ref=f16e769]:
+                - textbox [ref=f16e770]
+              - cell [ref=f16e771]
+              - cell [ref=f16e772]
+              - cell [ref=f16e773]:
+                - textbox [ref=f16e774]
+              - cell [ref=f16e775]:
+                - textbox [ref=f16e776]
+              - cell [ref=f16e777]:
+                - textbox [ref=f16e778]
+              - cell [ref=f16e779]:
+                - textbox [ref=f16e780]: "0.00"
+              - cell [ref=f16e781]:
+                - textbox [ref=f16e782]: "0.00"
+              - cell "496.29" [ref=f16e783]
+              - cell "1,414,426.50" [ref=f16e784]
+              - cell [ref=f16e785]:
+                - textbox [ref=f16e786]: "0.00"
+              - cell "1,414,551.50" [ref=f16e787]
+              - cell "USD" [ref=f16e788]
+              - cell [ref=f16e789]:
+                - textbox [ref=f16e790]: "1.0000000"
+              - cell [ref=f16e791]:
+                - textbox [ref=f16e792]: "1.0000000"
+              - cell "No" [ref=f16e793]
+              - cell [ref=f16e794]:
+                - textbox [ref=f16e795]
+              - cell "AE11" [ref=f16e796]
+              - cell "2" [ref=f16e797]
+              - cell [ref=f16e798]:
+                - textbox [ref=f16e799]
+              - cell [ref=f16e800]:
+                - textbox [ref=f16e801]
+              - cell [ref=f16e802]:
+                - textbox [ref=f16e803]
+              - cell [ref=f16e804]:
+                - textbox [ref=f16e805]
+              - cell [ref=f16e806]:
+                - textbox [ref=f16e807]: "0.00"
+              - cell "1,414,426.50" [ref=f16e808]
+              - cell [ref=f16e809]:
+                - textbox [ref=f16e810]
+              - cell [ref=f16e811]:
+                - textbox [ref=f16e812]
+              - cell [ref=f16e813]:
+                - textbox [ref=f16e814]
+              - cell "SESHAIAHB" [ref=f16e815]
+              - cell "08.09.2026" [ref=f16e816]
+              - cell "15:20:00" [ref=f16e817]
+              - cell [ref=f16e818]
+              - cell [ref=f16e819]
+              - cell "00:00:00" [ref=f16e820]
+              - cell [ref=f16e821]:
+                - textbox [ref=f16e822]
+  - generic [ref=f16e823]: ● Deal 10000010 loaded

@@ -2,13 +2,29 @@ const { app, BrowserWindow, dialog, ipcMain, safeStorage, shell } = require('ele
 const path = require('path');
 const { createGoogleDesktopAuth } = require('./googleDesktopAuth');
 const { createClaudeTokenStore } = require('./claudeTokenStore');
+const { createSapDevelopmentManager } = require('./sapDevelopmentManager');
 const { createSapTerminalManager } = require('./sapTerminalManager');
 
 const isDevelopment = !app.isPackaged;
 const GOOGLE_DESKTOP_CLIENT_ID = process.env.GOOGLE_DESKTOP_CLIENT_ID
   || '418759424186-vhvn6f4g6ckvef5gvjdtqi4g6gvfmvpe.apps.googleusercontent.com';
 let googleDesktopAuth;
+let sapDevelopmentManager;
 let sapTerminalManager;
+
+function registerSapDevelopmentHandlers() {
+  const claudeTokenStore = createClaudeTokenStore(app, safeStorage);
+  sapDevelopmentManager = createSapDevelopmentManager(app, claudeTokenStore);
+  ipcMain.handle('sap-development:get-status', () => sapDevelopmentManager.getStatus());
+  ipcMain.handle('sap-development:get-auth-status', () => sapDevelopmentManager.getAuthStatus());
+  ipcMain.handle('sap-development:configure-token', (_event, token) => sapDevelopmentManager.configureToken(token));
+  ipcMain.handle('sap-development:clear-token', () => sapDevelopmentManager.clearToken());
+  ipcMain.handle('sap-development:start', (_event, prompt, sessionId, systemId, credentials) => (
+    sapDevelopmentManager.start(prompt, sessionId, systemId, credentials)
+  ));
+  ipcMain.handle('sap-development:get-run', (_event, runId) => sapDevelopmentManager.getRun(runId));
+  ipcMain.handle('sap-development:stop', (_event, runId) => sapDevelopmentManager.stop(runId));
+}
 
 async function registerSapTerminalHandlers() {
   const claudeTokenStore = createClaudeTokenStore(app, safeStorage);
@@ -106,6 +122,7 @@ function createWindow() {
 app.whenReady().then(async () => {
   registerGoogleAuthHandlers();
   await registerSapTerminalHandlers();
+  registerSapDevelopmentHandlers();
   createWindow();
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -120,5 +137,6 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
+  sapDevelopmentManager?.stopAll();
   sapTerminalManager?.stopAll();
 });

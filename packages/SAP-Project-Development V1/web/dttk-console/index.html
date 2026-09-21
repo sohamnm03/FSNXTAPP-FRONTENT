@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Distribution Ticket (DTTK)</title>
+<style>
+:root{--bg:#f5f7f9;--surface:#fff;--surface-2:#f2f4f5;--border:#d5dadd;--border-strong:#8996a1;--text:#1d2d3e;--sub:#475e75;--muted:#687b8d;--blue:#0a6ed1;--blue-hover:#085caf;--blue-soft:#eaf3fc;--blue-soft-2:#d1e8ff;--green:#107e3e;--shadow:0 1px 3px rgba(34,53,72,.13);--radius:8px;--sidebar:355px;--header:52px}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:"72","Segoe UI",Arial,sans-serif;color:var(--text);background:var(--bg);font-size:13px}button,input,select{font:inherit;color:inherit}button{cursor:pointer}.app{height:100vh;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);grid-template-rows:var(--header) minmax(0,1fr);overflow:hidden}.topbar{grid-column:1/-1;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 18px;z-index:10}.title-wrap{display:flex;align-items:center;gap:11px;min-width:0}.mark{width:30px;height:30px;border-radius:6px;background:linear-gradient(145deg,#0a6ed1,#35a5dc);display:grid;place-items:center;color:#fff;box-shadow:0 2px 7px rgba(10,110,209,.22)}.title{font-size:17px;font-weight:700;white-space:nowrap}.title small{font-size:12px;color:var(--muted);font-weight:400;margin-left:8px}.actions{display:flex;align-items:center;gap:6px}.btn{height:32px;padding:0 11px;border:1px solid var(--border-strong);background:var(--surface);border-radius:4px;font-weight:600;display:inline-flex;align-items:center;gap:7px;color:var(--sub)}.btn:hover{background:var(--surface-2);color:var(--text)}.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn.primary:hover{background:var(--blue-hover)}.btn.icon-only{padding:0;width:32px;justify-content:center}.btn svg,.tool svg{width:15px;height:15px;fill:currentColor}.connection{width:8px;height:8px;background:#20a454;border-radius:50%;box-shadow:0 0 0 3px #d9f3e2;margin:0 6px}.sidebar{background:var(--surface);border-right:1px solid var(--border);overflow:auto;padding:12px;scrollbar-width:thin}.side-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.side-head strong{font-size:14px}.section{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;background:var(--surface)}.section-title{background:var(--surface-2);border-bottom:1px solid var(--border);padding:7px 10px;font-size:12px;font-weight:700;color:var(--sub)}.fields{padding:9px 10px 7px}.field{display:grid;grid-template-columns:128px minmax(0,1fr);gap:8px;align-items:center;margin-bottom:7px}.field label{font-size:12px;color:var(--sub);line-height:1.15}.field input,.field select{width:100%;height:28px;border:1px solid var(--border-strong);border-radius:3px;background:#fff;padding:3px 8px;outline:none;min-width:0}.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}.field .compound{display:flex;gap:5px;min-width:0}.field .short{width:74px;flex:none}.field .code{width:54px;flex:none}.field .amount{text-align:right;font-variant-numeric:tabular-nums}.field .suffix{height:28px;min-width:43px;padding:5px 6px;border:1px solid var(--border);border-radius:3px;background:var(--surface-2);font-size:11px;color:var(--sub)}.field.wide{grid-template-columns:1fr}.field.wide label{margin-bottom:-4px}.main{overflow:auto;padding:12px;display:grid;grid-template-rows:minmax(335px,1.08fr) minmax(245px,.92fr);gap:10px}.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}.panel-head{height:39px;display:flex;align-items:center;justify-content:space-between;padding:0 11px;border-bottom:1px solid var(--border);flex:none}.panel-title{font-weight:700;font-size:13px}.panel-meta{font-size:11px;color:var(--muted);font-weight:500}.panel-tools{display:flex;gap:5px;align-items:center}.tool{width:29px;height:27px;border:1px solid var(--border);border-radius:3px;background:#fff;color:var(--sub);display:grid;place-items:center}.tool:hover,.tool.active{background:var(--blue-soft);border-color:#a7cff5;color:var(--blue)}.search{height:27px;width:190px;border:1px solid var(--border-strong);border-radius:3px;padding:3px 8px;outline:none}.search:focus{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}.table-wrap{overflow:auto;flex:1;scrollbar-width:thin}table{border-collapse:collapse;width:100%;min-width:1060px;table-layout:fixed}th{position:sticky;top:0;z-index:2;background:var(--surface-2);color:var(--sub);font-size:11px;text-align:left;padding:7px 8px;border-bottom:1px solid var(--border);border-right:1px solid #e6e9eb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}td{padding:6px 8px;border-bottom:1px solid #edf0f2;border-right:1px solid #edf0f2;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#fff}tbody tr:hover td{background:#f7fbff}tbody tr.selected td{background:var(--blue-soft)}td.num{text-align:right;font-variant-numeric:tabular-nums}td.link{color:var(--blue);font-weight:600;text-decoration:underline;cursor:pointer}.empty-space{min-height:70px;background:linear-gradient(#fff,#fbfcfd)}.panel-foot{height:33px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:var(--muted);font-size:11px;flex:none}.pager{display:flex;gap:3px}.pager button{width:24px;height:23px;border:1px solid var(--border);background:#fff;border-radius:3px;color:var(--sub)}.pager button:disabled{opacity:.4;cursor:default}.collapse{display:none;position:fixed;left:344px;top:50%;z-index:20;width:22px;height:54px;border:0;border-radius:0 5px 5px 0;background:var(--blue);color:#fff}.toast{position:fixed;right:18px;bottom:18px;background:#243b53;color:#fff;padding:10px 14px;border-radius:6px;box-shadow:0 6px 24px rgba(0,0,0,.25);opacity:0;transform:translateY(8px);pointer-events:none;transition:.2s;z-index:50}.toast.show{opacity:1;transform:none}@media(max-width:980px){:root{--sidebar:320px}.title small{display:none}.actions .label{display:none}.actions .btn{width:34px;padding:0;justify-content:center}.main{padding:9px;gap:9px}.field{grid-template-columns:112px minmax(0,1fr)}}@media(max-width:720px){.app{grid-template-columns:1fr}.sidebar{position:fixed;left:0;top:var(--header);bottom:0;width:min(88vw,355px);z-index:15;box-shadow:8px 0 28px rgba(29,45,62,.18);transform:translateX(-100%);transition:.2s}.app.side-open .sidebar{transform:none}.collapse{display:block;left:0}.app.side-open .collapse{left:min(calc(88vw - 11px),344px)}.main{grid-column:1}.topbar{padding:0 10px}.title{font-size:15px}.connection{display:none}.main{grid-template-rows:minmax(360px,1fr) minmax(280px,.8fr)}}@media print{.actions,.panel-tools,.collapse{display:none}.app{height:auto;display:block}.sidebar{overflow:visible;border:0}.main{overflow:visible;display:block}.panel{margin:10px 0;box-shadow:none;min-height:300px}.table-wrap{overflow:visible}}
+/* Create OTTK modal layout */
+.app{grid-template-columns:minmax(0,1fr)}
+.main{grid-column:1;overflow:hidden;padding:12px 14px}
+.sidebar,.collapse{display:none!important}
+.create-btn{height:34px;padding:0 15px;border-radius:5px;box-shadow:0 2px 6px rgba(10,110,209,.18)}
+.modal-backdrop{position:fixed;inset:0;z-index:100;background:rgba(23,43,61,.48);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;visibility:hidden;transition:opacity .18s ease,visibility .18s ease}
+.modal-backdrop.open{opacity:1;visibility:visible}
+.ottk-modal{width:min(1240px,calc(100vw - 32px));max-height:min(850px,calc(100vh - 32px));background:var(--surface);border:1px solid #b9c2c9;border-radius:12px;box-shadow:0 22px 70px rgba(16,38,58,.3);display:grid;grid-template-rows:58px minmax(0,1fr) 58px;overflow:hidden;transform:translateY(10px) scale(.992);transition:transform .18s ease}
+.modal-backdrop.open .ottk-modal{transform:none}
+.modal-head{padding:0 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#fff,#fafbfc)}
+.modal-heading{display:flex;align-items:center;gap:11px}.modal-heading-icon{width:32px;height:32px;border-radius:7px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center}.modal-heading h2{font-size:17px;margin:0 0 2px}.modal-heading p{font-size:11px;color:var(--muted);margin:0}.modal-close{width:32px;height:32px;border:0;border-radius:50%;background:transparent;color:var(--muted);font-size:24px;line-height:1}.modal-close:hover{background:var(--surface-2);color:var(--text)}
+.modal-content-grid{min-height:0;padding:13px 16px;display:grid;grid-template-columns:.92fr 1fr 1fr;grid-template-rows:auto auto;grid-template-areas:"basic trade trade" "deposit others additional";gap:11px;background:#f7f9fa;overflow:hidden;align-content:stretch}
+.modal-content-grid .section{margin:0;min-width:0;box-shadow:0 1px 2px rgba(34,53,72,.06)}
+.modal-content-grid .section:nth-child(1){grid-area:basic}.modal-content-grid .section:nth-child(2){grid-area:trade}.modal-content-grid .section:nth-child(3){grid-area:deposit}.modal-content-grid .section:nth-child(4){grid-area:others}.modal-content-grid .section:nth-child(5){grid-area:additional}
+.modal-content-grid .section-title{height:34px;display:flex;align-items:center;padding:0 11px;background:#f8fafb;color:#304a62;border-left:3px solid var(--blue)}
+.modal-content-grid .fields{padding:9px 11px 7px}.modal-content-grid .field{grid-template-columns:122px minmax(0,1fr);gap:7px;margin-bottom:6px}.modal-content-grid .field:last-child{margin-bottom:0}
+.modal-content-grid .section:nth-child(2) .fields{display:grid;grid-template-columns:1fr 1fr;column-gap:18px;align-content:start}.modal-content-grid .section:nth-child(2) .field{grid-template-columns:116px minmax(0,1fr)}
+.modal-footer{padding:0 18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#fff}.modal-note{font-size:11px;color:var(--muted)}.modal-note b{color:#bb0000}.modal-actions{display:flex;gap:8px}.modal-actions .btn{min-width:96px;justify-content:center}
+body.modal-open{overflow:hidden}
+.status-pill{display:inline-flex;align-items:center;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600}.status-pill.open{color:var(--green);background:#e4f5e9}.status-pill.pending{color:#9b6b00;background:#fff4cc}
+.filter-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+@media(max-width:980px){.modal-content-grid{grid-template-columns:1fr 1fr;grid-template-areas:"basic trade" "deposit trade" "others additional"}.modal-content-grid .section:nth-child(2) .fields{display:block}.modal-content-grid .field,.modal-content-grid .section:nth-child(2) .field{grid-template-columns:108px minmax(0,1fr)}.ottk-modal{height:calc(100vh - 20px);width:calc(100vw - 20px)}}
+@media(max-height:760px) and (min-width:721px){.ottk-modal{grid-template-rows:50px minmax(0,1fr) 50px;height:calc(100vh - 16px)}.modal-content-grid{padding:8px 10px;gap:7px}.modal-content-grid .section-title{height:27px;font-size:11px}.modal-content-grid .fields{padding:6px 8px 4px}.modal-content-grid .field{margin-bottom:3px}.modal-content-grid .field input,.modal-content-grid .field select,.modal-content-grid .suffix{height:24px;font-size:11px;padding-top:1px;padding-bottom:1px}.modal-content-grid .field label{font-size:11px}}
+@media(max-width:720px){.main{grid-template-rows:minmax(340px,1fr) minmax(250px,.8fr)}.modal-backdrop{padding:0}.ottk-modal{width:100vw;height:100vh;border:0;border-radius:0}.modal-content-grid{grid-template-columns:1fr 1fr;grid-template-areas:"basic trade" "deposit trade" "others additional";gap:6px;padding:7px}.modal-content-grid .field,.modal-content-grid .section:nth-child(2) .field{grid-template-columns:88px minmax(0,1fr);gap:4px;margin-bottom:3px}.modal-content-grid .field label{font-size:10px}.modal-content-grid .field input,.modal-content-grid .field select{height:24px;font-size:10px}.modal-head{padding:0 10px}.modal-heading p,.modal-note{display:none}}
+/* Screenshot-inspired request modal */
+.modal-backdrop{background:rgba(30,48,66,.36);padding:18px}
+.ottk-modal{width:min(1220px,calc(100vw - 36px));max-height:min(800px,calc(100vh - 36px));border-radius:10px;border:1px solid #cbd9e6;grid-template-rows:56px minmax(0,1fr) 54px;box-shadow:0 18px 60px rgba(28,50,72,.28);font-size:12px}
+.modal-head{padding:0 20px;background:#eef6ff;border-bottom:2px solid #86bff3}
+.modal-heading-icon{display:none}.modal-heading h2{font-size:15px;color:#102a43;margin-bottom:4px}.modal-heading p{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.16em;color:#536d86}
+.modal-close{width:30px;height:30px;border-radius:4px;background:rgba(255,255,255,.72);font-size:20px;color:#607d94}.modal-close:hover{background:#fff;color:#12324d}
+.modal-head-right{display:flex;align-items:center;gap:13px;flex:none}
+.modal-head-created{display:flex;align-items:center;gap:5px;font-size:11px;color:#536d86;white-space:nowrap}
+.modal-head-created b{font-size:12px;color:#102a43}
+.modal-content-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto;grid-template-areas:"basic basic" "trade trade" "deposit deposit" "others additional";gap:10px 14px;padding:12px 18px 14px;background:#fff;overflow-y:auto;align-content:start}
+.modal-content-grid .section{border:0;border-radius:0;box-shadow:none;overflow:visible;background:transparent;align-self:start}
+.modal-content-grid .section:nth-child(1),.modal-content-grid .section:nth-child(2){border:1px solid #dbe3e9;border-radius:7px;background:#fff;padding:9px 13px}
+.modal-content-grid .section-title{height:26px;padding:3px 0 6px;border:0;border-bottom:1px solid #cbd3da;background:transparent;color:#6a727a;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.11em}
+.modal-content-grid .section-title::before{content:"";width:4px;height:4px;border-radius:50%;background:#37a4de;margin-right:6px;flex:none}
+.modal-content-grid .fields,.modal-content-grid .section:nth-child(2) .fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 14px;padding:8px 2px 2px}
+.modal-content-grid .field,.modal-content-grid .section:nth-child(2) .field{display:flex;flex-direction:column;align-items:stretch;gap:4px;margin:0;min-width:0}
+.modal-content-grid .field label{font-size:12px;line-height:1.2;font-weight:600;text-transform:none;letter-spacing:0;color:#5f6f7f}
+.modal-content-grid .field input,.modal-content-grid .field select{height:28px;border:0;border-bottom:1px solid #dfe5ea;border-radius:0;padding:4px 4px;background:#fff;font-size:13px;font-weight:600;color:#20364b;box-shadow:none}
+.modal-content-grid .field input:hover,.modal-content-grid .field select:hover{border-bottom-color:#8fb9dd}.modal-content-grid .field input:focus,.modal-content-grid .field select:focus{border-color:var(--blue);box-shadow:0 1px 0 var(--blue)}
+.modal-content-grid .field input[readonly]{background:transparent;color:#60758a}
+.modal-content-grid .compound{height:28px;gap:6px}.modal-content-grid .compound input{height:28px}.modal-content-grid .suffix{height:28px;width:70px;min-width:70px;flex:none;border:0;border-bottom:1px solid #dfe5ea;border-radius:0;background:transparent;padding:5px 3px;font-size:11px;font-weight:700}
+.modal-content-grid .section:nth-child(3){border:1px solid #cfe2f7;border-radius:7px;background:#eef6ff;padding:9px 13px}.modal-content-grid .section:nth-child(3) .section-title{color:#1265b4;border-bottom-color:#c6d9ed}.modal-content-grid .section:nth-child(3) .section-title::before{background:#1265b4}.modal-content-grid .section:nth-child(3) .field input,.modal-content-grid .section:nth-child(3) .field select{background:transparent}
+.modal-content-grid .section:nth-child(4),.modal-content-grid .section:nth-child(5){border:1px solid #cfead8;border-radius:7px;background:#effbf3;padding:9px 13px}.modal-content-grid .section:nth-child(4) .section-title,.modal-content-grid .section:nth-child(5) .section-title{color:#237b3b;border-bottom-color:#c5e0cd}.modal-content-grid .section:nth-child(4) .section-title::before,.modal-content-grid .section:nth-child(5) .section-title::before{background:#237b3b}.modal-content-grid .section:nth-child(4) .fields,.modal-content-grid .section:nth-child(5) .fields{grid-template-columns:repeat(3,minmax(0,1fr))}.modal-content-grid .section:nth-child(4) .field input,.modal-content-grid .section:nth-child(4) .field select,.modal-content-grid .section:nth-child(5) .field input,.modal-content-grid .section:nth-child(5) .field select{background:transparent}
+.modal-content-grid .section:nth-child(4){margin-bottom:0}.modal-content-grid .section:nth-child(5){margin-bottom:0}
+.modal-footer{padding:0 20px;background:#f8fafb;border-top:1px solid #d8e0e7}.modal-note{font-size:10px}.modal-actions{gap:8px}.modal-actions .btn{height:31px;border-radius:4px;font-size:12px;min-width:96px}.modal-actions .btn.primary{box-shadow:0 2px 5px rgba(10,110,209,.2)}
+@media(max-height:760px) and (min-width:801px){.ottk-modal{height:calc(100vh - 16px);grid-template-rows:52px minmax(0,1fr) 50px}.modal-content-grid{padding:9px 14px;gap:7px 11px}.modal-content-grid .section-title{height:23px;padding-bottom:4px}.modal-content-grid .fields,.modal-content-grid .section:nth-child(2) .fields{gap:6px 12px;padding:6px 2px 2px}.modal-content-grid .field input,.modal-content-grid .field select,.modal-content-grid .compound,.modal-content-grid .compound input,.modal-content-grid .suffix{height:25px}.modal-content-grid .section:nth-child(3),.modal-content-grid .section:nth-child(4),.modal-content-grid .section:nth-child(5){padding:7px 10px}}
+@media(max-width:800px){.modal-backdrop{padding:0}.ottk-modal{width:100vw;height:100vh;border:0;border-radius:0;grid-template-rows:52px minmax(0,1fr) 50px}.modal-content-grid{grid-template-columns:1fr 1fr;grid-template-areas:"basic basic" "trade trade" "deposit deposit" "others additional";padding:8px;gap:8px;overflow-y:auto}.modal-content-grid .fields,.modal-content-grid .section:nth-child(2) .fields{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;padding:6px 2px 2px}.modal-content-grid .field{gap:3px}.modal-content-grid .field label{font-size:9px}.modal-content-grid .field input,.modal-content-grid .field select{font-size:11px;height:26px}.modal-content-grid .section:nth-child(3),.modal-content-grid .section:nth-child(4),.modal-content-grid .section:nth-child(5){padding:7px 9px}.modal-content-grid .section-title{height:22px;padding-bottom:4px;font-size:9px}.modal-footer{padding:0 10px}.modal-actions .btn{min-width:76px;height:30px}}
+/* Content-sized table columns: single-line, fully visible values */
+.table-wrap table{width:max-content!important;min-width:100%!important;table-layout:auto!important}
+.table-wrap col{width:auto!important}
+.table-wrap th,.table-wrap td{width:auto!important;max-width:none!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;padding-left:10px;padding-right:10px}
+.modal-content-grid .num-input{text-align:right;font-variant-numeric:tabular-nums}
+#interestRateField input{max-width:92px}
+.modal-content-grid .fs-amount-input{text-align:right;font-variant-numeric:tabular-nums}
+.modal-content-grid .fs-amount-input.field-error{border-bottom-color:#d20a0a!important;background:#fff5f5!important;box-shadow:0 1px 0 #d20a0a!important}
+.advanced-filters{display:none;align-items:center;gap:7px;flex-wrap:wrap;padding:7px 10px;background:#f8fafb;border-bottom:1px solid var(--border);flex:none}.advanced-filters.open{display:flex}.advanced-filters select{height:28px;min-width:125px;border:1px solid var(--border-strong);border-radius:3px;background:#fff;padding:3px 26px 3px 8px;font-size:11px}.advanced-filters .filter-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:2px}.filter-reset-btn{height:28px;padding:0 9px;border:1px solid var(--border);border-radius:3px;background:#fff;color:var(--sub);font-size:11px;font-weight:600}.filter-reset-btn:hover{background:var(--surface-2)}
+/* Live-CRUD additions */
+.connection.offline{background:#c0392b;box-shadow:0 0 0 3px #fbdbd6}
+.modal-content-grid .field[hidden]{display:none}
+.modal-content-grid .compound .btn.icon-only{height:28px;width:28px;flex:none;border-radius:3px;padding:0;border:1px solid var(--border-strong);background:#fff;color:var(--sub)}
+.modal-content-grid .compound .btn.icon-only:hover{background:var(--blue-soft);border-color:#a7cff5;color:var(--blue)}
+.modal-content-grid .compound .btn.icon-only svg{width:14px;height:14px}
+#otherCharges[readonly]{background:var(--surface-2);color:var(--sub);font-weight:600}
+.charges-modal{width:min(980px,calc(100vw - 32px));max-height:min(680px,calc(100vh - 32px));background:var(--surface);border:1px solid #b9c2c9;border-radius:12px;box-shadow:0 22px 70px rgba(16,38,58,.3);display:grid;grid-template-rows:56px minmax(0,1fr) 52px;overflow:hidden;transform:translateY(10px) scale(.992);transition:transform .18s ease}
+.modal-backdrop.open .charges-modal{transform:none}
+.charges-body{min-height:0;padding:12px 16px;overflow:auto;background:#f7f9fa}
+.charges-table-wrap{border:1px solid var(--border);border-radius:6px;overflow:auto;background:#fff}
+.charges-table{border-collapse:collapse;width:100%;min-width:920px}
+.charges-table th{position:sticky;top:0;background:var(--surface-2);color:var(--sub);font-size:11px;text-align:left;padding:6px 7px;border-bottom:1px solid var(--border);border-right:1px solid #e6e9eb;white-space:nowrap}
+.charges-table td{padding:4px 6px;border-bottom:1px solid #edf0f2;border-right:1px solid #edf0f2}
+.charges-table td.num{text-align:right}
+.charges-table input,.charges-table select{width:100%;height:27px;border:1px solid var(--border-strong);border-radius:3px;background:#fff;padding:2px 6px;font-size:12px}
+.charges-table input.amt{text-align:right;font-variant-numeric:tabular-nums}
+.charges-table input[readonly]{background:var(--surface-2);color:var(--sub)}
+.charges-footer-total{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--sub);font-weight:600}
+.charges-footer-total input{width:150px;height:29px;text-align:right;border:1px solid var(--border-strong);border-radius:3px;background:var(--surface-2);font-variant-numeric:tabular-nums;font-weight:700;padding:3px 8px}
+.success-modal{width:min(360px,calc(100vw - 32px));background:var(--surface);border-radius:12px;box-shadow:0 22px 70px rgba(16,38,58,.3);padding:28px 26px 24px;text-align:center;transform:translateY(10px) scale(.992);transition:transform .18s ease}
+.modal-backdrop.open .success-modal{transform:none}
+.success-icon{width:52px;height:52px;border-radius:50%;background:#e4f5e9;color:var(--green);display:grid;place-items:center;margin:0 auto 14px;font-size:26px;font-weight:700}
+.success-modal h3{margin:0 0 8px;font-size:16px;color:var(--text)}
+.success-modal p{margin:0 0 20px;font-size:13px;color:var(--sub);line-height:1.5}
+.success-note{font-size:12px;color:var(--green)}
+.success-warn{font-size:12px;color:#bb0000}
+.success-modal .btn{min-width:96px;justify-content:center;margin:0 auto}
+</style>
+<style>
+/* ---------------------------------------------------------------------------------------------
+   DTTK modal layout.
+
+   The shared stylesheet places the five modal sections by :nth-child into fixed grid areas sized
+   for the OTTK form. The DTTK form has a different shape (a 14-field Discounting block, a 7-field
+   Confirmation block), so every rule here is keyed on .dttk-grid and the .sec-* class of each
+   section instead: higher specificity than the shared rules, so the inherited media queries can no
+   longer reshuffle the areas out from under it.
+--------------------------------------------------------------------------------------------- */
+.modal-content-grid.dttk-grid{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  grid-template-rows:auto;
+  grid-template-areas:"basic basic" "trade trade" "discounting discounting" "confirmation additional";
+  gap:14px 16px;padding:14px 18px 16px;align-content:start;
+}
+.modal-content-grid.dttk-grid .sec-basic{grid-area:basic}
+.modal-content-grid.dttk-grid .sec-trade{grid-area:trade}
+.modal-content-grid.dttk-grid .sec-confirmation{grid-area:confirmation}
+.modal-content-grid.dttk-grid .sec-discounting{grid-area:discounting}
+.modal-content-grid.dttk-grid .sec-additional{grid-area:additional}
+/* Type 1 "02 Discounting Only" hides Confirmation Bank (applyType1Visibility() toggles this
+   class) - without this, its grid cell just sits empty next to Additional Information instead of
+   being reclaimed, so Additional Information is widened to the full row in its place. */
+.modal-content-grid.dttk-grid.no-confirmation{
+  grid-template-areas:"basic basic" "trade trade" "discounting discounting" "additional additional";
+}
+/* Read-only OTTK view modal reuses the same basic/trade/discounting/confirmation/additional
+   scaffold (Basic and Trade full width, then two sections side by side) - just a different set of
+   section classes mapped onto the same five area names, so no second template is needed. */
+.modal-content-grid.dttk-grid .sec-otxn{grid-area:basic}
+.modal-content-grid.dttk-grid .sec-otrade{grid-area:trade}
+.modal-content-grid.dttk-grid .sec-odeposit{grid-area:discounting}
+.modal-content-grid.dttk-grid .sec-ocommercial{grid-area:confirmation}
+.modal-content-grid.dttk-grid .sec-ocontact{grid-area:additional}
+
+.modal-content-grid.dttk-grid .section{
+  border:1px solid #dbe3e9;border-radius:8px;background:#fff;padding:10px 14px 13px;
+  align-self:stretch;box-shadow:none;overflow:visible;
+}
+.modal-content-grid.dttk-grid .sec-confirmation{border-color:#cfe2f7;background:#f6fbff}
+.modal-content-grid.dttk-grid .sec-discounting,
+.modal-content-grid.dttk-grid .sec-additional{border-color:#cfead8;background:#f6fdf9}
+.modal-content-grid.dttk-grid .section-title{
+  height:auto;padding:0 0 7px;margin:0;border:0;border-bottom:1px solid #cbd3da;background:none;
+  color:#6a727a;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  display:flex;align-items:center;
+}
+.modal-content-grid.dttk-grid .sec-confirmation .section-title{color:#1265b4;border-bottom-color:#c6d9ed}
+.modal-content-grid.dttk-grid .sec-discounting .section-title,
+.modal-content-grid.dttk-grid .sec-additional .section-title{color:#237b3b;border-bottom-color:#c5e0cd}
+.modal-content-grid.dttk-grid .section-title::before{
+  content:"";width:4px;height:4px;border-radius:50%;background:currentColor;margin-right:7px;flex:none;
+}
+
+/* One rhythm for every section: columns fill the section's own width, and every control in a row
+   sits on the same baseline whether it is a plain input, a select or a compound. */
+.modal-content-grid.dttk-grid .fields{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));
+  gap:14px 18px;padding:12px 0 0;align-items:end;
+}
+.modal-content-grid.dttk-grid .field{
+  display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;
+  gap:5px;margin:0;min-width:0;
+}
+.modal-content-grid.dttk-grid .field label{
+  font-size:11px;font-weight:600;line-height:1.3;color:#5f6f7f;letter-spacing:0;text-transform:none;
+}
+.modal-content-grid.dttk-grid .field input,
+.modal-content-grid.dttk-grid .field select{
+  height:30px;width:100%;min-width:0;border:0;border-bottom:1px solid #dfe5ea;border-radius:0;
+  padding:4px 2px;background:transparent;font-size:12.5px;font-weight:600;color:#20364b;box-shadow:none;
+}
+.modal-content-grid.dttk-grid .field input:hover,
+.modal-content-grid.dttk-grid .field select:hover{border-bottom-color:#8fb9dd}
+.modal-content-grid.dttk-grid .field input:focus,
+.modal-content-grid.dttk-grid .field select:focus{border-bottom-color:var(--blue);box-shadow:0 1px 0 var(--blue)}
+.modal-content-grid.dttk-grid .field input[readonly]{color:#60758a;font-weight:500}
+.modal-content-grid.dttk-grid .field input:disabled{color:#33475a;font-weight:600;-webkit-text-fill-color:#33475a;opacity:1;cursor:default;background:transparent}
+
+.modal-content-grid.dttk-grid .compound{display:flex;align-items:flex-end;gap:7px;min-width:0}
+.modal-content-grid.dttk-grid .compound>input{flex:1 1 auto;min-width:0}
+.modal-content-grid.dttk-grid .compound>.suffix{
+  flex:0 0 62px;width:62px;height:30px;padding:6px 2px;border:0;border-bottom:1px solid #dfe5ea;
+  border-radius:0;background:transparent;font-size:11px;font-weight:700;color:#5f6f7f;
+}
+.modal-content-grid.dttk-grid .compound>select.suffix{font-weight:700}
+.modal-content-grid.dttk-grid .compound>.code{flex:0 0 58px;width:58px}
+.modal-content-grid.dttk-grid .compound .btn.icon-only{
+  flex:0 0 30px;width:30px;height:30px;padding:0;border-radius:4px;
+  border:1px solid var(--border-strong);background:#fff;color:var(--sub);
+}
+.modal-content-grid.dttk-grid .compound .btn.icon-only:hover{background:var(--blue-soft);border-color:#a7cff5;color:var(--blue)}
+.modal-content-grid.dttk-grid .compound .btn.icon-only svg{width:14px;height:14px}
+
+.modal-content-grid.dttk-grid .num-input,
+.modal-content-grid.dttk-grid .fs-amount-input{text-align:right;font-variant-numeric:tabular-nums}
+.modal-content-grid.dttk-grid #otherCharges[readonly]{background:transparent;color:var(--sub);font-weight:600}
+.modal-content-grid.dttk-grid .field[hidden]{display:none}
+
+/* Discounting Bank / Confirmation Bank carry the counterparty name and are the field the human
+   actually reads most often in this section - given two grid tracks instead of one so the bank
+   name isn't clipped behind a narrow select. */
+.modal-content-grid.dttk-grid .field.wide2{grid-column:span 2}
+
+/* Expected LC Date and Expected LC Tenor share one grid track as a compact pair instead of each
+   claiming a full-width column - the date shrinks to its natural width and the tenor stays a short
+   number+suffix beside it, exactly like the OTTK console's own field. */
+.modal-content-grid.dttk-grid .field.field-duo{flex-direction:row;align-items:flex-end;gap:14px}
+.modal-content-grid.dttk-grid .field-duo .duo-item{display:flex;flex-direction:column;gap:5px;flex:1 1 auto;min-width:0}
+.modal-content-grid.dttk-grid .field-duo .duo-item.duo-narrow{flex:0 0 auto}
+.modal-content-grid.dttk-grid .field-duo input[type="date"]{max-width:152px}
+.modal-content-grid.dttk-grid .field-duo .duo-narrow .compound>input.short{flex:0 0 48px;width:48px}
+
+@media(max-width:1080px){
+  .modal-content-grid.dttk-grid{
+    grid-template-columns:minmax(0,1fr);
+    grid-template-areas:"basic" "trade" "discounting" "confirmation" "additional";
+  }
+}
+.charges-note{font-size:11px;color:var(--muted);margin-right:auto}
+html.display-ticket,body.display-ticket{background:transparent}
+body.display-ticket .topbar,body.display-ticket .main,
+body.display-ticket #saveDttk,body.display-ticket #clearModal,
+body.display-ticket #openCharges,body.display-ticket #openConfCharges{display:none!important}
+body.display-ticket .dttk-grid select:disabled{opacity:1;color:#33475a;-webkit-text-fill-color:#33475a}
+</style>
+<style>
+/* Fourth Signal logo in the topbar -- the same asset the SLC hub (8771) serves,
+   so every console in web/ carries one identical mark. This is an <img>, and
+   img.mark / img.ds-mark outranks the plain .mark / .ds-mark class rule that
+   painted the old blue gradient square, so the gradient, shadow and radius are
+   switched off here rather than deleted out of the rule they came from. */
+img.mark, img.ds-mark {
+  width: 32px; height: 32px; flex: none;
+  background: none; box-shadow: none; border-radius: 0;
+  object-fit: contain;
+}
+</style>
+</head>
+<body class="">
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="title-wrap"><img class="mark" alt="Fourth Signal" src="https://raw.githubusercontent.com/ryannayak/fs-assets/e82f35a83e28689167b22b4300d4994a249acee0/fs-short-logo.png"/><div class="title">Distribution Ticket <small>DTTK</small></div></div>
+    <div class="actions"><button class="btn primary create-btn" id="createDttk" title="Create a new DTTK"><svg viewBox="0 0 24 24"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5z"></path></svg><span class="label">Create DTTK</span></button><span class="connection" id="connIndicator" title="System connected"></span><button class="btn" onclick="window.print()" title="Release &amp; Print"><svg viewBox="0 0 24 24"><path d="M19 8H5a3 3 0 0 0-3 3v4h4v4h12v-4h4v-4a3 3 0 0 0-3-3zm-3 9H8v-5h8v5zm1-13H7v3h10V4z"></path></svg><span class="label">Release &amp; Print</span></button><button class="btn" id="refresh" title="Refresh"><svg viewBox="0 0 24 24"><path d="M17.65 6.35A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.76-4.24L13 11h8V3l-3.35 3.35z"></path></svg><span class="label">Refresh</span></button><button class="btn" id="copy" title="Copy DTTK"><svg viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"></path></svg><span class="label">Copy DTTK</span></button></div>
+  </header>
+  <div class="modal-backdrop" id="dttkModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <section class="ottk-modal">
+    <div class="modal-head"><div class="modal-heading"><div class="modal-heading-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5z"></path></svg></div><div><h2 id="modalTitle">Create Distribution Ticket</h2><p id="modalSubtitle">Distribution · New &nbsp;|&nbsp; USD &nbsp;|&nbsp; Draft</p></div></div><div class="modal-head-right"><div class="modal-head-created" id="modalHeadCreated" hidden><span class="modal-head-created-label">Created By</span><b id="createdHeader"></b></div><button class="modal-close" id="closeModal" aria-label="Close modal">×</button></div></div>
+    <div class="modal-content-grid dttk-grid">
+    <section class="section sec-basic"><div class="section-title">Transaction Details</div><div class="fields">
+      <div class="field"><label for="type1">DTTK Type 1</label><select id="type1"><option value="">Select</option><option value="01">01 Discounting &amp; Confirmation</option><option value="02">02 Discounting Only</option><option value="03">03 Confirmation Only</option></select></div>
+      <div class="field"><label for="type2">DTTK Type 2</label><select id="type2"><option value="01">01 New</option><option value="02">02 With Ref OTTK</option></select></div>
+      <div class="field" id="otkNoField" hidden><label for="otkNo">Related OTTK</label><select id="otkNo"><option value="">Select OTTK</option></select></div>
+      <div class="field"><label for="structure">Structure</label><select id="structure"><option value="">Select structure</option><option value="DSX">DSX — Deposit Set Off - Cross Border</option><option value="LCP">LCP — LC Prepayment</option><option value="CC DSX">CC DSX — Cross Currency DSX</option><option value="CC LCP">CC LCP — Cross Currency LCP</option></select></div>
+      <div class="field"><label for="entityCode">Entity String</label><select id="entityCode"><option value="">Select entity</option></select></div>
+    </div></section>
+    <section class="section sec-trade"><div class="section-title">Trade Details</div><div class="fields">
+      <div class="field wide2"><label for="bank">Origination Bank</label><select id="bank"><option value="">Select bank</option></select></div>
+      <div class="field"><label>OTTK Trade Value</label><div class="compound"><input id="otkValue" class="fs-amount-input" placeholder="e.g. 1.5M" inputmode="decimal" title="Enter a number or use K, M, B, T (example: 1.5M)"><select id="otkValueCcy" class="suffix"><option>USD</option><option>EUR</option><option>GBP</option><option>INR</option><option>AED</option><option>SGD</option><option>AUD</option></select></div></div>
+      <div class="field"><label>DTTK Trade Value</label><div class="compound"><input id="tradeValue" class="fs-amount-input" placeholder="e.g. 1.5M" inputmode="decimal" title="Enter a number or use K, M, B, T (example: 1.5M)"><select id="tradeValueCcy" class="suffix"><option>USD</option><option>EUR</option><option>GBP</option><option>INR</option><option>AED</option><option>SGD</option><option>AUD</option></select></div></div>
+      <div class="field field-duo">
+        <div class="duo-item"><label for="lcdate">Expected LC Date</label><input id="lcdate" type="date"></div>
+        <div class="duo-item duo-narrow"><label for="tenor">Expected LC Tenor</label><div class="compound"><input id="tenor" class="short num-input" placeholder="0" inputmode="numeric" maxlength="5"><span class="suffix">days</span></div></div>
+      </div>
+      <div class="field field-duo">
+        <div class="duo-item"><label>LC Applicant</label><input id="lcApplicant" maxlength="10"></div>
+        <div class="duo-item"><label>LC Beneficiary</label><input id="lcBeneficiary" maxlength="10"></div>
+      </div>
+      <div class="field"><label>Company Code</label><div class="compound"><input id="coCode" class="code" maxlength="4"><input id="coCodeName" placeholder="(auto)" readonly></div></div>
+      <div class="field"><label>Business Area</label><div class="compound"><input id="businessAreaCode" class="code" maxlength="4" placeholder="(auto)" readonly><input id="businessAreaName" placeholder="(auto)" readonly></div></div>
+      <div class="field"><label for="rma">RMA With Orig. Bank</label><select id="rma"><option value="">Select</option><option value="Y">Y Yes</option><option value="N">N No</option></select></div>
+    </div></section>
+    <section class="section sec-discounting"><div class="section-title">Discounting Loan Details</div><div class="fields">
+      <div class="field wide2"><label for="disBank">Discounting Bank</label><select id="disBank"><option value="">Select bank</option></select></div>
+      <div class="field"><label for="disVal">Disc. Calc Method</label><select id="disVal"><option value="">Select</option><option value="DTY">DTY — Discounted Value</option><option value="STR">STR — Full Value</option></select></div>
+      <div class="field"><label>Discounting Loan Amt</label><div class="compound"><input id="disAmt" class="fs-amount-input" placeholder="e.g. 700K" inputmode="decimal"><select id="disCurr" class="suffix"><option>USD</option><option>EUR</option><option>GBP</option><option>INR</option><option>AED</option><option>SGD</option><option>AUD</option></select></div></div>
+      <div class="field"><label for="interestCategory">Discounting Rate</label><select id="interestCategory"><option value="01">01 Fixed</option><option value="02">02 Floating</option></select></div>
+      <div class="field" id="interestRateField"><label>Interest Rate</label><input id="interestRate" class="num-input" inputmode="decimal" placeholder="0.00"></div>
+      <div class="field" id="refIntRateField" hidden><label>Ref Int Rate</label><select id="refIntRate"><option value="">Select</option></select></div>
+      <div class="field" id="spreadRateField" hidden><label>Spread Rate</label><input id="spreadRate" class="num-input" inputmode="decimal" placeholder="0.00"></div>
+      <div class="field"><label for="interestFrequency">Interest Frequency</label><select id="interestFrequency"><option value="">Select</option><option value="01">01 Upfront</option><option value="02">02 Monthly</option><option value="03">03 Quarterly</option><option value="04">04 Half-yearly</option><option value="05">05 Rear-end</option><option value="06">06 NA</option></select></div>
+      <div class="field"><label>Negotiation Fee</label><input id="negFee" class="fs-amount-input" placeholder="0.00" inputmode="decimal"></div>
+      <div class="field"><label>Other Charges</label><div class="compound"><input id="otherCharges" class="num-input" placeholder="0.00" readonly title="Grand total from the Charges breakdown"><button type="button" class="btn icon-only" id="openCharges" title="Other Charges breakdown"><svg viewBox="0 0 24 24"><path d="M4 4h16v2H4V4zm0 7h16v2H4v-2zm0 7h16v2H4v-2z"></path></svg></button></div></div>
+      <div class="field"><label for="dTrader">Discounting Trader</label><select id="dTrader"><option value="">Select trader</option></select></div>
+      <div class="field"><label>Region</label><input id="region" maxlength="10"></div>
+      <div class="field"><label>Discounting / Flow Remark</label><input id="remarks" maxlength="255"></div>
+    </div></section>
+    <section class="section sec-confirmation"><div class="section-title">Confirmation Bank</div><div class="fields">
+      <div class="field wide2"><label for="cbank">Confirmation Bank</label><select id="cbank"><option value="">Select bank</option></select></div>
+      <div class="field"><label for="cfeeFrom">Conf. Fee From</label><select id="cfeeFrom"><option value="">Select</option><option value="01">01 Issuance Date</option><option value="02">02 Confirmation Date</option></select></div>
+      <div class="field"><label for="cfeeTo">Conf. Fee Till</label><select id="cfeeTo"><option value="">Select</option><option value="01">01 LC Maturity Date</option><option value="02">02 Document Presentation Date</option></select></div>
+      <div class="field"><label for="cTrader">Confirmation Trader</label><select id="cTrader"><option value="">Select trader</option></select></div>
+      <div class="field"><label>Confirmation Fee</label><div class="compound"><input id="confirmationFee" class="num-input" placeholder="0.00" readonly title="Grand total from the Confirmation Fee breakdown"><button type="button" class="btn icon-only" id="openConfCharges" title="Confirmation Fee breakdown"><svg viewBox="0 0 24 24"><path d="M4 4h16v2H4V4zm0 7h16v2H4v-2zm0 7h16v2H4v-2z"></path></svg></button></div></div>
+      <div class="field"><label>Confirmation Remark</label><input id="cremark" maxlength="255"></div>
+    </div></section>
+    <section class="section sec-additional"><div class="section-title">Additional Information</div><div class="fields">
+      <div class="field"><label>Bank Contact</label><input id="bankContact" maxlength="255"></div>
+      <div class="field"><label>Bank Contact Details</label><input id="bankContactDetails" maxlength="255"></div>
+      <div class="field"><label>Commitment End Date</label><input id="commitmentEndDate" type="date"></div>
+      <div class="field"><label>Commitment Fee</label><input id="commitmentFee" class="fs-amount-input" placeholder="0.00" inputmode="decimal"></div>
+      <div class="field"><label>Reservation Start Date</label><input id="reservationStartDate" type="date"></div>
+      <div class="field"><label>LC Issuance Latest Date</label><input id="lcIssuanceDate" type="date"></div>
+      <div class="field"><label>Doc Pres. Latest Date</label><input id="docPresDate" type="date"></div>
+      <div class="field"><label>Repay. of Prev LC Date</label><input id="repayPrevLcDate" type="date"></div>
+    </div></section>
+    </div>
+    <div class="modal-footer"><span class="modal-note"><b>*</b> Company Code is required before creation.</span><div class="modal-actions"><button class="btn" id="clearModal">Clear</button><button class="btn" id="cancelModal">Cancel</button><button class="btn primary" id="saveDttk">Create DTTK</button></div></div>
+  </section>
+  </div>
+  <div class="modal-backdrop" id="chargesModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="chargesModalTitle">
+  <section class="charges-modal">
+    <div class="modal-head"><div class="modal-heading"><div><h2 id="chargesModalTitle">Charges</h2><p>Other Charges breakdown for this DTTK</p></div></div><button class="modal-close" id="closeCharges" aria-label="Close Charges">×</button></div>
+    <div class="charges-body">
+      <div class="charges-table-wrap"><table class="charges-table"><thead><tr>
+        <th style="width:190px">Fee Type</th><th style="width:110px">Fee Category</th><th style="width:130px">Code for Collection</th><th style="width:120px">Base Amount</th><th style="width:80px">Int Rate</th><th style="width:70px">Period</th><th style="width:110px">Amount</th><th style="width:110px">Final Amount</th>
+      </tr></thead><tbody id="chargesTbody"></tbody></table></div>
+    </div>
+    <div class="modal-footer"><div class="charges-footer-total">Grand total <input id="chargesGrandTotal" readonly value="0.00"></div><div class="modal-actions"><span class="charges-note">Total is saved to the ticket; the service stores no DTTK charge lines.</span><button class="btn" id="cancelCharges">Cancel</button><button class="btn primary" id="applyCharges">Apply</button></div></div>
+  </section>
+  </div>
+  <div class="modal-backdrop" id="successModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="successModalTitle">
+  <section class="success-modal">
+    <div class="success-icon" aria-hidden="true">✓</div>
+    <h3 id="successModalTitle">DTTK Created</h3>
+    <p id="successModalMsg"></p>
+    <button class="btn primary" id="successModalOk">OK</button>
+  </section>
+  </div>
+  <div class="modal-backdrop" id="ottkViewModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="ottkViewModalTitle">
+  <section class="ottk-modal">
+    <div class="modal-head"><div class="modal-heading"><div class="modal-heading-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5z"></path></svg></div><div><h2 id="ottkViewModalTitle">View Origination Ticket</h2><p id="ottkViewModalSubtitle">Origination · Read-only</p></div></div><div class="modal-head-right"><div class="modal-head-created" id="ottkViewCreatedWrap" hidden><span class="modal-head-created-label">Created By</span><b id="ottkViewCreated"></b></div><button class="modal-close" id="closeOttkView" aria-label="Close modal">×</button></div></div>
+    <div class="modal-content-grid dttk-grid">
+    <section class="section sec-otxn"><div class="section-title">Transaction Details</div><div class="fields">
+      <div class="field"><label>OTTK Type</label><input id="ovType" disabled></div>
+      <div class="field"><label>Structure</label><input id="ovStructure" disabled></div>
+      <div class="field"><label>Entity String</label><input id="ovEntity" disabled></div>
+      <div class="field"><label>OT Trader</label><input id="ovTrader" disabled></div>
+      <div class="field"><label>Status</label><input id="ovStatus" disabled></div>
+    </div></section>
+    <section class="section sec-otrade"><div class="section-title">Trade Details</div><div class="fields">
+      <div class="field"><label>LC Issuing Bank</label><input id="ovBank" disabled></div>
+      <div class="field"><label>OTTK Trade Value</label><input id="ovTradeValue" class="num-input" disabled></div>
+      <div class="field"><label>Expected LC Date</label><input id="ovLcDate" disabled></div>
+      <div class="field"><label>Expected LC Tenor</label><input id="ovTenor" disabled></div>
+      <div class="field"><label>Payment Terms</label><input id="ovPayTerms" disabled></div>
+      <div class="field"><label>Other Charges</label><input id="ovOtherCharges" class="num-input" disabled></div>
+      <div class="field"><label>BL Type</label><input id="ovBlType" disabled></div>
+      <div class="field"><label>LC Applicant</label><input id="ovLcApplicant" disabled></div>
+      <div class="field"><label>LC Beneficiary</label><input id="ovLcBeneficiary" disabled></div>
+      <div class="field"><label>Company Code</label><input id="ovCoCode" disabled></div>
+      <div class="field"><label>Business Area</label><input id="ovBusinessArea" disabled></div>
+    </div></section>
+    <section class="section sec-odeposit"><div class="section-title">Deposit / Prepayment</div><div class="fields">
+      <div class="field"><label>Deposit Value</label><input id="ovDepValue" disabled></div>
+      <div class="field"><label>Deposit Amount</label><input id="ovDepAmount" class="num-input" disabled></div>
+      <div class="field"><label>Expected Date</label><input id="ovDepDate" disabled></div>
+      <div class="field"><label>Interest Category</label><input id="ovIntCat" disabled></div>
+      <div class="field"><label>Interest Rate</label><input id="ovIntRate" class="num-input" disabled></div>
+      <div class="field"><label>Ref Int Rate</label><input id="ovRefInt" disabled></div>
+      <div class="field"><label>Spread Rate</label><input id="ovSpreadRate" class="num-input" disabled></div>
+      <div class="field"><label>1st Interest Date</label><input id="ovFirstIntDate" disabled></div>
+      <div class="field"><label>Reset Frequency</label><input id="ovResetFrq" disabled></div>
+      <div class="field"><label>Interest Frequency</label><input id="ovIntFrq" disabled></div>
+    </div></section>
+    <section class="section sec-ocommercial"><div class="section-title">Commercial Summary</div><div class="fields">
+      <div class="field"><label>Expected P&amp;L %</label><input id="ovPlPercent" class="num-input" disabled></div>
+      <div class="field"><label>Expected P&amp;L Amt</label><input id="ovPlAmt" class="num-input" disabled></div>
+      <div class="field"><label>Remarks</label><input id="ovRemarks" disabled></div>
+    </div></section>
+    <section class="section sec-ocontact"><div class="section-title">Contact &amp; Commitment</div><div class="fields">
+      <div class="field"><label>Bank Contact</label><input id="ovBankContact" disabled></div>
+      <div class="field"><label>Bank Contact Details</label><input id="ovBankContactDet" disabled></div>
+      <div class="field"><label>Commitment End Date</label><input id="ovCommEndDate" disabled></div>
+    </div></section>
+    </div>
+    <div class="modal-footer"><span class="modal-note">Read-only view — use the Related OTTK field in Create DTTK to base a new ticket on this one.</span><div class="modal-actions"><button class="btn primary" id="closeOttkViewFooter">Close</button></div></div>
+  </section>
+  </div>
+  <main class="main">
+    <section class="panel"><div class="panel-head"><div><span class="panel-title">Open Distribution Tickets</span> <span class="panel-meta" id="dttkCount">0 records</span></div><div class="panel-tools"><input class="search" id="dttkSearch" placeholder="Search DTTK…" aria-label="Search distribution tickets"><button class="tool filter-btn" data-table="dttkTable" data-filters="dttkFilters" title="Filter"><svg viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4 2v-8L3 5z"></path></svg></button><button class="tool export-btn" data-table="dttkTable" title="Export CSV"><svg viewBox="0 0 24 24"><path d="M12 2v12l4-4 1.4 1.4L12 17l-5.4-5.6L8 10l3 4V2h1zm-8 17h16v3H4v-3z"></path></svg></button></div></div><div class="advanced-filters" id="dttkFilters"><span class="filter-label">Filter by</span><select id="dttkStatus" aria-label="DTTK status"><option value="">All statuses</option></select><select id="dttkType1" aria-label="DTTK type 1"><option value="">All Type 1</option><option value="01">01 Discounting &amp; Confirmation</option><option value="02">02 Discounting Only</option><option value="03">03 Confirmation Only</option></select><select id="dttkType2" aria-label="DTTK type 2"><option value="">All Type 2</option><option value="01">01 New</option><option value="02">02 With Ref OTTK</option></select><select id="dttkEntity" aria-label="Entity"><option value="">All entities</option></select><select id="dttkStructure" aria-label="Structure"><option value="">All structures</option><option value="DSX">DSX — Deposit Set Off - Cross Border</option><option value="LCP">LCP — LC Prepayment</option><option value="CC DSX">CC DSX — Cross Currency DSX</option><option value="CC LCP">CC LCP — Cross Currency LCP</option></select><select id="dttkBank" aria-label="Discounting bank"><option value="">All discounting banks</option></select><select id="dttkApplicant" aria-label="LC applicant"><option value="">All applicants</option></select><select id="dttkCoCode" aria-label="Company code"><option value="">All company codes</option></select><select id="dttkBeneficiary" aria-label="LC beneficiary"><option value="">All beneficiaries</option></select><button class="filter-reset-btn" data-reset="dttk">Clear filters</button></div><div class="table-wrap"><table id="dttkTable" style="min-width:1620px"><thead><tr><th>DTTK No</th><th>Type 1</th><th>Type 2</th><th>Related OTTK</th><th>Structure</th><th>Entity String</th><th>DTTK Value</th><th>Crcy</th><th>Discounting Bank</th><th>Expected LC Date</th><th>Tenor</th><th>LC Applicant</th><th>LC Beneficiary</th><th>CoCode</th><th>Interest</th><th>Status</th></tr></thead><tbody></tbody></table></div><div class="panel-foot"><span id="dttkShowing">Showing 0 of 0</span><div class="pager"><button disabled="">‹</button><button>1</button><button disabled="">›</button></div></div></section>
+    <section class="panel"><div class="panel-head"><div><span class="panel-title">Open Origination Tickets</span> <span class="panel-meta" id="ottkCount">0 records</span></div><div class="panel-tools"><input class="search" id="ottkSearch" placeholder="Search OTTK…" aria-label="Search origination tickets"><button class="tool filter-btn" data-table="ottkTable" data-filters="ottkFilters" title="Filter"><svg viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4 2v-8L3 5z"></path></svg></button><button class="tool export-btn" data-table="ottkTable" title="Export CSV"><svg viewBox="0 0 24 24"><path d="M12 2v12l4-4 1.4 1.4L12 17l-5.4-5.6L8 10l3 4V2h1zm-8 17h16v3H4v-3z"></path></svg></button></div></div><div class="advanced-filters" id="ottkFilters"><span class="filter-label">Filter by</span><select id="ottkType" aria-label="OTTK type"><option value="">All types</option><option value="01">01 New</option><option value="02">02 With Ref DTTK</option></select><select id="ottkCurrency" aria-label="OTTK currency"><option value="">All currencies</option></select><select id="ottkEntity" aria-label="Entity"><option value="">All entities</option></select><select id="ottkStructure" aria-label="Structure"><option value="">All structures</option><option value="DSX">DSX — Deposit Set Off - Cross Border</option><option value="LCP">LCP — LC Prepayment</option><option value="CC DSX">CC DSX — Cross Currency DSX</option><option value="CC LCP">CC LCP — Cross Currency LCP</option></select><select id="ottkBank" aria-label="LC issuing bank"><option value="">All issuing banks</option></select><select id="ottkApplicant" aria-label="LC applicant"><option value="">All applicants</option></select><select id="ottkCoCode" aria-label="Company code"><option value="">All company codes</option></select><select id="ottkBeneficiary" aria-label="LC beneficiary"><option value="">All beneficiaries</option></select><button class="filter-reset-btn" data-reset="ottk">Clear filters</button></div><div class="table-wrap"><table id="ottkTable" style="min-width:1540px"><thead><tr><th>OTTK No</th><th>Type</th><th>Structure</th><th>Entity ID</th><th>Entity String</th><th>LC Issuing Bank</th><th>Trade Value</th><th>Crcy</th><th>Expected LC Date</th><th>Tenor</th><th>LC Applicant</th><th>LC Beneficiary</th><th>CoCode</th><th>Deposit Amt</th><th>Interest</th><th>Status</th></tr></thead><tbody></tbody></table></div><div class="panel-foot"><span id="ottkShowing">Showing 0 of 0</span><div class="pager"><button disabled="">‹</button><button>1</button><button disabled="">›</button></div></div></section>
+  </main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const API_BASE={ottk:'/api/ottk',dttk:'/api/dttk'};
+const displayDttkKey=new URLSearchParams(location.search).get('displayDttk');
+// Same shared-page trick as displayDttk, for callers (e.g. web/deal-id-console) that only need a
+// read-only OTTK popup - reuses the existing in-page ottkViewModal, no separate lookups required
+// since it only shows plain disabled fields, not <select> dropdowns.
+const displayOttkKey=new URLSearchParams(location.search).get('displayOttk');
+if(displayDttkKey!==null||displayOttkKey!==null){document.body.classList.add('display-ticket');document.documentElement.classList.add('display-ticket');}
+let dttkRows=[],ottkRows=[],dttkBankOptions=[],ottkBankOptions=[],entityOptions=[],coCodeOptions=[],refIntOptions=[],traderOptions=[];
+// Two fee-type lists, two grids, one stored table: CFeeType (zcfee_flag) feeds the Confirmation
+// Fee, DFeeType (zdttk, confirmation types excluded) feeds Other Charges, and both persist to
+// SlcDttkFee keyed by (ZdttkNo, ZfeeType) - disjoint lists, so a line belongs to exactly one total.
+let feeTypes={confirmation:[],other:[]};
+let chargeState={confirmation:[],other:[]},chargesContext='other',chargesSnapshot=[],chargesLoadedForKey=null,chargesPending=null;
+
+async function apiRequest(path,opts){
+  if((displayDttkKey!==null||displayOttkKey!==null)&&String(opts?.method||'GET').toUpperCase()!=='GET')throw new Error('This ticket is display only.');
+  let res;
+  try{ res=await fetch(path,opts); }
+  catch(netErr){ setConnState(false); throw new Error('Cannot reach the local proxy — is proxy.py running?'); }
+  // 502 is proxy.py's own signal that it reached out to SAP and failed (network/TLS/timeout) - see
+  // its proxy_request() "except Exception" branch - never a status SAP itself returns. Any other
+  // status, success or failure, means SAP answered, so only 502 (or the network throw above)
+  // means "not linked"; a 400 on a bad save must not paint the whole console as disconnected.
+  setConnState(res.status!==502);
+  const text=await res.text();
+  let data=null;
+  if(text){ try{ data=JSON.parse(text); }catch(e){ data=null; } }
+  if(!res.ok){
+    const msg=(data&&data.error&&data.error.message&&(data.error.message.value||data.error.message))
+      ||(data&&data.SAP__Messages&&data.SAP__Messages[0]&&data.SAP__Messages[0].message)
+      ||res.statusText||('HTTP '+res.status);
+    throw new Error(msg);
+  }
+  return {data,res};
+}
+async function apiFetch(path,opts){ return (await apiRequest(path,opts)).data; }
+function looseMatch(filterVal,rowVal){
+  if(!filterVal)return true;
+  if(rowVal===undefined||rowVal===null||rowVal==='')return false;
+  const f=String(filterVal).toLowerCase(),r=String(rowVal).toLowerCase();
+  return r.includes(f)||f.includes(r);
+}
+function fmtNum(v){ if(v===undefined||v===null||v==='')return ''; const n=Number(v); if(!isFinite(n))return ''; return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtDate(v){ if(!v)return ''; const m=String(v).match(/^(\d{4})-(\d{2})-(\d{2})/); return m?`${m[3]}.${m[2]}.${m[1]}`:v; }
+function codeText(code,text){ if(!code)return ''; return text?`${esc(code)} ${esc(text)}`:esc(code); }
+function esc(v){ return v===undefined||v===null?'':String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function setConnState(ok){ const el=document.getElementById('connIndicator'); if(!el)return; el.classList.toggle('offline',!ok); el.title=ok?'System connected':'Cannot reach the SAP proxy'; }
+
+/* ---------- lookups ---------- */
+function fillBankSelect(sel,list,label){ if(!sel)return; const cur=sel.value; sel.innerHTML=`<option value="">${esc(label||'Select bank')}</option>`+list.map(b=>`<option value="${esc(b.Zbp)}">${esc(b.Zbp)} — ${esc(b.BpName)}</option>`).join(''); if(cur)sel.value=cur; }
+function fillEntitySelect(sel,list){ if(!sel)return; const cur=sel.value; sel.innerHTML='<option value="">Select entity</option>'+list.map(e=>`<option value="${esc(e.ZentId)}">${esc(e.ZentId)} — ${esc(e.ZentDesc)}</option>`).join(''); if(cur)sel.value=cur; }
+function fillRefIntSelect(sel,list){ if(!sel)return; const cur=sel.value; sel.innerHTML='<option value="">Select</option>'+list.map(r=>`<option value="${esc(r.ZrefInt)}">${esc(r.ZrefInt)}${r.ZrefDesc?' — '+esc(r.ZrefDesc):''}</option>`).join(''); if(cur)sel.value=cur; }
+function fillTraderSelect(sel){ if(!sel)return; const cur=sel.value; sel.innerHTML='<option value="">Select trader</option>'+traderOptions.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join(''); if(cur)sel.value=cur; }
+function fillOttkSelect(sel){ if(!sel)return; const cur=sel.value; sel.innerHTML='<option value="">Select OTTK</option>'+ottkRows.map(r=>`<option value="${esc(r.ZottkNo)}">${esc(r.ZottkNo)}${r.ZentDesc?' — '+esc(r.ZentDesc):''}</option>`).join(''); if(cur)sel.value=cur; }
+
+// No trader master is exposed by either service, so both trader dropdowns are built from the trader
+// values that actually occur on the live tickets rather than from an invented code list.
+function collectTraders(){
+  const seen=new Set();
+  ottkRows.forEach(r=>{ if(r.Ztrader)seen.add(r.Ztrader); });
+  dttkRows.forEach(r=>{ if(r.ZdTrader)seen.add(r.ZdTrader); if(r.ZcTrader)seen.add(r.ZcTrader); });
+  traderOptions=[...seen].sort();
+}
+// Runs tasks a few at a time and reports results in Promise.allSettled shape.
+// Why the limit matters: a browser allows ~6 connections per origin and proxy.py speaks HTTP/1.0
+// (no keep-alive), so every in-flight request holds a socket for its whole duration. Firing all
+// seven lookups at once consumed the entire pool, which starved everything else on the page
+// whenever SAP was slow. Three at a time keeps most of the speed win with sockets to spare.
+async function runLimited(tasks,limit=3){
+  const results=new Array(tasks.length);
+  let next=0;
+  await Promise.all(Array.from({length:Math.min(limit,tasks.length)},async()=>{
+    while(next<tasks.length){
+      const i=next++;
+      try{ results[i]={status:'fulfilled',value:await tasks[i]()}; }
+      catch(reason){ results[i]={status:'rejected',reason}; }
+    }
+  }));
+  return results;
+}
+async function loadLookups(){
+  const [dttkBankRes,ottkBankRes,entityRes,coCodeRes,refIntRes,cFeeRes,dFeeRes]=await runLimited([
+    ()=>apiFetch(`${API_BASE.dttk}/Bank`),
+    ()=>apiFetch(`${API_BASE.ottk}/Bank`),
+    ()=>apiFetch(`${API_BASE.ottk}/EntityString`),
+    ()=>apiFetch(`${API_BASE.ottk}/CoCode`),
+    ()=>apiFetch(`${API_BASE.ottk}/RefInt`),
+    ()=>apiFetch(`${API_BASE.dttk}/CFeeType`),
+    ()=>apiFetch(`${API_BASE.dttk}/DFeeType`),
+  ]);
+  // Connection state is no longer set from this one call: apiRequest() now reports it for every
+  // request, so each of the 7 lookups above already reflects its own outcome.
+  dttkBankOptions=dttkBankRes.status==='fulfilled'?(dttkBankRes.value.value||[]):[];
+  ottkBankOptions=ottkBankRes.status==='fulfilled'?(ottkBankRes.value.value||[]):[];
+  entityOptions=entityRes.status==='fulfilled'?(entityRes.value.value||[]):[];
+  coCodeOptions=coCodeRes.status==='fulfilled'?(coCodeRes.value.value||[]):[];
+  refIntOptions=refIntRes.status==='fulfilled'?(refIntRes.value.value||[]):[];
+  feeTypes.confirmation=cFeeRes.status==='fulfilled'?(cFeeRes.value.value||[]):[];
+  feeTypes.other=dFeeRes.status==='fulfilled'?(dFeeRes.value.value||[]):[];
+  // Origination bank comes from the OTTK service because only that Bank set carries the business
+  // area; the confirmation and discounting banks come from the DTTK service's own list.
+  fillBankSelect(document.getElementById('bank'),ottkBankOptions);
+  fillBankSelect(document.getElementById('cbank'),dttkBankOptions);
+  fillBankSelect(document.getElementById('disBank'),dttkBankOptions);
+  fillEntitySelect(document.getElementById('entityCode'),entityOptions);
+  fillRefIntSelect(document.getElementById('refIntRate'),refIntOptions);
+  const dttkBank=document.getElementById('dttkBank');
+  if(dttkBank) dttkBank.innerHTML='<option value="">All discounting banks</option>'+dttkBankOptions.map(b=>`<option value="${esc(b.Zbp)}">${esc(b.Zbp)} — ${esc(b.BpName)}</option>`).join('');
+  const ottkBank=document.getElementById('ottkBank');
+  if(ottkBank) ottkBank.innerHTML='<option value="">All issuing banks</option>'+ottkBankOptions.map(b=>`<option value="${esc(b.Zbp)}">${esc(b.Zbp)} — ${esc(b.BpName)}</option>`).join('');
+  [['dttkEntity','All entities'],['ottkEntity','All entities']].forEach(([id,label])=>{
+    const sel=document.getElementById(id);
+    if(sel) sel.innerHTML=`<option value="">${label}</option>`+entityOptions.map(e=>`<option value="${esc(e.ZentId)}">${esc(e.ZentId)}</option>`).join('');
+  });
+}
+
+/* ---------- lists ---------- */
+function fillFilterSelect(sel,rows,field,allLabel,textField){
+  if(!sel)return;
+  const cur=sel.value;
+  const seen=new Map();
+  rows.forEach(r=>{
+    const v=r[field];
+    if(v===undefined||v===null||v==='')return;
+    if(!seen.has(v))seen.set(v,textField&&r[textField]?`${v} — ${r[textField]}`:String(v));
+  });
+  const opts=[...seen.entries()].sort((a,b)=>String(a[0]).localeCompare(String(b[0])));
+  sel.innerHTML=`<option value="">${esc(allLabel)}</option>`+opts.map(([v,t])=>`<option value="${esc(v)}">${esc(t)}</option>`).join('');
+  if(cur)sel.value=cur;
+}
+function populateDttkFilterOptions(){
+  fillFilterSelect(document.getElementById('dttkStatus'),dttkRows,'ZdttkSt','All statuses');
+  fillFilterSelect(document.getElementById('dttkApplicant'),dttkRows,'ZlcApp','All applicants');
+  fillFilterSelect(document.getElementById('dttkCoCode'),dttkRows,'Zbukrs','All company codes');
+  fillFilterSelect(document.getElementById('dttkBeneficiary'),dttkRows,'ZlcBen','All beneficiaries');
+}
+function populateOttkFilterOptions(){
+  fillFilterSelect(document.getElementById('ottkCurrency'),ottkRows,'ZottkCurr','All currencies');
+  fillFilterSelect(document.getElementById('ottkApplicant'),ottkRows,'ZlcApp','All applicants');
+  fillFilterSelect(document.getElementById('ottkCoCode'),ottkRows,'Zbukrs','All company codes');
+  fillFilterSelect(document.getElementById('ottkBeneficiary'),ottkRows,'ZlcBen','All beneficiaries');
+}
+// Hard filter, not a togglable one: only tickets still open for assignment belong here, so
+// anything past "05 - Partially Assigned" (06 Fully Assigned and up) never enters ottkRows/dttkRows
+// at all - same rule as web/deal-id-console (see its L-286/L-289). Blank status counts as eligible.
+// Does not affect the ?displayDttk=/?displayOttk= read-only popups: those fetch one specific
+// ticket by key directly, never through these filtered arrays.
+function isAssignableStatus(code){ const n=parseInt(code,10); return !isFinite(n)||n<=5; }
+async function loadDttk(){
+  try{ const d=await apiFetch(`${API_BASE.dttk}/SlcDttkDetail`); dttkRows=(d.value||[]).filter(r=>isAssignableStatus(r.ZdttkSt)); }
+  catch(e){ dttkRows=[]; notify('Failed to load DTTK: '+e.message); }
+  collectTraders();
+  fillTraderSelect(document.getElementById('dTrader'));
+  fillTraderSelect(document.getElementById('cTrader'));
+  populateDttkFilterOptions();
+  renderDttk();
+}
+async function loadOttk(){
+  try{ const d=await apiFetch(`${API_BASE.ottk}/SlcOttkDetail`); ottkRows=(d.value||[]).filter(r=>isAssignableStatus(r.ZottkSt)); }
+  catch(e){ ottkRows=[]; notify('Failed to load OTTK: '+e.message); }
+  collectTraders();
+  fillOttkSelect(document.getElementById('otkNo'));
+  populateOttkFilterOptions();
+  renderOttk();
+}
+
+function statusPill(txt){ txt=txt||'Draft'; const cls=/open/i.test(txt)?'open':/pend/i.test(txt)?'pending':'open'; return `<span class="status-pill ${cls}">${esc(txt)}</span>`; }
+function bankLabel(list,id){ if(!id)return ''; const rec=list.find(b=>String(b.Zbp)===String(id)); return rec?`${id} — ${rec.BpName}`:String(id); }
+
+function renderDttk(){
+  const q=document.getElementById('dttkSearch').value.toLowerCase();
+  const status=document.getElementById('dttkStatus').value;
+  const type1=document.getElementById('dttkType1').value;
+  const type2=document.getElementById('dttkType2').value;
+  const entity=document.getElementById('dttkEntity').value;
+  const structure=document.getElementById('dttkStructure').value;
+  const bank=document.getElementById('dttkBank').value;
+  const applicant=document.getElementById('dttkApplicant').value;
+  const coCode=document.getElementById('dttkCoCode').value;
+  const beneficiary=document.getElementById('dttkBeneficiary').value;
+  const hits=dttkRows.filter(r=>{
+    const hay=Object.values(r).join(' ').toLowerCase();
+    return hay.includes(q)
+      && looseMatch(status,r.ZdttkSt)
+      && (!type1||r.Ztype1===type1)
+      && (!type2||r.Ztype2===type2)
+      && looseMatch(entity,r.ZentId)
+      && looseMatch(structure,r.Zstr||r.ZstrText)
+      && (!bank||String(r.ZdisBp)===bank)
+      && looseMatch(applicant,r.ZlcApp)
+      && looseMatch(coCode,r.Zbukrs)
+      && looseMatch(beneficiary,r.ZlcBen);
+  });
+  const tbody=document.querySelector('#dttkTable tbody');
+  tbody.innerHTML=hits.map(r=>`<tr data-key="${esc(r.ZdttkNo)}">
+    <td class="link">${esc(r.ZdttkNo)}</td>
+    <td>${codeText(r.Ztype1,r.Ztype1Text)}</td>
+    <td>${codeText(r.Ztype2,r.Ztype2Text)}</td>
+    <td>${esc(r.ZottkNo)}</td>
+    <td>${codeText(r.Zstr,r.ZstrText)}</td>
+    <td>${esc(r.ZentDesc)}</td>
+    <td class="num">${fmtNum(r.ZdttkValue)}</td>
+    <td>${esc(r.ZdttkCurr)}</td>
+    <td>${r.ZdisBp?esc(r.ZdisBp)+(r.ZdisDesc?' — '+esc(r.ZdisDesc):''):''}</td>
+    <td>${fmtDate(r.Zdate)}</td>
+    <td class="num">${esc(r.Ztenor)}</td>
+    <td>${esc(r.ZlcApp)}</td>
+    <td>${esc(r.ZlcBen)}</td>
+    <td>${esc(r.Zbukrs)}</td>
+    <td>${r.ZintCat?esc(r.ZintCatText||r.ZintCat)+' '+fmtNum(r.ZintRate)+'%':''}</td>
+    <td>${statusPill(r.ZstatDesc||r.ZdttkSt)}</td>
+  </tr>`).join('');
+  document.getElementById('dttkCount').textContent=`${hits.length} records`;
+  document.getElementById('dttkShowing').textContent=`Showing ${hits.length} of ${dttkRows.length}`;
+  bindRows(tbody,'dttk');
+}
+
+function renderOttk(){
+  const q=document.getElementById('ottkSearch').value.toLowerCase();
+  const type=document.getElementById('ottkType').value;
+  const currency=document.getElementById('ottkCurrency').value;
+  const entity=document.getElementById('ottkEntity').value;
+  const structure=document.getElementById('ottkStructure').value;
+  const bank=document.getElementById('ottkBank').value;
+  const applicant=document.getElementById('ottkApplicant').value;
+  const coCode=document.getElementById('ottkCoCode').value;
+  const beneficiary=document.getElementById('ottkBeneficiary').value;
+  const hits=ottkRows.filter(r=>{
+    const hay=Object.values(r).join(' ').toLowerCase();
+    return hay.includes(q)
+      && (!type||r.Ztype===type)
+      && looseMatch(currency,r.ZottkCurr)
+      && looseMatch(entity,r.ZentId)
+      && looseMatch(structure,r.Zstr||r.ZstrText)
+      && (!bank||String(r.ZottkBank)===bank)
+      && looseMatch(applicant,r.ZlcApp)
+      && looseMatch(coCode,r.Zbukrs)
+      && looseMatch(beneficiary,r.ZlcBen);
+  });
+  const tbody=document.querySelector('#ottkTable tbody');
+  tbody.innerHTML=hits.map(r=>`<tr data-key="${esc(r.ZottkNo)}">
+    <td class="link">${esc(r.ZottkNo)}</td>
+    <td>${codeText(r.Ztype,r.ZtypeText)}</td>
+    <td>${codeText(r.Zstr,r.ZstrText)}</td>
+    <td>${esc(r.ZentId)}</td>
+    <td>${esc(r.ZentDesc)}</td>
+    <td>${r.ZottkBank?esc(r.ZottkBank)+' — '+esc(r.BpName):''}</td>
+    <td class="num">${fmtNum(r.ZottkValue)}</td>
+    <td>${esc(r.ZottkCurr)}</td>
+    <td>${fmtDate(r.Zdate)}</td>
+    <td class="num">${esc(r.Ztenor)}</td>
+    <td>${esc(r.ZlcApp)}</td>
+    <td>${esc(r.ZlcBen)}</td>
+    <td>${esc(r.Zbukrs)}</td>
+    <td class="num">${fmtNum(r.ZdepAmt)}</td>
+    <td>${r.ZintCat?esc(r.ZintCatText||r.ZintCat)+' '+fmtNum(r.ZintRate)+'%':''}</td>
+    <td>${statusPill(r.ZstatDesc||r.ZottkSt)}</td>
+  </tr>`).join('');
+  document.getElementById('ottkCount').textContent=`${hits.length} records`;
+  document.getElementById('ottkShowing').textContent=`Showing ${hits.length} of ${ottkRows.length}`;
+  bindRows(tbody,'ottk');
+}
+
+// This screen is DTTK-only: a DTTK number opens its editor, while an OTTK number starts a new DTTK
+// with that ticket's values copied down - the OTTK itself is never edited here.
+function bindRows(tbodyEl,kind){
+  tbodyEl.querySelectorAll('tr').forEach(tr=>{
+    tr.addEventListener('click',()=>{ tbodyEl.querySelectorAll('tr').forEach(r=>r.classList.remove('selected')); tr.classList.add('selected'); });
+    const linkCell=tr.querySelector('td.link');
+    if(!linkCell)return;
+    linkCell.style.cursor='pointer';
+    linkCell.addEventListener('click',e=>{
+      e.stopPropagation();
+      if(kind==='dttk'){
+        const row=dttkRows.find(r=>String(r.ZdttkNo)===tr.dataset.key);
+        if(!row){ notify('Could not find that record — try Refresh'); return; }
+        openDttkModal('edit',row);
+      }else{
+        const row=ottkRows.find(r=>String(r.ZottkNo)===tr.dataset.key);
+        if(!row){ notify('Could not find that record — try Refresh'); return; }
+        openOttkViewModal(row);
+      }
+    });
+  });
+}
+
+document.getElementById('dttkSearch').oninput=renderDttk;
+document.getElementById('ottkSearch').oninput=renderOttk;
+document.querySelectorAll('#dttkFilters select').forEach(select=>select.onchange=renderDttk);
+document.querySelectorAll('#ottkFilters select').forEach(select=>select.onchange=renderOttk);
+document.querySelectorAll('.filter-btn').forEach(btn=>btn.onclick=()=>{const filters=document.getElementById(btn.dataset.filters);const opening=!filters.classList.contains('open');filters.classList.toggle('open',opening);btn.classList.toggle('active',opening);if(opening)filters.querySelector('select').focus()});
+document.querySelector('[data-reset="dttk"]').onclick=()=>{document.getElementById('dttkSearch').value='';document.querySelectorAll('#dttkFilters select').forEach(s=>s.selectedIndex=0);renderDttk();notify('Distribution filters cleared')};
+document.querySelector('[data-reset="ottk"]').onclick=()=>{document.getElementById('ottkSearch').value='';document.querySelectorAll('#ottkFilters select').forEach(s=>s.selectedIndex=0);renderOttk();notify('Origination filters cleared')};
+
+function exportTable(id){
+  const table=document.getElementById(id);
+  const rows=[...table.querySelectorAll('tr')].filter(r=>!r.hidden);
+  const csv=rows.map(row=>[...row.children].map(cell=>'"'+cell.textContent.trim().replaceAll('"','""')+'"').join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=id+'-export.csv';a.click();URL.revokeObjectURL(a.href);notify('CSV export downloaded');
+}
+document.querySelectorAll('.export-btn').forEach(btn=>btn.onclick=()=>exportTable(btn.dataset.table));
+
+const toast=document.getElementById('toast');
+function notify(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>toast.classList.remove('show'),2400)}
+
+document.getElementById('refresh').onclick=e=>{
+  e.currentTarget.querySelector('svg').animate([{transform:'rotate(0)'},{transform:'rotate(360deg)'}],{duration:550});
+  Promise.all([loadDttk(),loadOttk(),loadLookups()]).then(()=>notify('Ticket lists refreshed'));
+};
+
+/* ---------- DTTK modal ---------- */
+const dttkModal=document.getElementById('dttkModal');
+function openModal(el){el.classList.add('open');el.setAttribute('aria-hidden','false');document.body.classList.add('modal-open')}
+function closeModalEl(el){el.classList.remove('open');el.setAttribute('aria-hidden','true');document.body.classList.remove('modal-open')}
+document.getElementById('closeModal').onclick=()=>closeModalEl(dttkModal);
+document.getElementById('cancelModal').onclick=()=>closeModalEl(dttkModal);
+dttkModal.onclick=e=>{if(e.target===dttkModal)closeModalEl(dttkModal)};
+
+/* ---------- OTTK view modal (read-only - the OTTK hotspot never opens an editor here) ---------- */
+const ottkViewModal=document.getElementById('ottkViewModal');
+function openOttkViewModal(row){
+  const v=(id,val)=>{document.getElementById(id).value=val==null||val===''?'—':val};
+  document.getElementById('ottkViewModalSubtitle').innerHTML=`Origination · Read-only &nbsp;|&nbsp; OTTK #${esc(row.ZottkNo)} &nbsp;|&nbsp; ${esc(row.ZottkCurr||'USD')}`;
+  const createdBy=row.ZcreatedBy||row.LocalCreatedBy||'';
+  document.getElementById('ottkViewCreated').textContent=createdBy;
+  document.getElementById('ottkViewCreatedWrap').hidden=!createdBy;
+  v('ovType',codeText(row.Ztype,row.ZtypeText));
+  v('ovStructure',codeText(row.Zstr,row.ZstrText));
+  v('ovEntity',codeText(row.ZentId,row.ZentDesc));
+  v('ovTrader',row.Ztrader);
+  v('ovStatus',row.ZstatDesc||row.ZottkSt);
+  v('ovBank',codeText(row.ZottkBank,row.BpName));
+  v('ovTradeValue',row.ZottkValue!=null?`${fmtNum(row.ZottkValue)} ${row.ZottkCurr||''}`.trim():'');
+  v('ovLcDate',fmtDate(row.Zdate));
+  v('ovTenor',row.Ztenor?`${row.Ztenor} days`:'');
+  v('ovPayTerms',codeText(row.ZpayTerms,row.ZpayTermsDesc));
+  v('ovOtherCharges',row.ZothFee?fmtNum(row.ZothFee):'');
+  v('ovBlType',row.Zbltype);
+  v('ovLcApplicant',row.ZlcApp);
+  v('ovLcBeneficiary',row.ZlcBen);
+  v('ovCoCode',codeText(row.Zbukrs,row.Butxt));
+  v('ovBusinessArea',codeText(row.Zrbusa,row.ZbaText));
+  v('ovDepValue',codeText(row.ZdepVal,row.ZdepValueText));
+  v('ovDepAmount',row.ZdepAmt?`${fmtNum(row.ZdepAmt)} ${row.ZdepCurr||''}`.trim():'');
+  v('ovDepDate',fmtDate(row.ZexpDate));
+  v('ovIntCat',codeText(row.ZintCat,row.ZintCatText));
+  v('ovIntRate',row.ZintRate?`${Number(row.ZintRate).toFixed(5)}%`:'');
+  v('ovRefInt',row.ZrefInt);
+  v('ovSpreadRate',row.Zsrate);
+  v('ovFirstIntDate',fmtDate(row.Zsdate));
+  v('ovResetFrq',row.ZresFrq);
+  v('ovIntFrq',codeText(row.AccType,row.ZaccTypeText));
+  v('ovPlPercent',row.ZplPer);
+  v('ovPlAmt',row.ZplAmt?fmtNum(row.ZplAmt):'');
+  v('ovRemarks',row.Zremark);
+  v('ovBankContact',row.ZbankContact);
+  v('ovBankContactDet',row.ZbankContactDet);
+  v('ovCommEndDate',fmtDate(row.ZcommEndDate));
+  openModal(ottkViewModal);
+}
+// In the standalone page a plain close suffices; embedded via ?displayOttk= (showDisplayOttk()
+// below overrides these three handlers with a postMessage-aware close instead).
+document.getElementById('closeOttkView').onclick=()=>closeModalEl(ottkViewModal);
+document.getElementById('closeOttkViewFooter').onclick=()=>closeModalEl(ottkViewModal);
+ottkViewModal.onclick=e=>{if(e.target===ottkViewModal)closeModalEl(ottkViewModal)};
+
+const successModal=document.getElementById('successModal');
+function showSuccessModal(title,dttkNo,verb,feeResult){
+  document.getElementById('successModalTitle').textContent=title;
+  let html=dttkNo
+    ?`Distribution Ticket <b>#${esc(dttkNo)}</b> has been ${verb} successfully.`
+    :`Distribution ticket has been ${verb} successfully.`;
+  // Charge-line outcome belongs here, not in a toast: the toast is replaced within 2.4s and sits
+  // behind this modal, so a failed charge line would be invisible in practice.
+  if(feeResult&&feeResult.saved)html+=`<br><span class="success-note">${feeResult.saved} charge line${feeResult.saved===1?'':'s'} saved.</span>`;
+  if(feeResult&&feeResult.failed&&feeResult.failed.length){
+    html+=`<br><span class="success-warn">Charges not saved:<br>${feeResult.failed.map(esc).join('<br>')}</span>`;
+  }
+  document.getElementById('successModalMsg').innerHTML=html;
+  openModal(successModal);
+}
+document.getElementById('successModalOk').onclick=()=>closeModalEl(successModal);
+successModal.onclick=e=>{if(e.target===successModal)closeModalEl(successModal)};
+
+// "01 Fixed" shows a plain Interest Rate; "02 Floating" is reference-rate driven, so it shows
+// Ref Int Rate + Spread Rate instead. Hidden fields are cleared so a stale value is never sent.
+function applyIntCategoryVisibility(){
+  const cat=document.getElementById('interestCategory').value;
+  const isFixed=cat==='01'||cat==='';
+  document.getElementById('interestRateField').hidden=!isFixed;
+  document.getElementById('refIntRateField').hidden=isFixed;
+  document.getElementById('spreadRateField').hidden=isFixed;
+  if(isFixed){ document.getElementById('refIntRate').value=''; document.getElementById('spreadRate').value=''; }
+  else{ document.getElementById('interestRate').value=''; }
+}
+document.getElementById('interestCategory').onchange=applyIntCategoryVisibility;
+document.getElementById('interestRate').addEventListener('blur',e=>{
+  const n=Number(e.target.value.trim());
+  if(e.target.value.trim()!==''&&isFinite(n))e.target.value=n.toFixed(5);
+});
+
+// ZentId is a plain master code (e.g. "E021"); Zent1/Zent2 are separate stored tokens, not derived
+// by splitting the description.
+function applyEntitySelection(){
+  const id=document.getElementById('entityCode').value;
+  const rec=entityOptions.find(e=>e.ZentId===id);
+  document.getElementById('lcBeneficiary').value=(rec&&rec.Zent1)||'';
+  document.getElementById('lcApplicant').value=(rec&&rec.Zent2)||'';
+  applyCoCodeLookup();
+}
+document.getElementById('entityCode').onchange=applyEntitySelection;
+
+// Business Area is derived from the origination bank - both fields are read-only.
+function applyBankSelection(){
+  const zbp=document.getElementById('bank').value;
+  const rec=ottkBankOptions.find(b=>String(b.Zbp)===zbp);
+  document.getElementById('businessAreaCode').value=(rec&&rec.Zrbusa)||'';
+  document.getElementById('businessAreaName').value=(rec&&rec.ZbaText)||'';
+}
+document.getElementById('bank').onchange=applyBankSelection;
+
+function applyCoCodeLookup(){
+  const applicant=document.getElementById('lcApplicant').value.trim();
+  if(!applicant)return;
+  const rec=coCodeOptions.find(c=>String(c.ZcomId).toUpperCase()===applicant.toUpperCase());
+  if(!rec)return;
+  document.getElementById('coCode').value=rec.Zbukrs;
+  document.getElementById('coCodeName').value=rec.Butxt;
+}
+document.getElementById('lcApplicant').addEventListener('input',applyCoCodeLookup);
+
+// Picking a Related OTTK copies that ticket's trade terms down, including the company code - the
+// service requires Zbukrs at create and the field is otherwise easy to leave blank. Only the fields
+// the OTTK actually owns are touched, so confirmation/discounting entries already made stay put.
+function applyOttkSelection(){
+  const no=document.getElementById('otkNo').value;
+  applyOtkLock();
+  if(!no)return;
+  const row=ottkRows.find(r=>String(r.ZottkNo)===no);
+  if(!row)return;
+  const v=(id,val)=>{document.getElementById(id).value=val==null?'':val};
+  document.getElementById('type2').value='02';
+  v('structure',row.Zstr);v('entityCode',row.ZentId);
+  v('bank',row.ZottkBank);v('otkValue',row.ZottkValue?fmtNum(row.ZottkValue):'');
+  v('otkValueCcy',row.ZottkCurr||'USD');
+  if(!document.getElementById('tradeValue').value){
+    v('tradeValue',row.ZottkValue?fmtNum(row.ZottkValue):'');v('tradeValueCcy',row.ZottkCurr||'USD');
+  }
+  v('lcdate',row.Zdate);v('tenor',row.Ztenor);
+  v('lcApplicant',row.ZlcApp);v('lcBeneficiary',row.ZlcBen);
+  v('coCode',row.Zbukrs);v('coCodeName',row.Butxt);
+  applyBankSelection();
+  if(row.Zrbusa&&!document.getElementById('businessAreaCode').value)v('businessAreaCode',row.Zrbusa);
+  if(!document.getElementById('dTrader').value)v('dTrader',row.Ztrader);
+}
+document.getElementById('otkNo').onchange=applyOttkSelection;
+
+// Related OTTK only means anything once the ticket is declared "With Ref OTTK" - hidden the rest
+// of the time so a plain New DTTK never shows an empty, irrelevant dropdown.
+function applyType2Visibility(){
+  const visible=document.getElementById('type2').value==='02';
+  document.getElementById('otkNoField').hidden=!visible;
+  if(!visible)document.getElementById('otkNo').value='';
+  applyOtkLock();
+}
+document.getElementById('type2').onchange=applyType2Visibility;
+
+// Confirmation Bank only applies when the ticket carries a confirmation leg ("01 Discounting &
+// Confirmation" or "03 Confirmation Only") - "02 Discounting Only" has none, so the section is
+// hidden rather than left showing fields that don't apply to that type.
+function applyType1Visibility(){
+  const hide=document.getElementById('type1').value==='02';
+  document.querySelector('.sec-confirmation').hidden=hide;
+  // Scoped to #dttkModal specifically: the read-only OTTK view modal reuses the same .dttk-grid
+  // class on its own, separate grid container, and must not be touched by this toggle.
+  document.querySelector('#dttkModal .dttk-grid').classList.toggle('no-confirmation',hide);
+}
+document.getElementById('type1').onchange=applyType1Visibility;
+
+// Once a DTTK is tied to an OTTK, its trade terms are the OTTK's trade terms - the whole Trade
+// Details section goes non-editable so nothing here can drift from what the OTTK actually says.
+// Clearing Related OTTK (or switching Type 2 back to "New") unlocks it again.
+function applyOtkLock(){
+  const locked=!!document.getElementById('otkNo').value;
+  document.querySelectorAll('.sec-trade input, .sec-trade select').forEach(el=>{ el.disabled=locked; });
+}
+
+function clearDttkFields(){
+  dttkModal.querySelectorAll('input:not([readonly])').forEach(i=>{ if(i.type==='checkbox'){i.checked=false;}else{i.value='';} i.classList.remove('field-error'); });
+  dttkModal.querySelectorAll('select').forEach(s=>s.selectedIndex=0);
+  document.getElementById('coCodeName').value='';
+  document.getElementById('businessAreaCode').value='';document.getElementById('businessAreaName').value='';
+  document.getElementById('createdHeader').textContent='';document.getElementById('modalHeadCreated').hidden=true;
+  // Both are readonly breakdown totals, so the generic loop above skips them - each needs its own
+  // clear line, or a value left over from whatever ticket was last shown carries into a new one.
+  document.getElementById('otherCharges').value='';
+  document.getElementById('confirmationFee').value='';
+  chargeState={confirmation:[],other:[]};chargesSnapshot=[];chargesLoadedForKey=null;
+  applyIntCategoryVisibility();
+  applyType2Visibility();
+  applyType1Visibility();
+}
+function setDttkModalMode(mode,data){
+  const title=document.getElementById('modalTitle');const sub=document.getElementById('modalSubtitle');
+  const save=document.getElementById('saveDttk');
+  if(mode==='edit'){
+    title.textContent='Edit Distribution Ticket';
+    sub.innerHTML=`Distribution · Edit &nbsp;|&nbsp; DTTK #${esc(data.ZdttkNo)} &nbsp;|&nbsp; ${esc(data.ZstatDesc||data.ZdttkSt||'Draft')}`;
+    save.textContent='Update DTTK';dttkModal.dataset.mode='edit';dttkModal.dataset.key=data.ZdttkNo||'';
+  }else{
+    title.textContent='Create Distribution Ticket';
+    sub.innerHTML='Distribution · New &nbsp;|&nbsp; USD &nbsp;|&nbsp; Draft';
+    save.textContent='Create DTTK';dttkModal.dataset.mode='create';dttkModal.dataset.key='';
+  }
+}
+function populateDttkModal(d){
+  const v=(id,val)=>{document.getElementById(id).value=val==null?'':val};
+  v('type1',d.Ztype1);v('type2',d.Ztype2||(d.ZottkNo?'02':'01'));v('otkNo',d.ZottkNo);
+  applyType2Visibility();
+  applyType1Visibility();
+  v('structure',d.Zstr);v('entityCode',d.ZentId);
+  const createdBy=d.ZcreatedBy||d.LocalCreatedBy||'';
+  document.getElementById('createdHeader').textContent=createdBy;
+  document.getElementById('modalHeadCreated').hidden=!createdBy;
+  v('bank',d.ZottkBank);v('otkValue',d.ZottkValue?fmtNum(d.ZottkValue):'');v('otkValueCcy',d.ZottkCurr||'USD');
+  v('tradeValue',d.ZdttkValue?fmtNum(d.ZdttkValue):'');v('tradeValueCcy',d.ZdttkCurr||'USD');
+  v('lcdate',d.Zdate);v('tenor',d.Ztenor);
+  v('lcApplicant',d.ZlcApp);v('lcBeneficiary',d.ZlcBen);
+  v('coCode',d.Zbukrs);v('coCodeName',d.Butxt);v('businessAreaCode',d.Zrbusa);v('businessAreaName',d.ZbaText);
+  // The stored ZbaText is frequently blank for these business areas - fall back to the Bank lookup
+  // the origination-bank handler uses live rather than show nothing.
+  if(!d.ZbaText&&d.ZottkBank){
+    const bankRec=ottkBankOptions.find(b=>String(b.Zbp)===String(d.ZottkBank));
+    if(bankRec){
+      document.getElementById('businessAreaCode').value=bankRec.Zrbusa||d.Zrbusa||'';
+      document.getElementById('businessAreaName').value=bankRec.ZbaText||'';
+    }
+  }
+  v('rma',d.Zrma);
+  v('cbank',d.Zcbank);v('cfeeFrom',d.ZcfeeFrom);v('cfeeTo',d.ZcfeeTo);v('cTrader',d.ZcTrader);
+  v('confirmationFee',d.Zcfee?fmtNum(d.Zcfee):'');v('cremark',d.Zcremark);
+  v('disBank',d.ZdisBp);v('disVal',d.ZdisVal);v('disAmt',d.ZdisAmt?fmtNum(d.ZdisAmt):'');v('disCurr',d.ZdisCurr||'USD');
+  v('interestCategory',(!d.ZintCat||d.ZintCat==='01')?'01':'02');
+  v('interestRate',d.ZintRate?Number(d.ZintRate).toFixed(5):'');
+  v('refIntRate',d.ZrefInt);v('spreadRate',d.Zsrate||'');
+  v('interestFrequency',d.ZaccType);
+  v('negFee',d.Znfee?fmtNum(d.Znfee):'');v('otherCharges',d.Zofee?fmtNum(d.Zofee):'');
+  v('dTrader',d.ZdTrader);v('region',d.Zregion);v('remarks',d.Zremark);
+  v('bankContact',d.ZbankContact);v('bankContactDetails',d.ZbankContactDet);
+  v('commitmentEndDate',d.ZcommEndDate);v('commitmentFee',d.ZcommFee?fmtNum(d.ZcommFee):'');
+  v('reservationStartDate',d.ZresrvStDate);v('lcIssuanceDate',d.ZlcLateDate);
+  v('docPresDate',d.ZdocPresDate);v('repayPrevLcDate',d.ZrepPrevLcDate);
+  applyIntCategoryVisibility();
+}
+function openDttkModal(mode,data){
+  clearDttkFields();
+  if(data&&Object.keys(data).length) populateDttkModal(data);
+  setDttkModalMode(mode,data||{});
+  openModal(dttkModal);
+  setTimeout(()=>document.getElementById('type1').focus(),80);
+  // Stage the stored charge lines behind the form: an edit loads that ticket's own lines, and Copy
+  // carries the source ticket's lines into the new one, so both totals stay backed by real rows.
+  const sourceKey=(data&&data.ZdttkNo)?String(data.ZdttkNo):'';
+  chargesPending=loadChargeLines(sourceKey).catch(()=>{});
+}
+document.getElementById('createDttk').onclick=()=>openDttkModal('create',{});
+document.getElementById('clearModal').onclick=()=>{clearDttkFields();notify('Form cleared')};
+
+function buildDttkPayload(){
+  const val=id=>document.getElementById(id).value.trim();
+  const numVal=id=>{const raw=String(document.getElementById(id).value||'').replace(/,/g,'').trim();return raw===''?0:Number(raw)};
+  return{
+    Ztype1:val('type1'),Ztype2:val('type2'),ZottkNo:val('otkNo'),
+    Zstr:val('structure'),ZentId:val('entityCode'),
+    ZottkBank:val('bank'),ZottkValue:numVal('otkValue'),ZottkCurr:val('otkValueCcy')||'USD',
+    ZdttkValue:numVal('tradeValue'),ZdttkCurr:val('tradeValueCcy')||'USD',
+    Zdate:val('lcdate')||null,Ztenor:val('tenor'),
+    ZlcApp:val('lcApplicant'),ZlcBen:val('lcBeneficiary'),
+    Zbukrs:val('coCode'),Zrbusa:val('businessAreaCode'),Zrma:val('rma'),
+    // ZnoCbank is deliberately absent: the "No Confirmation Bank" checkbox was removed from the
+    // modal, so the console has no user input for the flag and must not invent one. It is carried
+    // over from the stored row instead - see PASSTHROUGH_FIELDS below.
+    Zcbank:val('cbank'),ZcfeeFrom:val('cfeeFrom'),ZcfeeTo:val('cfeeTo'),
+    ZcTrader:val('cTrader'),Zcfee:numVal('confirmationFee'),Zcremark:val('cremark'),
+    ZdisBp:val('disBank'),ZdisVal:val('disVal'),ZdisAmt:numVal('disAmt'),ZdisCurr:val('disCurr')||'USD',
+    ZintCat:val('interestCategory'),ZintRate:numVal('interestRate'),
+    ZrefInt:val('refIntRate'),Zsrate:numVal('spreadRate'),ZaccType:val('interestFrequency'),
+    Znfee:numVal('negFee'),Zofee:numVal('otherCharges'),
+    ZdTrader:val('dTrader'),Zregion:val('region'),Zremark:val('remarks'),
+    ZbankContact:val('bankContact'),ZbankContactDet:val('bankContactDetails'),
+    ZcommEndDate:val('commitmentEndDate')||null,ZcommFee:numVal('commitmentFee'),
+    ZresrvStDate:val('reservationStartDate')||null,ZlcLateDate:val('lcIssuanceDate')||null,
+    ZdocPresDate:val('docPresDate')||null,ZrepPrevLcDate:val('repayPrevLcDate')||null
+  };
+}
+
+// The BO used to overwrite the whole row on update, blanking any property a PATCH omitted; that is
+// fixed in LHC_SlcDttkDetail.update (L-272) and omitted fields are now preserved. These are the
+// writable properties the screen has no field for, still carried over from the stored row so the
+// console stays safe against a system where transport DS4K907263 has not been imported yet.
+const PASSTHROUGH_FIELDS=['ZccOttkValue','ZccOttkCurr','ZccDttkValue','ZccDttkCurr','ZresFrq',
+  'ZdttkSt','ZdrefRate','ZcfTenor','ZcfPerc','ZnfeeFrom','ZnfeeTo','ZnfTenor','ZnfPerc','Zdealer',
+  'ZresidRelChk','ZnoCbank'];
+function withUntouchedFields(payload,key){
+  const stored=dttkRows.find(r=>String(r.ZdttkNo)===String(key));
+  if(!stored)return payload;
+  PASSTHROUGH_FIELDS.forEach(f=>{ if(stored[f]!==undefined)payload[f]=stored[f]; });
+  return payload;
+}
+
+// The new DTTK number is generated server-side, so it is read back from the created entity, then
+// OData's OData-EntityId/Location header, and finally a highest-number re-read.
+async function createDttk(payload){
+  const {data,res}=await apiRequest(`${API_BASE.dttk}/SlcDttkDetail`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Prefer':'return=representation'},
+    body:JSON.stringify(payload)
+  });
+  if(data&&data.ZdttkNo)return data.ZdttkNo;
+  const idHeader=res.headers.get('OData-EntityId')||res.headers.get('Location')||'';
+  const fromHeader=idHeader.match(/\('([^']+)'\)/);
+  if(fromHeader)return fromHeader[1];
+  try{
+    const latest=await apiFetch(`${API_BASE.dttk}/SlcDttkDetail?${encodeURIComponent('$orderby')}=ZdttkNo%20desc&${encodeURIComponent('$top')}=1`);
+    if(latest&&latest.value&&latest.value[0]&&latest.value[0].ZdttkNo)return latest.value[0].ZdttkNo;
+  }catch(e){ /* reported by the caller */ }
+  return '';
+}
+document.getElementById('saveDttk').onclick=async()=>{
+  const amounts=[...dttkModal.querySelectorAll('.fs-amount-input')];
+  if(!amounts.every(input=>applyAmountSuffix(input))){notify('Please correct the highlighted amount');return}
+  const payload=buildDttkPayload();
+  if(!payload.Zbukrs){notify('Company Code is required');return}
+  const mode=dttkModal.dataset.mode||'create';const key=dttkModal.dataset.key;
+  try{
+    if(chargesPending){ await chargesPending; chargesPending=null; }
+    if(mode==='edit'&&key){
+      await apiFetch(`${API_BASE.dttk}/SlcDttkDetail('${encodeURIComponent(key)}')`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(withUntouchedFields(payload,key))});
+      const feeResult=await syncDttkFeeRows(key,payload.ZdttkCurr);
+      closeModalEl(dttkModal);await loadDttk();
+      showSuccessModal('DTTK Updated',key,'updated',feeResult);
+    }else{
+      const newNo=await createDttk(payload);
+      const feeResult=newNo
+        ? await syncDttkFeeRows(newNo,payload.ZdttkCurr)
+        : {saved:0,failed:['DTTK number could not be read back from the service — charge lines were not saved']};
+      closeModalEl(dttkModal);await loadDttk();
+      if(newNo)showSuccessModal('DTTK Created',newNo,'created',feeResult);
+      else notify('Created, but the new DTTK number could not be read back');
+    }
+  }catch(err){ notify('Save failed: '+err.message); }
+};
+document.getElementById('copy').onclick=()=>{
+  const row=document.querySelector('#dttkTable tbody tr.selected');
+  if(!row){notify('Select a DTTK line to copy first');return}
+  const key=row.dataset.key;const data=dttkRows.find(r=>String(r.ZdttkNo)===key);
+  if(!data){notify('Could not find selected DTTK data');return}
+  openDttkModal('create',data);
+  notify(`DTTK ${key} copied — review and create`);
+};
+
+/* ---------- Charges popups (Confirmation Fee and Other Charges) ---------- */
+const chargesModal=document.getElementById('chargesModal');
+const FEE_CATEGORY_OPTIONS=[{v:'01',t:'01 %'},{v:'02',t:'02 Flat Amount'}];
+const FEE_CODE_OPTIONS=[{v:'01',t:'01 Standard'},{v:'02',t:'02 Greater of Two'},{v:'03',t:'03 Least of Two'}];
+const CHARGES_UI={
+  confirmation:{title:'Confirmation Fee',sub:'Confirmation Fee breakdown for this DTTK',target:'confirmationFee'},
+  other:{title:'Other Charges',sub:'Other Charges breakdown for this DTTK',target:'otherCharges'}
+};
+function toNum(v){ const raw=String(v||'').replace(/,/g,'').trim(); return raw===''?0:Number(raw); }
+function fmt2(n){ return Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function optionsHtml(list,sel){
+  return '<option value=""></option>'+list.map(o=>`<option value="${o.v}"${o.v===sel?' selected':''}>${esc(o.t)}</option>`).join('');
+}
+function currentTradeValueNum(){ return toNum(document.getElementById('tradeValue').value); }
+function chargeRowsOf(ctx){ return chargeState[ctx]||[]; }
+
+// Fee Category '02' (Flat Amount) takes the manually entered Amount as-is. Otherwise the row is
+// percentage-based (Base Amount x Int Rate% x Period/360) and Code for Collection decides whether
+// that figure alone is used (Standard) or compared against the manual Amount (Greater/Least of Two).
+function recalcRow(r){
+  const base=toNum(r.ZbAmt),rate=toNum(r.Zrate),period=toNum(r.Zday),amount=toNum(r.Zamt);
+  const pct=base*(rate/100)*(period/360);
+  let final;
+  if(r.Zcat==='02') final=amount;
+  else if(r.Zcode==='02') final=Math.max(pct,amount);
+  else if(r.Zcode==='03') final=Math.min(pct,amount);
+  else final=pct;
+  r.ZfAmt=fmt2(Math.round(final*100)/100);
+}
+function recalcAllRows(ctx){
+  const baseDisplay=fmt2(currentTradeValueNum());
+  chargeRowsOf(ctx).forEach(r=>{ r.ZbAmt=baseDisplay; recalcRow(r); });
+}
+function chargesTotal(ctx){ return chargeRowsOf(ctx).reduce((s,r)=>s+toNum(r.ZfAmt),0); }
+function recalcChargesTotal(){
+  const total=chargesTotal(chargesContext);
+  document.getElementById('chargesGrandTotal').value=fmt2(total);
+  return total;
+}
+function renderChargeRows(){
+  const tbody=document.getElementById('chargesTbody');
+  tbody.innerHTML=chargeRowsOf(chargesContext).map((r,idx)=>`<tr>
+    <td>${esc(r.ZfeeType)} ${esc(r.ZfeeDesc)}</td>
+    <td><select data-idx="${idx}" data-field="Zcat">${optionsHtml(FEE_CATEGORY_OPTIONS,r.Zcat)}</select></td>
+    <td><select data-idx="${idx}" data-field="Zcode">${optionsHtml(FEE_CODE_OPTIONS,r.Zcode)}</select></td>
+    <td><input class="amt" data-field="ZbAmt" value="${esc(r.ZbAmt)}" readonly></td>
+    <td><input class="amt" data-idx="${idx}" data-field="Zrate" inputmode="decimal" value="${esc(r.Zrate)}"${r.Zcat==='02'?' readonly':''}></td>
+    <td><input data-idx="${idx}" data-field="Zday" maxlength="5" inputmode="numeric" value="${esc(r.Zday)}"${r.Zcat==='02'?' readonly':''}></td>
+    <td><input class="amt" data-idx="${idx}" data-field="Zamt" inputmode="decimal" value="${esc(r.Zamt)}"${r.Zcat==='01'?' readonly':''}></td>
+    <td><input class="amt" data-field="ZfAmt" value="${esc(r.ZfAmt)}" readonly></td>
+  </tr>`).join('');
+  recalcChargesTotal();
+}
+function updateRowFinalDisplay(idx){
+  const cell=document.querySelector(`#chargesTbody tr:nth-child(${idx+1}) [data-field="ZfAmt"]`);
+  if(cell)cell.value=chargeRowsOf(chargesContext)[idx].ZfAmt;
+  recalcChargesTotal();
+}
+function onChargeFieldChange(e){
+  const idx=e.target.dataset.idx,field=e.target.dataset.field;
+  if(idx===undefined||!field)return;
+  const rows=chargeRowsOf(chargesContext);
+  if(field==='Zamt'&&e.type==='input')formatAmountInput(e.target);
+  rows[idx][field]=e.target.value;
+  // '01 %' is percentage-only - Amount plays no part in the calc, so it goes readonly and any stale
+  // typed value is cleared. '02 Flat Amount' is the mirror case for Int Rate / Period.
+  if(field==='Zcat'&&e.target.value==='01')rows[idx].Zamt='';
+  if(field==='Zcat'&&e.target.value==='02'){rows[idx].Zrate='';rows[idx].Zday='';}
+  recalcRow(rows[idx]);
+  if(field==='Zcat')renderChargeRows();
+  else updateRowFinalDisplay(Number(idx));
+}
+document.getElementById('chargesTbody').addEventListener('input',onChargeFieldChange);
+document.getElementById('chargesTbody').addEventListener('change',onChargeFieldChange);
+
+// One row per fee type of that context - no add/remove. A fee type the human never touches (every
+// editable field left blank) is simply not persisted (see syncDttkFeeRows).
+function buildChargeRowsTemplate(ctx,existingByType){
+  return (feeTypes[ctx]||[]).map(f=>{
+    const ex=existingByType[f.ZfeeType];
+    return {
+      ZfeeType:f.ZfeeType,ZfeeDesc:f.ZfeeDesc,
+      Zcat:(ex&&ex.Zcat)||'',Zcode:(ex&&ex.Zcode)||'',
+      Zrate:(ex&&ex.Zrate)?ex.Zrate:'',Zday:(ex&&ex.Zday)?String(ex.Zday).trim():'',
+      Zamt:(ex&&ex.Zamt)?fmtNum(ex.Zamt):'',
+      ZbAmt:'',ZfAmt:'0.00'
+    };
+  });
+}
+async function fetchFeeRowsByType(dttkNo){
+  const byType={};
+  try{
+    const d=await apiFetch(`${API_BASE.dttk}/SlcDttkFee?$filter=${encodeURIComponent(`ZdttkNo eq '${dttkNo}'`)}`);
+    (d.value||[]).forEach(r=>{ byType[r.ZfeeType]=r; });
+  }catch(e){ notify('Failed to load charges: '+e.message); }
+  return byType;
+}
+
+// Both grids are rebuilt from the ticket's stored lines in one read, then split by which fee-type
+// list each line belongs to.
+async function loadChargeLines(dttkNo){
+  const byType=dttkNo?await fetchFeeRowsByType(dttkNo):{};
+  chargeState.confirmation=buildChargeRowsTemplate('confirmation',byType);
+  chargeState.other=buildChargeRowsTemplate('other',byType);
+  recalcAllRows('confirmation');
+  recalcAllRows('other');
+  chargesLoadedForKey=dttkNo||null;
+}
+async function ensureChargeLists(){
+  if(!feeTypes.confirmation.length){
+    try{ const d=await apiFetch(`${API_BASE.dttk}/CFeeType`); feeTypes.confirmation=d.value||[]; }catch(e){ /* reported below */ }
+  }
+  if(!feeTypes.other.length){
+    try{ const d=await apiFetch(`${API_BASE.dttk}/DFeeType`); feeTypes.other=d.value||[]; }catch(e){ /* reported below */ }
+  }
+  if(!feeTypes.confirmation.length&&!feeTypes.other.length)notify('No fee types available — check the connection and refresh');
+}
+async function openChargesFor(ctx){
+  chargesContext=ctx;
+  await ensureChargeLists();
+  if(chargesPending){ await chargesPending; chargesPending=null; }
+  const key=dttkModal.dataset.key;
+  const mode=dttkModal.dataset.mode||'create';
+  if((mode==='edit'&&key&&chargesLoadedForKey!==key)||!chargeRowsOf(ctx).length){
+    await loadChargeLines(mode==='edit'?key:'');
+  }
+  recalcAllRows(ctx);
+  document.getElementById('chargesModalTitle').textContent=CHARGES_UI[ctx].title;
+  const sub=document.querySelector('#chargesModal .modal-heading p');
+  if(sub)sub.textContent=CHARGES_UI[ctx].sub;
+  chargesSnapshot=JSON.parse(JSON.stringify(chargeRowsOf(ctx)));
+  renderChargeRows();
+  openModal(chargesModal);
+}
+document.getElementById('openCharges').onclick=()=>openChargesFor('other');
+document.getElementById('openConfCharges').onclick=()=>openChargesFor('confirmation');
+function closeChargesReverting(){ chargeState[chargesContext]=JSON.parse(JSON.stringify(chargesSnapshot)); closeModalEl(chargesModal); }
+document.getElementById('closeCharges').onclick=closeChargesReverting;
+document.getElementById('cancelCharges').onclick=closeChargesReverting;
+chargesModal.onclick=e=>{if(e.target===chargesModal)closeChargesReverting()};
+document.getElementById('applyCharges').onclick=()=>{
+  const total=recalcChargesTotal();
+  document.getElementById(CHARGES_UI[chargesContext].target).value=total?fmt2(total):'';
+  closeModalEl(chargesModal);
+};
+
+function isChargeRowTouched(row){
+  return !!(row.Zcat||row.Zcode||toNum(row.Zrate)||row.Zday||toNum(row.Zamt));
+}
+// Lines live in ZSGSLCTR_FEEDATA as ZTYPE '02' rows keyed by (ZdttkNo, ZfeeType). The stored set is
+// replaced wholesale rather than diffed - the same approach the OTTK console takes.
+async function syncDttkFeeRows(dttkNo,currency){
+  const result={saved:0,failed:[]};
+  let existing=[];
+  try{
+    const d=await apiFetch(`${API_BASE.dttk}/SlcDttkFee?$filter=${encodeURIComponent(`ZdttkNo eq '${dttkNo}'`)}`);
+    existing=d.value||[];
+  }catch(e){ /* treat as none on read failure */ }
+  for(const row of existing){
+    try{ await apiFetch(`${API_BASE.dttk}/SlcDttkFee(ZdttkNo='${encodeURIComponent(dttkNo)}',ZfeeType='${encodeURIComponent(row.ZfeeType)}')`,{method:'DELETE'}); }
+    catch(e){ /* best effort - a stale line is preferable to blocking the DTTK save */ }
+  }
+  for(const ctx of ['confirmation','other']){
+    for(const row of chargeRowsOf(ctx)){
+      if(!isChargeRowTouched(row))continue;
+      // ZdttkCurr is readonly on the BO but must still be in the body: OData V4 rejects an amount
+      // without its paired currency property (L-263, re-confirmed live on this entity).
+      const body={
+        ZdttkNo:dttkNo,ZfeeType:row.ZfeeType,Zcat:row.Zcat||'',Zcode:row.Zcode||'',
+        ZdttkCurr:currency||'USD',ZbAmt:toNum(row.ZbAmt),Zrate:toNum(row.Zrate),Zday:row.Zday||'',
+        Zamt:toNum(row.Zamt),ZfAmt:toNum(row.ZfAmt)
+      };
+      try{
+        await apiFetch(`${API_BASE.dttk}/SlcDttkFee`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+        result.saved++;
+      }catch(e){ result.failed.push(`${row.ZfeeType}: ${e.message}`); }
+    }
+  }
+  return result;
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  if(successModal.classList.contains('open'))closeModalEl(successModal);
+  else if(chargesModal.classList.contains('open'))closeChargesReverting();
+  else if(ottkViewModal.classList.contains('open'))closeModalEl(ottkViewModal);
+  else if(dttkModal.classList.contains('open'))closeModalEl(dttkModal);
+});
+
+/* ---------- shared amount-suffix helpers (K/M/B/T) ---------- */
+const AMOUNT_MULTIPLIERS={K:1e3,M:1e6,B:1e9,T:1e12};
+function parseAmountSuffix(raw){const value=String(raw||'').replace(/,/g,'').trim();if(!value)return null;const match=value.match(/^([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*([KMBT])?$/i);if(!match)return null;const number=Number(match[1]);if(!Number.isFinite(number))return null;return number*(AMOUNT_MULTIPLIERS[(match[2]||'').toUpperCase()]||1)}
+function formatAmountInput(input){let raw=String(input.value||'').replace(/,/g,'').trim();if(/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)\s*[kmbt]$/i.test(raw)){input.value=raw.toUpperCase();return}const caretFromEnd=input.value.length-(input.selectionStart||input.value.length);if(!/^[+-]?\d*\.?\d*$/.test(raw))raw=raw.replace(/[^\d.+-]/g,'');const sign=raw.startsWith('-')?'-':'';raw=raw.replace(/[+-]/g,'');const firstDot=raw.indexOf('.');if(firstDot!==-1)raw=raw.slice(0,firstDot+1)+raw.slice(firstDot+1).replace(/\./g,'');const parts=raw.split('.');parts[0]=parts[0].replace(/\B(?=(\d{3})+(?!\d))/g,',');input.value=sign+parts.join('.');const position=Math.max(0,input.value.length-caretFromEnd);try{input.setSelectionRange(position,position)}catch(ignore){}}
+function applyAmountSuffix(input){if(!String(input.value||'').trim()){input.classList.remove('field-error');return true}const parsed=parseAmountSuffix(input.value);if(parsed===null){input.classList.add('field-error');return false}input.classList.remove('field-error');input.value=Number(parsed).toLocaleString('en-US',{maximumFractionDigits:2});return true}
+document.querySelectorAll('.fs-amount-input').forEach(input=>{input.addEventListener('input',()=>formatAmountInput(input));input.addEventListener('blur',()=>applyAmountSuffix(input));input.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();applyAmountSuffix(input);input.blur()}})});
+
+/* ---------- initial load ---------- */
+async function showDisplayDttk(){
+  // Hide all surrounding console surfaces; leave only the original DTTK modal.
+  [...document.getElementById('app').children].forEach(el=>{
+    if(el!==dttkModal)el.hidden=true;
+  });
+  openModal(dttkModal);
+  document.getElementById('modalTitle').textContent='Display Distribution Ticket';
+  document.getElementById('modalSubtitle').textContent='Loading DTTK…';
+  dttkModal.querySelectorAll('input,select,textarea,button').forEach(el=>el.disabled=true);
+  const close=()=>{if(parent!==window)parent.postMessage('dttk-display-close',location.origin);else closeModalEl(dttkModal)};
+  for(const id of ['closeModal','cancelModal']){
+    const button=document.getElementById(id);button.disabled=false;button.onclick=close;
+  }
+  document.getElementById('cancelModal').textContent='Close';
+  dttkModal.onclick=e=>{if(e.target===dttkModal)close()};
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+  document.getElementById('closeModal').focus();
+  // Tell the host page the modal is up and safe to show. The host also watches the iframe's
+  // 'load' event and a timer, but this is the only signal that means "actually presentable",
+  // so it is the one that normally wins.
+  if(parent!==window)parent.postMessage('dttk-display-ready',location.origin);
+  try{
+    if(!/^\d+$/.test(displayDttkKey))throw new Error('Invalid DTTK number.');
+    const [row]=await Promise.all([
+      apiFetch(`${API_BASE.dttk}/SlcDttkDetail('${displayDttkKey}')`),loadLookups(),loadOttk()
+    ]);
+    // Preserve stored codes even when a current lookup no longer contains them.
+    const storedSelects={type1:'Ztype1',type2:'Ztype2',otkNo:'ZottkNo',structure:'Zstr',entityCode:'ZentId',bank:'ZottkBank',cbank:'Zcbank',disBank:'ZdisBp',cTrader:'ZcTrader',dTrader:'ZdTrader',refIntRate:'ZrefInt'};
+    Object.entries(storedSelects).forEach(([id,field])=>{
+      const select=document.getElementById(id),value=String(row[field]||'');
+      if(value&&![...select.options].some(o=>o.value===value))select.add(new Option(value,value));
+    });
+    populateDttkModal(row);
+    document.getElementById('modalSubtitle').textContent=`Distribution · Display only | DTTK #${row.ZdttkNo} | ${row.ZstatDesc||row.ZdttkSt||'Draft'}`;
+  }catch(e){document.getElementById('modalSubtitle').textContent=e.message;}
+  finally{
+    // Population applies ordinary edit rules, so lock again after it completes.
+    dttkModal.querySelectorAll('input,select,textarea,button').forEach(el=>{
+      el.disabled=!['closeModal','cancelModal'].includes(el.id);
+    });
+  }
+}
+async function showDisplayOttk(){
+  // Hide all surrounding console surfaces; leave only the OTTK view modal.
+  [...document.getElementById('app').children].forEach(el=>{
+    if(el!==ottkViewModal)el.hidden=true;
+  });
+  document.getElementById('ottkViewModalSubtitle').textContent='Loading OTTK…';
+  const close=()=>{if(parent!==window)parent.postMessage('dttk-display-close',location.origin);else closeModalEl(ottkViewModal)};
+  document.getElementById('closeOttkView').onclick=close;
+  document.getElementById('closeOttkViewFooter').onclick=close;
+  ottkViewModal.onclick=e=>{if(e.target===ottkViewModal)close()};
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+  openModal(ottkViewModal);
+  document.getElementById('closeOttkView').focus();
+  // Same "tell the host it's safe to show" signal as showDisplayDttk() - no lookups to await here
+  // since ottkViewModal only has plain disabled fields, not <select> dropdowns to populate.
+  if(parent!==window)parent.postMessage('dttk-display-ready',location.origin);
+  try{
+    if(!/^\d+$/.test(displayOttkKey))throw new Error('Invalid OTTK number.');
+    const row=await apiFetch(`${API_BASE.ottk}/SlcOttkDetail('${displayOttkKey}')`);
+    openOttkViewModal(row);
+  }catch(e){
+    document.getElementById('ottkViewModalSubtitle').textContent=e.message;
+  }
+}
+if(displayDttkKey!==null)showDisplayDttk();
+else if(displayOttkKey!==null)showDisplayOttk();
+else{
+  loadLookups();loadDttk();loadOttk();
+  // The connection dot only updates as a side effect of an actual request (via apiRequest()
+  // above). Without this poll it would go stale the moment the user stops clicking anything - SAP
+  // dropping mid-session would leave it stuck on whatever it last was, usually green. Skipped in
+  // the read-only display popup: body.display-ticket hides the topbar this dot lives in, so
+  // polling there would have nothing to show for it.
+  setInterval(()=>{ apiFetch(`${API_BASE.dttk}/Bank`).catch(()=>{}); },30000);
+}
+</script>
+
+
+</body></html>

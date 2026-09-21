@@ -1,0 +1,10 @@
+{
+  "name": "sap-project-mcp-abap-adt-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Project-local install of the mcp-abap-abap-adt-api MCP server",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "mcp-abap-abap-adt-api": "^0.1.1"
+  }
+}

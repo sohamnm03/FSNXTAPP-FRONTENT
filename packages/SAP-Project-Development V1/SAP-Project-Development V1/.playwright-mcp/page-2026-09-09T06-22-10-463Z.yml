@@ -1,0 +1,135 @@
+- generic [active] [ref=f1e1]:
+  - banner [ref=f1e2]:
+    - generic [ref=f1e3]:
+      - img "Fourth Signal" [ref=f1e4]
+      - generic [ref=f1e5]:
+        - heading "SLC" [level=1] [ref=f1e6]
+        - paragraph [ref=f1e7]: FS • VISTA
+    - generic "SAP TRM connected" [ref=f1e8]
+  - main [ref=f1e9]:
+    - generic [ref=f1e10]: SLC
+    - generic [ref=f1e11]: Front Office
+    - generic [ref=f1e12]:
+      - generic [ref=f1e13] [cursor=pointer]:
+        - generic [ref=f1e17]: Origination Ticket (OTTK)
+        - generic [ref=f1e18]: Capture and maintain origination tickets, their structures and pricing details.
+        - generic [ref=f1e19]:
+          - generic [ref=f1e20]: Console
+          - generic [ref=f1e21]: →
+      - generic [ref=f1e22] [cursor=pointer]:
+        - generic [ref=f1e26]: Distribution Ticket (DTTK)
+        - generic [ref=f1e27]: Capture and maintain distribution tickets against an origination ticket.
+        - generic [ref=f1e28]:
+          - generic [ref=f1e29]: Console
+          - generic [ref=f1e30]: →
+      - generic [ref=f1e31] [cursor=pointer]:
+        - generic [ref=f1e35]: Deal ID Creation
+        - generic [ref=f1e36]: Create a deal ID and link its origination and distribution ticket legs.
+        - generic [ref=f1e37]:
+          - generic [ref=f1e38]: Console
+          - generic [ref=f1e39]: →
+      - generic [ref=f1e40] [cursor=pointer]:
+        - generic [ref=f1e44]: Facility Workbench
+        - generic [ref=f1e45]: Set up and maintain sanctioned credit facilities and limits.
+        - generic [ref=f1e46]:
+          - generic [ref=f1e47]: Create
+          - generic [ref=f1e48]: →
+      - generic [ref=f1e49] [cursor=pointer]:
+        - generic [ref=f1e53]: Facility Confirmation
+        - generic [ref=f1e54]: Approve or reject sanctioned facility set-up requests.
+        - generic [ref=f1e55]:
+          - generic [ref=f1e56]: Confirm
+          - generic [ref=f1e57]: →
+    - generic [ref=f1e58]: LC Process
+    - generic [ref=f1e59]:
+      - generic [ref=f1e60] [cursor=pointer]:
+        - generic [ref=f1e64]: LC Issuance Process
+        - generic [ref=f1e65]: 4 screens in this sub-process.
+        - generic [ref=f1e66]:
+          - generic [ref=f1e67]: Folder
+          - generic [ref=f1e68]: →
+      - generic [ref=f1e69] [cursor=pointer]:
+        - generic [ref=f1e73]: LC Acceptance & Presentation
+        - generic [ref=f1e74]: 4 screens in this sub-process.
+        - generic [ref=f1e75]:
+          - generic [ref=f1e76]: Folder
+          - generic [ref=f1e77]: →
+      - generic [ref=f1e78] [cursor=pointer]:
+        - generic [ref=f1e82]: LC Amendment Process
+        - generic [ref=f1e83]: 2 screens in this sub-process.
+        - generic [ref=f1e84]:
+          - generic [ref=f1e85]: Folder
+          - generic [ref=f1e86]: →
+      - generic [ref=f1e87] [cursor=pointer]:
+        - generic [ref=f1e91]: LC Termination Process
+        - generic [ref=f1e92]: 2 screens in this sub-process.
+        - generic [ref=f1e93]:
+          - generic [ref=f1e94]: Folder
+          - generic [ref=f1e95]: →
+    - generic [ref=f1e96]: BG Process
+    - generic [ref=f1e97]:
+      - generic [ref=f1e98] [cursor=pointer]:
+        - generic [ref=f1e102]: BG Issuance Process
+        - generic [ref=f1e103]: 4 screens in this sub-process.
+        - generic [ref=f1e104]:
+          - generic [ref=f1e105]: Folder
+          - generic [ref=f1e106]: →
+      - generic [ref=f1e107] [cursor=pointer]:
+        - generic [ref=f1e111]: BG Amendment Process
+        - generic [ref=f1e112]: 2 screens in this sub-process.
+        - generic [ref=f1e113]:
+          - generic [ref=f1e114]: Folder
+          - generic [ref=f1e115]: →
+      - generic [ref=f1e116] [cursor=pointer]:
+        - generic [ref=f1e120]: BG Termination Process
+        - generic [ref=f1e121]: 2 screens in this sub-process.
+        - generic [ref=f1e122]:
+          - generic [ref=f1e123]: Folder
+          - generic [ref=f1e124]: →
+    - generic [ref=f1e125]: Accounting
+    - generic [ref=f1e127] [cursor=pointer]:
+      - generic [ref=f1e131]: Posting of Fees
+      - generic [ref=f1e132]: Post accrued LC / BG fees and charges to the ledger.
+      - generic [ref=f1e133]:
+        - generic [ref=f1e134]: Process
+        - generic [ref=f1e135]: →
+    - generic [ref=f1e136]: Dashboard Reporting
+    - generic [ref=f1e137]:
+      - generic [ref=f1e138] [cursor=pointer]:
+        - generic [ref=f1e142]: Limit Utilization Tracker
+        - generic [ref=f1e143]: Track sanctioned limit usage across facilities in real time.
+        - generic [ref=f1e144]:
+          - generic [ref=f1e145]: Dashboard
+          - generic [ref=f1e146]: →
+      - generic [ref=f1e147] [cursor=pointer]:
+        - generic [ref=f1e151]: Fees Tracker
+        - generic [ref=f1e152]: Monitor fee accrual and posting status across all requests.
+        - generic [ref=f1e153]:
+          - generic [ref=f1e154]: Dashboard
+          - generic [ref=f1e155]: →
+    - generic [ref=f1e156]: Reporting
+    - generic [ref=f1e157]:
+      - generic [ref=f1e158] [cursor=pointer]:
+        - generic [ref=f1e162]: LC Register
+        - generic [ref=f1e163]: Full register of LC requests across all statuses.
+        - generic [ref=f1e164]:
+          - generic [ref=f1e165]: Report
+          - generic [ref=f1e166]: →
+      - generic [ref=f1e167] [cursor=pointer]:
+        - generic [ref=f1e171]: Facility Register
+        - generic [ref=f1e172]: Full register of sanctioned facilities and their utilization.
+        - generic [ref=f1e173]:
+          - generic [ref=f1e174]: Report
+          - generic [ref=f1e175]: →
+      - generic [ref=f1e176] [cursor=pointer]:
+        - generic [ref=f1e180]: LC Amendment Register
+        - generic [ref=f1e181]: Full register of LC amendments, pending and processed.
+        - generic [ref=f1e182]:
+          - generic [ref=f1e183]: Report
+          - generic [ref=f1e184]: →
+      - generic [ref=f1e185] [cursor=pointer]:
+        - generic [ref=f1e189]: Fees & Chargers Register
+        - generic [ref=f1e190]: Full register of posted fees and charges.
+        - generic [ref=f1e191]:
+          - generic [ref=f1e192]: Report
+          - generic [ref=f1e193]: →

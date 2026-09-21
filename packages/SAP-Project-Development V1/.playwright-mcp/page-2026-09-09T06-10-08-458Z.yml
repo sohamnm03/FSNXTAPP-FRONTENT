@@ -1,0 +1,117 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - img "Fourth Signal" [ref=e4]
+      - generic [ref=e5]:
+        - heading "Trade Finance" [level=1] [ref=e6]
+        - paragraph [ref=e7]: FS • VISTA
+    - generic "SAP TRM connected" [ref=e8]
+  - main [ref=e9]:
+    - generic [ref=e386]: Trade Finance
+    - generic [ref=e387]: Sanction Creation
+    - generic [ref=e388]:
+      - generic [ref=e389] [cursor=pointer]:
+        - generic [ref=e393]: Facility Workbench
+        - generic [ref=e394]: Set up and maintain sanctioned credit facilities and limits.
+        - generic [ref=e395]:
+          - generic [ref=e396]: Create
+          - generic [ref=e397]: →
+      - generic [ref=e398] [cursor=pointer]:
+        - generic [ref=e402]: Facility Confirmation
+        - generic [ref=e403]: Approve or reject sanctioned facility set-up requests.
+        - generic [ref=e404]:
+          - generic [ref=e405]: Confirm
+          - generic [ref=e406]: →
+    - generic [ref=e407]: LC Process
+    - generic [ref=e408]:
+      - generic [ref=e409] [cursor=pointer]:
+        - generic [ref=e413]: LC Issuance Process
+        - generic [ref=e414]: 4 screens in this sub-process.
+        - generic [ref=e415]:
+          - generic [ref=e416]: Folder
+          - generic [ref=e417]: →
+      - generic [ref=e418] [cursor=pointer]:
+        - generic [ref=e422]: LC Acceptance & Presentation
+        - generic [ref=e423]: 4 screens in this sub-process.
+        - generic [ref=e424]:
+          - generic [ref=e425]: Folder
+          - generic [ref=e426]: →
+      - generic [ref=e427] [cursor=pointer]:
+        - generic [ref=e431]: LC Amendment Process
+        - generic [ref=e432]: 2 screens in this sub-process.
+        - generic [ref=e433]:
+          - generic [ref=e434]: Folder
+          - generic [ref=e435]: →
+      - generic [ref=e436] [cursor=pointer]:
+        - generic [ref=e440]: LC Termination Process
+        - generic [ref=e441]: 2 screens in this sub-process.
+        - generic [ref=e442]:
+          - generic [ref=e443]: Folder
+          - generic [ref=e444]: →
+    - generic [ref=e445]: BG Process
+    - generic [ref=e446]:
+      - generic [ref=e447] [cursor=pointer]:
+        - generic [ref=e451]: BG Issuance Process
+        - generic [ref=e452]: 4 screens in this sub-process.
+        - generic [ref=e453]:
+          - generic [ref=e454]: Folder
+          - generic [ref=e455]: →
+      - generic [ref=e456] [cursor=pointer]:
+        - generic [ref=e460]: BG Amendment Process
+        - generic [ref=e461]: 2 screens in this sub-process.
+        - generic [ref=e462]:
+          - generic [ref=e463]: Folder
+          - generic [ref=e464]: →
+      - generic [ref=e465] [cursor=pointer]:
+        - generic [ref=e469]: BG Termination Process
+        - generic [ref=e470]: 2 screens in this sub-process.
+        - generic [ref=e471]:
+          - generic [ref=e472]: Folder
+          - generic [ref=e473]: →
+    - generic [ref=e474]: Accounting
+    - generic [ref=e476] [cursor=pointer]:
+      - generic [ref=e480]: Posting of Fees
+      - generic [ref=e481]: Post accrued LC / BG fees and charges to the ledger.
+      - generic [ref=e482]:
+        - generic [ref=e483]: Process
+        - generic [ref=e484]: →
+    - generic [ref=e485]: Dashboard Reporting
+    - generic [ref=e486]:
+      - generic [ref=e487] [cursor=pointer]:
+        - generic [ref=e491]: Limit Utilization Tracker
+        - generic [ref=e492]: Track sanctioned limit usage across facilities in real time.
+        - generic [ref=e493]:
+          - generic [ref=e494]: Dashboard
+          - generic [ref=e495]: →
+      - generic [ref=e496] [cursor=pointer]:
+        - generic [ref=e500]: Fees Tracker
+        - generic [ref=e501]: Monitor fee accrual and posting status across all requests.
+        - generic [ref=e502]:
+          - generic [ref=e503]: Dashboard
+          - generic [ref=e504]: →
+    - generic [ref=e505]: Reporting
+    - generic [ref=e506]:
+      - generic [ref=e507] [cursor=pointer]:
+        - generic [ref=e511]: LC Register
+        - generic [ref=e512]: Full register of LC requests across all statuses.
+        - generic [ref=e513]:
+          - generic [ref=e514]: Report
+          - generic [ref=e515]: →
+      - generic [ref=e516] [cursor=pointer]:
+        - generic [ref=e520]: Facility Register
+        - generic [ref=e521]: Full register of sanctioned facilities and their utilization.
+        - generic [ref=e522]:
+          - generic [ref=e523]: Report
+          - generic [ref=e524]: →
+      - generic [ref=e525] [cursor=pointer]:
+        - generic [ref=e529]: LC Amendment Register
+        - generic [ref=e530]: Full register of LC amendments, pending and processed.
+        - generic [ref=e531]:
+          - generic [ref=e532]: Report
+          - generic [ref=e533]: →
+      - generic [ref=e534] [cursor=pointer]:
+        - generic [ref=e538]: Fees & Chargers Register
+        - generic [ref=e539]: Full register of posted fees and charges.
+        - generic [ref=e540]:
+          - generic [ref=e541]: Report
+          - generic [ref=e542]: →

@@ -1,0 +1,26 @@
+[     617ms] [INFO] [ottk-console] build 2026-09-08d @ http://localhost:8765/:882
+[   43012ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/ottk/Bank:0
+[   43013ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/ottk/RefInt:0
+[   43013ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/ottk/EntityString:0
+[   43014ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/ottk/CoCode:0
+[   43073ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/ottk/FeeType:0
+[   43075ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/ottk/SlcOttkDetail:0
+[   85471ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/dttk/SlcDttkDetail:0
+[  209827ms] [INFO] [ottk-console] step: 1 open key=100039 @ http://localhost:8765/:839
+[  209828ms] [INFO] [ottk-console] step: 2 overlay shown @ http://localhost:8765/:839
+[  209832ms] [INFO] [ottk-console] step: 3 src set -> http://localhost:8765/dttk-view.html?displayDttk=100039 @ http://localhost:8765/:839
+[  209832ms] [INFO] [ottk-console] step: 4 timer armed, waiting for load/ready @ http://localhost:8765/:839
+[  210207ms] [INFO] [ottk-console] DTTK view revealed via ready message @ http://localhost:8765/:830
+[  210226ms] [INFO] [ottk-console] step: load event fired @ http://localhost:8765/:839
+[  252261ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/ottk/RefInt:0
+[  252262ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/ottk/SlcDttkDetail:0
+[  252263ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/ottk/CoCode:0
+[  252264ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/ottk/Bank:0
+[  252265ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/ottk/EntityString:0
+[  252522ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/ottk/FeeType:0
+[  294679ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/ottk/SlcOttkDetail:0
+[  294679ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/dttk/SlcDttkDetail('100039'):0
+[  294704ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/dttk/CFeeType:0
+[  294705ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/dttk/DFeeType:0
+[  294705ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/dttk/Bank:0
+[  294906ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8765/api/ottk/Bank:0

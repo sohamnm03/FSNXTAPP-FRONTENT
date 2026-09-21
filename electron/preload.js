@@ -9,6 +9,15 @@ contextBridge.exposeInMainWorld('desktopAPI', Object.freeze({
   googleAuth: Object.freeze({
     login: () => ipcRenderer.invoke('google-auth:login'),
   }),
+  sapDevelopment: Object.freeze({
+    getStatus: () => ipcRenderer.invoke('sap-development:get-status'),
+    getAuthStatus: () => ipcRenderer.invoke('sap-development:get-auth-status'),
+    configureToken: (token) => ipcRenderer.invoke('sap-development:configure-token', token),
+    clearToken: () => ipcRenderer.invoke('sap-development:clear-token'),
+    start: (prompt, sessionId, systemId, credentials) => ipcRenderer.invoke('sap-development:start', prompt, sessionId, systemId, credentials),
+    getRun: (runId) => ipcRenderer.invoke('sap-development:get-run', runId),
+    stop: (runId) => ipcRenderer.invoke('sap-development:stop', runId),
+  }),
   sapTerminal: Object.freeze({
     getProject: (username) => ipcRenderer.invoke('sap-terminal:get-project', username),
     chooseArchiveDirectory: () => ipcRenderer.invoke('sap-terminal:choose-archive-directory'),

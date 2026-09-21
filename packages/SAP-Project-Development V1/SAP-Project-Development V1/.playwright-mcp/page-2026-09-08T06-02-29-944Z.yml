@@ -1,0 +1,653 @@
+- generic [ref=f9e1]:
+  - generic [ref=f9e2]:
+    - banner [ref=f9e3]:
+      - generic [ref=f9e4]: Distribution Ticket DTTK
+      - generic [ref=f9e9]:
+        - button "Create DTTK" [ref=f9e10] [cursor=pointer]
+        - generic "System connected" [ref=f9e14]
+        - button "Release & Print" [ref=f9e15] [cursor=pointer]
+        - button "Refresh" [ref=f9e19] [cursor=pointer]
+        - button "Copy DTTK" [ref=f9e23] [cursor=pointer]
+    - dialog [ref=f9e102]:
+      - generic [ref=f9e103]:
+        - generic [ref=f9e104]:
+          - generic [ref=f9e106]:
+            - heading "Edit Distribution Ticket" [level=2] [ref=f9e107]
+            - paragraph [ref=f9e108]: "Distribution · Edit | DTTK #100039 | Draft"
+          - generic [ref=f9e109]:
+            - generic [ref=f9e110]:
+              - generic [ref=f9e111]: Created By
+              - generic [ref=f9e112]: FS_DEV3
+            - button "Close modal" [ref=f9e113] [cursor=pointer]: ×
+        - generic [ref=f9e114]:
+          - generic [ref=f9e115]:
+            - generic [ref=f9e116]: Transaction Details
+            - generic [ref=f9e117]:
+              - generic [ref=f9e118]:
+                - generic [ref=f9e119]: DTTK Type 1
+                - combobox "DTTK Type 1" [active] [ref=f9e120]:
+                  - option "Select"
+                  - option "01 Discounting & Confirmation"
+                  - option "02 Discounting Only" [selected]
+                  - option "03 Confirmation Only"
+              - generic [ref=f9e121]:
+                - generic [ref=f9e122]: DTTK Type 2
+                - combobox "DTTK Type 2" [ref=f9e123]:
+                  - option "01 New"
+                  - option "02 With Ref OTTK" [selected]
+              - generic [ref=f9e124]:
+                - generic [ref=f9e125]: Related OTTK
+                - combobox "Related OTTK" [ref=f9e126]:
+                  - option "Select OTTK"
+                  - option "100042 — OGA-DMCC-PAN" [selected]
+                  - option "100045 — OGA-DMCC-PAN"
+                  - option "100046 — DMCC-OGA-PAN"
+                  - option "100047 — DMCC-OGA-PAN"
+                  - option "100048 — DMCC-OGA-PAN"
+              - generic [ref=f9e127]:
+                - generic [ref=f9e128]: Structure
+                - combobox "Structure" [ref=f9e129]:
+                  - option "Select structure"
+                  - option "DSX — Deposit Set Off - Cross Border" [selected]
+                  - option "LCP — LC Prepayment"
+                  - option "CC DSX — Cross Currency DSX"
+                  - option "CC LCP — Cross Currency LCP"
+              - generic [ref=f9e130]:
+                - generic [ref=f9e131]: Entity String
+                - combobox "Entity String" [ref=f9e132]:
+                  - option "Select entity"
+                  - option "E020 — OGA-OSML-DMCC"
+                  - option "E021 — OGA-DMCC-PAN"
+                  - option "E022 — OGA-AMBER-DMCC"
+                  - option "E023 — SEDA-DMCC-OGA"
+                  - option "E024 — DMCC-OGA-PAN" [selected]
+                  - option "E025 — OGA-OSIPL-PAN"
+                  - option "E026 — OGA-OSIPL-DMCC"
+          - generic [ref=f9e133]:
+            - generic [ref=f9e134]: Trade Details
+            - generic [ref=f9e135]:
+              - generic [ref=f9e136]:
+                - generic [ref=f9e137]: Origination Bank
+                - combobox "Origination Bank" [disabled] [ref=f9e138]:
+                  - option "Select bank" [selected]
+                  - option "3 — BARCLAYS BANK PLC"
+                  - option "21 — Group branch"
+                  - option "44 — ICICI new bank"
+                  - option "100067276 — GSD 400 Testing"
+                  - option "100571179 — Bao Chau Import Export and Trading"
+                  - option "100571180 — PHU QUI TRADING EXPORT IMPORT COMPA"
+                  - option "400000005 — Union Bank"
+                  - option "660000003 — Test vendor SG32"
+                  - option "660000645 — DBS BANK LTD"
+                  - option "660000680 — STANDARD CHARTERED BANK SINGAPORE"
+                  - option "660000759 — QATAR NATIONAL BANK (QPSC)"
+                  - option "660000780 — TEST Bank 3"
+                  - option "660000781 — TEST Bank 4"
+                  - option "660000782 — TEST Bank 5"
+                  - option "660000802 — WESTPAC BANKING CORPORATION"
+                  - option "660000805 — BNP PARIBAS"
+                  - option "660000806 — CITIBANK NA"
+                  - option "660000807 — HSBC SINGAPORE"
+                  - option "660000809 — RABOBANK INTERNATIONAL SINGAPORE"
+                  - option "660000810 — STANDARD CHARTERED BANK SINGAPORE"
+                  - option "660000820 — Bank of America_Pune"
+                  - option "660000821 — Bank of America_mumbai"
+                  - option "660000825 — Standard Chartered_Mumbai"
+                  - option "660000826 — Standard Chartered_Bangalore"
+                  - option "660000829 — Bank test"
+                  - option "660000830 — SBI_mumbai"
+                  - option "660000831 — SBI_pune"
+                  - option "660000835 — SBI_hyderabad"
+                  - option "660000840 — Bank of Baroda_mumbai"
+                  - option "660000841 — Bank of Baroda_pune"
+                  - option "660000848 — Bank test 3"
+                  - option "660000850 — Bank test 5"
+                  - option "660000851 — Bank test 6"
+                  - option "660000854 — Bank test 9"
+                  - option "660000855 — Bank test 10"
+                  - option "660000856 — Bank test 11"
+                  - option "660000857 — Bank test 12"
+                  - option "660000865 — Bank test 20"
+                  - option "660000866 — Bank test 21"
+                  - option "660000867 — Bank test 22"
+                  - option "660000868 — Bank test 23"
+                  - option "660000874 — ICICI new bank"
+                  - option "660000875 — TEST Bank 1"
+                  - option "660000876 — fewgnwi"
+                  - option "660000877 — LMAO"
+                  - option "660000883 — kyuki"
+                  - option "660000884 — TEST 2"
+                  - option "660000885 — mat kar lala"
+                  - option "660000886 — test case 1"
+                  - option "660000889 — test case 3"
+                  - option "660000893 — test case 4"
+                  - option "660000894 — test case 5"
+                  - option "660000895 — test case 6"
+                  - option "660001090 — SAIGON-HANOI COMMERCIAL JOINT"
+                  - option "660001091 — HOCHIMINH CITY DEVELOPMENT"
+                  - option "660001100 — ICICI Bank Limited Singapore"
+                  - option "660001101 — DEUTSCHE BANK AG"
+                  - option "660001102 — DEUTSCHE BANK, SG"
+                  - option "660001103 — BANCO BRADESCO S.A. -NY BRANCH"
+                  - option "660001104 — BANCO BRADESCO S.A."
+                  - option "660001105 — CREDIT AGRICOLE CORPORATE AND INVES"
+                  - option "660001106 — CREDIT AGRICOLE"
+                  - option "660001107 — Citibank N.A Abu Dhabi Branch"
+                  - option "660001108 — Citibank N.A London Branch"
+                  - option "660001109 — Bank of China, Tianjin"
+                  - option "660001110 — Bank of China, Shanghai"
+                  - option "660001111 — Bank of China Limited London Branch"
+                  - option "660001117 — HOCHIMINH CITY DEVELOPMENT"
+                  - option "660012172 — BARCLAYS BANK PLC"
+                  - option "660012173 — JPMORGAN CHASE BANK NA SINGAPO"
+                  - option "660012175 — STANDARD CHARTERED BANK SINGAPORE"
+                  - option "660012194 — DEUTSCHE BANK AG LONDON BRANCH"
+                  - option "660012300 — ICICI Bank Limited Singapore"
+                  - option "660012539 — YES BANK LIMITED, INDIA"
+                  - option "660012542 —"
+                  - option "660012545 —"
+                  - option "660012547 —"
+                  - option "660012716 — INDUSIND BANK LIMITED"
+                  - option "660012783 — ECOBANK NIGERIA LTD"
+                  - option "660012933 — FEDERAL BANK"
+                  - option "660012956 — Westpac Banking Corporation"
+                  - option "660012992 — BANCO DO BRASIL S.A."
+                  - option "660013357 —"
+                  - option "660013362 — ITAU UNIBANCO S.A., NASSAU BRANCH"
+                  - option "660013363 — BANCO VOTORANTIM S.A."
+                  - option "660013364 — BANCO BOCOM BBM S.A."
+                  - option "660013365 — BANCO SAFRA S.A."
+                  - option "660013366 — BANCO BRADESCO EUROPA S.A."
+                  - option "660013367 — BANCO INDUSTRIAL S.A."
+                  - option "660013368 — BANESCO (PANAMA) S.A."
+                  - option "660013369 — CHINA MERCHANTS BANK"
+                  - option "660013370 — ACCESS BANK PLC"
+                  - option "660013371 — CORONATION MERCHANT BANK LIMITED,"
+                  - option "660013372 — UNION BANK OF NIGERIA"
+                  - option "660013375 — DEUTSCHE BANK, SG"
+                  - option "660013376 —"
+                  - option "660013377 — BANCO BRADESCO S.A."
+                  - option "660013378 — CHINA CONSTRUCTION BANK (BRASIL) BA"
+                  - option "660013379 — BANCO ABC BRASIL S.A."
+                  - option "660013380 — MULTIBANK, INC & SUBS."
+              - generic [ref=f9e139]:
+                - generic [ref=f9e140]: OTTK Trade Value
+                - generic [ref=f9e141]:
+                  - 'textbox "Enter a number or use K, M, B, T (example: 1.5M)" [disabled] [ref=f9e142]':
+                    - /placeholder: e.g. 1.5M
+                    - text: 1,000,000.00
+                  - combobox [disabled] [ref=f9e143]:
+                    - option "USD" [selected]
+                    - option "EUR"
+                    - option "GBP"
+                    - option "INR"
+                    - option "AED"
+                    - option "SGD"
+                    - option "AUD"
+              - generic [ref=f9e144]:
+                - generic [ref=f9e145]: DTTK Trade Value
+                - generic [ref=f9e146]:
+                  - 'textbox "Enter a number or use K, M, B, T (example: 1.5M)" [disabled] [ref=f9e147]':
+                    - /placeholder: e.g. 1.5M
+                    - text: 1,000,000.00
+                  - combobox [disabled] [ref=f9e148]:
+                    - option "USD" [selected]
+                    - option "EUR"
+                    - option "GBP"
+                    - option "INR"
+                    - option "AED"
+                    - option "SGD"
+                    - option "AUD"
+              - generic [ref=f9e149]:
+                - generic [ref=f9e150]:
+                  - generic [ref=f9e151]: Expected LC Date
+                  - textbox "Expected LC Date" [disabled] [ref=f9e152]: 2026-09-07
+                - generic [ref=f9e153]:
+                  - generic [ref=f9e154]: Expected LC Tenor
+                  - generic [ref=f9e155]:
+                    - textbox "Expected LC Tenor" [disabled] [ref=f9e156]:
+                      - /placeholder: "0"
+                      - text: "90"
+                    - generic [ref=f9e157]: days
+              - generic [ref=f9e158]:
+                - generic [ref=f9e159]:
+                  - generic [ref=f9e160]: LC Applicant
+                  - textbox [disabled] [ref=f9e161]: OGA
+                - generic [ref=f9e162]:
+                  - generic [ref=f9e163]: LC Beneficiary
+                  - textbox [disabled] [ref=f9e164]: DMCC
+              - generic [ref=f9e165]:
+                - generic [ref=f9e166]: Company Code
+                - generic [ref=f9e167]:
+                  - textbox [disabled] [ref=f9e168]: SG03
+                  - textbox "(auto)" [disabled] [ref=f9e169]: OLAM GlobalAgri Pte. Ltd
+              - generic [ref=f9e170]:
+                - generic [ref=f9e171]: Business Area
+                - generic [ref=f9e172]:
+                  - textbox "(auto)" [disabled] [ref=f9e173]: "0615"
+                  - textbox "(auto)" [disabled] [ref=f9e174]
+              - generic [ref=f9e175]:
+                - generic [ref=f9e176]: RMA With Orig. Bank
+                - combobox "RMA With Orig. Bank" [disabled] [ref=f9e177]:
+                  - option "Select"
+                  - option "Y Yes" [selected]
+                  - option "N No"
+          - generic [ref=f9e178]:
+            - generic [ref=f9e179]: Discounting Loan Details
+            - generic [ref=f9e180]:
+              - generic [ref=f9e181]:
+                - generic [ref=f9e182]: Discounting Bank
+                - combobox "Discounting Bank" [ref=f9e183]:
+                  - option "Select bank" [selected]
+                  - option "3 — BARCLAYS BANK PLC"
+                  - option "100067276 — GSD 400 Testing"
+                  - option "100571179 — Bao Chau Import Export and Trading"
+                  - option "100571180 — PHU QUI TRADING EXPORT IMPORT COMPA"
+                  - option "100571232 — THOGAL JOINT STOCK COMPANY"
+                  - option "400000006 — Standard chartered"
+                  - option "660000003 — Test vendor SG32"
+                  - option "660000645 — DBS BANK LTD"
+                  - option "660000680 — STANDARD CHARTERED BANK SINGAPORE"
+                  - option "660000759 — QATAR NATIONAL BANK (QPSC)"
+                  - option "660000784 — TEST Bank 7"
+                  - option "660000802 — WESTPAC BANKING CORPORATION"
+                  - option "660000805 — BNP PARIBAS"
+                  - option "660000806 — CITIBANK NA"
+                  - option "660000807 — HSBC SINGAPORE"
+                  - option "660000809 — RABOBANK INTERNATIONAL SINGAPORE"
+                  - option "660000810 — STANDARD CHARTERED BANK SINGAPORE"
+                  - option "660000822 — Yes Bank_Mumbai"
+                  - option "660000823 — Yes Bank_Pune"
+                  - option "660000827 — HSBC_Mumbai"
+                  - option "660000828 — HSBC_Pune"
+                  - option "660000832 — DBS_mumbai"
+                  - option "660000833 — DBS_pune"
+                  - option "660000842 — Standard Chartered_Mumbai"
+                  - option "660000843 — Standard Chartered_Pune"
+                  - option "660000845 — Bank test"
+                  - option "660000846 — Bank test 1"
+                  - option "660000847 — Bank test 2"
+                  - option "660000849 — Bank test 4"
+                  - option "660000852 — Bank test 7"
+                  - option "660000853 — Bank test 8"
+                  - option "660000858 — Bank test 13"
+                  - option "660000859 — Bank test 14"
+                  - option "660000860 — Bank test 15"
+                  - option "660000861 — Bank test 16"
+                  - option "660000862 — Bank test 17"
+                  - option "660000863 — Bank test 18"
+                  - option "660000864 — Bank test 19"
+                  - option "660000869 — Bank test 24"
+                  - option "660000871 — Bank test 25"
+                  - option "660000872 — Bank test 26"
+                  - option "660000873 — Bank test 27"
+                  - option "660001090 — SAIGON-HANOI COMMERCIAL JOINT"
+                  - option "660001091 — HOCHIMINH CITY DEVELOPMENT"
+                  - option "660001100 — ICICI Bank Limited Singapore"
+                  - option "660001101 — DEUTSCHE BANK AG"
+                  - option "660001102 — DEUTSCHE BANK, SG"
+                  - option "660001103 — BANCO BRADESCO S.A. -NY BRANCH"
+                  - option "660001105 — CREDIT AGRICOLE CORPORATE AND INVES"
+                  - option "660001106 — CREDIT AGRICOLE"
+                  - option "660001107 — Citibank N.A Abu Dhabi Branch"
+                  - option "660001108 — Citibank N.A London Branch"
+                  - option "660001109 — Bank of China, Tianjin"
+                  - option "660001110 — Bank of China, Shanghai"
+                  - option "660001111 — Bank of China Limited London Branch"
+                  - option "660012171 — AUSTRALIA AND NEW ZEALAND BANKING"
+                  - option "660012172 — BARCLAYS BANK PLC"
+                  - option "660012173 — JPMORGAN CHASE BANK NA SINGAPO"
+                  - option "660012175 — STANDARD CHARTERED BANK SINGAPORE"
+                  - option "660012191 — CITIBANK NA"
+                  - option "660012192 — DBS BANK LTD"
+                  - option "660012194 — DEUTSCHE BANK AG LONDON BRANCH"
+                  - option "660012195 — HSBC SINGAPORE"
+                  - option "660012280 — MUFG Bank Ltd Singapore Branch"
+                  - option "660012300 — ICICI Bank Limited Singapore"
+                  - option "660012501 — Intesa Sanpaolo S p A"
+                  - option "660012542 —"
+                  - option "660012580 — JPMorgan Chase Bank N.A. London"
+                  - option "660012581 — Citibank, N.A. New York"
+                  - option "660012601 — Banco Bilbao Vizcaya Argentaria, S."
+                  - option "660012614 — Bank of Baroda"
+                  - option "660012615 — CREDIT AGRICOLE"
+                  - option "660012670 — EMIRATES NATIONAL BANK OF DUBAI"
+                  - option "660012676 — HSBC BANK PLC"
+                  - option "660012701 — UNICREDIT BANK AG, HAMBURG"
+                  - option "660012776 — INTESA SANPAOLO NY"
+                  - option "660012816 — ABSA BANK LIMITED"
+                  - option "660012818 — RAND MERCHANT BAN"
+                  - option "660012820 — STANDARD BANK OF SOUTH AFRICA"
+                  - option "660012887 — COBANK ACB"
+                  - option "660012951 — Wells Fargo Bank NA,"
+                  - option "660012952 — The Bank of Nova Scotia"
+                  - option "660012956 — Westpac Banking Corporation"
+                  - option "660012992 — BANCO DO BRASIL S.A."
+                  - option "660013354 — BANCO BILBAO VIZCAYA ARGENTARIA SA,"
+                  - option "660013355 — BANCO BILBAO VIZCAYA ARGENTARIA SA,"
+                  - option "660013356 — BRITISH ARAB COMMERCIAL BANK PLC LO"
+                  - option "660013357 —"
+                  - option "660013358 — HUNTINGTON NATIONAL BANK"
+                  - option "660013359 — WELLS FARGO BANK, N.A."
+                  - option "660013360 — WELLS FARGO BANK, N.A."
+                  - option "660013361 — THE KOREA DEVELOPMENT BANK"
+                  - option "660013362 — ITAU UNIBANCO S.A., NASSAU BRANCH"
+                  - option "660013369 — CHINA MERCHANTS BANK"
+                  - option "660013373 — SHINHAN BANK"
+                  - option "660013374 — BANK OF MONTREAL"
+                  - option "660013375 — DEUTSCHE BANK, SG"
+                  - option "660013382 — BANCO ALIADOS.A. AND SUBSIDIARIES"
+                  - option "660013391 — UNITED BANK FOR AFRICA - NEW YORK B"
+                  - option "660013392 — THE BANK OF NEW YORK MELLON - NEW Y"
+              - generic [ref=f9e184]:
+                - generic [ref=f9e185]: Disc. Calc Method
+                - combobox "Disc. Calc Method" [ref=f9e186]:
+                  - option "Select"
+                  - option "DTY — Discounted Value" [selected]
+                  - option "STR — Full Value"
+              - generic [ref=f9e187]:
+                - generic [ref=f9e188]: Discounting Loan Amt
+                - generic [ref=f9e189]:
+                  - textbox "e.g. 700K" [ref=f9e190]: 1,000,000.00
+                  - combobox [ref=f9e191]:
+                    - option "USD" [selected]
+                    - option "EUR"
+                    - option "GBP"
+                    - option "INR"
+                    - option "AED"
+                    - option "SGD"
+                    - option "AUD"
+              - generic [ref=f9e192]:
+                - generic [ref=f9e193]: Discounting Rate
+                - combobox "Discounting Rate" [ref=f9e194]:
+                  - option "01 Fixed" [selected]
+                  - option "02 Floating"
+              - generic [ref=f9e195]:
+                - generic [ref=f9e196]: Interest Rate
+                - textbox "0.00" [ref=f9e197]: "10.00000"
+              - generic [ref=f9e198]:
+                - generic [ref=f9e199]: Interest Frequency
+                - combobox "Interest Frequency" [ref=f9e200]:
+                  - option "Select"
+                  - option "01 Upfront" [selected]
+                  - option "02 Monthly"
+                  - option "03 Quarterly"
+                  - option "04 Half-yearly"
+                  - option "05 Rear-end"
+                  - option "06 NA"
+              - generic [ref=f9e201]:
+                - generic [ref=f9e202]: Negotiation Fee
+                - textbox "0.00" [ref=f9e203]: 10,000.00
+              - generic [ref=f9e204]:
+                - generic [ref=f9e205]: Other Charges
+                - generic [ref=f9e206]:
+                  - textbox "Grand total from the Charges breakdown" [ref=f9e207]:
+                    - /placeholder: "0.00"
+                    - text: 2,777.78
+                  - button "Other Charges breakdown" [ref=f9e208] [cursor=pointer]
+              - generic [ref=f9e211]:
+                - generic [ref=f9e212]: Discounting Trader
+                - combobox "Discounting Trader" [ref=f9e213]:
+                  - option "Select trader" [selected]
+              - generic [ref=f9e214]:
+                - generic [ref=f9e215]: Region
+                - textbox [ref=f9e216]
+              - generic [ref=f9e217]:
+                - generic [ref=f9e218]: Discounting / Flow Remark
+                - textbox [ref=f9e219]
+          - generic [ref=f9e220]:
+            - generic [ref=f9e221]: Additional Information
+            - generic [ref=f9e222]:
+              - generic [ref=f9e223]:
+                - generic [ref=f9e224]: Bank Contact
+                - textbox [ref=f9e225]: karthik
+              - generic [ref=f9e226]:
+                - generic [ref=f9e227]: Bank Contact Details
+                - textbox [ref=f9e228]: KArthik Ram
+              - generic [ref=f9e229]:
+                - generic [ref=f9e230]: Commitment End Date
+                - textbox [ref=f9e231]: 2026-09-08
+              - generic [ref=f9e232]:
+                - generic [ref=f9e233]: Commitment Fee
+                - textbox "0.00" [ref=f9e234]
+              - generic [ref=f9e235]:
+                - generic [ref=f9e236]: Reservation Start Date
+                - textbox [ref=f9e237]: 2026-09-08
+              - generic [ref=f9e238]:
+                - generic [ref=f9e239]: LC Issuance Latest Date
+                - textbox [ref=f9e240]: 2026-09-08
+              - generic [ref=f9e241]:
+                - generic [ref=f9e242]: Doc Pres. Latest Date
+                - textbox [ref=f9e243]: 2026-09-08
+              - generic [ref=f9e244]:
+                - generic [ref=f9e245]: Repay. of Prev LC Date
+                - textbox [ref=f9e246]: 2026-09-08
+        - generic [ref=f9e247]:
+          - generic [ref=f9e248]: "* Company Code is required before creation."
+          - generic [ref=f9e249]:
+            - button "Clear" [ref=f9e250] [cursor=pointer]
+            - button "Cancel" [ref=f9e251] [cursor=pointer]
+            - button "Update DTTK" [ref=f9e252] [cursor=pointer]
+    - main [ref=f9e27]:
+      - generic [ref=f9e28]:
+        - generic [ref=f9e29]:
+          - generic [ref=f9e30]: Open Distribution Tickets 4 records
+          - generic [ref=f9e31]:
+            - textbox "Search distribution tickets" [ref=f9e32]:
+              - /placeholder: Search DTTK…
+            - button "Filter" [ref=f9e33] [cursor=pointer]
+            - button "Export CSV" [ref=f9e36] [cursor=pointer]
+        - table [ref=f9e40]:
+          - rowgroup [ref=f9e41]:
+            - row [ref=f9e42]:
+              - columnheader "DTTK No" [ref=f9e43]
+              - columnheader "Type 1" [ref=f9e44]
+              - columnheader "Type 2" [ref=f9e45]
+              - columnheader "Related OTTK" [ref=f9e46]
+              - columnheader "Structure" [ref=f9e47]
+              - columnheader "Entity String" [ref=f9e48]
+              - columnheader "DTTK Value" [ref=f9e49]
+              - columnheader "Crcy" [ref=f9e50]
+              - columnheader "Discounting Bank" [ref=f9e51]
+              - columnheader "Expected LC Date" [ref=f9e52]
+              - columnheader "Tenor" [ref=f9e53]
+              - columnheader "LC Applicant" [ref=f9e54]
+              - columnheader "LC Beneficiary" [ref=f9e55]
+              - columnheader "CoCode" [ref=f9e56]
+              - columnheader "Interest" [ref=f9e57]
+              - columnheader "Status" [ref=f9e58]
+          - rowgroup [ref=f9e253]:
+            - row [ref=f9e254]:
+              - cell "100039" [ref=f9e255] [cursor=pointer]
+              - cell "02 Discounting Only" [ref=f9e256]
+              - cell "02 With Ref DTTK" [ref=f9e257]
+              - cell "100042" [ref=f9e258]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f9e259]
+              - cell "DMCC-OGA-PAN" [ref=f9e260]
+              - cell "1,000,000.00" [ref=f9e261]
+              - cell "USD" [ref=f9e262]
+              - cell [ref=f9e263]
+              - cell "07.09.2026" [ref=f9e264]
+              - cell "90" [ref=f9e265]
+              - cell "OGA" [ref=f9e266]
+              - cell "DMCC" [ref=f9e267]
+              - cell "SG03" [ref=f9e268]
+              - cell "Fixed 10.00%" [ref=f9e269]
+              - cell "Draft" [ref=f9e270]
+            - row [ref=f9e272]:
+              - cell "100040" [ref=f9e273] [cursor=pointer]
+              - cell "01 Discounting & Confirmation" [ref=f9e274]
+              - cell "02 With Ref DTTK" [ref=f9e275]
+              - cell "100048" [ref=f9e276]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f9e277]
+              - cell "DMCC-OGA-PAN" [ref=f9e278]
+              - cell "2,500,000.00" [ref=f9e279]
+              - cell "USD" [ref=f9e280]
+              - cell "400000006 — Standard chartered" [ref=f9e281]
+              - cell "07.09.2026" [ref=f9e282]
+              - cell "250" [ref=f9e283]
+              - cell "OGA" [ref=f9e284]
+              - cell "DMCC" [ref=f9e285]
+              - cell "SG03" [ref=f9e286]
+              - cell "Fixed 10.00%" [ref=f9e287]
+              - cell "Draft" [ref=f9e288]
+            - row [ref=f9e290]:
+              - cell "100041" [ref=f9e291] [cursor=pointer]
+              - cell "01 Discounting & Confirmation" [ref=f9e292]
+              - cell "02 With Ref DTTK" [ref=f9e293]
+              - cell "100048" [ref=f9e294]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f9e295]
+              - cell "DMCC-OGA-PAN" [ref=f9e296]
+              - cell "2,500,000.00" [ref=f9e297]
+              - cell "USD" [ref=f9e298]
+              - cell "400000006 — Standard chartered" [ref=f9e299]
+              - cell "07.09.2026" [ref=f9e300]
+              - cell "250" [ref=f9e301]
+              - cell "OGA" [ref=f9e302]
+              - cell "DMCC" [ref=f9e303]
+              - cell "SG03" [ref=f9e304]
+              - cell "Fixed 10.00%" [ref=f9e305]
+              - cell "01" [ref=f9e306]
+            - row [ref=f9e308]:
+              - cell "100042" [ref=f9e309] [cursor=pointer]
+              - cell "01 Discounting & Confirmation" [ref=f9e310]
+              - cell "01 New" [ref=f9e311]
+              - cell [ref=f9e312]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f9e313]
+              - cell "DMCC-OGA-PAN" [ref=f9e314]
+              - cell "2,000,000.00" [ref=f9e315]
+              - cell "USD" [ref=f9e316]
+              - cell "660000802 — WESTPAC BANKING CORPORATION" [ref=f9e317]
+              - cell "08.09.2026" [ref=f9e318]
+              - cell "90" [ref=f9e319]
+              - cell "OGA" [ref=f9e320]
+              - cell "DMCC" [ref=f9e321]
+              - cell "SG03" [ref=f9e322]
+              - cell "Fixed 8.00%" [ref=f9e323]
+              - cell "01" [ref=f9e324]
+        - generic [ref=f9e59]:
+          - generic [ref=f9e60]: Showing 4 of 4
+          - generic [ref=f9e61]:
+            - button "‹" [disabled] [ref=f9e62]
+            - button "1" [ref=f9e63] [cursor=pointer]
+            - button "›" [disabled] [ref=f9e64]
+      - generic [ref=f9e65]:
+        - generic [ref=f9e66]:
+          - generic [ref=f9e67]: Open Origination Tickets 5 records
+          - generic [ref=f9e68]:
+            - textbox "Search origination tickets" [ref=f9e69]:
+              - /placeholder: Search OTTK…
+            - button "Filter" [ref=f9e70] [cursor=pointer]
+            - button "Export CSV" [ref=f9e73] [cursor=pointer]
+        - table [ref=f9e77]:
+          - rowgroup [ref=f9e78]:
+            - row [ref=f9e79]:
+              - columnheader "OTTK No" [ref=f9e80]
+              - columnheader "Type" [ref=f9e81]
+              - columnheader "Structure" [ref=f9e82]
+              - columnheader "Entity ID" [ref=f9e83]
+              - columnheader "Entity String" [ref=f9e84]
+              - columnheader "LC Issuing Bank" [ref=f9e85]
+              - columnheader "Trade Value" [ref=f9e86]
+              - columnheader "Crcy" [ref=f9e87]
+              - columnheader "Expected LC Date" [ref=f9e88]
+              - columnheader "Tenor" [ref=f9e89]
+              - columnheader "LC Applicant" [ref=f9e90]
+              - columnheader "LC Beneficiary" [ref=f9e91]
+              - columnheader "CoCode" [ref=f9e92]
+              - columnheader "Deposit Amt" [ref=f9e93]
+              - columnheader "Interest" [ref=f9e94]
+              - columnheader "Status" [ref=f9e95]
+          - rowgroup [ref=f9e326]:
+            - row [ref=f9e327]:
+              - cell "100042" [ref=f9e328] [cursor=pointer]
+              - cell "01 New" [ref=f9e329]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f9e330]
+              - cell "E021" [ref=f9e331]
+              - cell "OGA-DMCC-PAN" [ref=f9e332]
+              - cell "3 — BARCLAYS BANK PLC" [ref=f9e333]
+              - cell "1,000,000.00" [ref=f9e334]
+              - cell "USD" [ref=f9e335]
+              - cell "07.09.2026" [ref=f9e336]
+              - cell "90" [ref=f9e337]
+              - cell "DMCC" [ref=f9e338]
+              - cell "OGA" [ref=f9e339]
+              - cell "AE13" [ref=f9e340]
+              - cell "1,000,000.00" [ref=f9e341]
+              - cell "Fixed 10.00%" [ref=f9e342]
+              - cell "Draft" [ref=f9e343]
+            - row [ref=f9e345]:
+              - cell "100045" [ref=f9e346] [cursor=pointer]
+              - cell "01 New" [ref=f9e347]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f9e348]
+              - cell "E021" [ref=f9e349]
+              - cell "OGA-DMCC-PAN" [ref=f9e350]
+              - cell "3 — BARCLAYS BANK PLC" [ref=f9e351]
+              - cell "1,500,000.00" [ref=f9e352]
+              - cell "USD" [ref=f9e353]
+              - cell "07.09.2026" [ref=f9e354]
+              - cell "90" [ref=f9e355]
+              - cell "DMCC" [ref=f9e356]
+              - cell "OGA" [ref=f9e357]
+              - cell "AE13" [ref=f9e358]
+              - cell "1,000,000.00" [ref=f9e359]
+              - cell "Fixed 10.00%" [ref=f9e360]
+              - cell "Draft" [ref=f9e361]
+            - row [ref=f9e363]:
+              - cell "100046" [ref=f9e364] [cursor=pointer]
+              - cell "01 New" [ref=f9e365]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f9e366]
+              - cell "E024" [ref=f9e367]
+              - cell "DMCC-OGA-PAN" [ref=f9e368]
+              - cell "100067276 — GSD 400 Testing" [ref=f9e369]
+              - cell "1,000,000.00" [ref=f9e370]
+              - cell "USD" [ref=f9e371]
+              - cell [ref=f9e372]
+              - cell "90" [ref=f9e373]
+              - cell "OGA" [ref=f9e374]
+              - cell "DMCC" [ref=f9e375]
+              - cell "SG03" [ref=f9e376]
+              - cell "0.00" [ref=f9e377]
+              - cell "Fixed 0.00%" [ref=f9e378]
+              - cell "Draft" [ref=f9e379]
+            - row [ref=f9e381]:
+              - cell "100047" [ref=f9e382] [cursor=pointer]
+              - cell "01 New" [ref=f9e383]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f9e384]
+              - cell "E024" [ref=f9e385]
+              - cell "DMCC-OGA-PAN" [ref=f9e386]
+              - cell "660000645 — DBS BANK LTD" [ref=f9e387]
+              - cell "2,500,000.00" [ref=f9e388]
+              - cell "USD" [ref=f9e389]
+              - cell "07.09.2026" [ref=f9e390]
+              - cell "120" [ref=f9e391]
+              - cell "OGA" [ref=f9e392]
+              - cell "DMCC" [ref=f9e393]
+              - cell "AE13" [ref=f9e394]
+              - cell "1,500,000.00" [ref=f9e395]
+              - cell "Fixed 10.55%" [ref=f9e396]
+              - cell "01 - Create New" [ref=f9e397]
+            - row [ref=f9e399]:
+              - cell "100048" [ref=f9e400] [cursor=pointer]
+              - cell "01 New" [ref=f9e401]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f9e402]
+              - cell "E024" [ref=f9e403]
+              - cell "DMCC-OGA-PAN" [ref=f9e404]
+              - cell "660000680 — STANDARD CHARTERED BANK SINGAPORE" [ref=f9e405]
+              - cell "2,500,000.00" [ref=f9e406]
+              - cell "USD" [ref=f9e407]
+              - cell "07.09.2026" [ref=f9e408]
+              - cell "250" [ref=f9e409]
+              - cell "OGA" [ref=f9e410]
+              - cell "DMCC" [ref=f9e411]
+              - cell "SG03" [ref=f9e412]
+              - cell "1,500,000.00" [ref=f9e413]
+              - cell "Fixed 8.00%" [ref=f9e414]
+              - cell "01 - Create New" [ref=f9e415]
+        - generic [ref=f9e96]:
+          - generic [ref=f9e97]: Showing 5 of 5
+          - generic [ref=f9e98]:
+            - button "‹" [disabled] [ref=f9e99]
+            - button "1" [ref=f9e100] [cursor=pointer]
+            - button "›" [disabled] [ref=f9e101]
+  - status

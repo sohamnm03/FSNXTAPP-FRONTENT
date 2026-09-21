@@ -1,0 +1,37 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - img "Fourth Signal" [ref=e4]
+      - generic [ref=e5]:
+        - heading "Trade Finance" [level=1] [ref=e6]
+        - paragraph [ref=e7]: FS • VISTA
+    - generic "SAP TRM connected" [ref=e8]
+  - main [ref=e9]:
+    - generic [ref=e167] [cursor=pointer]: ← Back to Trade Finance Menu Path
+    - generic [ref=e168]: LC Issuance Process
+    - generic [ref=e169]: Part of LC Process. Pick a screen below.
+    - generic [ref=e170]:
+      - generic [ref=e171] [cursor=pointer]:
+        - generic [ref=e175]: LC Request Creation
+        - generic [ref=e176]: Create a new letter of credit request against a PO and beneficiary.
+        - generic [ref=e177]:
+          - generic [ref=e178]: Create
+          - generic [ref=e179]: →
+      - generic [ref=e180] [cursor=pointer]:
+        - generic [ref=e184]: LC Request Confirmation
+        - generic [ref=e185]: Approve or reject pending LC requests.
+        - generic [ref=e186]:
+          - generic [ref=e187]: Confirm
+          - generic [ref=e188]: →
+      - generic [ref=e189] [cursor=pointer]:
+        - generic [ref=e193]: LC Bank Allocation
+        - generic [ref=e194]: Route approved LC requests to the issuing bank.
+        - generic [ref=e195]:
+          - generic [ref=e196]: Confirm
+          - generic [ref=e197]: →
+      - generic [ref=e198] [cursor=pointer]:
+        - generic [ref=e202]: LC Confirmation
+        - generic [ref=e203]: Confirm the LC has been issued by the bank.
+        - generic [ref=e204]:
+          - generic [ref=e205]: Confirm
+          - generic [ref=e206]: →

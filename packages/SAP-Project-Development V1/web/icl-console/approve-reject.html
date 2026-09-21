@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>View &amp; Approve ICL Request</title>
+<style>
+:root {
+  --page:#f5f7f9;
+  --page2:#f2f4f5;
+  --surface:#ffffff;
+  --surfaceAlt:#f2f4f5;
+  --line:#d5dadd;
+  --lineStrong:#8996a1;
+  --text:#1d2d3e;
+  --muted:#687b8d;
+  --labelInk:#475e75;
+  --blue:#0a6ed1;
+  --blueMid:#35a5dc;
+  --blueDark:#085caf;
+  --blueSoft:#eaf3fc;
+  --blueSoft2:#d1e8ff;
+  --teal:#00897b;
+  --tealDark:#00796b;
+  --tealSoft:#e0f7f4;
+  --green:#107e3e;
+  --greenSoft:#e4f5e9;
+  --orange:#e65100;
+  --orangeMid:#f57c00;
+  --orangeSoft:#fff3e0;
+  --red:#d20a0a;
+  --redSoft:#ffebee;
+  --grayReadOnly:#f2f4f5;
+  --shadow:0 1px 3px rgba(34,53,72,.13);
+  --shadowHover:0 3px 10px rgba(34,53,72,.16);
+  --radius:8px;
+  --radiusSm:4px;
+}
+* { box-sizing:border-box; }
+html, body {
+  margin:0;
+  padding:0;
+  height:100%;
+  background:var(--page);
+  color:var(--text);
+  font-family:"Inter","Segoe UI", Arial, Helvetica, sans-serif;
+  font-size:12px;
+  overflow:auto;
+}
+button { font-family:inherit; }
+.hidden { display:none !important; }
+.app-shell { display:flex; flex-direction:column; min-height:100vh; }
+.app-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:var(--surface);
+  border-bottom:1px solid var(--line);
+  padding:0 18px;
+  height:44px;
+  flex:0 0 44px;
+}
+.app-title { font-size:16px; font-weight:600; color:#1d2d3e; }
+.hdr-btn {
+  border:1px solid var(--lineStrong);
+  background:var(--surface);
+  color:var(--labelInk);
+  border-radius:var(--radiusSm);
+  height:32px;
+  padding:0 11px;
+  font-size:12px;
+  font-weight:400;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+}
+.hdr-btn:hover { background:var(--surfaceAlt); color:var(--text); }
+.hdr-btn:active { transform:translateY(1px); }
+.hdr-btn.primary { background:var(--blue); border-color:var(--blue); color:#fff; }
+.hdr-btn.primary:hover { background:var(--blueDark); }
+.hdr-btn.danger { background:var(--surface); border-color:var(--lineStrong); color:#000000; }
+.hdr-btn.danger:hover { background:var(--surfaceAlt); color:#000000; }
+.hdr-btn:disabled { opacity:.5; cursor:not-allowed; }
+.hdr-btn.icon-btn { width:30px; padding:0; justify-content:center; font-size:13px; }
+.toolbar {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:var(--surfaceAlt);
+  border-bottom:1px solid var(--line);
+  padding:6px 14px;
+  flex-wrap:wrap;
+}
+.toolbar-field { display:flex; align-items:center; gap:6px; }
+.toolbar-field label { font-size:12px; font-weight:400; color:#1d2d3e; }
+.screen { padding:12px 14px; flex:1; }
+#filtersRow { display:contents; }
+.action-bar { display:flex; align-items:center; justify-content:flex-end; gap:8px; margin:10px 0 8px 0; }
+.table-card { border:1px solid #e1e6ea; border-radius:8px; background:#fff; box-shadow:0 1px 4px rgba(29,45,62,.04); overflow:hidden; }
+.table-card-head {
+  padding:7px 12px; border-bottom:1px solid #e5e9ed; background:#fafcfe;
+  font-size:12px; font-weight:600; color:#1d2d3e;
+}
+th.th-select { width:42px; }
+.table-scroll { width:100%; overflow:auto; background:#fff; }
+table.data-table { width:auto; border-collapse:separate; border-spacing:0; font-size:12px; }
+table.data-table th {
+  position:sticky; top:0; z-index:2; height:34px; padding:6px 24px 6px 8px; background:#f5f8fa; color:#1d2d3e;
+  border-right:1px solid #d9d9d9; border-bottom:1px solid #c7d4e0; text-align:left; font-weight:600; white-space:nowrap;
+}
+table.data-table td {
+  height:34px; padding:4px 8px; background:#fff; border-right:1px solid #e7ebee;
+  border-bottom:1px solid #e7ebee; white-space:nowrap; color:#1d2d3e; font-weight:400;
+}
+table.data-table thead th[data-col] { cursor:pointer; user-select:none; position:relative; }
+.sort-arrows { position:absolute; top:9px; right:8px; width:8px; height:15px; }
+.sort-up, .sort-down { position:absolute; left:0; width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; }
+.sort-up { top:0; border-bottom:5px solid #9aa7b4; }
+.sort-down { bottom:0; border-top:5px solid #9aa7b4; }
+table.data-table thead th.sort-asc .sort-up { border-bottom-color:#0a6ed1; }
+table.data-table thead th.sort-desc .sort-down { border-top-color:#0a6ed1; }
+.icl-select-radio { width:14px; height:14px; cursor:pointer; }
+.pagination-bar { display:flex; align-items:center; justify-content:flex-end; gap:5px; padding:8px 10px; background:#fff; border-top:1px solid #e5e9ed; }
+.page-btn {
+  min-width:30px; height:28px; padding:0 8px; border:1px solid #d9d9d9; border-radius:4px;
+  background:#fff; color:#1d2d3e; font-size:11px; cursor:pointer;
+}
+.page-btn:hover:not(:disabled) { background:#f7f8f9; border-color:#b8b8b8; }
+.page-btn.active { background:#eaf3fc; border-color:#0a6ed1; color:#004b93; font-weight:600; }
+.page-btn:disabled { background:#f7f8f9; color:#9aa7b4; cursor:default; }
+table.data-table tbody tr:hover td { background:#f2f8fd; }
+table.data-table tbody tr.selected-row td { background:#eaf3fc !important; }
+table.data-table td.num, table.data-table th.num { text-align:right; font-variant-numeric:tabular-nums; }
+.status-dot { display:inline-block; width:11px; height:11px; border-radius:2px; vertical-align:middle; }
+.status-dot.yellow { background:#fdd835; }
+.status-dot.green { background:var(--green); }
+.status-dot.red { background:var(--red); }
+.status-dot.none { background:transparent; }
+.link-text {
+  color:var(--blue); cursor:pointer; text-decoration:underline; background:none; border:none;
+  padding:0; font-size:12px; font-family:inherit; font-weight:400;
+}
+.link-text:hover { color:var(--blueDark); }
+.date-field-wrap {
+  position:relative; display:inline-flex; align-items:center; justify-self:start;
+  align-self:flex-start; width:auto; max-width:100%; flex:0 0 auto;
+}
+.date-field-wrap input[type="text"] {
+  height:26px; border:none; border-bottom:1px solid var(--lineStrong); border-radius:0;
+  padding:0 15px 0 2px; font-size:12px; font-weight:400; width:120px; max-width:100%;
+  background:transparent; color:#1d2d3e;
+}
+.date-field-wrap input[type="text"]:focus { outline:none; border-bottom-color:var(--blue); }
+#uptoRequestDate {
+  border:1px solid var(--lineStrong); border-radius:var(--radiusSm); background:#fff;
+  height:30px; padding:2px 22px 2px 8px; width:112px;
+}
+#uptoRequestDate:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 1px var(--blue); }
+.date-cal-btn {
+  position:absolute; right:0; top:50%; transform:translateY(-50%);
+  border:none; background:none; cursor:pointer; font-size:11px; color:var(--blueDark);
+  padding:2px 0; line-height:1;
+}
+.date-cal-btn:hover { color:var(--blue); }
+.date-cal-popup {
+  position:fixed; z-index:500;
+  background:var(--surface); border:1px solid var(--lineStrong); border-radius:var(--radiusSm);
+  box-shadow:0 8px 22px rgba(13,42,74,.22); padding:10px; width:236px; font-size:12px;
+}
+.date-cal-popup.hidden { display:none; }
+.date-cal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.date-cal-month { font-weight:700; color:var(--text); font-size:13px; }
+.date-cal-month .cal-caret { color:var(--muted); font-size:10px; margin-left:2px; }
+.date-cal-nav { display:flex; gap:2px; }
+.date-cal-nav button {
+  border:none; background:none; color:var(--labelInk); border-radius:3px;
+  width:20px; height:20px; cursor:pointer; font-size:11px; line-height:1;
+}
+.date-cal-nav button:hover { background:var(--surfaceAlt); }
+.date-cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; text-align:center; }
+.date-cal-grid .dow { font-weight:700; color:var(--labelInk); font-size:10px; padding:2px 0 5px; }
+.date-cal-grid button.day {
+  border:2px solid transparent; background:none; padding:4px 0; border-radius:3px; cursor:pointer;
+  color:var(--text); font-size:11.5px; box-sizing:border-box;
+}
+.date-cal-grid button.day:hover { background:var(--blueSoft); }
+.date-cal-grid button.day.other-month { color:var(--muted); cursor:default; }
+.date-cal-grid button.day.today { border-color:var(--blue); font-weight:700; }
+.date-cal-grid button.day.selected { background:var(--blue); border-color:var(--blue); color:#fff; }
+.date-cal-foot {
+  display:flex; align-items:center; justify-content:space-between; margin-top:8px;
+  padding-top:8px; border-top:1px solid var(--line);
+}
+.date-cal-foot button {
+  border:none; background:none; color:var(--blue); font-size:11.5px; font-weight:600; cursor:pointer; padding:0;
+}
+.date-cal-foot button:hover { color:var(--blueDark); text-decoration:underline; }
+.cal-month-toggle { border:none; background:none; padding:0; font-weight:700; color:var(--text); font-size:13px; cursor:pointer; }
+.cal-year-anchor {
+  font-weight:700; color:var(--text); font-size:13px; padding:6px 8px; background:var(--surfaceAlt);
+  border-radius:3px; cursor:pointer; margin-bottom:6px;
+}
+.cal-year-anchor:hover { background:var(--blueSoft); }
+.cal-month-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin-bottom:6px; }
+.cal-month-cell {
+  border:none; background:var(--surfaceAlt); color:var(--text); border-radius:3px; cursor:pointer;
+  font-size:11.5px; font-weight:600; padding:8px 0;
+}
+.cal-month-cell:hover { background:var(--blueSoft); }
+.cal-month-cell.selected { background:var(--blue); color:#fff; }
+.cal-year-list { max-height:120px; overflow-y:auto; border-top:1px solid var(--line); }
+.cal-year-row {
+  display:block; width:100%; border:none; background:var(--surfaceAlt); color:var(--text);
+  text-align:left; padding:6px 8px; font-size:11.5px; font-weight:600; cursor:pointer; margin-top:2px;
+}
+.cal-year-row:hover { background:var(--blueSoft); }
+.field-check { display:flex; align-items:center; gap:5px; }
+.toolbar select {
+  height:30px; border:1px solid var(--lineStrong); border-radius:var(--radiusSm);
+  padding:2px 22px 2px 8px; font-size:11.5px; font-weight:400; background:#fff; color:#000;
+  min-width:150px;
+}
+#filterEntityId { min-width:112px; width:112px; }
+.toolbar select:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 1px var(--blue); }
+.toolbar select.placeholder-active { color:#9aa7b4; }
+.toolbar select option { color:#000000; }
+.toolbar input.filter-text {
+  height:30px; border:1px solid var(--lineStrong); border-radius:var(--radiusSm);
+  padding:2px 8px; font-size:11.5px; font-weight:400; background:#fff; color:#000; width:140px;
+}
+.toolbar input.filter-text::placeholder { color:#9aa7b4; opacity:1; }
+.toolbar input.filter-text:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 1px var(--blue); }
+#filtersRow .date-field-wrap input[type="text"] {
+  height:30px; border:1px solid var(--lineStrong); border-radius:var(--radiusSm);
+  padding:2px 22px 2px 8px; font-size:11.5px; font-weight:400; background:#fff; color:#000; width:140px;
+}
+#filtersRow .date-field-wrap input[type="text"]::placeholder { color:#9aa7b4; opacity:1; }
+#filtersRow .date-field-wrap input[type="text"]:focus {
+  outline:none; border-color:var(--blue); box-shadow:0 0 0 1px var(--blue);
+}
+.btn-secondary {
+  border:1px solid var(--lineStrong); background:var(--surface); color:var(--labelInk);
+  border-radius:var(--radiusSm); padding:0 14px; height:32px; font-size:12px; font-weight:400; cursor:pointer;
+}
+.btn-secondary:hover { background:var(--surfaceAlt); }
+.modal-overlay {
+  position:fixed; top:0; left:0; right:0; bottom:0;
+  background:rgba(30,48,66,.36); display:flex; align-items:center; justify-content:center; z-index:200;
+}
+.modal-overlay.hidden { display:none; }
+.modal-dialog {
+  background:var(--surface); border-radius:10px; width:720px; max-width:94vw; max-height:88vh;
+  overflow-y:auto; box-shadow:0 18px 60px rgba(28,50,72,.28); border:1px solid #cbd9e6;
+}
+.modal-dialog.wide { width:960px; }
+.modal-head {
+  display:flex; align-items:center; justify-content:space-between; padding:0 18px; height:56px;
+  border-bottom:2px solid #86bff3; background:#eef6ff;
+}
+.modal-title { font-size:16px; font-weight:600; color:#1d2d3e; }
+.modal-close-btn { border:none; background:none; font-size:20px; color:#607d94; cursor:pointer; }
+.modal-body { padding:14px; font-size:12px; line-height:1.5; color:var(--text); }
+.modal-footer {
+  padding:0 18px; height:52px; display:flex; align-items:center; justify-content:flex-end; gap:8px;
+  border-top:1px solid #d8e0e7; background:#f8fafb;
+}
+.section-box { border:1px solid var(--line); border-radius:var(--radiusSm); margin-bottom:12px; background:var(--surfaceAlt); }
+.section-head {
+  background:#f8fafb; color:#1d2d3e; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.08em;
+  padding:7px 11px; border-bottom:1px solid var(--line); border-radius:var(--radiusSm) var(--radiusSm) 0 0;
+  border-left:3px solid var(--blue);
+}
+.section-body { padding:12px 14px; }
+.field-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:20px; row-gap:14px; align-items:start; }
+.field-grid label { font-size:12px; font-weight:400; color:#1d2d3e; }
+.field-grid input:not([type="checkbox"]), .field-grid select {
+  height:24px; border:none; border-bottom:1px solid var(--lineStrong); border-radius:0;
+  padding:3px 2px; font-size:12px; font-weight:400; background:transparent; color:#1d2d3e;
+  width:100%; max-width:100%; transition:border-color .15s ease;
+}
+.field-grid input:not([type="checkbox"]):not([readonly]):hover, .field-grid select:not(:disabled):hover {
+  border-bottom-color:var(--blueMid);
+}
+.field-grid input:focus, .field-grid select:focus { outline:none; border-bottom-color:var(--blue); }
+.field-grid input[readonly] {
+  color:#1d2d3e; background:#f3f5f7; border-radius:3px 3px 0 0; padding-left:6px; cursor:default;
+}
+.stacked-field-row { display:flex; align-items:flex-end; gap:24px; flex-wrap:nowrap; }
+.stacked-field { display:flex; flex-direction:column; align-items:flex-start; gap:2px; min-width:0; }
+.stacked-field label { font-size:12px; font-weight:400; color:#1d2d3e; white-space:nowrap; }
+.stacked-field input, .stacked-field select {
+  height:24px; border:none; border-bottom:1px solid var(--lineStrong); border-radius:0;
+  padding:3px 2px; font-size:12px; font-weight:400; background:transparent; color:#1d2d3e; width:160px;
+}
+.stacked-field input:focus, .stacked-field select:focus { outline:none; border-bottom-color:var(--blue); }
+.stacked-field input[readonly] {
+  color:#1d2d3e; background:#f3f5f7; border-radius:3px 3px 0 0; padding-left:6px; cursor:default;
+}
+.dms-table { width:100%; border-collapse:collapse; font-size:11.5px; }
+.dms-table th {
+  background:var(--page2); color:#1d2d3e; text-align:left; font-weight:600; padding:6px 7px;
+  border-bottom:1px solid var(--lineStrong); white-space:nowrap;
+}
+.dms-table td { padding:5px 7px; border-bottom:1px solid var(--line); color:#1d2d3e; white-space:nowrap; }
+.dms-table input[type="text"] {
+  height:22px; border:none; border-bottom:1px solid var(--lineStrong); border-radius:0;
+  padding:2px 14px 2px 2px; font-size:11.5px; width:100%; background:transparent; color:#1d2d3e;
+}
+.dms-table input[readonly] { background:#f3f5f7; color:#1d2d3e; }
+.dms-file-path { cursor:pointer; }
+.dms-btn {
+  border:1px solid var(--lineStrong); background:var(--surface); color:var(--labelInk);
+  border-radius:var(--radiusSm); padding:3px 8px; font-size:11px; font-weight:400; cursor:pointer;
+  white-space:nowrap;
+}
+.dms-btn:hover { background:var(--surfaceAlt); }
+.dms-btn:disabled { opacity:.4; cursor:not-allowed; filter:blur(.3px); }
+.dms-btn:disabled:hover { background:var(--surface); }
+#toastRegion { position:fixed; bottom:16px; right:16px; display:flex; flex-direction:column; gap:8px; z-index:300; }
+.toast {
+  display:flex; align-items:flex-start; gap:8px; min-width:260px; max-width:380px;
+  background:#243b53; color:#fff; padding:10px 14px; border-radius:6px;
+  font-size:11.5px; line-height:1.4; box-shadow:0 6px 24px rgba(0,0,0,.25); border-left:4px solid var(--blueMid);
+}
+.toast.error { background:#7f1d1d; border-left-color:#ffb4ab; }
+.toast.success { background:#14532d; border-left-color:#86efac; }
+.toast.warning { background:#7c4a03; border-left-color:#fdd67d; }
+.toast-title { font-size:11px; font-weight:700; margin-bottom:2px; }
+.icl-console-nav{display:flex;align-items:center;gap:2px;height:34px;padding:0 10px;background:#0a3d68;overflow-x:auto}
+.icl-console-nav a{display:inline-flex;align-items:center;height:34px;padding:0 10px;color:#cfe3fb;font-size:11.5px;
+font-weight:600;text-decoration:none;white-space:nowrap}
+.icl-console-nav a:hover{color:#fff;background:rgba(255,255,255,.08)}
+.icl-console-nav a.home{color:#fff;font-weight:700;margin-right:6px}
+.icl-console-nav a.current{color:#fff;background:rgba(255,255,255,.14);cursor:default}
+</style>
+</head>
+<body>
+<div class="icl-console-nav">
+<a class="home" href="index.html">&#8592; ICL Console</a>
+<a href="create-request.html">Create Request</a>
+<a href="deposit-create.html">Create Deposit</a>
+<a href="alloc-bank.html">Allocate Bank</a>
+<a class="current" href="approve-reject.html">Approve / Reject</a>
+</div>
+<div class="app-shell">
+
+  <header class="app-header">
+    <div class="app-title">View &amp; Approve ICL Request</div>
+    <div>
+      <button type="button" id="btnRefresh" class="hdr-btn">&#8635; Refresh</button>
+    </div>
+  </header>
+
+  <main class="screen" id="screenMain">
+    <div class="toolbar">
+      <div class="toolbar-field"><label for="uptoRequestDate">Upto Request Date</label>
+        <div class="date-field-wrap">
+          <input type="text" id="uptoRequestDate" placeholder="DD-MM-YYYY">
+          <button type="button" class="date-cal-btn" aria-label="Open calendar">&#128197;</button>
+        </div>
+      </div>
+      <button type="button" class="hdr-btn icon-btn" id="btnToggleFilters" title="Filters">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M2 3h12l-4.5 5.2v3.6l-3 1.4V8.2z" stroke-linejoin="round" stroke-linecap="round"></path>
+        </svg>
+      </button>
+      <span id="filtersRow" class="hidden">
+        <div class="toolbar-field">
+          <input type="text" id="filterRequestNo" class="filter-text" placeholder="Request No."></div>
+        <div class="toolbar-field">
+          <select id="filterEntityId"><option value="">Entity ID</option></select></div>
+        <div class="toolbar-field">
+          <input type="text" id="filterOttkNo" class="filter-text" placeholder="OTTK No."></div>
+        <div class="toolbar-field">
+          <select id="filterIclReqStatus"><option value="">ICL Request Status</option></select></div>
+        <div class="toolbar-field">
+          <div class="date-field-wrap">
+            <input type="text" id="filterPlannedEndDate" placeholder="Planned End Date">
+            <button type="button" class="date-cal-btn" aria-label="Open calendar">&#128197;</button>
+          </div>
+        </div>
+        <button type="button" class="hdr-btn" id="btnClearFilters">Clear filters</button>
+      </span>
+    </div>
+
+    <div class="action-bar hidden" id="iclActionBar">
+      <button type="button" class="hdr-btn primary" id="btnApproveIcl">&#10003; Approve ICL Request</button>
+      <button type="button" class="hdr-btn danger" id="btnRejectIcl">&#10005; Reject ICL Request</button>
+    </div>
+
+    <div class="table-card hidden" id="iclTableCard">
+      <div class="table-card-head">ICL Requests</div>
+      <div class="table-scroll">
+        <table class="data-table" id="iclTable">
+          <thead>
+            <tr>
+              <th class="th-select">Select</th>
+              <th data-col="status">Status<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="iclGivenPrdDesc">ICL Given Prd Desc<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="iclReqStatusDesc">ICL Request Status Description<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="entityString">Entity String<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="requestorCoName">Requestor Co Name<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="iclRequestNo">ICL Request No<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="amount" class="num">Amount<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="currency">Currency<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="requestDate">Request Date<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="ottkNo">OTTK No<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="dttkNo">DTTK No<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="dealId">Deal ID<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="startDate">Start Date<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="endDate">End Date<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="depositBankName">Deposit Bank Name<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="houseBank">House Bank<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="accountId">Account ID<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="partnerBankId">Partner Bank ID<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="fiscalYear">Fiscal Year<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="docNo">Doc No<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="client">Client<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="iclGivenCoCode">ICL Given Co Code<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="plannedEndDate">Planned End Date<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="iclReqStatus">ICL Req Status<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="slcStructure">SLC Structure<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+              <th data-col="entityId">Entity ID<span class="sort-arrows"><span class="sort-up"></span><span class="sort-down"></span></span></th>
+            </tr>
+          </thead>
+          <tbody id="iclTableBody"></tbody>
+        </table>
+      </div>
+      <div class="pagination-bar" id="iclPaginationBar"></div>
+    </div>
+  </main>
+
+</div>
+
+<div class="modal-overlay hidden" id="dmsOverlay">
+  <div class="modal-dialog wide" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <div class="modal-title">DMS for ICL Request</div>
+      <button type="button" class="modal-close-btn" id="btnDmsCloseX">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <div class="section-box">
+        <div class="section-head">ICL Request Details</div>
+        <div class="section-body stacked-field-row">
+          <div class="stacked-field">
+            <label for="dmsReqNo">ICL Request No.</label>
+            <input type="text" id="dmsReqNo" readonly>
+          </div>
+          <div class="stacked-field">
+            <label for="dmsReqStatus">ICL Request Status</label>
+            <select id="dmsReqStatus"></select>
+          </div>
+        </div>
+      </div>
+      <div class="section-box">
+        <div class="section-head">DMS Data</div>
+        <div class="section-body" style="padding:0;">
+          <div class="table-scroll">
+            <table class="dms-table" id="dmsDataTable">
+              <thead>
+                <tr>
+                  <th>Doc Type</th><th>Doc Type Desc</th><th>Doc Date</th><th>File Path</th>
+                  <th>DMS Code</th><th>Upload</th><th>Download</th><th>Edit</th>
+                </tr>
+              </thead>
+              <tbody id="dmsDataTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="hdr-btn primary" id="btnDmsApprove">&#10003; Approve</button>
+      <button type="button" class="btn-secondary" id="btnDmsCancel">&#10005; Cancel</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="dmsHiddenFileInput" class="hidden">
+
+<div id="toastRegion" aria-live="polite"></div>
+
+<script>
+var EMPTY_PAYLOAD = {
+  "meta": { "user": "", "message": "", "messageType": "" },
+  "masterData": { "iclReqStatuses": [] },
+  "iclRequests": []
+};
+
+var STATUS_COLOR_MAP = {
+  "01": "yellow", "02": "green", "03": "yellow", "04": "yellow", "05": "yellow",
+  "11": "red", "12": "red", "20": "yellow", "21": "green"
+};
+var ICL_GIVEN_PRD_DESC = "26A - Inter-Co Loan Given";
+
+var DUMMY_MASTER_DATA = {
+  iclReqStatuses: [
+    { key: "01", text: "ICL Request Created" },
+    { key: "02", text: "Approved by TSF Manager" },
+    { key: "03", text: "Treasury Approval / ICL Given" },
+    { key: "04", text: "ICL Received" },
+    { key: "05", text: "Deposit Created" },
+    { key: "11", text: "Rejected By TSF" },
+    { key: "12", text: "Rejected By Treasury" },
+    { key: "20", text: "ICL Partially Repaid" },
+    { key: "21", text: "ICL Fully Repaid" }
+  ]
+};
+
+function makeDmsData() {
+  return [
+    { docType: "D01", docTypeDesc: "ICL Request", docDate: "", filePath: "", dmsCode: "" },
+    { docType: "D02", docTypeDesc: "ICL Request 2", docDate: "", filePath: "", dmsCode: "" },
+    { docType: "D03", docTypeDesc: "ICL Request 3", docDate: "", filePath: "", dmsCode: "" }
+  ];
+}
+
+function makeDmsDataWithUpload(docDate, fileName, dmsCode) {
+  var data = makeDmsData();
+  data[0].docDate = docDate;
+  data[0].filePath = fileName;
+  data[0].dmsCode = dmsCode;
+  return data;
+}
+
+var DUMMY_ICL_REQUESTS = [
+  { iclRequestNo: "22001501", entityId: "AE13", entityString: "AE13 - Olam International DMCC",
+    requestorCoName: "Olam International DMCC", iclReqStatus: "01", amount: 100.00, currency: "USD",
+    requestDate: "02-01-2026", ottkNo: "101001", dttkNo: "201101", dealId: "12002001",
+    startDate: "05-01-2026", endDate: "05-01-2027", depositBankName: "STANDARD CHARTERED BANK",
+    houseBank: "SCBL", accountId: "0660013401", partnerBankId: "SCBLAEAD", fiscalYear: "2026",
+    docNo: "5100002001", client: "100", iclGivenCoCode: "AE13", plannedEndDate: "05-01-2027",
+    slcStructure: "Standard", dmsData: makeDmsData() },
+  { iclRequestNo: "22001502", entityId: "AE13", entityString: "AE13 - Olam International DMCC",
+    requestorCoName: "Olam International DMCC", iclReqStatus: "02", amount: 10000.00, currency: "USD",
+    requestDate: "15-12-2025", ottkNo: "101002", dttkNo: "201102", dealId: "12002002",
+    startDate: "20-11-2025", endDate: "20-11-2026", depositBankName: "CITI BANK",
+    houseBank: "CITI", accountId: "0660013402", partnerBankId: "CITIUS33", fiscalYear: "2025",
+    docNo: "5100002002", client: "100", iclGivenCoCode: "AE13", plannedEndDate: "20-11-2026",
+    slcStructure: "Structured", approved: true,
+    dmsData: makeDmsDataWithUpload("16-12-2025", "icl_request_22001502.pdf", "DMSD0184201") },
+  { iclRequestNo: "22001503", entityId: "SG21", entityString: "SG21 - Olam International Pte Ltd",
+    requestorCoName: "Olam International Pte Ltd", iclReqStatus: "03", amount: 25000.00, currency: "USD",
+    requestDate: "10-01-2026", ottkNo: "101003", dttkNo: "201103", dealId: "12002003",
+    startDate: "12-01-2026", endDate: "12-01-2027", depositBankName: "HSBC BANK",
+    houseBank: "HSBC", accountId: "0660013403", partnerBankId: "HSBCSGSG", fiscalYear: "2026",
+    docNo: "5100002003", client: "100", iclGivenCoCode: "SG21", plannedEndDate: "12-01-2027",
+    slcStructure: "Standard", dmsData: makeDmsData() },
+  { iclRequestNo: "22001504", entityId: "SG21", entityString: "SG21 - Olam International Pte Ltd",
+    requestorCoName: "Olam International Pte Ltd", iclReqStatus: "04", amount: 500.00, currency: "USD",
+    requestDate: "22-12-2025", ottkNo: "101004", dttkNo: "201104", dealId: "12002004",
+    startDate: "24-12-2025", endDate: "24-12-2026", depositBankName: "DBS BANK",
+    houseBank: "DBS", accountId: "0660013404", partnerBankId: "DBSSSGSG", fiscalYear: "2025",
+    docNo: "5100002004", client: "100", iclGivenCoCode: "SG21", plannedEndDate: "24-12-2026",
+    slcStructure: "Standard", dmsData: makeDmsData() },
+  { iclRequestNo: "22001505", entityId: "US10", entityString: "US10 - Olam Americas Corp",
+    requestorCoName: "Olam Americas Corp", iclReqStatus: "05", amount: 75000.00, currency: "USD",
+    requestDate: "05-01-2026", ottkNo: "101005", dttkNo: "201105", dealId: "12002005",
+    startDate: "07-01-2026", endDate: "07-01-2027", depositBankName: "JPMORGAN CHASE",
+    houseBank: "JPMC", accountId: "0660013405", partnerBankId: "CHASUS33", fiscalYear: "2026",
+    docNo: "5100002005", client: "100", iclGivenCoCode: "US10", plannedEndDate: "07-01-2027",
+    slcStructure: "Structured", dmsData: makeDmsData() },
+  { iclRequestNo: "22001506", entityId: "US10", entityString: "US10 - Olam Americas Corp",
+    requestorCoName: "Olam Americas Corp", iclReqStatus: "11", amount: 1200.00, currency: "USD",
+    requestDate: "18-11-2025", ottkNo: "101006", dttkNo: "201106", dealId: "12002006",
+    startDate: "20-11-2025", endDate: "20-11-2026", depositBankName: "BANK OF AMERICA",
+    houseBank: "BOFA", accountId: "0660013406", partnerBankId: "BOFAUS3N", fiscalYear: "2025",
+    docNo: "5100002006", client: "100", iclGivenCoCode: "US10", plannedEndDate: "20-11-2026",
+    slcStructure: "Standard", dmsData: makeDmsData() },
+  { iclRequestNo: "22001507", entityId: "AE13", entityString: "AE13 - Olam International DMCC",
+    requestorCoName: "Olam International DMCC", iclReqStatus: "12", amount: 3300.00, currency: "USD",
+    requestDate: "30-12-2025", ottkNo: "101007", dttkNo: "201107", dealId: "12002007",
+    startDate: "02-01-2026", endDate: "02-01-2027", depositBankName: "STANDARD CHARTERED BANK",
+    houseBank: "SCBL", accountId: "0660013407", partnerBankId: "SCBLAEAD", fiscalYear: "2025",
+    docNo: "5100002007", client: "100", iclGivenCoCode: "AE13", plannedEndDate: "02-01-2027",
+    slcStructure: "Standard", dmsData: makeDmsData() },
+  { iclRequestNo: "22001508", entityId: "SG21", entityString: "SG21 - Olam International Pte Ltd",
+    requestorCoName: "Olam International Pte Ltd", iclReqStatus: "20", amount: 900.00, currency: "USD",
+    requestDate: "01-12-2025", ottkNo: "101008", dttkNo: "201108", dealId: "12002008",
+    startDate: "03-12-2025", endDate: "03-12-2026", depositBankName: "DBS BANK",
+    houseBank: "DBS", accountId: "0660013408", partnerBankId: "DBSSSGSG", fiscalYear: "2025",
+    docNo: "5100002008", client: "100", iclGivenCoCode: "SG21", plannedEndDate: "03-12-2026",
+    slcStructure: "Standard", dmsData: makeDmsData() },
+  { iclRequestNo: "22001509", entityId: "US10", entityString: "US10 - Olam Americas Corp",
+    requestorCoName: "Olam Americas Corp", iclReqStatus: "21", amount: 15000.00, currency: "USD",
+    requestDate: "12-01-2026", ottkNo: "101009", dttkNo: "201109", dealId: "12002009",
+    startDate: "14-01-2026", endDate: "14-01-2027", depositBankName: "JPMORGAN CHASE",
+    houseBank: "JPMC", accountId: "0660013409", partnerBankId: "CHASUS33", fiscalYear: "2026",
+    docNo: "5100002009", client: "100", iclGivenCoCode: "US10", plannedEndDate: "14-01-2027",
+    slcStructure: "Structured", approved: true,
+    dmsData: makeDmsDataWithUpload("13-01-2026", "icl_request_22001509.pdf", "DMSD0197532") },
+  { iclRequestNo: "22001510", entityId: "AE13", entityString: "AE13 - Olam International DMCC",
+    requestorCoName: "Olam International DMCC", iclReqStatus: "01", amount: 250.00, currency: "USD",
+    requestDate: "20-01-2026", ottkNo: "101010", dttkNo: "201110", dealId: "12002010",
+    startDate: "22-01-2026", endDate: "22-01-2027", depositBankName: "CITI BANK",
+    houseBank: "CITI", accountId: "0660013410", partnerBankId: "CITIAEAD", fiscalYear: "2026",
+    docNo: "5100002010", client: "100", iclGivenCoCode: "AE13", plannedEndDate: "22-01-2027",
+    slcStructure: "Standard", dmsData: makeDmsData() },
+  { iclRequestNo: "22001511", entityId: "SG21", entityString: "SG21 - Olam International Pte Ltd",
+    requestorCoName: "Olam International Pte Ltd", iclReqStatus: "05", amount: 640.00, currency: "USD",
+    requestDate: "25-12-2025", ottkNo: "101011", dttkNo: "201111", dealId: "12002011",
+    startDate: "27-12-2025", endDate: "27-12-2026", depositBankName: "HSBC BANK",
+    houseBank: "HSBC", accountId: "0660013411", partnerBankId: "HSBCSGSG", fiscalYear: "2025",
+    docNo: "5100002011", client: "100", iclGivenCoCode: "SG21", plannedEndDate: "27-12-2026",
+    slcStructure: "Standard", dmsData: makeDmsData() },
+  { iclRequestNo: "22001512", entityId: "US10", entityString: "US10 - Olam Americas Corp",
+    requestorCoName: "Olam Americas Corp", iclReqStatus: "21", amount: 2000.00, currency: "USD",
+    requestDate: "08-11-2025", ottkNo: "101012", dttkNo: "201112", dealId: "12002012",
+    startDate: "10-11-2025", endDate: "10-11-2026", depositBankName: "BANK OF AMERICA",
+    houseBank: "BOFA", accountId: "0660013412", partnerBankId: "BOFAUS3N", fiscalYear: "2025",
+    docNo: "5100002012", client: "100", iclGivenCoCode: "US10", plannedEndDate: "10-11-2026",
+    slcStructure: "Standard", dmsData: makeDmsData() }
+];
+
+var appData = null;
+var ICL_PAGE_SIZE = 10;
+var state = {
+  selectedRequestNo: "",
+  dmsOpenerBtn: null,
+  sortColumn: "",
+  sortDir: "asc",
+  currentPage: 0
+};
+
+function cloneEmptyPayload() { return JSON.parse(JSON.stringify(EMPTY_PAYLOAD)); }
+function cloneObj(o) { return JSON.parse(JSON.stringify(o || {})); }
+function cloneArr(a) { return JSON.parse(JSON.stringify(a || [])); }
+
+function escapeHtml(value) {
+  if (value === null || value === undefined) { return ""; }
+  return String(value)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+function toSafeNumber(value) {
+  var num = parseFloat(String(value === undefined || value === null ? 0 : value).replace(/,/g, ""));
+  if (isNaN(num)) { return 0; }
+  return num;
+}
+
+function formatAmount(value) {
+  var num = toSafeNumber(value);
+  var negative = num < 0;
+  num = Math.abs(num);
+  var fixed = num.toFixed(2);
+  var parts = fixed.split(".");
+  var intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return (negative ? "-" : "") + intPart + "." + parts[1];
+}
+
+function parseDdMmYyyy(str) {
+  if (!str) { return null; }
+  var m = String(str).match(/^(\d{2})-(\d{2})-(\d{4})$/);
+  if (!m) { return null; }
+  var t = Date.UTC(parseInt(m[3], 10), parseInt(m[2], 10) - 1, parseInt(m[1], 10));
+  return isNaN(t) ? null : t;
+}
+
+function showToast(message, kind) {
+  var region = document.getElementById("toastRegion");
+  if (!region || !message) { return; }
+  var el = document.createElement("div");
+  var body = document.createElement("div");
+  var title = document.createElement("div");
+  var text = document.createElement("div");
+  var normalizedKind = kind || "";
+  el.className = "toast" + (normalizedKind ? (" " + normalizedKind) : "");
+  title.className = "toast-title";
+  text.className = "toast-message";
+  title.textContent = normalizedKind === "success" ? "Success" :
+    normalizedKind === "error" ? "Unable to complete" :
+    normalizedKind === "warning" ? "Attention" : "Information";
+  text.textContent = message;
+  body.appendChild(title);
+  body.appendChild(text);
+  el.appendChild(body);
+  region.appendChild(el);
+  window.setTimeout(function () {
+    if (el.parentNode) { el.parentNode.removeChild(el); }
+  }, normalizedKind === "success" ? 5000 : 4000);
+}
+
+function fillSelectOptions(selectId, list, placeholder, preselect) {
+  var el = document.getElementById(selectId);
+  if (!el) { return; }
+  var html = placeholder ? ("<option value=\"\">" + escapeHtml(placeholder) + "</option>") : "";
+  for (var i = 0; i < (list || []).length; i++) {
+    var item = list[i];
+    html += "<option value=\"" + escapeHtml(item.key) + "\">" +
+      escapeHtml(item.key) + " - " + escapeHtml(item.text) + "</option>";
+  }
+  el.innerHTML = html;
+  el.value = preselect || "";
+}
+
+function lookupText(list, key) {
+  if (!key) { return ""; }
+  for (var i = 0; i < (list || []).length; i++) {
+    if (list[i].key === key) { return list[i].text; }
+  }
+  return key;
+}
+
+function statusColorForIclStatus(code) { return STATUS_COLOR_MAP[code] || "none"; }
+
+function statusColorForRow(row) {
+  if (row.rejected) { return "red"; }
+  if (row.approved) { return "green"; }
+  return statusColorForIclStatus(row.iclReqStatus);
+}
+
+function findRequestByNo(reqNo) {
+  var all = (appData && appData.iclRequests) ? appData.iclRequests : [];
+  for (var i = 0; i < all.length; i++) {
+    if (all[i].iclRequestNo === reqNo) { return all[i]; }
+  }
+  return null;
+}
+
+function computeUniqueFieldValues(list, getter) {
+  var seen = {};
+  var out = [];
+  for (var i = 0; i < list.length; i++) {
+    var v = getter(list[i]);
+    if (v && !seen[v]) { seen[v] = true; out.push(v); }
+  }
+  out.sort();
+  return out;
+}
+
+function updateSelectPlaceholderStyle(selectId) {
+  var el = document.getElementById(selectId);
+  if (!el) { return; }
+  el.classList.toggle("placeholder-active", el.value === "");
+}
+
+function populateFilterOptions() {
+  var all = appData.iclRequests || [];
+  var entityIds = computeUniqueFieldValues(all, function (r) { return r.entityId; });
+  var entityEl = document.getElementById("filterEntityId");
+  if (entityEl) {
+    var html = "<option value=\"\">Entity ID</option>";
+    for (var i = 0; i < entityIds.length; i++) {
+      html += "<option value=\"" + escapeHtml(entityIds[i]) + "\">" + escapeHtml(entityIds[i]) + "</option>";
+    }
+    entityEl.innerHTML = html;
+  }
+  fillSelectOptions("filterIclReqStatus", appData.masterData.iclReqStatuses, "ICL Request Status", "");
+  updateSelectPlaceholderStyle("filterEntityId");
+  updateSelectPlaceholderStyle("filterIclReqStatus");
+}
+
+function iclMatchesFilters(row) {
+  var reqNoEl = document.getElementById("filterRequestNo");
+  if (reqNoEl && reqNoEl.value) {
+    if (row.iclRequestNo.toLowerCase().indexOf(reqNoEl.value.toLowerCase()) === -1) { return false; }
+  }
+  var entityEl = document.getElementById("filterEntityId");
+  if (entityEl && entityEl.value && row.entityId !== entityEl.value) { return false; }
+  var ottkEl = document.getElementById("filterOttkNo");
+  if (ottkEl && ottkEl.value) {
+    if (row.ottkNo.toLowerCase().indexOf(ottkEl.value.toLowerCase()) === -1) { return false; }
+  }
+  var statusEl = document.getElementById("filterIclReqStatus");
+  if (statusEl && statusEl.value && row.iclReqStatus !== statusEl.value) { return false; }
+  var plannedEl = document.getElementById("filterPlannedEndDate");
+  if (plannedEl && plannedEl.value && row.plannedEndDate !== plannedEl.value) { return false; }
+  return true;
+}
+
+function getSortValue(row, col) {
+  if (col === "status") { return row.iclReqStatus; }
+  if (col === "iclGivenPrdDesc") { return ICL_GIVEN_PRD_DESC; }
+  if (col === "iclReqStatusDesc") { return lookupText(appData.masterData.iclReqStatuses, row.iclReqStatus); }
+  if (col === "iclRequestNo" || col === "ottkNo" || col === "dttkNo" || col === "dealId" ||
+      col === "fiscalYear" || col === "docNo" || col === "amount") {
+    return toSafeNumber(row[col]);
+  }
+  if (col === "requestDate" || col === "startDate" || col === "endDate" || col === "plannedEndDate") {
+    var parsed = parseDdMmYyyy(row[col]);
+    return parsed === null ? 0 : parsed;
+  }
+  return row[col];
+}
+
+function compareSortValues(a, b) {
+  if (typeof a === "number" && typeof b === "number") { return a - b; }
+  var as = String(a === undefined || a === null ? "" : a).toLowerCase();
+  var bs = String(b === undefined || b === null ? "" : b).toLowerCase();
+  if (as < bs) { return -1; }
+  if (as > bs) { return 1; }
+  return 0;
+}
+
+function applySorting(rows) {
+  if (!state.sortColumn) { return rows; }
+  var col = state.sortColumn;
+  var dir = state.sortDir === "desc" ? -1 : 1;
+  var decorated = rows.map(function (r, idx) { return { r: r, idx: idx, v: getSortValue(r, col) }; });
+  decorated.sort(function (a, b) {
+    var cmp = compareSortValues(a.v, b.v);
+    if (cmp !== 0) { return cmp * dir; }
+    return a.idx - b.idx;
+  });
+  return decorated.map(function (d) { return d.r; });
+}
+
+function applySortClass(activeCol, direction) {
+  var ths = document.querySelectorAll("#iclTable thead th[data-col]");
+  for (var i = 0; i < ths.length; i++) {
+    var col = ths[i].getAttribute("data-col");
+    ths[i].classList.remove("sort-asc", "sort-desc");
+    if (col === activeCol) { ths[i].classList.add(direction === "asc" ? "sort-asc" : "sort-desc"); }
+  }
+}
+
+function handleHeaderSortClick(col) {
+  if (state.sortColumn === col) {
+    state.sortDir = (state.sortDir === "asc") ? "desc" : "asc";
+  } else {
+    state.sortColumn = col;
+    state.sortDir = "asc";
+  }
+  state.currentPage = 0;
+  applySortClass(state.sortColumn, state.sortDir);
+  renderTable();
+}
+
+function renderTable() {
+  var all = appData.iclRequests || [];
+  var uptoEl = document.getElementById("uptoRequestDate");
+  var uptoStr = uptoEl ? uptoEl.value : "";
+  var uptoMs = uptoStr ? parseDdMmYyyy(uptoStr) : null;
+  var filtered = [];
+  if (uptoMs !== null) {
+    for (var f = 0; f < all.length; f++) {
+      var reqMs = parseDdMmYyyy(all[f].requestDate);
+      if (reqMs !== null && reqMs <= uptoMs && iclMatchesFilters(all[f])) { filtered.push(all[f]); }
+    }
+  }
+  filtered = applySorting(filtered);
+  var totalPages = Math.max(1, Math.ceil(filtered.length / ICL_PAGE_SIZE));
+  if (state.currentPage < 0) { state.currentPage = 0; }
+  if (state.currentPage > totalPages - 1) { state.currentPage = totalPages - 1; }
+  var pageStart = state.currentPage * ICL_PAGE_SIZE;
+  var pageRows = filtered.slice(pageStart, pageStart + ICL_PAGE_SIZE);
+  var html = "";
+  for (var i = 0; i < pageRows.length; i++) {
+    var r = pageRows[i];
+    var isSelected = (r.iclRequestNo === state.selectedRequestNo);
+    var dotClass = statusColorForRow(r);
+    var statusDesc = lookupText(appData.masterData.iclReqStatuses, r.iclReqStatus);
+    html += "<tr class=\"" + (isSelected ? "selected-row" : "") + "\" data-reqno=\"" +
+      escapeHtml(r.iclRequestNo) + "\">";
+    html += "<td class=\"td-select\"><input type=\"radio\" name=\"iclSelectRadio\" class=\"icl-select-radio\" " +
+      "data-reqno=\"" + escapeHtml(r.iclRequestNo) + "\"" + (isSelected ? " checked" : "") + "></td>";
+    html += "<td><span class=\"status-dot " + dotClass + "\"></span></td>";
+    html += "<td>" + escapeHtml(ICL_GIVEN_PRD_DESC) + "</td>";
+    html += "<td>" + escapeHtml(r.iclReqStatus) + " - " + escapeHtml(statusDesc) + "</td>";
+    html += "<td>" + escapeHtml(r.entityString) + "</td>";
+    html += "<td>" + escapeHtml(r.requestorCoName) + "</td>";
+    html += "<td>" + escapeHtml(r.iclRequestNo) + "</td>";
+    html += "<td class=\"num\">" + formatAmount(r.amount) + "</td>";
+    html += "<td>" + escapeHtml(r.currency) + "</td>";
+    html += "<td>" + escapeHtml(r.requestDate) + "</td>";
+    html += "<td>" + escapeHtml(r.ottkNo) + "</td>";
+    html += "<td>" + escapeHtml(r.dttkNo) + "</td>";
+    html += "<td>" + escapeHtml(r.dealId) + "</td>";
+    html += "<td>" + escapeHtml(r.startDate) + "</td>";
+    html += "<td>" + escapeHtml(r.endDate) + "</td>";
+    html += "<td>" + escapeHtml(r.depositBankName) + "</td>";
+    html += "<td>" + escapeHtml(r.houseBank) + "</td>";
+    html += "<td>" + escapeHtml(r.accountId) + "</td>";
+    html += "<td>" + escapeHtml(r.partnerBankId) + "</td>";
+    html += "<td>" + escapeHtml(r.fiscalYear) + "</td>";
+    html += "<td>" + escapeHtml(r.docNo) + "</td>";
+    html += "<td>" + escapeHtml(r.client) + "</td>";
+    html += "<td>" + escapeHtml(r.iclGivenCoCode) + "</td>";
+    html += "<td>" + escapeHtml(r.plannedEndDate) + "</td>";
+    html += "<td>" + escapeHtml(r.iclReqStatus) + "</td>";
+    html += "<td>" + escapeHtml(r.slcStructure) + "</td>";
+    html += "<td>" + escapeHtml(r.entityId) + "</td>";
+    html += "</tr>";
+  }
+  if (filtered.length === 0) {
+    html = uptoMs === null ? "" :
+      "<tr><td colspan=\"27\">No ICL requests found for the selected Upto Request Date/filters.</td></tr>";
+  }
+  document.getElementById("iclTableBody").innerHTML = html;
+  var tableCard = document.getElementById("iclTableCard");
+  var actionBar = document.getElementById("iclActionBar");
+  if (tableCard) { tableCard.classList.toggle("hidden", uptoMs === null); }
+  if (actionBar) { actionBar.classList.toggle("hidden", uptoMs === null); }
+  renderIclPaginationBar(filtered.length, totalPages);
+  var rows = document.querySelectorAll("#iclTableBody tr[data-reqno]");
+  for (var j = 0; j < rows.length; j++) {
+    rows[j].addEventListener("click", function () {
+      state.selectedRequestNo = this.getAttribute("data-reqno");
+      renderTable();
+    });
+  }
+}
+
+function renderIclPaginationBar(totalRows, totalPages) {
+  var bar = document.getElementById("iclPaginationBar");
+  if (!bar) { return; }
+  var listPage = state.currentPage + 1;
+  var html = "";
+  html += "<button class=\"page-btn\" data-page=\"prev\" type=\"button\"" +
+    (listPage === 1 ? " disabled" : "") + ">Previous</button>";
+  var startPage = Math.max(1, listPage - 1);
+  var endPage = Math.min(totalPages, startPage + 2);
+  startPage = Math.max(1, endPage - 2);
+  for (var p = startPage; p <= endPage; p++) {
+    html += "<button class=\"page-btn" + (p === listPage ? " active" : "") + "\" data-page=\"" +
+      p + "\" type=\"button\">" + p + "</button>";
+  }
+  html += "<button class=\"page-btn\" data-page=\"next\" type=\"button\"" +
+    (listPage === totalPages ? " disabled" : "") + ">Next</button>";
+  bar.innerHTML = html;
+  bar.onclick = function (e) {
+    var target = e.target || e.srcElement;
+    var page = target.getAttribute ? target.getAttribute("data-page") : null;
+    if (!page || target.disabled) { return; }
+    if (page === "prev") { state.currentPage -= 1; }
+    else if (page === "next") { state.currentPage += 1; }
+    else { state.currentPage = (parseInt(page, 10) || 1) - 1; }
+    renderTable();
+  };
+}
+
+function requireSelectedRow() {
+  if (!state.selectedRequestNo) {
+    showToast("Select an ICL Request row.", "error");
+    return null;
+  }
+  var row = findRequestByNo(state.selectedRequestNo);
+  if (!row) {
+    showToast("Selected ICL Request was not found.", "error");
+    return null;
+  }
+  return row;
+}
+
+function renderDmsDataTable(row) {
+  var html = "";
+  var locked = !!row.approved;
+  for (var i = 0; i < row.dmsData.length; i++) {
+    var d = row.dmsData[i];
+    var uploaded = !!d.dmsCode;
+    html += "<tr data-doctype=\"" + escapeHtml(d.docType) + "\">";
+    html += "<td>" + escapeHtml(d.docType) + "</td>";
+    html += "<td>" + escapeHtml(d.docTypeDesc) + "</td>";
+    html += "<td><div class=\"date-field-wrap\"><input type=\"text\" class=\"dms-doc-date\" " +
+      "data-doctype=\"" + escapeHtml(d.docType) + "\" value=\"" + escapeHtml(d.docDate) +
+      "\" placeholder=\"DD-MM-YYYY\">" +
+      "<button type=\"button\" class=\"date-cal-btn dms-cal-btn\" data-doctype=\"" +
+      escapeHtml(d.docType) + "\" aria-label=\"Open calendar\">&#128197;</button></div></td>";
+    html += "<td><input type=\"text\" class=\"dms-file-path\" data-doctype=\"" + escapeHtml(d.docType) +
+      "\" value=\"" + escapeHtml(d.filePath) + "\" readonly></td>";
+    html += "<td><input type=\"text\" class=\"dms-code\" data-doctype=\"" + escapeHtml(d.docType) +
+      "\" value=\"" + escapeHtml(d.dmsCode) + "\" readonly></td>";
+    html += "<td><button type=\"button\" class=\"dms-btn dms-upload-btn\" data-doctype=\"" +
+      escapeHtml(d.docType) + "\"" + (locked ? " disabled" : "") + ">&#11014; Upload</button></td>";
+    html += "<td><button type=\"button\" class=\"dms-btn dms-download-btn\" data-doctype=\"" +
+      escapeHtml(d.docType) + "\"" + (uploaded ? "" : " disabled") + ">&#11015; Download</button></td>";
+    html += "<td><button type=\"button\" class=\"dms-btn dms-edit-btn\" data-doctype=\"" +
+      escapeHtml(d.docType) + "\"" + ((uploaded && !locked) ? "" : " disabled") + ">&#9998; Edit</button></td>";
+    html += "</tr>";
+  }
+  document.getElementById("dmsDataTableBody").innerHTML = html;
+  attachDmsRowListeners(row);
+}
+
+function attachDmsRowListeners(row) {
+  var uploadBtns = document.querySelectorAll("#dmsDataTableBody .dms-upload-btn");
+  for (var i = 0; i < uploadBtns.length; i++) {
+    uploadBtns[i].addEventListener("click", function () { handleUploadDoc(row, this.getAttribute("data-doctype")); });
+  }
+  var downloadBtns = document.querySelectorAll("#dmsDataTableBody .dms-download-btn");
+  for (var j = 0; j < downloadBtns.length; j++) {
+    downloadBtns[j].addEventListener("click", function () { handleDownloadDoc(row, this.getAttribute("data-doctype")); });
+  }
+  var editBtns = document.querySelectorAll("#dmsDataTableBody .dms-edit-btn");
+  for (var k = 0; k < editBtns.length; k++) {
+    editBtns[k].addEventListener("click", function () { handleEditDoc(row, this.getAttribute("data-doctype")); });
+  }
+  var pathInputs = document.querySelectorAll("#dmsDataTableBody .dms-file-path");
+  for (var n = 0; n < pathInputs.length; n++) {
+    pathInputs[n].addEventListener("click", function () {
+      openFileDialogForDocType(row, this.getAttribute("data-doctype"));
+    });
+  }
+  var calBtns = document.querySelectorAll("#dmsDataTableBody .dms-cal-btn");
+  for (var m = 0; m < calBtns.length; m++) {
+    calBtns[m].addEventListener("click", function (e) {
+      e.stopPropagation();
+      var docType = this.getAttribute("data-doctype");
+      var input = document.querySelector('.dms-doc-date[data-doctype="' + docType + '"]');
+      if (input && !input.hasAttribute("readonly")) { openCalendarForInput(input); }
+    });
+  }
+}
+
+function findDmsDoc(row, docType) {
+  for (var i = 0; i < row.dmsData.length; i++) {
+    if (row.dmsData[i].docType === docType) { return row.dmsData[i]; }
+  }
+  return null;
+}
+
+var pendingUploadDocType = "";
+var pendingFilesByDocType = {};
+var uploadedFilesByDocType = {};
+
+function openFileDialogForDocType(row, docType) {
+  if (row.approved) {
+    showToast("This ICL Request is already approved. Upload is disabled.", "error");
+    return;
+  }
+  pendingUploadDocType = docType;
+  var fileInput = document.getElementById("dmsHiddenFileInput");
+  fileInput.value = "";
+  fileInput.click();
+}
+
+function handleUploadDoc(row, docType) {
+  if (row.approved) {
+    showToast("This ICL Request is already approved. Upload is disabled.", "error");
+    return;
+  }
+  var file = pendingFilesByDocType[docType];
+  if (!file) {
+    showToast("Click the File Path field to select a file before uploading.", "error");
+    return;
+  }
+  var doc = findDmsDoc(row, docType);
+  if (!doc) { return; }
+  var newCode = generateDmsCode(docType);
+  doc.filePath = file.name;
+  doc.dmsCode = newCode;
+  uploadedFilesByDocType[row.iclRequestNo + "_" + docType] = file;
+  delete pendingFilesByDocType[docType];
+  renderDmsDataTable(row);
+  showToast("File uploaded for " + docType + ".", "success");
+}
+
+function handleDownloadDoc(row, docType) {
+  var doc = findDmsDoc(row, docType);
+  if (!doc || !doc.dmsCode) {
+    showToast("No file available to download for " + (doc ? doc.docTypeDesc : docType) + ".", "error");
+    return;
+  }
+  var file = uploadedFilesByDocType[row.iclRequestNo + "_" + docType];
+  if (!file) {
+    showToast("Uploaded file is unavailable for download.", "error");
+    return;
+  }
+  var url = URL.createObjectURL(file);
+  var link = document.createElement("a");
+  link.href = url;
+  link.download = file.name;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  showToast("Downloading " + file.name + ".", "success");
+}
+
+function handleEditDoc(row, docType) {
+  openFileDialogForDocType(row, docType);
+}
+
+function generateDmsCode(docType) {
+  return "DMS" + docType + String(Math.floor(1000 + Math.random() * 9000));
+}
+
+function openDmsModal(row) {
+  document.getElementById("dmsReqNo").value = row.iclRequestNo;
+  fillSelectOptions("dmsReqStatus", appData.masterData.iclReqStatuses, "Select...", row.iclReqStatus);
+  renderDmsDataTable(row);
+  var approveBtn = document.getElementById("btnDmsApprove");
+  if (approveBtn) { approveBtn.disabled = !!row.approved; }
+  document.getElementById("dmsOverlay").classList.remove("hidden");
+}
+
+function closeDmsModal() {
+  document.getElementById("dmsOverlay").classList.add("hidden");
+  if (state.dmsOpenerBtn && typeof state.dmsOpenerBtn.focus === "function") { state.dmsOpenerBtn.focus(); }
+}
+
+function handleApproveClick() {
+  var row = requireSelectedRow();
+  if (!row) { return; }
+  state.dmsOpenerBtn = document.getElementById("btnApproveIcl");
+  openDmsModal(row);
+}
+
+function handleRejectClick() {
+  var row = requireSelectedRow();
+  if (!row) { return; }
+  row.iclReqStatus = "11";
+  row.rejected = true;
+  row.approved = false;
+  renderTable();
+  showToast("ICL Request " + row.iclRequestNo + " rejected.", "warning");
+}
+
+function handleDmsCancel() { closeDmsModal(); }
+
+function handleDmsApprove() {
+  var row = findRequestByNo(document.getElementById("dmsReqNo").value);
+  if (!row) { closeDmsModal(); return; }
+  if (row.approved) {
+    showToast("This ICL Request has already been approved.", "error");
+    return;
+  }
+  var newStatus = document.getElementById("dmsReqStatus").value;
+  if (!newStatus) {
+    showToast("Select an ICL Request Status before approving.", "error");
+    return;
+  }
+  var dateInputs = document.querySelectorAll("#dmsDataTableBody .dms-doc-date");
+  var pathInputs = document.querySelectorAll("#dmsDataTableBody .dms-file-path");
+  var codeInputs = document.querySelectorAll("#dmsDataTableBody .dms-code");
+  for (var i = 0; i < row.dmsData.length; i++) {
+    var docType = row.dmsData[i].docType;
+    for (var j = 0; j < dateInputs.length; j++) {
+      if (dateInputs[j].getAttribute("data-doctype") === docType) { row.dmsData[i].docDate = dateInputs[j].value; }
+    }
+    for (var k = 0; k < pathInputs.length; k++) {
+      if (pathInputs[k].getAttribute("data-doctype") === docType) { row.dmsData[i].filePath = pathInputs[k].value; }
+    }
+    for (var m = 0; m < codeInputs.length; m++) {
+      if (codeInputs[m].getAttribute("data-doctype") === docType) { row.dmsData[i].dmsCode = codeInputs[m].value; }
+    }
+  }
+  row.iclReqStatus = newStatus;
+  row.approved = true;
+  row.rejected = false;
+  closeDmsModal();
+  renderTable();
+  showToast("ICL Request " + row.iclRequestNo + " approved successfully.", "success");
+}
+
+function handleRefresh() {
+  window.location.reload();
+}
+
+function parseDdMmYyyyParts(str) {
+  var m = String(str || "").match(/^(\d{2})-(\d{2})-(\d{4})$/);
+  if (!m) { return null; }
+  return { d: parseInt(m[1], 10), m: parseInt(m[2], 10) - 1, y: parseInt(m[3], 10) };
+}
+
+function formatDdMmYyyyParts(y, m, d) {
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  return pad(d) + "-" + pad(m + 1) + "-" + y;
+}
+
+function closeAllDatePopups() {
+  var popups = document.querySelectorAll(".date-cal-popup");
+  for (var i = 0; i < popups.length; i++) { popups[i].classList.add("hidden"); }
+}
+
+document.addEventListener("click", function (e) {
+  if (e.target && e.target.closest &&
+      (e.target.closest(".date-cal-popup") || e.target.closest(".date-cal-btn"))) {
+    return;
+  }
+  closeAllDatePopups();
+});
+
+function buildCalendarPopup(inputEl) {
+  var popup = document.createElement("div");
+  popup.className = "date-cal-popup hidden";
+  var initial = parseDdMmYyyyParts(inputEl.value);
+  var now = new Date();
+  var viewYear = initial ? initial.y : now.getFullYear();
+  var viewMonth = initial ? initial.m : now.getMonth();
+  var mode = "day";
+  var monthShortNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  function render() {
+    if (mode === "monthYear") { renderMonthYearView(); } else { renderDayView(); }
+  }
+
+  function renderDayView() {
+    var monthNames = ["January", "February", "March", "April", "May", "June", "July",
+      "August", "September", "October", "November", "December"];
+    var firstOfMonth = new Date(viewYear, viewMonth, 1);
+    var startDow = firstOfMonth.getDay();
+    var daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+    var daysInPrevMonth = new Date(viewYear, viewMonth, 0).getDate();
+    var selected = parseDdMmYyyyParts(inputEl.value);
+    var today = new Date();
+
+    var html = "";
+    html += "<div class=\"date-cal-head\">";
+    html += "<button type=\"button\" class=\"cal-month-toggle\" data-action=\"open-monthyear\">" +
+      monthNames[viewMonth] + " " + viewYear + " <span class=\"cal-caret\">&#9662;</span></button>";
+    html += "<span class=\"date-cal-nav\">";
+    html += "<button type=\"button\" data-nav=\"prev\">&#9650;</button>";
+    html += "<button type=\"button\" data-nav=\"next\">&#9660;</button>";
+    html += "</span>";
+    html += "</div>";
+    html += "<div class=\"date-cal-grid\">";
+    var dows = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+    for (var i = 0; i < 7; i++) { html += "<div class=\"dow\">" + dows[i] + "</div>"; }
+    for (var i = 0; i < startDow; i++) {
+      var pd = daysInPrevMonth - startDow + 1 + i;
+      html += "<button type=\"button\" class=\"day other-month\" disabled>" + pd + "</button>";
+    }
+    for (var d = 1; d <= daysInMonth; d++) {
+      var isToday = (today.getFullYear() === viewYear && today.getMonth() === viewMonth && today.getDate() === d);
+      var isSelected = !!(selected && selected.y === viewYear && selected.m === viewMonth && selected.d === d);
+      var cls = "day" + (isToday ? " today" : "") + (isSelected ? " selected" : "");
+      html += "<button type=\"button\" class=\"" + cls + "\" data-day=\"" + d + "\">" + d + "</button>";
+    }
+    var totalCells = startDow + daysInMonth;
+    var trailing = (7 - (totalCells % 7)) % 7;
+    for (var t = 1; t <= trailing; t++) {
+      html += "<button type=\"button\" class=\"day other-month\" disabled>" + t + "</button>";
+    }
+    html += "</div>";
+    html += "<div class=\"date-cal-foot\">";
+    html += "<button type=\"button\" data-action=\"clear\">Clear</button>";
+    html += "<button type=\"button\" data-action=\"today\">Today</button>";
+    html += "</div>";
+    popup.innerHTML = html;
+    if (popup.parentNode) { positionCalendarPopup(popup, inputEl.parentNode); }
+
+    popup.querySelector('[data-action="open-monthyear"]').addEventListener("click", function (e) {
+      e.stopPropagation();
+      mode = "monthYear";
+      render();
+    });
+    popup.querySelector('[data-nav="prev"]').addEventListener("click", function (e) {
+      e.stopPropagation();
+      viewMonth--; if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+      render();
+    });
+    popup.querySelector('[data-nav="next"]').addEventListener("click", function (e) {
+      e.stopPropagation();
+      viewMonth++; if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+      render();
+    });
+    var dayButtons = popup.querySelectorAll("button.day[data-day]");
+    for (var j = 0; j < dayButtons.length; j++) {
+      dayButtons[j].addEventListener("click", function (e) {
+        e.stopPropagation();
+        var day = parseInt(this.getAttribute("data-day"), 10);
+        inputEl.value = formatDdMmYyyyParts(viewYear, viewMonth, day);
+        popup.classList.add("hidden");
+        inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+        inputEl.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+    }
+    popup.querySelector('[data-action="clear"]').addEventListener("click", function (e) {
+      e.stopPropagation();
+      inputEl.value = "";
+      popup.classList.add("hidden");
+      inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+      inputEl.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    popup.querySelector('[data-action="today"]').addEventListener("click", function (e) {
+      e.stopPropagation();
+      var t = new Date();
+      inputEl.value = formatDdMmYyyyParts(t.getFullYear(), t.getMonth(), t.getDate());
+      popup.classList.add("hidden");
+      inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+      inputEl.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  }
+
+  function renderMonthYearView() {
+    var html = "";
+    html += "<div class=\"cal-year-anchor\" data-action=\"close-monthyear\">" + viewYear + "</div>";
+    html += "<div class=\"cal-month-grid\">";
+    for (var m = 0; m < 12; m++) {
+      var cls = "cal-month-cell" + (m === viewMonth ? " selected" : "");
+      html += "<button type=\"button\" class=\"" + cls + "\" data-month=\"" + m + "\">" +
+        monthShortNames[m] + "</button>";
+    }
+    html += "</div>";
+    html += "<div class=\"cal-year-list\">";
+    for (var y = viewYear + 1; y <= viewYear + 14; y++) {
+      html += "<button type=\"button\" class=\"cal-year-row\" data-year=\"" + y + "\">" + y + "</button>";
+    }
+    html += "</div>";
+    popup.innerHTML = html;
+    if (popup.parentNode) { positionCalendarPopup(popup, inputEl.parentNode); }
+
+    popup.querySelector('[data-action="close-monthyear"]').addEventListener("click", function (e) {
+      e.stopPropagation();
+      mode = "day";
+      render();
+    });
+    var monthCells = popup.querySelectorAll(".cal-month-cell");
+    for (var i = 0; i < monthCells.length; i++) {
+      monthCells[i].addEventListener("click", function (e) {
+        e.stopPropagation();
+        viewMonth = parseInt(this.getAttribute("data-month"), 10);
+        mode = "day";
+        render();
+      });
+    }
+    var yearRows = popup.querySelectorAll(".cal-year-row");
+    for (var k = 0; k < yearRows.length; k++) {
+      yearRows[k].addEventListener("click", function (e) {
+        e.stopPropagation();
+        viewYear = parseInt(this.getAttribute("data-year"), 10);
+        render();
+      });
+    }
+  }
+
+  render();
+  return popup;
+}
+
+function positionCalendarPopup(popup, wrap) {
+  var rect = wrap.getBoundingClientRect();
+  var popupWidth = popup.offsetWidth || 236;
+  var popupHeight = popup.offsetHeight || 300;
+  var margin = 8;
+  var left = rect.left;
+  if (left + popupWidth > window.innerWidth - margin) { left = window.innerWidth - popupWidth - margin; }
+  if (left < margin) { left = margin; }
+  var top = rect.bottom + 4;
+  if (top + popupHeight > window.innerHeight - margin) {
+    var altTop = rect.top - popupHeight - 4;
+    top = (altTop < margin) ? margin : altTop;
+  }
+  popup.style.left = left + "px";
+  popup.style.top = top + "px";
+}
+
+function formatDateDigits(raw) {
+  var digits = String(raw || "").replace(/[^\d]/g, "").slice(0, 8);
+  var parts = [];
+  if (digits.length > 0) { parts.push(digits.slice(0, 2)); }
+  if (digits.length > 2) { parts.push(digits.slice(2, 4)); }
+  if (digits.length > 4) { parts.push(digits.slice(4, 8)); }
+  return parts.join("-");
+}
+
+function openCalendarForInput(input) {
+  var wrap = input.parentNode;
+  if (!wrap || !wrap.classList || !wrap.classList.contains("date-field-wrap")) { return; }
+  closeAllDatePopups();
+  var popupEl = buildCalendarPopup(input);
+  document.body.appendChild(popupEl);
+  popupEl.classList.remove("hidden");
+  positionCalendarPopup(popupEl, wrap);
+}
+
+function initDatePicker(inputId) {
+  var input = document.getElementById(inputId);
+  if (!input) { return; }
+  var wrap = input.parentNode;
+  if (!wrap || !wrap.classList || !wrap.classList.contains("date-field-wrap")) { return; }
+  var btn = wrap.querySelector(".date-cal-btn");
+  if (!btn) { return; }
+  var popupEl = null;
+
+  input.addEventListener("input", function () {
+    var digits = this.value.replace(/[^\d]/g, "");
+    if (digits.length === 0) { return; }
+    var formatted = formatDateDigits(digits);
+    if (formatted !== this.value) { this.value = formatted; }
+  });
+
+  btn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    var reopening = !popupEl || popupEl.classList.contains("hidden");
+    closeAllDatePopups();
+    if (popupEl && popupEl.parentNode) { popupEl.parentNode.removeChild(popupEl); }
+    popupEl = null;
+    if (reopening) {
+      popupEl = buildCalendarPopup(input);
+      document.body.appendChild(popupEl);
+      popupEl.classList.remove("hidden");
+      positionCalendarPopup(popupEl, wrap);
+    }
+  });
+}
+
+function handleUptoDateChange() { state.currentPage = 0; renderTable(); }
+function handleFilterFieldChange() { state.currentPage = 0; renderTable(); }
+
+function attachStaticListeners() {
+  document.getElementById("btnRefresh").addEventListener("click", handleRefresh);
+  var sortableThs = document.querySelectorAll("#iclTable thead th[data-col]");
+  for (var s = 0; s < sortableThs.length; s++) {
+    sortableThs[s].addEventListener("click", function () {
+      handleHeaderSortClick(this.getAttribute("data-col"));
+    });
+  }
+  initDatePicker("uptoRequestDate");
+  document.getElementById("uptoRequestDate").addEventListener("input", handleUptoDateChange);
+  document.getElementById("btnToggleFilters").addEventListener("click", function () {
+    document.getElementById("filtersRow").classList.toggle("hidden");
+  });
+  document.getElementById("filterRequestNo").addEventListener("input", handleFilterFieldChange);
+  document.getElementById("filterEntityId").addEventListener("change", function () {
+    updateSelectPlaceholderStyle("filterEntityId");
+    handleFilterFieldChange();
+  });
+  document.getElementById("filterOttkNo").addEventListener("input", handleFilterFieldChange);
+  document.getElementById("filterIclReqStatus").addEventListener("change", function () {
+    updateSelectPlaceholderStyle("filterIclReqStatus");
+    handleFilterFieldChange();
+  });
+  initDatePicker("filterPlannedEndDate");
+  document.getElementById("filterPlannedEndDate").addEventListener("input", handleFilterFieldChange);
+  document.getElementById("btnClearFilters").addEventListener("click", function () {
+    document.getElementById("filterRequestNo").value = "";
+    document.getElementById("filterEntityId").value = "";
+    document.getElementById("filterOttkNo").value = "";
+    document.getElementById("filterIclReqStatus").value = "";
+    document.getElementById("filterPlannedEndDate").value = "";
+    updateSelectPlaceholderStyle("filterEntityId");
+    updateSelectPlaceholderStyle("filterIclReqStatus");
+    state.currentPage = 0;
+    renderTable();
+  });
+  document.getElementById("btnApproveIcl").addEventListener("click", handleApproveClick);
+  document.getElementById("btnRejectIcl").addEventListener("click", handleRejectClick);
+  document.getElementById("btnDmsCancel").addEventListener("click", handleDmsCancel);
+  document.getElementById("btnDmsCloseX").addEventListener("click", handleDmsCancel);
+  document.getElementById("btnDmsApprove").addEventListener("click", handleDmsApprove);
+  document.getElementById("dmsOverlay").addEventListener("click", function (evt) {
+    if (evt.target === this) { closeDmsModal(); }
+  });
+  document.addEventListener("keydown", function (evt) {
+    if (evt.key !== "Escape") { return; }
+    if (!document.getElementById("dmsOverlay").classList.contains("hidden")) { closeDmsModal(); }
+  });
+  document.getElementById("dmsHiddenFileInput").addEventListener("change", function () {
+    if (!this.files || this.files.length === 0 || !pendingUploadDocType) { return; }
+    var file = this.files[0];
+    var docType = pendingUploadDocType;
+    var pathInput = document.querySelector('.dms-file-path[data-doctype="' + docType + '"]');
+    pendingFilesByDocType[docType] = file;
+    if (pathInput) { pathInput.value = file.name; }
+    showToast("File selected for " + docType + ". Click Upload to confirm.", "success");
+    pendingUploadDocType = "";
+  });
+}
+
+function seedUploadedFilesFromRequests(requests) {
+  for (var i = 0; i < requests.length; i++) {
+    var row = requests[i];
+    for (var j = 0; j < row.dmsData.length; j++) {
+      var d = row.dmsData[j];
+      if (d.dmsCode && d.filePath) {
+        var content = "Sample uploaded document for ICL Request " + row.iclRequestNo + ", " + d.docTypeDesc + ".";
+        var file = new File([content], d.filePath, { type: "text/plain" });
+        uploadedFilesByDocType[row.iclRequestNo + "_" + d.docType] = file;
+      }
+    }
+  }
+}
+
+function applyAppData(newAppData) {
+  appData = newAppData;
+  if (!appData.masterData || !appData.masterData.iclReqStatuses ||
+    appData.masterData.iclReqStatuses.length === 0) {
+    appData.masterData = cloneObj(DUMMY_MASTER_DATA);
+  }
+  if (!appData.iclRequests || appData.iclRequests.length === 0) {
+    appData.iclRequests = cloneArr(DUMMY_ICL_REQUESTS);
+  }
+  seedUploadedFilesFromRequests(appData.iclRequests || []);
+  populateFilterOptions();
+  renderTable();
+  if (appData.meta.message) {
+    showToast(appData.meta.message, String(appData.meta.messageType || "").toLowerCase());
+  }
+}
+
+function init() {
+  var initialData = (typeof ICL_APPROVE_REQUESTS_PAYLOAD !== "undefined")
+    ? ICL_APPROVE_REQUESTS_PAYLOAD : cloneEmptyPayload();
+  try { applyAppData(initialData); } catch (e) {
+    if (window.console && console.error) { console.error("ICL UI applyAppData failed", e); }
+  }
+  try { attachStaticListeners(); } catch (e) {
+    if (window.console && console.error) { console.error("ICL UI attachStaticListeners failed", e); }
+  }
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,116 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]: Deal ID CreationZFS_SB_DEALID_O4_API
+      - generic [ref=e9]:
+        - generic "System connected" [ref=e10]
+        - button "Refresh" [ref=e11] [cursor=pointer]
+    - complementary [ref=e15]:
+      - generic [ref=e16]: DTTK Details
+      - generic [ref=e17]:
+        - generic [ref=e18]: DTTK No *
+        - textbox "DTTK No *" [ref=e19]:
+          - /placeholder: Type or pick from the grid
+      - generic [ref=e20]:
+        - generic [ref=e21]: DTTK Trade Value
+        - textbox [ref=e22]
+        - textbox [ref=e23]
+      - generic [ref=e24]:
+        - generic [ref=e25]: DTTK Assigned
+        - textbox [ref=e26]
+      - generic [ref=e27]:
+        - generic [ref=e28]: DTTK Balance
+        - textbox [ref=e29]
+      - generic [ref=e30]: OTTK Details
+      - generic [ref=e31]:
+        - generic [ref=e32]: OTTK No *
+        - generic [ref=e33]:
+          - textbox "OTTK No *" [ref=e34]:
+            - /placeholder: Type or search
+          - button "🔍" [ref=e35] [cursor=pointer]
+      - generic [ref=e36]:
+        - generic [ref=e37]: OTTK Trade Value
+        - textbox [ref=e38]
+        - textbox [ref=e39]
+      - generic [ref=e40]:
+        - generic [ref=e41]: OTTK Assigned
+        - textbox [ref=e42]
+      - generic [ref=e43]:
+        - generic [ref=e44]: OTTK Balance
+        - textbox [ref=e45]
+      - generic [ref=e46]:
+        - generic [ref=e47]: Entity ID
+        - textbox [ref=e48]
+      - generic [ref=e49]:
+        - generic [ref=e50]: Structure
+        - textbox [ref=e51]
+      - generic [ref=e52]: Deal ID Details
+      - generic [ref=e53]:
+        - generic [ref=e54]: Deal ID Amt *
+        - textbox "Deal ID Amt *" [ref=e55]:
+          - /placeholder: "0.00"
+        - textbox "Defaults to the selected OTTK's currency" [ref=e56]
+      - generic [ref=e57]:
+        - generic [ref=e58]: Deal ID Desc
+        - textbox "Deal ID Desc" [ref=e59]
+      - generic [ref=e60]:
+        - generic [ref=e61]: Status
+        - textbox "Status" [ref=e62]:
+          - /placeholder: e.g. 01
+      - button "Create Deal ID" [ref=e63] [cursor=pointer]
+    - main [ref=e64]:
+      - generic [ref=e65]:
+        - generic [ref=e66]:
+          - generic [ref=e67]: Open Origination Tickets (OTTK) 0 records
+          - generic [ref=e68]:
+            - textbox "Search OTTK…" [ref=e69]
+            - button "Filter" [ref=e70] [cursor=pointer]
+        - table [ref=e74]:
+          - rowgroup [ref=e75]:
+            - row [ref=e76]:
+              - columnheader "OTTK No" [ref=e77]
+              - columnheader "Type" [ref=e78]
+              - columnheader "Structure" [ref=e79]
+              - columnheader "Entity ID" [ref=e80]
+              - columnheader "Entity String" [ref=e81]
+              - columnheader "LC Issuing Bank" [ref=e82]
+              - columnheader "Trade Value" [ref=e83]
+              - columnheader "Crcy" [ref=e84]
+              - columnheader "Balance" [ref=e85]
+              - columnheader "Expected LC Date" [ref=e86]
+              - columnheader "Tenor" [ref=e87]
+              - columnheader "LC Applicant" [ref=e88]
+              - columnheader "LC Beneficiary" [ref=e89]
+              - columnheader "CoCode" [ref=e90]
+              - columnheader "Deposit Amt" [ref=e91]
+              - columnheader "Interest" [ref=e92]
+              - columnheader "Status" [ref=e93]
+          - rowgroup
+      - generic [ref=e95]:
+        - generic [ref=e96]:
+          - generic [ref=e97]: Open Distribution Tickets (DTTK) 0 records
+          - generic [ref=e98]:
+            - textbox "Search DTTK…" [ref=e99]
+            - button "Filter" [ref=e100] [cursor=pointer]
+        - table [ref=e104]:
+          - rowgroup [ref=e105]:
+            - row [ref=e106]:
+              - columnheader "DTTK No" [ref=e107]
+              - columnheader "Type 1" [ref=e108]
+              - columnheader "Type 2" [ref=e109]
+              - columnheader "Related OTTK" [ref=e110]
+              - columnheader "Structure" [ref=e111]
+              - columnheader "Entity String" [ref=e112]
+              - columnheader "DTTK Value" [ref=e113]
+              - columnheader "Crcy" [ref=e114]
+              - columnheader "Balance" [ref=e115]
+              - columnheader "Discounting Bank" [ref=e116]
+              - columnheader "Expected LC Date" [ref=e117]
+              - columnheader "Tenor" [ref=e118]
+              - columnheader "LC Applicant" [ref=e119]
+              - columnheader "LC Beneficiary" [ref=e120]
+              - columnheader "CoCode" [ref=e121]
+              - columnheader "Interest" [ref=e122]
+              - columnheader "Status" [ref=e123]
+          - rowgroup
+  - status

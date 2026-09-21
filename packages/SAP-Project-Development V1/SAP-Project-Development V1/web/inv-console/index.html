@@ -1,0 +1,4366 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta charset="UTF-8">
+<title>Amend Selected BLs and Finalise Trade Invoices</title>
+
+<style type="text/css">
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #eaf3fb;
+  color: #0d2a4a;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10px;
+  overflow: hidden;
+}
+
+body {
+  overflow: hidden;
+}
+
+.page {
+  width: 100%;
+  min-height: 100%;
+  background-color: #eaf3fb;
+}
+
+.header {
+  height: 40px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #c9deef;
+}
+
+.header-table {
+  width: 100%;
+  height: 40px;
+  border-collapse: collapse;
+}
+
+.header-left {
+  padding-left: 12px;
+  vertical-align: middle;
+}
+
+.header-right {
+  padding-right: 12px;
+  vertical-align: middle;
+  text-align: right;
+  width: 170px;
+}
+
+.header-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #2c5aa0;
+  line-height: 18px;
+}
+
+.header-subtitle {
+  margin-top: 1px;
+  font-size: 8px;
+  font-weight: bold;
+  color: #6a7f98;
+  text-transform: uppercase;
+}
+
+.program-chip {
+  display: inline-block;
+  padding: 3px 7px;
+  border: 1px solid #bbdefb;
+  background-color: #e3f2fd;
+  color: #1565c0;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.main {
+  padding: 7px 9px 26px 9px;
+  overflow: hidden;
+}
+
+.screen-hidden {
+  display: none;
+}
+
+.screen-visible {
+  display: block;
+}
+
+.section-label {
+  margin: 0 0 9px 0;
+  padding: 0 0 5px 0;
+  border-bottom: 1px solid #c9deef;
+  color: #6a9cbf;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.panel {
+  margin: 0 0 6px 0;
+  background-color: #ffffff;
+  border: 1px solid #c9deef;
+}
+
+.panel-head {
+  height: 22px;
+  background-color: #f7fbff;
+  border-bottom: 1px solid #c9deef;
+}
+
+.panel-head-table {
+  width: 100%;
+  height: 22px;
+  border-collapse: collapse;
+}
+
+.panel-title {
+  padding-left: 9px;
+  vertical-align: middle;
+  color: #1565c0;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.panel-action {
+  padding-right: 12px;
+  vertical-align: middle;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.panel-body {
+  padding: 7px 9px;
+}
+
+.selection-box {
+  width: 760px;
+  max-width: 100%;
+}
+
+.form-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.form-table td {
+  padding: 2px 5px;
+  vertical-align: middle;
+}
+
+.label-cell {
+  width: 112px;
+  color: #2e6090;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.input-text,
+.select-text {
+  height: 25px;
+  border: 1px solid #b0ceeb;
+  background-color: #ffffff;
+  color: #0d2a4a;
+  padding: 1px 6px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+}
+
+.input-text {
+  width: 100%;
+}
+
+.select-text {
+  width: 100%;
+}
+
+.input-readonly {
+  background-color: #f5f9fd;
+  color: #4f6d88;
+}
+
+.input-help-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.input-help-table td {
+  padding: 0;
+}
+
+.input-help-button-cell {
+  width: 38px;
+}
+
+.help-btn {
+  width: 38px;
+  height: 25px;
+  border: 1px solid #b0ceeb;
+  background-color: #e3f2fd;
+  color: #1565c0;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn,
+.tool-btn {
+  height: 25px;
+  border: 1px solid #b0ceeb;
+  background-color: #ffffff;
+  color: #2e6090;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 8px;
+}
+
+.btn-primary,
+.tool-primary {
+  border-color: #1565c0;
+  background-color: #1e88e5;
+  color: #ffffff;
+}
+
+.btn-danger {
+  color: #a63535;
+}
+
+.hint {
+  margin-top: 9px;
+  color: #6a9cbf;
+  font-size: 10px;
+}
+
+.toolbar {
+  margin-bottom: 6px;
+  padding: 4px;
+  background-color: #ffffff;
+  border: 1px solid #c9deef;
+}
+
+.toolbar .tool-btn {
+  margin: 1px;
+}
+
+.two-col-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.two-col-table td {
+  width: 50%;
+  vertical-align: top;
+}
+
+.left-col {
+  padding-right: 7px;
+}
+
+.right-col {
+  padding-left: 7px;
+}
+
+.details-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.details-table td {
+  width: 50%;
+  vertical-align: top;
+}
+
+.details-left {
+  padding-right: 7px;
+}
+
+.details-right {
+  padding-left: 7px;
+}
+
+.table-wrap {
+  width: 100%;
+  overflow: auto;
+  max-height: 205px;
+}
+
+.data-table {
+  border-collapse: collapse;
+  min-width: 1380px;
+  width: 100%;
+  font-size: 10px;
+}
+
+.data-table th {
+  padding: 4px 5px;
+  border-right: 1px solid #c9deef;
+  border-bottom: 1px solid #b0ceeb;
+  background-color: #ddeef9;
+  color: #5d86a7;
+  font-size: 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.data-table td {
+  padding: 3px 5px;
+  border-right: 1px solid #edf3f8;
+  border-bottom: 1px solid #edf3f8;
+  background-color: #ffffff;
+  color: #2e6090;
+  white-space: nowrap;
+}
+
+.data-table .rocell {
+  background-color: #f8fbfd;
+}
+
+.data-table .number {
+  text-align: right;
+}
+
+.grid-input {
+  height: 22px;
+  min-width: 68px;
+  border: 1px solid #b0ceeb;
+  background-color: #ffffff;
+  color: #0d2a4a;
+  padding: 0 4px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10px;
+}
+
+.modal-bg {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  background-color: rgba(35, 57, 79, 0.32);
+}
+
+.modal-window {
+  position: absolute;
+  left: 50%;
+  top: 55px;
+  width: 980px;
+  margin-left: -490px;
+  background-color: #ffffff;
+  border: 2px solid #5f8ebc;
+}
+
+.modal-window-small {
+  width: 900px;
+  margin-left: -450px;
+}
+
+.modal-head {
+  height: 40px;
+  background-color: #1565c0;
+  color: #ffffff;
+}
+
+.modal-head-table {
+  width: 100%;
+  height: 40px;
+  border-collapse: collapse;
+}
+
+.modal-title {
+  padding-left: 9px;
+  font-weight: bold;
+  vertical-align: middle;
+}
+
+.modal-close-cell {
+  width: 50px;
+  text-align: right;
+  vertical-align: middle;
+  padding-right: 8px;
+}
+
+.modal-close {
+  width: 28px;
+  height: 26px;
+  border: 1px solid #ffffff;
+  background-color: #1565c0;
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 14px;
+  max-height: 560px;
+  overflow: auto;
+}
+
+.modal-foot {
+  padding: 10px 14px;
+  border-top: 1px solid #c9deef;
+  background-color: #f7fbff;
+  text-align: right;
+}
+
+.search-input {
+  width: 100%;
+  height: 31px;
+  margin-bottom: 10px;
+  border: 1px solid #b0ceeb;
+  padding: 1px 6px;
+}
+
+.lookup-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+
+.lookup-table th {
+  padding: 7px;
+  background-color: #ddeef9;
+  color: #5d86a7;
+  border: 1px solid #c9deef;
+  text-align: left;
+}
+
+.lookup-table td {
+  padding: 7px;
+  border: 1px solid #e2edf5;
+}
+
+.lookup-selected td {
+  background-color: #bbdefb;
+}
+
+.checklist {
+  margin: 0;
+  padding-left: 28px;
+}
+
+.checklist li {
+  margin: 0 0 13px 0;
+  line-height: 18px;
+  color: #243f5a;
+}
+
+.confirm-note {
+  margin-top: 14px;
+  padding: 10px;
+  border: 1px solid #bbdefb;
+  background-color: #e3f2fd;
+  color: #2e6090;
+  font-weight: bold;
+}
+
+.statusbar {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 20px;
+  line-height: 20px;
+  background-color: #ffffff;
+  border-top: 1px solid #c9deef;
+  color: #6a9cbf;
+  font-size: 10px;
+  padding-left: 12px;
+  z-index: 900;
+}
+
+.status-dot {
+  color: #00a7b7;
+  font-size: 16px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+
+.header { height: 36px; }
+.header-table { height: 36px; }
+.header-title { font-size: 15px; line-height: 17px; }
+.header-subtitle { font-size: 8px; }
+.main { padding: 5px 8px 24px 8px; }
+.section-label { margin-bottom: 5px; padding-bottom: 3px; }
+.panel { border-radius: 6px; overflow: hidden; margin-bottom: 5px; }
+.panel-head { height: 24px; }
+.panel-head-table { height: 24px; }
+.panel-body { padding: 5px 8px; }
+.toolbar { border-radius: 6px; padding: 3px 4px; margin-bottom: 5px; }
+.btn, .tool-btn { height: 25px; border-radius: 5px; }
+.input-text, .select-text {
+  height: 24px;
+  border-radius: 8px;
+  width: 290px;
+  max-width: 290px;
+  background-color: #ffffff;
+}
+.input-readonly { background-color: #f7fbff; }
+.label-cell { width: 118px; }
+.details-left, .details-right { padding-left: 5px; padding-right: 5px; }
+.left-col { padding-right: 3px; }
+.right-col { padding-left: 3px; }
+.help-btn { width: 31px; height: 24px; border-radius: 0 8px 8px 0; }
+.input-help-button-cell { width: 31px; }
+.selection-box { width: 590px; }
+.table-wrap { overflow-x: hidden; overflow-y: auto; max-height: 190px; }
+.data-table { min-width: 0; width: 100%; table-layout: fixed; font-size: 9px; }
+.data-table th { padding: 4px 3px; font-size: 7px; overflow: hidden; white-space: nowrap; }
+.data-table td { padding: 2px 3px; overflow: hidden; white-space: nowrap; }
+.grid-input { width: 100%; min-width: 0; height: 20px; font-size: 9px; }
+.modal-window { width: 820px; margin-left: -410px; top: 35px; border-radius: 7px; }
+.modal-window-small { width: 820px; margin-left: -410px; }
+.modal-body { max-height: 500px; }
+.statusbar { height: 18px; line-height: 18px; }
+
+
+
+
+html, body { overflow: hidden; }
+.main { padding: 4px 7px 22px 7px; }
+
+
+.panel { border-radius: 0 !important; overflow: visible !important; margin-bottom: 4px; }
+.panel-head { height: 21px; }
+.panel-head-table { height: 21px; }
+.panel-body { padding: 4px 7px; }
+.toolbar { border-radius: 0 !important; padding: 2px 3px; margin-bottom: 4px; white-space: nowrap; }
+.btn, .tool-btn { height: 23px; border-radius: 0 !important; padding: 0 7px; }
+
+
+.two-col-table { table-layout: fixed; }
+.two-col-table td { overflow: visible; }
+.two-col-table .form-table { table-layout: fixed; }
+.two-col-table .label-cell { width: 145px; }
+.two-col-table .input-text,
+.two-col-table .select-text {
+  width: 88% !important;
+  max-width: none !important;
+  height: 22px;
+  border-radius: 0 !important;
+  box-sizing: border-box;
+}
+
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  max-height: 230px;
+  border-top: 1px solid #b8cee0;
+}
+.data-table {
+  width: 1810px !important;
+  min-width: 1810px !important;
+  table-layout: fixed !important;
+  font-size: 9px;
+}
+.data-table th {
+  height: 21px;
+  padding: 2px 4px !important;
+  font-size: 8px !important;
+  color: #173f63;
+  background-color: #dceaf4;
+  border-right: 1px solid #b8cee0;
+  border-bottom: 1px solid #9fbcd2;
+  overflow: visible !important;
+  white-space: nowrap !important;
+}
+.data-table td {
+  height: 22px;
+  padding: 1px 4px !important;
+  border-right: 1px solid #d6e1e9;
+  border-bottom: 1px solid #d6e1e9;
+  overflow: hidden;
+  white-space: nowrap;
+  background-color: #f8fbfd;
+}
+.data-table .rocell { background-color: #f8fbfd; }
+.grid-input {
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 20px !important;
+  padding: 0 2px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0;
+  background: transparent !important;
+  box-sizing: border-box;
+  font-size: 9px;
+}
+.grid-input:focus { background-color: #fffbe6 !important; }
+
+
+.data-table th:nth-child(1),  .data-table td:nth-child(1)  { width: 65px; }
+.data-table th:nth-child(2),  .data-table td:nth-child(2)  { width: 75px; }
+.data-table th:nth-child(3),  .data-table td:nth-child(3)  { width: 105px; }
+.data-table th:nth-child(4),  .data-table td:nth-child(4)  { width: 105px; }
+.data-table th:nth-child(5),  .data-table td:nth-child(5)  { width: 125px; }
+.data-table th:nth-child(6),  .data-table td:nth-child(6)  { width: 90px; }
+.data-table th:nth-child(7),  .data-table td:nth-child(7)  { width: 95px; }
+.data-table th:nth-child(8),  .data-table td:nth-child(8)  { width: 105px; }
+.data-table th:nth-child(9),  .data-table td:nth-child(9)  { width: 170px; }
+.data-table th:nth-child(10), .data-table td:nth-child(10) { width: 80px; }
+.data-table th:nth-child(11), .data-table td:nth-child(11) { width: 85px; }
+.data-table th:nth-child(12), .data-table td:nth-child(12) { width: 95px; }
+.data-table th:nth-child(13), .data-table td:nth-child(13) { width: 105px; }
+.data-table th:nth-child(14), .data-table td:nth-child(14) { width: 105px; }
+.data-table th:nth-child(15), .data-table td:nth-child(15) { width: 80px; }
+.data-table th:nth-child(16), .data-table td:nth-child(16) { width: 90px; }
+.data-table th:nth-child(17), .data-table td:nth-child(17) { width: 110px; }
+
+
+.grid-toolbar {
+  height: 25px;
+  padding: 2px 5px;
+  border-top: 1px solid #c9deef;
+  border-bottom: 1px solid #c9deef;
+  background-color: #eef5fa;
+  text-align: left;
+}
+.grid-calc-btn {
+  height: 21px;
+  padding: 0 8px;
+  border: 1px solid #9db9ce;
+  background-color: #f8fbfd;
+  color: #173f63;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 9px;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+
+
+html, body { font-size: 11px; }
+.header { height: 34px; }
+.header-table { height: 34px; }
+.header-title { font-size: 16px; }
+.main { padding-top: 5px; }
+
+
+.details-table .input-text,
+.details-table .select-text,
+.selection-box .input-text {
+  border-radius: 7px !important;
+  font-size: 11px !important;
+}
+
+
+.two-col-table .input-text,
+.two-col-table .select-text {
+  border-radius: 0 !important;
+  font-size: 11px !important;
+  height: 24px !important;
+}
+.panel-title, .label-cell { font-size: 11px !important; }
+
+
+.data-table { font-size: 10px !important; }
+.data-table th { font-size: 9px !important; height: 23px; padding: 3px 5px !important; }
+.data-table td { font-size: 10px !important; height: 24px; padding: 2px 5px !important; }
+.grid-input { font-size: 10px !important; height: 22px !important; }
+.grid-calc-btn { font-size: 10px !important; height: 22px; }
+
+
+.modal-bg { background-color: rgba(35, 57, 79, 0.28) !important; }
+.modal-window { border: 1px solid #9fbcd2 !important; box-shadow: none; }
+.modal-head {
+  height: 34px !important;
+  background-color: #dceaf4 !important;
+  color: #173f63 !important;
+  border-bottom: 1px solid #9fbcd2;
+}
+.modal-head-table { height: 34px !important; }
+.modal-close {
+  background-color: #f8fbfd !important;
+  color: #173f63 !important;
+  border: 1px solid #9fbcd2 !important;
+}
+.search-input { font-size: 11px; border: 1px solid #9fbcd2; }
+.lookup-table { font-size: 10px; }
+.lookup-table th { background-color: #e6f0f7; color: #173f63; }
+.lookup-selected td { background-color: #d7eaf7 !important; }
+
+
+
+
+
+.input-text,
+.select-text,
+.search-input,
+.grid-input {
+  border-radius: 8px !important;
+}
+
+
+.input-readonly {
+  border-radius: 8px !important;
+}
+
+
+.details-table .input-text,
+.details-table .select-text,
+.selection-box .input-text {
+  border-radius: 8px !important;
+}
+
+
+.two-col-table .input-text,
+.two-col-table .select-text {
+  border-radius: 8px !important;
+}
+
+
+.grid-input {
+  border: 1px solid #b0ceeb !important;
+  background-color: #ffffff !important;
+  padding: 0 5px !important;
+  box-sizing: border-box;
+}
+
+
+.selection-box .input-help-table .input-text {
+  border-radius: 8px 0 0 8px !important;
+}
+
+.help-btn {
+  border-radius: 0 8px 8px 0 !important;
+}
+
+
+
+.modal-bg {
+  overflow: auto !important;
+  text-align: center;
+}
+
+.modal-window,
+.modal-window-small {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  margin: 38px auto 0 auto !important;
+  text-align: left;
+  max-width: calc(100% - 50px) !important;
+  box-sizing: border-box;
+}
+
+#reverseModal .modal-window {
+  width: 720px !important;
+}
+
+#blListModal .modal-window {
+  width: 94% !important;
+  max-width: 1500px !important;
+}
+
+#remarkModal .modal-window {
+  width: 720px !important;
+}
+
+#pnlModal .modal-window {
+  width: 90% !important;
+  max-width: 1250px !important;
+}
+
+
+.modal-window {
+  background-color: #ffffff !important;
+  border: 1px solid #8fb0c8 !important;
+}
+
+.modal-head {
+  background-color: #dceaf4 !important;
+  color: #173f63 !important;
+}
+
+.modal-foot {
+  background-color: #f7fbff !important;
+}
+
+
+
+#pnlTable { width: 1500px !important; min-width: 1500px !important; table-layout: fixed !important; }
+#pnlTable th:nth-child(1), #pnlTable td:nth-child(1) { width: 105px; }
+#pnlTable th:nth-child(2), #pnlTable td:nth-child(2) { width: 70px; }
+#pnlTable th:nth-child(3), #pnlTable td:nth-child(3) { width: 210px; }
+#pnlTable th:nth-child(4), #pnlTable td:nth-child(4), #pnlTable th:nth-child(5), #pnlTable td:nth-child(5), #pnlTable th:nth-child(6), #pnlTable td:nth-child(6), #pnlTable
+th:nth-child(7), #pnlTable td:nth-child(7) { width: 125px; }
+#pnlTable th:nth-child(8), #pnlTable td:nth-child(8), #pnlTable th:nth-child(9), #pnlTable td:nth-child(9), #pnlTable th:nth-child(10), #pnlTable td:nth-child(10) { width: 65px; }
+#pnlTable th:nth-child(11), #pnlTable td:nth-child(11), #pnlTable th:nth-child(12), #pnlTable td:nth-child(12) { width: 190px; }
+
+
+html, body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+.header {
+  height: 44px !important;
+}
+
+.header-table {
+  height: 44px !important;
+}
+
+.header-left {
+  padding-left: 18px !important;
+}
+
+.header-title {
+  font-size: 18px !important;
+  line-height: 20px !important;
+}
+
+.main {
+  padding: 8px 10px 28px 10px !important;
+}
+
+.toolbar {
+  padding: 5px 7px !important;
+  margin-bottom: 7px !important;
+  white-space: normal !important;
+  border-radius: 6px !important;
+}
+
+.tool-btn {
+  height: 28px !important;
+  margin: 1px 2px 1px 0 !important;
+  border-radius: 4px !important;
+}
+
+.panel {
+  margin-bottom: 7px !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+}
+
+.panel-head,
+.panel-head-table {
+  height: 28px !important;
+}
+
+.panel-title {
+  padding-left: 11px !important;
+  font-size: 11px !important;
+}
+
+.panel-body {
+  padding: 8px 10px !important;
+}
+
+.details-table,
+.details-table .form-table,
+.two-col-table,
+.two-col-table .form-table {
+  table-layout: fixed;
+}
+
+.details-left {
+  padding-right: 18px !important;
+}
+
+.details-right {
+  padding-left: 18px !important;
+}
+
+.details-table .form-table td,
+.two-col-table .form-table td {
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
+}
+
+.details-table .label-cell {
+  width: 130px !important;
+}
+
+.two-col-table .label-cell {
+  width: 155px !important;
+}
+
+.details-table .input-text,
+.details-table .select-text,
+.two-col-table .input-text,
+.two-col-table .select-text {
+  width: 100% !important;
+  max-width: 390px !important;
+  height: 29px !important;
+  border-radius: 7px !important;
+  box-sizing: border-box;
+}
+
+.deal-select {
+  background-color: #ffffff !important;
+  border-color: #7fb3df !important;
+  color: #0d2a4a !important;
+  font-weight: bold;
+}
+
+.input-readonly {
+  background-color: #f5f9fd !important;
+}
+
+.left-col {
+  padding-right: 4px !important;
+}
+
+.right-col {
+  padding-left: 4px !important;
+}
+
+.blank-adjusted {
+  min-height: 150px;
+  background-color: #ffffff;
+}
+
+.statusbar {
+  position: fixed;
+}
+
+@media screen and (max-width: 980px) {
+  .details-table > tbody > tr > td,
+  .two-col-table > tbody > tr > td {
+    display: block;
+    width: auto !important;
+    padding: 0 !important;
+  }
+
+  .details-left,
+  .details-right,
+  .left-col,
+  .right-col {
+    padding: 0 !important;
+  }
+
+  .details-table .input-text,
+  .details-table .select-text,
+  .two-col-table .input-text,
+  .two-col-table .select-text {
+    max-width: none !important;
+  }
+}
+
+
+
+html, body {
+  height: 100% !important;
+  overflow: hidden !important;
+  background: #f5f6f7 !important;
+  color: #1d2d3e !important;
+  font-family: "Inter", Arial, Helvetica, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+}
+
+button, input, select, table, th, td, div, span, label {
+  font-family: "Inter", Arial, Helvetica, sans-serif !important;
+}
+
+.page {
+  height: 100vh !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: #f5f6f7 !important;
+}
+
+.header {
+  height: 46px !important;
+  flex: 0 0 46px !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid #d9d9d9 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+.header-table {
+  height: 46px !important;
+}
+
+.header-left {
+  padding-left: 18px !important;
+}
+
+.header-title {
+  color: #1d2d3e !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 20px !important;
+}
+
+.main {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  padding: 8px 12px 24px !important;
+  overflow: hidden !important;
+}
+
+#detailScreen {
+  height: 100% !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.toolbar {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin: 0 0 8px !important;
+  padding: 6px 8px !important;
+  background: #ffffff !important;
+  border: 1px solid #d9d9d9 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+}
+
+.toolbar .tool-btn,
+.btn,
+.grid-calc-btn,
+.grid-nav-btn {
+  min-height: 30px !important;
+  height: 30px !important;
+  margin: 0 !important;
+  padding: 0 11px !important;
+  border: 1px solid #d1e8ff !important;
+  border-radius: 4px !important;
+  background: #eaf3fc !important;
+  color: #004b93 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  line-height: 28px !important;
+  box-shadow: none !important;
+}
+
+.toolbar .tool-btn:hover,
+.btn:hover,
+.grid-calc-btn:hover,
+.grid-nav-btn:hover {
+  background: #d1e8ff !important;
+  border-color: #0a6ed1 !important;
+  color: #0854a0 !important;
+}
+
+.toolbar .tool-primary,
+.btn-primary {
+  border-color: #0a6ed1 !important;
+  background: #0a6ed1 !important;
+  color: #ffffff !important;
+}
+
+.toolbar .tool-primary:hover,
+.btn-primary:hover {
+  border-color: #0854a0 !important;
+  background: #0854a0 !important;
+  color: #ffffff !important;
+}
+
+.panel {
+  flex: 0 0 auto !important;
+  margin: 0 0 8px !important;
+  overflow: visible !important;
+  background: #ffffff !important;
+  border: 1px solid #d9d9d9 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+}
+
+.panel-head {
+  height: auto !important;
+  min-height: 32px !important;
+  display: block !important;
+  overflow: visible !important;
+  background: #f7f8f9 !important;
+  border-bottom: 1px solid #d9d9d9 !important;
+  border-radius: 8px 8px 0 0 !important;
+}
+
+.panel-head-table {
+  width: 100% !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  border-collapse: collapse !important;
+}
+
+.panel-title {
+  height: auto !important;
+  padding: 7px 12px !important;
+  color: #1d2d3e !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 17px !important;
+  text-transform: none !important;
+  vertical-align: middle !important;
+  white-space: normal !important;
+}
+
+.panel-body {
+  padding: 8px 12px !important;
+}
+
+.details-table,
+.two-col-table {
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+
+.details-left,
+.details-right {
+  width: 50% !important;
+  padding: 0 18px 0 0 !important;
+}
+
+.details-right {
+  padding: 0 0 0 18px !important;
+}
+
+.left-col,
+.right-col {
+  width: 50% !important;
+  padding: 0 5px 0 0 !important;
+}
+
+.right-col {
+  padding: 0 0 0 5px !important;
+}
+
+.form-table {
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+
+.form-table td {
+  padding: 3px 5px !important;
+}
+
+.label-cell {
+  width: 145px !important;
+  color: #556b82 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  line-height: 16px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.01em !important;
+}
+
+.details-table .input-text,
+.details-table .select-text,
+.two-col-table .input-text,
+.two-col-table .select-text {
+  width: 100% !important;
+  max-width: 360px !important;
+  min-height: 28px !important;
+  height: 28px !important;
+  padding: 3px 8px !important;
+  border: 1px solid #b8b8b8 !important;
+  border-radius: 4px !important;
+  background: #ffffff !important;
+  color: #1d2d3e !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+}
+
+.details-table .input-readonly,
+.two-col-table .input-readonly {
+  background: #f2f4f5 !important;
+  color: #556b82 !important;
+}
+
+.deal-select {
+  background: #ffffff !important;
+  color: #1d2d3e !important;
+  font-weight: 600 !important;
+  border-color: #0a6ed1 !important;
+}
+
+.two-col-table {
+  flex: 0 0 auto !important;
+  margin: 0 0 8px !important;
+}
+
+.two-col-table .panel {
+  height: 100% !important;
+  margin-bottom: 0 !important;
+}
+
+.adjusted-panel {
+  flex: 1 1 auto !important;
+  min-height: 235px !important;
+  margin-bottom: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.adjusted-panel .panel-head {
+  flex: 0 0 auto !important;
+}
+
+.grid-toolbar {
+  flex: 0 0 auto !important;
+  min-height: 38px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  padding: 4px 8px !important;
+  background: #ffffff !important;
+  border-top: 0 !important;
+  border-bottom: 1px solid #d9d9d9 !important;
+  text-align: left !important;
+}
+
+.grid-toolbar-left {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 5px !important;
+}
+
+.grid-nav-btn {
+  min-width: 60px !important;
+  padding: 0 8px !important;
+  background: #f7f8f9 !important;
+  border-color: #d9d9d9 !important;
+  color: #1d2d3e !important;
+  font-weight: 400 !important;
+}
+
+.grid-state-text,
+.grid-line-count {
+  color: #6a6d70 !important;
+  font-size: 11px !important;
+  font-weight: 400 !important;
+  white-space: nowrap !important;
+}
+
+.fti-table-wrap {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  width: 100% !important;
+  overflow: auto !important;
+  border-top: 0 !important;
+  background: #ffffff !important;
+}
+
+.fti-table {
+  width: 5338px !important;
+  min-width: 5338px !important;
+  table-layout: fixed !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  font-size: 12px !important;
+}
+
+.fti-table th {
+  height: 31px !important;
+  padding: 6px 7px !important;
+  overflow: hidden !important;
+  background: #eef1f3 !important;
+  color: #556b82 !important;
+  border-right: 1px solid #d9d9d9 !important;
+  border-bottom: 1px solid #c7d4e0 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  line-height: 16px !important;
+  text-align: left !important;
+  text-transform: none !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+.fti-table td {
+  height: 29px !important;
+  padding: 3px 6px !important;
+  overflow: hidden !important;
+  background: #f7f8f9 !important;
+  color: #1d2d3e !important;
+  border-right: 1px solid #e3e6e8 !important;
+  border-bottom: 1px solid #e3e6e8 !important;
+  font-size: 12px !important;
+  line-height: 21px !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+  box-sizing: border-box !important;
+}
+
+.fti-table td.editable-cell {
+  background: #ffffff !important;
+}
+
+.fti-table td.number,
+.fti-table th.number {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+.fti-table .grid-input {
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 23px !important;
+  padding: 1px 4px !important;
+  border: 1px solid transparent !important;
+  border-radius: 3px !important;
+  background: #ffffff !important;
+  color: #1d2d3e !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  line-height: 19px !important;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+}
+
+.fti-table .grid-input:hover {
+  border-color: #b8b8b8 !important;
+}
+
+.fti-table .grid-input:focus {
+  border-color: #0a6ed1 !important;
+  background: #ffffff !important;
+  outline: 0 !important;
+  box-shadow: 0 0 0 1px #0a6ed1 !important;
+}
+
+.fti-table tr:hover td {
+  background: #eef6fd !important;
+}
+
+.fti-table tr:hover td.editable-cell {
+  background: #ffffff !important;
+}
+
+.adjusted-panel.locked .fti-table td,
+.adjusted-panel.locked .fti-table td.editable-cell {
+  background: #eef1f3 !important;
+  color: #556b82 !important;
+}
+
+.adjusted-panel.locked .fti-table .grid-input {
+  background: #eef1f3 !important;
+  color: #556b82 !important;
+  border-color: transparent !important;
+}
+
+.adjusted-panel.locked .grid-state-text {
+  color: #107e3e !important;
+  font-weight: 600 !important;
+}
+
+.modal-bg {
+  background: rgba(29, 45, 62, 0.42) !important;
+}
+
+.modal-window,
+.modal-window-small {
+  margin-top: 28px !important;
+  background: #ffffff !important;
+  border: 1px solid #d9d9d9 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18) !important;
+  overflow: hidden !important;
+}
+
+.modal-head {
+  height: 40px !important;
+  min-height: 40px !important;
+  background: #eaf3fc !important;
+  color: #1d2d3e !important;
+  border-bottom: 1px solid #d1e8ff !important;
+}
+
+.modal-head-table {
+  height: 40px !important;
+}
+
+.modal-title {
+  padding-left: 14px !important;
+  color: #1d2d3e !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+.modal-close {
+  width: 28px !important;
+  height: 28px !important;
+  border: 1px solid #d9d9d9 !important;
+  border-radius: 4px !important;
+  background: #ffffff !important;
+  color: #556b82 !important;
+}
+
+.modal-body {
+  color: #1d2d3e !important;
+  font-size: 12px !important;
+}
+
+.modal-foot {
+  background: #f7f8f9 !important;
+  border-top: 1px solid #d9d9d9 !important;
+}
+
+.checklist li {
+  color: #1d2d3e !important;
+  line-height: 19px !important;
+}
+
+.confirm-note {
+  border: 1px solid #d1e8ff !important;
+  background: #eaf3fc !important;
+  color: #004b93 !important;
+}
+
+#toastRegion {
+  position: fixed;
+  right: 22px;
+  bottom: 30px;
+  z-index: 5000;
+  width: 350px;
+  max-width: calc(100% - 44px);
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 8px;
+  padding: 12px 14px;
+  background: #f2f4f5;
+  color: #1d2d3e;
+  border: 1px solid #d9d9d9;
+  border-left: 3px solid #a8b3bd;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.toast.success {
+  background: #f2f4f5;
+  border-color: #d9d9d9;
+  border-left-color: #107e3e;
+}
+
+.toast.error {
+  border-left-color: #bb0000;
+}
+
+.toast.warning {
+  border-left-color: #e9730c;
+}
+
+.toast-icon {
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #e5e8eb;
+  color: #556b82;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.toast.success .toast-icon {
+  background: #ebf5eb;
+  color: #107e3e;
+}
+
+.toast-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-title {
+  margin-bottom: 2px;
+  color: #1d2d3e;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.toast-message {
+  color: #556b82;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 17px;
+}
+
+.statusbar {
+  height: 20px !important;
+  line-height: 20px !important;
+  background: #ffffff !important;
+  border-top: 1px solid #d9d9d9 !important;
+  color: #6a6d70 !important;
+  font-size: 11px !important;
+}
+
+.status-dot {
+  color: #0a6ed1 !important;
+}
+
+@media screen and (max-width: 1100px) {
+  html, body {
+    overflow-y: auto !important;
+  }
+
+  .page {
+    height: auto !important;
+    min-height: 100vh !important;
+  }
+
+  .main {
+    overflow: visible !important;
+  }
+
+  #detailScreen {
+    height: auto !important;
+  }
+
+  .details-table > tbody > tr > td,
+  .two-col-table > tbody > tr > td {
+    display: block !important;
+    width: auto !important;
+    padding: 0 !important;
+  }
+
+  .details-left,
+  .details-right,
+  .left-col,
+  .right-col {
+    padding: 0 !important;
+  }
+
+  .details-table .input-text,
+  .details-table .select-text,
+  .two-col-table .input-text,
+  .two-col-table .select-text {
+    max-width: none !important;
+  }
+
+  .adjusted-panel {
+    min-height: 420px !important;
+  }
+}
+
+@media screen and (max-width: 680px) {
+  .header-title {
+    font-size: 14px !important;
+  }
+
+  .main {
+    padding-left: 7px !important;
+    padding-right: 7px !important;
+  }
+
+  .form-table,
+  .form-table tbody,
+  .form-table tr,
+  .form-table td {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .label-cell {
+    width: auto !important;
+    padding-bottom: 1px !important;
+  }
+
+  .grid-toolbar {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+  }
+}
+
+</style>
+
+<style id="fti-v4-layout" type="text/css">
+.header {
+  height: 40px !important;
+  flex-basis: 40px !important;
+}
+.header-table {
+  height: 40px !important;
+}
+.header-left {
+  padding-left: 16px !important;
+}
+.main {
+  padding: 6px 10px 22px !important;
+}
+.toolbar {
+  gap: 4px !important;
+  margin-bottom: 5px !important;
+  padding: 4px 6px !important;
+  border-radius: 6px !important;
+}
+.toolbar .tool-btn,
+.btn,
+.grid-calc-btn {
+  min-height: 27px !important;
+  height: 27px !important;
+  padding: 0 9px !important;
+  font-size: 10.5px !important;
+  line-height: 25px !important;
+}
+.panel {
+  margin-bottom: 5px !important;
+  border-radius: 6px !important;
+}
+.panel-head {
+  min-height: 25px !important;
+  border-radius: 6px 6px 0 0 !important;
+}
+.panel-head-table {
+  height: 25px !important;
+  min-height: 25px !important;
+}
+.panel-title {
+  padding: 4px 10px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+.panel-body {
+  padding: 3px 8px !important;
+}
+.form-table td {
+  padding: 1px 4px !important;
+}
+.label-cell {
+  width: 132px !important;
+  font-size: 10px !important;
+  line-height: 14px !important;
+}
+.details-table .input-text,
+.details-table .select-text,
+.two-col-table .input-text,
+.two-col-table .select-text {
+  max-width: 335px !important;
+  min-height: 23px !important;
+  height: 23px !important;
+  padding: 2px 7px !important;
+  font-size: 11px !important;
+}
+.details-left,
+.details-right {
+  padding-right: 12px !important;
+}
+.details-right {
+  padding-left: 12px !important;
+  padding-right: 0 !important;
+}
+.two-col-table {
+  margin-bottom: 5px !important;
+}
+.two-col-table .label-cell {
+  width: 138px !important;
+}
+.left-col {
+  padding-right: 4px !important;
+}
+.right-col {
+  padding-left: 4px !important;
+}
+.adjusted-panel {
+  min-height: 300px !important;
+}
+.grid-toolbar {
+  min-height: 31px !important;
+  padding: 2px 7px !important;
+}
+.grid-toolbar-left {
+  gap: 4px !important;
+}
+.grid-line-count {
+  font-size: 10.5px !important;
+}
+.fti-table th {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 3 !important;
+  height: 29px !important;
+  padding: 5px 22px 5px 7px !important;
+  cursor: pointer !important;
+}
+.fti-table th.sortable {
+  position: sticky !important;
+}
+.sort-arrows {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 8px;
+  height: 14px;
+}
+.sort-up,
+.sort-down {
+  position: absolute;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+}
+.sort-up {
+  top: 0;
+  border-bottom: 5px solid #9aa7b4;
+}
+.sort-down {
+  bottom: 0;
+  border-top: 5px solid #9aa7b4;
+}
+.fti-table th.sort-asc .sort-up {
+  border-bottom-color: #0a6ed1;
+}
+.fti-table th.sort-desc .sort-down {
+  border-top-color: #0a6ed1;
+}
+.fti-table td {
+  height: 27px !important;
+  padding: 2px 6px !important;
+  line-height: 20px !important;
+}
+.fti-table .grid-input {
+  height: 21px !important;
+  line-height: 17px !important;
+}
+.fti-table .grid-input.locked-input {
+  background: #f7fbff !important;
+  color: #1d2d3e !important;
+  border-color: transparent !important;
+  cursor: default !important;
+}
+.adjusted-panel.locked .fti-table td,
+.adjusted-panel.locked .fti-table td.editable-cell {
+  background: #f7f8f9 !important;
+  color: #1d2d3e !important;
+}
+.adjusted-panel.locked .fti-table td.editable-cell {
+  background: #ffffff !important;
+}
+.adjusted-panel.locked .fti-table .grid-input {
+  background: #f7fbff !important;
+  color: #1d2d3e !important;
+}
+.fti-table td.invoice-number-cell {
+  background: #ebf5eb !important;
+  color: #107e3e !important;
+  font-weight: 600 !important;
+}
+.fti-table tr:hover td.invoice-number-cell {
+  background: #e3f1e4 !important;
+}
+@media screen and (max-width: 1100px) {
+  .adjusted-panel {
+    min-height: 480px !important;
+  }
+}
+</style>
+
+<style id="fti-v5-layout" type="text/css">
+html, body, button, input, select, table, th, td, div, span, label {
+  font-family: "Inter", "Segoe UI", Arial, Helvetica, sans-serif !important;
+}
+.header-title {
+  color: #1d2d3e !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+.toolbar .tool-btn,
+.btn,
+.grid-calc-btn,
+.grid-icon-btn {
+  font-size: 12px !important;
+  font-weight: 400 !important;
+}
+.upper-panel {
+  margin-bottom: 4px !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05) !important;
+}
+.upper-panel .panel-head {
+  min-height: 23px !important;
+  background: #f7f8f9 !important;
+}
+.upper-panel .panel-head-table {
+  height: 23px !important;
+  min-height: 23px !important;
+}
+.upper-panel .panel-title {
+  padding: 3px 10px !important;
+  color: #1d2d3e !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 16px !important;
+}
+.upper-panel .panel-body {
+  padding: 2px 8px 3px !important;
+}
+.upper-panel .form-table td {
+  padding: 1px 4px !important;
+}
+.label-cell {
+  width: 118px !important;
+  color: #1d2d3e !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  line-height: 16px !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+.two-col-table .label-cell {
+  width: 124px !important;
+}
+.details-table .input-text,
+.details-table .select-text {
+  width: 260px !important;
+  max-width: 260px !important;
+  min-height: 24px !important;
+  height: 24px !important;
+  padding: 2px 8px !important;
+  color: #1d2d3e !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+}
+.two-col-table .input-text,
+.two-col-table .select-text {
+  width: 245px !important;
+  max-width: 245px !important;
+  min-height: 24px !important;
+  height: 24px !important;
+  padding: 2px 8px !important;
+  color: #1d2d3e !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+}
+.input-readonly {
+  background: #f2f4f5 !important;
+  color: #1d2d3e !important;
+}
+.deal-select {
+  color: #1d2d3e !important;
+  font-weight: 400 !important;
+}
+.two-col-table {
+  margin-bottom: 4px !important;
+}
+.grid-toolbar {
+  min-height: 34px !important;
+  padding: 3px 8px !important;
+}
+.grid-toolbar-left {
+  gap: 6px !important;
+}
+.grid-icon-btn {
+  width: 30px !important;
+  min-width: 30px !important;
+  height: 27px !important;
+  padding: 0 !important;
+  border: 1px solid #d1e8ff !important;
+  border-radius: 4px !important;
+  background: #eaf3fc !important;
+  color: #004b93 !important;
+  line-height: 25px !important;
+  text-align: center !important;
+  cursor: pointer !important;
+}
+.grid-icon-btn:hover {
+  background: #d1e8ff !important;
+  border-color: #0a6ed1 !important;
+  color: #0854a0 !important;
+}
+.fti-table th {
+  color: #1d2d3e !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+.fti-table td,
+.fti-table .grid-input {
+  color: #1d2d3e !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+}
+.adjusted-panel {
+  min-height: 360px !important;
+}
+@media screen and (max-width: 980px) {
+  .details-table .input-text,
+  .details-table .select-text,
+  .two-col-table .input-text,
+  .two-col-table .select-text {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+</style>
+
+
+<style id="fti-v6-layout" type="text/css">
+html,
+body,
+.page,
+.main {
+  background: #fbfdff !important;
+}
+.toolbar,
+.panel,
+.grid-toolbar,
+.modal-window,
+.modal-window-small {
+  background: #ffffff !important;
+}
+.panel {
+  border-color: #e1e6ea !important;
+  box-shadow: 0 1px 4px rgba(29, 45, 62, 0.035) !important;
+}
+.upper-panel .panel-head,
+.adjusted-panel .panel-head {
+  background: #fafcfe !important;
+  border-bottom-color: #e5e9ed !important;
+}
+.input-readonly,
+.details-table .input-readonly,
+.two-col-table .input-readonly {
+  background: #f8fafc !important;
+  border-color: #c9d1d8 !important;
+}
+.details-table .input-text,
+.details-table .select-text,
+.two-col-table .input-text,
+.two-col-table .select-text {
+  width: 220px !important;
+  max-width: 220px !important;
+}
+.fti-table th {
+  background: #f5f8fa !important;
+  border-bottom-color: #d8e0e6 !important;
+}
+.fti-table td {
+  background: #fbfcfd !important;
+  border-right-color: #e7ebee !important;
+  border-bottom-color: #e7ebee !important;
+}
+.fti-table tr:hover td {
+  background: #f2f8fd !important;
+}
+.fti-table td.editable-cell,
+.fti-table tr:hover td.editable-cell {
+  background: #ffffff !important;
+}
+.modal-bg {
+  background: rgba(29, 45, 62, 0.30) !important;
+}
+#blListModal .modal-window {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  width: calc(100% - 48px) !important;
+  max-width: 1760px !important;
+  max-height: 82vh !important;
+  margin: 0 !important;
+  transform: translate(-50%, -50%) !important;
+}
+#blListModal .modal-body {
+  max-height: calc(82vh - 100px) !important;
+  padding: 10px 12px !important;
+  overflow: hidden !important;
+}
+#blListModal .bl-list-wrap {
+  width: 100% !important;
+  max-height: calc(82vh - 160px) !important;
+  overflow: auto !important;
+  border: 1px solid #e1e6ea !important;
+  background: #ffffff !important;
+}
+#blListTable {
+  width: 10086px !important;
+  min-width: 10086px !important;
+  table-layout: fixed !important;
+}
+#blListTable th {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 3 !important;
+  background: #f5f8fa !important;
+  color: #1d2d3e !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+}
+#blListTable td {
+  background: #ffffff !important;
+  color: #1d2d3e !important;
+  font-size: 11px !important;
+}
+#blListTable tbody tr:hover td {
+  background: #f2f8fd !important;
+}
+#blListTable tbody tr.bl-selected td {
+  background: #eaf3fc !important;
+}
+#blListTable th:first-child,
+#blListTable td:first-child {
+  position: sticky !important;
+  left: 0 !important;
+  z-index: 4 !important;
+  background: #ffffff !important;
+}
+#blListTable th:first-child {
+  z-index: 6 !important;
+  background: #f5f8fa !important;
+}
+.statusbar {
+  background: #ffffff !important;
+  border-top-color: #e1e6ea !important;
+}
+@media screen and (max-width: 980px) {
+  .details-table .input-text,
+  .details-table .select-text,
+  .two-col-table .input-text,
+  .two-col-table .select-text {
+    width: 100% !important;
+    max-width: none !important;
+  }
+  #blListModal .modal-window {
+    width: calc(100% - 20px) !important;
+  }
+}
+</style>
+
+<style id="fti-v7-layout" type="text/css">
+.grid-toolbar {
+  justify-content: flex-end !important;
+}
+.grid-toolbar-left {
+  margin-left: auto !important;
+}
+#reverseModal .modal-window,
+#remarkModal .modal-window,
+#pnlModal .modal-window {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  margin: 0 !important;
+  transform: translate(-50%, -50%) !important;
+}
+#reverseModal .modal-window,
+#remarkModal .modal-window {
+  width: 720px !important;
+  max-width: calc(100% - 40px) !important;
+}
+#pnlModal .modal-window {
+  width: calc(100% - 70px) !important;
+  max-width: 1500px !important;
+  max-height: 82vh !important;
+}
+#pnlModal .modal-body {
+  max-height: calc(82vh - 96px) !important;
+  padding: 10px 12px !important;
+  overflow: hidden !important;
+}
+#pnlModal .table-wrap {
+  max-height: calc(82vh - 155px) !important;
+  overflow: auto !important;
+}
+#pnlTable {
+  width: 1870px !important;
+  min-width: 1870px !important;
+  table-layout: fixed !important;
+}
+#pnlTable th,
+#pnlTable td {
+  font-family: "Inter", "Segoe UI", Arial, Helvetica, sans-serif !important;
+  font-size: 12px !important;
+  color: #1d2d3e !important;
+  text-transform: none !important;
+}
+#pnlTable th {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 2 !important;
+  background: #f5f8fa !important;
+  font-weight: 600 !important;
+}
+#pnlTable td {
+  background: #ffffff !important;
+  font-weight: 400 !important;
+}
+#pnlTable th:nth-child(1), #pnlTable td:nth-child(1) { width: 100px !important; }
+#pnlTable th:nth-child(2), #pnlTable td:nth-child(2) { width: 65px !important; }
+#pnlTable th:nth-child(3), #pnlTable td:nth-child(3) { width: 200px !important; }
+#pnlTable th:nth-child(4), #pnlTable td:nth-child(4),
+#pnlTable th:nth-child(5), #pnlTable td:nth-child(5),
+#pnlTable th:nth-child(6), #pnlTable td:nth-child(6),
+#pnlTable th:nth-child(7), #pnlTable td:nth-child(7) { width: 125px !important; }
+#pnlTable th:nth-child(8), #pnlTable td:nth-child(8) { width: 65px !important; }
+#pnlTable th:nth-child(9), #pnlTable td:nth-child(9),
+#pnlTable th:nth-child(10), #pnlTable td:nth-child(10) { width: 95px !important; }
+#pnlTable th:nth-child(11), #pnlTable td:nth-child(11),
+#pnlTable th:nth-child(12), #pnlTable td:nth-child(12) { width: 190px !important; }
+#pnlTable th:nth-child(13), #pnlTable td:nth-child(13) { width: 120px !important; }
+#pnlTable th:nth-child(14), #pnlTable td:nth-child(14) { width: 180px !important; }
+@media screen and (max-width: 760px) {
+  #reverseModal .modal-window,
+  #remarkModal .modal-window,
+  #pnlModal .modal-window {
+    width: calc(100% - 20px) !important;
+    max-width: calc(100% - 20px) !important;
+  }
+}
+</style>
+<style id="ottk-design-system" type="text/css">
+/* ============================================================================
+   OTTK design system
+   Fonts, colour tokens and chrome taken from web/ottk-dttk-console/index.html
+   so every console under web/ reads as one product. Appended last on purpose:
+   this file carries five earlier <style> layers, most of them written with
+   !important, so the alignment has to answer in kind to win the cascade. That
+   is why nearly every declaration below is flagged - it is cascade arithmetic
+   against the v4-v7 layers, not emphasis.
+
+   Density is deliberately NOT reset to OTTK's: this is a dense data-entry
+   screen and the v4-v7 layers shrank its controls on purpose. Colour, type and
+   chrome are aligned; the compact field heights stay. Presentation only - no
+   ids, handlers or behaviour are touched.
+
+   This file declares no custom properties of its own (it predates them), so
+   the tokens below are for the rules in this block; existing rules are
+   restated against them by hand.
+   ========================================================================= */
+:root{
+  --ds-page:#f5f7f9;
+  --ds-surface:#ffffff;
+  --ds-surface-2:#f2f4f5;
+  --ds-line:#d5dadd;
+  --ds-line-strong:#8996a1;
+  --ds-text:#1d2d3e;
+  --ds-sub:#475e75;
+  --ds-muted:#687b8d;
+  --ds-blue:#0a6ed1;
+  --ds-blue-hover:#085caf;
+  --ds-blue-soft:#eaf3fc;
+  --ds-green:#107e3e;
+  --ds-shadow:0 1px 3px rgba(34,53,72,.13);
+  --ds-radius:8px;
+  --ds-font:"72","Segoe UI",Arial,sans-serif;
+}
+
+/* "72" is SAP's UI font and the first face OTTK asks for; the rest of the stack
+   is OTTK's fallback. This file set Arial (and later Inter) in a dozen separate
+   rules, so the swap is done once here for everything. */
+body,body *{font-family:var(--ds-font)!important}
+html,body{background:var(--ds-page)!important;color:var(--ds-text)!important}
+.page{background:var(--ds-page)!important}
+
+/* --- Topbar --------------------------------------------------------------
+   The old 40px title strip becomes OTTK's 52px topbar: gradient mark, bold
+   title, muted code, green connection dot. */
+.header{
+  height:52px!important;flex-basis:52px!important;min-height:52px!important;
+  background:var(--ds-surface)!important;border-bottom:1px solid var(--ds-line)!important;
+  box-shadow:none!important;
+}
+.header-table{height:52px!important;width:100%!important}
+.header-left{padding-left:18px!important;vertical-align:middle!important}
+.header-right{padding-right:18px!important;text-align:right!important;white-space:nowrap!important}
+.ds-head-wrap{display:flex;align-items:center;gap:11px;min-width:0}
+.header-title{
+  font-size:17px!important;font-weight:700!important;color:var(--ds-text)!important;
+  white-space:nowrap!important;
+}
+.ds-mark{
+  width:30px;height:30px;border-radius:6px;flex:none;display:grid;place-items:center;
+  background:linear-gradient(145deg,#0a6ed1,#35a5dc);color:#fff;
+  box-shadow:0 2px 7px rgba(10,110,209,.22);
+}
+.ds-mark svg{width:18px;height:18px;fill:currentColor}
+.ds-code{font-size:12px;font-weight:400;color:var(--ds-muted);white-space:nowrap}
+/* Same green dot OTTK uses to say "the page is talking to SAP". */
+.ds-conn{
+  display:inline-block;width:8px;height:8px;border-radius:50%;
+  background:#20a454;box-shadow:0 0 0 3px #d9f3e2;
+}
+
+/* --- Action bar and buttons ---------------------------------------------
+   Kept as an in-page action bar (eleven semantic actions do not belong in a
+   topbar), but given OTTK's button shape and 32px height. */
+.toolbar{
+  background:var(--ds-surface)!important;border:1px solid var(--ds-line)!important;
+  border-radius:var(--ds-radius)!important;box-shadow:var(--ds-shadow)!important;
+  gap:6px!important;padding:7px 9px!important;margin-bottom:8px!important;
+}
+.toolbar .tool-btn,.btn,.grid-calc-btn{
+  height:32px!important;min-height:32px!important;line-height:30px!important;
+  padding:0 11px!important;font-size:13px!important;font-weight:600!important;
+  border:1px solid var(--ds-line-strong)!important;border-radius:4px!important;
+  background:var(--ds-surface)!important;color:var(--ds-sub)!important;
+}
+.toolbar .tool-btn:hover,.btn:hover,.grid-calc-btn:hover{
+  background:var(--ds-surface-2)!important;color:var(--ds-text)!important;
+}
+.toolbar .tool-primary,.toolbar .tool-btn.tool-primary{
+  background:var(--ds-blue)!important;border-color:var(--ds-blue)!important;color:#fff!important;
+}
+.toolbar .tool-primary:hover{background:var(--ds-blue-hover)!important}
+.grid-icon-btn{
+  width:32px!important;height:32px!important;padding:0!important;
+  border:1px solid var(--ds-line-strong)!important;border-radius:4px!important;
+  background:var(--ds-surface)!important;color:var(--ds-sub)!important;font-size:14px!important;
+}
+.grid-icon-btn:hover{
+  background:var(--ds-blue-soft)!important;border-color:#a7cff5!important;color:var(--ds-blue)!important;
+}
+
+/* --- Panels --------------------------------------------------------------- */
+.panel{
+  background:var(--ds-surface)!important;border:1px solid var(--ds-line)!important;
+  border-radius:var(--ds-radius)!important;box-shadow:var(--ds-shadow)!important;
+  margin-bottom:8px!important;
+}
+.panel-head,.upper-panel .panel-head,.adjusted-panel .panel-head{
+  background:var(--ds-surface)!important;border-bottom:1px solid var(--ds-line)!important;
+  border-radius:var(--ds-radius) var(--ds-radius) 0 0!important;min-height:34px!important;
+}
+.panel-head-table,.upper-panel .panel-head-table{height:34px!important;min-height:34px!important}
+/* .upper-panel .panel-title in the v5 layer is more specific than a bare
+   .panel-title, so both are named here rather than relying on source order. */
+.panel-title,.upper-panel .panel-title,.adjusted-panel .panel-title{
+  padding:0 11px!important;font-size:13px!important;font-weight:700!important;
+  line-height:34px!important;color:var(--ds-text)!important;
+}
+.panel-body{padding:8px 11px!important}
+
+/* --- Form fields ---------------------------------------------------------- */
+.label-cell{
+  font-size:12px!important;font-weight:600!important;line-height:16px!important;
+  color:var(--ds-sub)!important;
+}
+.input-text,.select-text,
+.details-table .input-text,.details-table .select-text,
+.two-col-table .input-text,.two-col-table .select-text{
+  border:1px solid var(--ds-line-strong)!important;border-radius:3px!important;
+  color:var(--ds-text)!important;font-size:12px!important;background:#fff!important;
+}
+.input-text:focus,.select-text:focus{
+  border-color:var(--ds-blue)!important;box-shadow:0 0 0 1px var(--ds-blue)!important;outline:none!important;
+}
+.input-readonly,.details-table .input-readonly,.two-col-table .input-readonly{
+  background:var(--ds-surface-2)!important;border-color:var(--ds-line)!important;
+  color:var(--ds-sub)!important;font-weight:600!important;
+}
+
+/* --- Grid ----------------------------------------------------------------- */
+.fti-table th,.data-table th{
+  background:var(--ds-surface-2)!important;color:var(--ds-sub)!important;
+  font-size:11px!important;font-weight:700!important;
+  border-bottom:1px solid var(--ds-line)!important;border-right:1px solid #e6e9eb!important;
+}
+.fti-table td,.data-table td,.fti-table .grid-input{
+  color:var(--ds-text)!important;font-size:12px!important;background:#fff!important;
+  border-right-color:#edf0f2!important;border-bottom-color:#edf0f2!important;
+}
+.fti-table tr:hover td{background:#f7fbff!important}
+.fti-table td.editable-cell,.fti-table tr:hover td.editable-cell{background:#fff!important}
+.grid-toolbar{padding:7px 11px!important;border-bottom:1px solid var(--ds-line)!important}
+
+/* --- Modals --------------------------------------------------------------- */
+.modal-bg{background:rgba(30,48,66,.36)!important}
+.modal-window{
+  border:1px solid #cbd9e6!important;border-radius:10px!important;
+  box-shadow:0 18px 60px rgba(28,50,72,.28)!important;
+}
+.modal-head{background:#eef6ff!important;border-bottom:2px solid #86bff3!important}
+.modal-title{font-size:15px!important;font-weight:700!important;color:#102a43!important}
+.modal-close{
+  border-radius:4px!important;background:rgba(255,255,255,.72)!important;color:#607d94!important;
+}
+.modal-close:hover{background:#fff!important;color:#12324d!important}
+
+/* --- Status bar ----------------------------------------------------------- */
+.statusbar{
+  background:var(--ds-surface)!important;border-top:1px solid var(--ds-line)!important;
+  color:var(--ds-muted)!important;font-size:11px!important;
+}
+.status-dot{color:var(--ds-green)!important}
+</style>
+<style>
+/* Fourth Signal logo in the topbar -- the same asset the SLC hub (8771) serves,
+   so every console in web/ carries one identical mark. This is an <img>, and
+   img.mark / img.ds-mark outranks the plain .mark / .ds-mark class rule that
+   painted the old blue gradient square, so the gradient, shadow and radius are
+   switched off here rather than deleted out of the rule they came from. */
+img.mark, img.ds-mark {
+  width: 32px; height: 32px; flex: none;
+  background: none; box-shadow: none; border-radius: 0;
+  object-fit: contain;
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <div class="header">
+    <table class="header-table">
+      <tr>
+        <td class="header-left">
+          <div class="ds-head-wrap">
+            <img class="ds-mark" alt="Fourth Signal" src="https://raw.githubusercontent.com/ryannayak/fs-assets/e82f35a83e28689167b22b4300d4994a249acee0/fs-short-logo.png"/>
+            <div class="header-title">Amend BLs &amp; Finalise Trade Invoices</div>
+            <span class="ds-code">INVOICE</span>
+          </div>
+        </td>
+        <td class="header-right">
+          <span class="ds-conn" id="connIndicator" title="System connected"></span>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="main">
+    <div id="detailScreen" class="screen-visible">
+
+      <div class="toolbar">
+        <button id="confirmBtn" class="tool-btn tool-primary" type="button">Confirm Invoice Generation</button>
+        <button id="reverseConfirmBtn" class="tool-btn" type="button">Reverse Confirm Invoice Generation</button>
+        <button id="viewBlBtn" class="tool-btn" type="button">View List of BL's</button>
+        <button id="refreshBtn" class="tool-btn" type="button">Refresh</button>
+        <button id="pnlBtn" class="tool-btn" type="button">P&amp;L</button>
+        <button id="saveBtn" class="tool-btn" type="button">Save Data</button>
+        <button id="amendBtn" class="tool-btn" type="button">Amendment</button>
+        <button id="amendConfirmBtn" class="tool-btn" type="button">Amendment Confirm</button>
+        <button id="sblcFeeBtn" class="tool-btn" type="button">SBLC Fee Details</button>
+        <button id="printFormBtn" class="tool-btn" type="button">Print Form</button>
+        <button id="mergePdfBtn" class="tool-btn" type="button">Merge PDF</button>
+      </div>
+
+      <div class="panel upper-panel basic-panel">
+        <div class="panel-head">
+          <table class="panel-head-table">
+            <tr>
+              <td class="panel-title">Basic Selection</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="panel-body">
+          <table class="details-table">
+            <tr>
+              <td class="details-left">
+                <table class="form-table">
+                  <tr>
+                    <td class="label-cell">Deal ID</td>
+                    <td><select id="dDeal" class="select-text deal-select"></select></td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">Entity ID</td>
+                    <td><input id="dEntity" class="input-text input-readonly" type="text" readonly></td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">Business Area</td>
+                    <td><input id="dBusa" class="input-text input-readonly" type="text" readonly></td>
+                  </tr>
+                </table>
+              </td>
+
+              <td class="details-right">
+                <table class="form-table">
+                  <tr>
+                    <td class="label-cell">SLC Structure</td>
+                    <td><input id="dStruct" class="input-text input-readonly" type="text" readonly></td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">Deal ID Status</td>
+                    <td><input id="dStatus" class="input-text input-readonly" type="text" readonly></td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <table class="two-col-table">
+        <tr>
+          <td class="left-col">
+            <div class="panel upper-panel pricing-panel">
+              <div class="panel-head">
+                <table class="panel-head-table">
+                  <tr><td class="panel-title">OTTK Pricing Details</td></tr>
+                </table>
+              </div>
+
+              <div class="panel-body">
+                <table class="form-table">
+                  <tr>
+                    <td class="label-cell">OTTK No</td>
+                    <td><input id="oNo" class="input-text input-readonly" type="text" readonly></td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">LC Tenor</td>
+                    <td><input id="oTenor" class="input-text input-readonly" type="text" readonly></td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">Interest Category</td>
+                    <td><input id="oCat" class="input-text input-readonly" type="text" readonly></td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">Interest Rate</td>
+                    <td><input id="oRate" class="input-text input-readonly" type="text" readonly></td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </td>
+
+          <td class="right-col">
+            <div class="panel upper-panel pricing-panel">
+              <div class="panel-head">
+                <table class="panel-head-table">
+                  <tr><td class="panel-title">DTTK Pricing Details</td></tr>
+                </table>
+              </div>
+
+              <div class="panel-body">
+                <table class="form-table">
+                  <tr>
+                    <td class="label-cell">DTTK No</td>
+                    <td><input id="dNo" class="input-text input-readonly" type="text" readonly></td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">LC Tenor</td>
+                    <td><input id="dTenor" class="input-text input-readonly" type="text" readonly></td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">Interest Category</td>
+                    <td><input id="dCat" class="input-text input-readonly" type="text" readonly></td>
+                  </tr>
+                  <tr>
+                    <td class="label-cell">Ref. Int. Rate + Sprd</td>
+                    <td><input id="dRate" class="input-text input-readonly" type="text" readonly></td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <div id="adjustedPanel" class="panel adjusted-panel">
+        <div class="panel-head">
+          <table class="panel-head-table">
+            <tr>
+              <td class="panel-title">Adjusted Price / Qty</td>
+            </tr>
+          </table>
+        </div>
+        <div class="grid-toolbar">
+          <div class="grid-toolbar-left">
+            <button id="calcBtn" class="grid-calc-btn" type="button">Calculate</button>
+            <button id="downloadTableBtn" class="grid-calc-btn" type="button">Download</button>
+            <button id="refreshTableBtn" class="grid-icon-btn" type="button"
+              title="Refresh table" aria-label="Refresh table">&#8635;</button>
+          </div>
+        </div>
+        <div id="ftiTableWrap" class="table-wrap fti-table-wrap">
+          <table id="ftiLineTable" class="data-table fti-table">
+            <thead id="lineHead"></thead>
+            <tbody id="lineBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="complianceModal" class="modal-bg">
+  <div class="modal-window modal-window-small">
+
+    <div class="modal-head">
+      <table class="modal-head-table">
+        <tr>
+          <td class="modal-title">BL Compliance Checklist</td>
+          <td class="modal-close-cell">
+            <button id="complianceClose" class="modal-close" type="button">X</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="modal-body">
+      <ol class="checklist">
+        <li>Port of Loading, Port of Discharge, Commodity and shipment date for the selected BL shall match the requirements of the Master Contract for which the BL is being
+        selected.</li>
+        <li>Load Port, Discharge Port and Origin of goods shall not be from any of the Countries in the OFAC list.</li>
+        <li>Scanned copies of OBL shall be used for TSF Merchanting book. No Seaway Bills / Draft BLs are accepted for FX invoicing.</li>
+        <li>Consignee should be "To Order". If Consignee is "third party BL" or "Bank" on the BL, such BL shall not be acceptable unless approved otherwise. If approved, the
+        bank on face of BL and the Bank for TSF transaction shall be different.</li>
+        <li>If the BL has LC details, the bank handling the BU documentation should not be same as that of TSF.</li>
+        <li>If BU is routing documents through Bank on Buy or Sell Leg, TSF cannot use these BL for invoicing the FX transaction with these banks.</li>
+        <li>There cannot be an overlap between BU banks and TSF banks for the same BL.</li>
+        <li>The date of PO / Contract shall be in line with the title date.</li>
+        <li>The title of the goods must be with OIL on the date of TSF invoicing.</li>
+        <li>Shipment / vessel should be in transit at the time of bundling the invoice. The TSF invoice date in no case can be after the vessel discharge date.</li>
+      </ol>
+
+      <div class="confirm-note">Do you want to proceed?</div>
+    </div>
+
+    <div class="modal-foot">
+      <button id="complianceCancel" class="btn" type="button">Cancel</button>
+      <button id="complianceYes" class="btn btn-primary" type="button">Yes, Proceed</button>
+    </div>
+
+  </div>
+</div>
+
+
+
+<div id="reverseModal" class="modal-bg">
+  <div class="modal-window modal-window-small">
+    <div class="modal-head">
+    <table class="modal-head-table">
+    <tr>
+    <td class="modal-title">Cancel TRM Invoice</td>
+    <td class="modal-close-cell">
+    <button id="reverseClose" class="modal-close" type="button">X</button>
+    </td>
+    </tr>
+    </table>
+    </div>
+    <div class="modal-body"><div style="padding:18px 8px;font-size:14px;">Do you really want to cancel the invoice?</div></div>
+    <div class="modal-foot"><button id="reverseNo" class="btn" type="button">No</button><button id="reverseYes" class="btn btn-primary" type="button">Yes</button></div>
+  </div>
+</div>
+
+
+<div id="blListModal" class="modal-bg">
+  <div class="modal-window" style="width:94%;max-width:1500px;">
+    <div class="modal-head">
+    <table class="modal-head-table">
+    <tr>
+    <td class="modal-title">View List of BL's</td>
+    <td class="modal-close-cell">
+    <button id="blListClose" class="modal-close" type="button">X</button>
+    </td>
+    </tr>
+    </table>
+    </div>
+    <div class="modal-body">
+      <div class="table-wrap bl-list-wrap">
+        <table class="data-table" id="blListTable">
+          <thead id="blListHead"></thead>
+          <tbody id="blListBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-foot">
+    <button id="blListCancel" class="btn" type="button">Cancel</button>
+    <button id="deassignBtn" class="btn btn-primary" type="button">De-assign</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="remarkModal" class="modal-bg">
+  <div class="modal-window modal-window-small">
+    <div class="modal-head">
+    <table class="modal-head-table">
+    <tr>
+    <td class="modal-title">BL De-Assign</td>
+    <td class="modal-close-cell">
+    <button id="remarkClose" class="modal-close" type="button">X</button>
+    </td>
+    </tr>
+    </table>
+    </div>
+    <div class="modal-body"><table class="form-table"><tr><td class="label-cell">Remark</td><td><input id="deassignRemark" class="input-text" type="text" maxlength="100"
+    style="width:100%;"></td></tr></table></div>
+    <div class="modal-foot"><button id="remarkCancel" class="btn" type="button">Cancel</button><button id="remarkUpdate" class="btn btn-primary" type="button">Update</button></div>
+  </div>
+</div>
+
+
+<div id="pnlModal" class="modal-bg">
+  <div class="modal-window" style="width:90%;max-width:1250px;">
+    <div class="modal-head">
+    <table class="modal-head-table">
+    <tr>
+    <td class="modal-title">P&amp;L</td>
+    <td class="modal-close-cell">
+    <button id="pnlClose" class="modal-close" type="button">X</button>
+    </td>
+    </tr>
+    </table>
+    </div>
+    <div class="modal-body">
+      <div class="table-wrap" style="max-height:430px;">
+        <table class="data-table" id="pnlTable"><thead><tr><th>Int Rate</th>
+        <th>Days</th>
+        <th>Particulars</th>
+        <th>OGA</th>
+        <th>DMCC</th>
+        <th>PAN</th>
+        <th>Total</th>
+        <th>SNo</th>
+        <th>Product Type</th>
+        <th>Flow Type</th>
+        <th>Product Type Description</th>
+        <th>Flow Type Description</th>
+        <th>Income/Expense</th>
+        <th>Notes</th></tr></thead>
+        <tbody id="pnlBody"></tbody></table>
+      </div>
+    </div>
+    <div class="modal-foot"><button id="pnlCancel" class="btn" type="button">Close</button></div>
+  </div>
+</div>
+
+<div id="toastRegion" aria-live="polite"></div>
+
+<div class="statusbar">
+  <span class="status-dot">&#9679;</span>
+  <span id="statusText">Ready</span>
+</div>
+
+
+<script type="text/javascript">
+(function () {
+  var HAS_SAP_DATA = typeof FTI_DEALS !== "undefined";
+  var SAP_DETAIL = typeof FTI_DETAIL !== "undefined" ? FTI_DETAIL : null;
+  var SAP_LINES = typeof FTI_LINES !== "undefined" ? FTI_LINES : [];
+  var SAP_LINES_BY_DEAL = typeof FTI_LINES_BY_DEAL !== "undefined" ? FTI_LINES_BY_DEAL : null;
+  var BL_LINES = typeof FTI_BL_LINES !== "undefined" ? FTI_BL_LINES : [];
+  var PNL_LINES = typeof FTI_PNL_LINES !== "undefined" ? FTI_PNL_LINES : [];
+  var OPEN_POPUP = typeof FTI_OPEN_POPUP !== "undefined" ? FTI_OPEN_POPUP : "";
+  var SAP_MESSAGE = typeof FTI_MESSAGE !== "undefined" ? FTI_MESSAGE : "";
+  var SAP_MESSAGE_TYPE = typeof FTI_MESSAGE_TYPE !== "undefined" ? FTI_MESSAGE_TYPE : "success";
+  var selectedBl = null;
+  var currentDeal = null;
+  var currentLines = [];
+  var tableLocked = false;
+  var generatedByDeal = {};
+  var sortColumnIndex = -1;
+  var sortDirection = "";
+
+  var DUMMY = {
+    deals: [
+      {
+        deal: "10000000",
+        entity: "E021 - OGA-DMCC-PAN",
+        busa: "0615",
+        structure: "LCP LC Prepayment",
+        status: "01 - Open",
+        ottk: "100009",
+        ottk_tenor: "180",
+        ottk_cat: "Fixed",
+        ottk_rate: "1.8500000",
+        dttk: "100003",
+        dttk_tenor: "180",
+        dttk_cat: "Fixed",
+        dttk_rate: "1.9500000",
+        quantity: 2800,
+        price: 492.75,
+        companyCode: "AE11",
+        entryDate: "27.08.2026",
+        commodity: "THAI PARBOILED RICE 5% BROKEN",
+        gtCommodityId: "RICE-PB5",
+        incoterms: "FOB",
+        payTerms: "180 days from LC Negotiation Date",
+        currency: "USD",
+        exchangeRate: "1.0000000",
+        plannedExchangeRate: "1.0000000",
+        fixedMatDate: "26.08.2026",
+        blDate: "25.08.2026",
+        profitMargin: "1.8500",
+        client: "100"
+      },
+      {
+        deal: "10000001",
+        entity: "E022 - DMCC-PAN-OGA",
+        busa: "0616",
+        structure: "DSX Deposit Set Off",
+        status: "01 - Open",
+        ottk: "100008",
+        ottk_tenor: "240",
+        ottk_cat: "Fixed",
+        ottk_rate: "1.9000000",
+        dttk: "100002",
+        dttk_tenor: "240",
+        dttk_cat: "Fixed",
+        dttk_rate: "2.0000000",
+        quantity: 2900,
+        price: 493.40,
+        companyCode: "AE13",
+        entryDate: "28.08.2026",
+        commodity: "INDIAN BASMATI RICE 1121",
+        gtCommodityId: "BAS1121",
+        incoterms: "CFR",
+        payTerms: "CAD 30 days",
+        currency: "USD",
+        exchangeRate: "1.0000000",
+        plannedExchangeRate: "0.9985000",
+        fixedMatDate: "27.08.2026",
+        blDate: "26.08.2026",
+        profitMargin: "2.1000",
+        client: "110"
+      },
+      {
+        deal: "10000004",
+        entity: "E024 - OGA-PAN-DMCC",
+        busa: "0622",
+        structure: "DSX Deposit Set Off",
+        status: "01 - Open",
+        ottk: "100011",
+        ottk_tenor: "270",
+        ottk_cat: "Floating",
+        ottk_rate: "2.1000000",
+        dttk: "100004",
+        dttk_tenor: "270",
+        dttk_cat: "Floating",
+        dttk_rate: "2.2500000",
+        quantity: 2500,
+        price: 497.20,
+        companyCode: "AE13",
+        entryDate: "30.08.2026",
+        commodity: "THAI JASMINE RICE HOM MALI",
+        gtCommodityId: "JAS-HM",
+        incoterms: "CIF",
+        payTerms: "60 days from BL Date",
+        currency: "USD",
+        exchangeRate: "1.0000000",
+        plannedExchangeRate: "1.0015000",
+        fixedMatDate: "29.08.2026",
+        blDate: "28.08.2026",
+        profitMargin: "2.3500",
+        client: "120"
+      },
+      {
+        deal: "10000009",
+        entity: "E025 - PAN-OGA-DMCC",
+        busa: "0625",
+        structure: "LCP LC Prepayment",
+        status: "01 - Open",
+        ottk: "100018",
+        ottk_tenor: "360",
+        ottk_cat: "Fixed",
+        ottk_rate: "1.9500000",
+        dttk: "100016",
+        dttk_tenor: "360",
+        dttk_cat: "Fixed",
+        dttk_rate: "2.0500000",
+        quantity: 3150,
+        price: 491.85,
+        companyCode: "AE11",
+        entryDate: "02.09.2026",
+        commodity: "VIETNAM LONG GRAIN WHITE RICE",
+        gtCommodityId: "VLG-WR",
+        incoterms: "FOB",
+        payTerms: "90 days from Invoice Date",
+        currency: "USD",
+        exchangeRate: "1.0000000",
+        plannedExchangeRate: "0.9990000",
+        fixedMatDate: "01.09.2026",
+        blDate: "31.08.2026",
+        profitMargin: "1.9750",
+        client: "100"
+      },
+      {
+        deal: "10000010",
+        entity: "E021 - OGA-DMCC-PAN",
+        busa: "none",
+        structure: "LCP LC Prepayment",
+        status: "01 - Open",
+        ottk: "100019",
+        ottk_tenor: "360",
+        ottk_cat: "Fixed",
+        ottk_rate: "2.0000000",
+        dttk: "100017",
+        dttk_tenor: "360",
+        dttk_cat: "Fixed",
+        dttk_rate: "2.0000000",
+        quantity: 3000,
+        price: 494.99,
+        companyCode: "AE11",
+        entryDate: "03.09.2026",
+        commodity: "THAI WHITE RICE 5% BROKEN DOUBLE POLISHED",
+        gtCommodityId: "RICE5",
+        incoterms: "FOB",
+        payTerms: "360 days from LC Negotiation Date",
+        currency: "USD",
+        exchangeRate: "1.0000000",
+        plannedExchangeRate: "1.0000000",
+        fixedMatDate: "02.09.2026",
+        blDate: "01.09.2026",
+        profitMargin: "2.2500",
+        client: "100"
+      },
+      {
+        deal: "1200001",
+        entity: "E029 - DMCC-OGA-PAN",
+        busa: "0710",
+        structure: "LCP LC Prepayment",
+        status: "01 - Open",
+        ottk: "100010",
+        ottk_tenor: "120",
+        ottk_cat: "Fixed",
+        ottk_rate: "1.7500000",
+        dttk: "200003",
+        dttk_tenor: "120",
+        dttk_cat: "Fixed",
+        dttk_rate: "1.8750000",
+        quantity: 2100,
+        price: 490.10,
+        companyCode: "SG03",
+        entryDate: "07.09.2026",
+        commodity: "PAKISTAN IRRI-6 WHITE RICE",
+        gtCommodityId: "IRRI6",
+        incoterms: "CFR",
+        payTerms: "45 days from Invoice Date",
+        currency: "USD",
+        exchangeRate: "1.0000000",
+        plannedExchangeRate: "1.0020000",
+        fixedMatDate: "06.09.2026",
+        blDate: "05.09.2026",
+        profitMargin: "1.6500",
+        client: "200"
+      }
+    ],
+    blLines: [],
+    pnlLines: []
+  };
+
+  var DEALS = HAS_SAP_DATA ? FTI_DEALS : DUMMY.deals;
+
+  if (!BL_LINES.length) {
+    DUMMY.blLines = buildDummyBlLines();
+    BL_LINES = DUMMY.blLines;
+  }
+  if (!PNL_LINES.length) {
+    PNL_LINES = DUMMY.pnlLines;
+  }
+
+  var BL_COLUMNS = [
+    { key: "client", label: "Client", width: 72 },
+    { key: "ztf_no", label: "Trade Flow ID", width: 112 },
+    { key: "ztf_split", label: "TF Split ID", width: 86 },
+    { key: "zbl_no", label: "BL No", width: 112 },
+    { key: "zbl_split", label: "BL Split ID", width: 86 },
+    { key: "zbl_reuse", label: "Reuse ID", width: 82 },
+    { key: "zbl_date", label: "BL Date", width: 92 },
+    { key: "zdeal_id", label: "Deal ID", width: 94 },
+    { key: "ztf_assign_date", label: "Date", width: 92 },
+    { key: "zbl_lot", label: "BL Lot ID", width: 84 },
+    { key: "zinv_comm", label: "Invoice Commodity", width: 190 },
+    { key: "gt_commodity_id", label: "GT Commodity ID", width: 112 },
+    { key: "zinco", label: "Incoterms", width: 84 },
+    { key: "zinv_date", label: "Invoice Date", width: 96 },
+    { key: "zso_date", label: "SO/PO Date", width: 96 },
+    { key: "zinv_type", label: "Invoice Type", width: 90 },
+    { key: "tf_upload_date", label: "TF Upload Date", width: 104 },
+    { key: "trader", label: "Trader", width: 112 },
+    { key: "bu", label: "BU", width: 84 },
+    { key: "grade", label: "Grade", width: 112 },
+    { key: "operator", label: "Operator", width: 100 },
+    { key: "bl_vessel_name", label: "BL- Vessel Name", width: 150 },
+    { key: "bu_commodity", label: "BU Commodity", width: 120 },
+    { key: "p_contract_number", label: "P - Contract Number", width: 128 },
+    { key: "purchase_incoterms", label: "Purchase Incoterms", width: 116 },
+    { key: "purchase_payment_terms", label: "Payment terms - Purchase Side", width: 180 },
+    { key: "purchase_seller_bank", label: "Banks-Purchase Leg-Seller Ba", width: 180 },
+    { key: "purchase_buyer_bank", label: "Banks-Purchase Leg-Buyer Bank", width: 180 },
+    { key: "s_contract_number", label: "S Contract Number", width: 128 },
+    { key: "sales_incoterms", label: "Sales Incoterms", width: 112 },
+    { key: "sales_payment_terms", label: "Payment terms - Sales Side", width: 170 },
+    { key: "sales_seller_bank", label: "Banks-Sale Leg-Seller Bank", width: 170 },
+    { key: "sales_buyer_bank", label: "Banks-Sale Leg-Buyer Bank", width: 170 },
+    { key: "oga_title_from", label: "OGA Title From - Date", width: 132 },
+    { key: "oga_title_till", label: "OGA Title Till - Date", width: 132 },
+    { key: "quantity", label: "Quantity", width: 96, number: true },
+    { key: "contract_price", label: "Contract Price", width: 104, number: true },
+    { key: "cmp_mt", label: "CMP (MT)", width: 90, number: true },
+    { key: "inv_price_usd", label: "Inv Price (USD)", width: 104, number: true },
+    { key: "invoice_price", label: "Invoice Price", width: 104, number: true },
+    { key: "contract_amt_usd", label: "Contract Amt(USD)", width: 122, number: true },
+    { key: "total_amt_cmp_usd", label: "Total Amt CMP (USD)", width: 138, number: true },
+    { key: "invoice_amount_usd", label: "Invoice Amount(USD)", width: 128, number: true },
+    { key: "port_loading", label: "Port of Loading", width: 120 },
+    { key: "port_destination", label: "Port of Destination", width: 130 },
+    { key: "sailing_date", label: "Sailing Date", width: 96 },
+    { key: "bl_number", label: "BL Number", width: 112 },
+    { key: "number_of_days", label: "Number of Days", width: 104, number: true },
+    { key: "eta_discharge", label: "ETA at Discharge Port", width: 138 },
+    { key: "consignee_bl", label: "Consignee on BL", width: 130 },
+    { key: "lc_details_bl", label: "LC details in BL", width: 130 },
+    { key: "origin_entity", label: "Origin Entity", width: 112 },
+    { key: "supplier_olam_destination", label: "Supplier- Olam Destination", width: 160 },
+    { key: "buyer_3p_destination", label: "Buyer- 3P Destination", width: 150 },
+    { key: "avail_one_third_from_a", label: "Avail 1/3 OB TSF From", width: 140 },
+    { key: "avail_one_third_from_b", label: "Avail 1/3 OB TSF From", width: 140 },
+    { key: "avail_three_third_from", label: "Avail 3/3 OB TSF From", width: 140 },
+    { key: "avail_three_third_till", label: "Avail 3/3 OB TSF Till", width: 140 },
+    { key: "remarks", label: "Remarks", width: 150 },
+    { key: "bl_receipt_date", label: "BL Receipt date", width: 104 },
+    { key: "tf_status", label: "TF Status", width: 92 },
+    { key: "bl_status_1", label: "BL Status 1", width: 90 },
+    { key: "bl_status_1_desc", label: "BL Status 1 Desc", width: 140 },
+    { key: "bl_status_2", label: "BL Status 2", width: 90 },
+    { key: "bl_status_2_desc", label: "BL Status 2 Desc", width: 140 },
+    { key: "tsf_dms_code_a", label: "TSF DMS Code", width: 112 },
+    { key: "dms_code_exception", label: "DMS Code-Exception", width: 132 },
+    { key: "tsf_dms_reuse_code", label: "TSF DMS Reuse Code", width: 138 },
+    { key: "tsf_dms_code_b", label: "TSF DMS Code", width: 112 },
+    { key: "bl_delete", label: "BL Delete", width: 82 },
+    { key: "bl_expired", label: "BL Expired", width: 88 },
+    { key: "tf_type", label: "TF Type", width: 82 },
+    { key: "bl_exception", label: "BL Exception", width: 100 },
+    { key: "exception_notes", label: "Exception Notes", width: 150 },
+    { key: "proposed_deal_id", label: "Proposed Deal ID", width: 112 },
+    { key: "reuse_comments", label: "Reuse Comments", width: 140 },
+    { key: "reuse_awaiting_confirm", label: "Reuse Awaiting Confirm", width: 140 },
+    { key: "pre_ticket_ref_no", label: "Pre Ticket Reference Number", width: 170 },
+    { key: "entered_by", label: "Entered By", width: 110 },
+    { key: "entered_on", label: "Entered On", width: 96 },
+    { key: "entry_time", label: "Entry Time", width: 92 },
+    { key: "last_changed_by", label: "Last Changed By", width: 120 },
+    { key: "changed_on", label: "Changed On", width: 96 },
+    { key: "time_changed", label: "Time Changed", width: 96 }
+  ];
+
+  var COLUMNS = [
+    { key: "invoiceTypeMain", label: "Invoice Type", width: 88 },
+    { key: "drawingAmountA", label: "Drawing Amount", width: 108, number: true },
+    { key: "tradeType", label: "Trade Type", width: 78 },
+    { key: "profitability", label: "Profitability", width: 88 },
+    { key: "plannedInvAmt", label: "Planned Inv Amt", width: 108, number: true },
+    { key: "client", label: "Client", width: 60 },
+    { key: "dealId", label: "Deal ID", width: 86 },
+    { key: "invTrmRefNo", label: "Inv TRM Ref No", width: 112 },
+    { key: "invoiceType", label: "Invoice Type", width: 88 },
+    { key: "preTicketRefNo", label: "Pre Ticket Reference Number", width: 128, editable: true },
+    { key: "proposedInvDate", label: "Proposed Inv Date", width: 104, editable: true },
+    { key: "invoiceDate", label: "Invoice Date", width: 96, editable: true },
+    { key: "soPoDate", label: "SO/PO Date", width: 92, editable: true },
+    { key: "invoiceNo", label: "Invoice No", width: 100 },
+    { key: "invoiceCommodity", label: "Invoice Commodity", width: 185, editable: true },
+    { key: "gtCommodityId", label: "GT Commodity ID", width: 98 },
+    { key: "partialComplete", label: "Partial/Complete", width: 104, editable: true },
+    { key: "fixedMatDate", label: "Fixed Mat Date", width: 96 },
+    { key: "incoterms", label: "Incoterms", width: 84, editable: true },
+    { key: "seller", label: "Seller", width: 76 },
+    { key: "buyer", label: "Buyer", width: 76 },
+    { key: "mcRefPurchase", label: "MC Ref Purchase", width: 108, editable: true },
+    { key: "mcRefSale", label: "MC Ref Sale", width: 108, editable: true },
+    { key: "mcReferenceNo", label: "MC Reference No", width: 115, editable: true },
+    { key: "quantity", label: "Quantity", width: 90, editable: true, number: true },
+    { key: "price", label: "Price", width: 82, editable: true, number: true },
+    { key: "invPriceUsd", label: "Inv Price (USD)", width: 100, number: true },
+    { key: "invAmountUsd", label: "Inv Amount (USD)", width: 112, number: true },
+    { key: "differenceInvAmount", label: "Difference Inv Amount", width: 118, editable: true, number: true },
+    { key: "finalInvAmt", label: "Final Inv Amt", width: 108, number: true },
+    { key: "invoiceCurrency", label: "Invoice Currency", width: 100 },
+    { key: "exchangeRate", label: "Exchange Rate", width: 98, editable: true, number: true },
+    { key: "plannedExchangeRate", label: "Planned Exchange Rate", width: 118, editable: true, number: true },
+    { key: "invoiceTransferred", label: "Invoice Transfered", width: 108 },
+    { key: "payTerms", label: "Pay Terms", width: 170, editable: true },
+    { key: "companyCode", label: "Company Code", width: 96 },
+    { key: "int4", label: "INT4", width: 55, number: true },
+    { key: "businessPartner", label: "Business Partner", width: 110, editable: true },
+    { key: "houseBank", label: "House Bank", width: 92, editable: true },
+    { key: "accountId", label: "Account ID", width: 92, editable: true },
+    { key: "bankDetailsId", label: "Bank Details ID", width: 108, editable: true },
+    { key: "prepaymentDiscount", label: "Prepayment Discount", width: 118, editable: true, number: true },
+    { key: "netAmount", label: "Net Amount", width: 108, number: true },
+    { key: "profitMargin", label: "Profit Margin", width: 98, editable: true, number: true },
+    { key: "blDate", label: "BL Date", width: 92, editable: true },
+    { key: "drawingAmountB", label: "Drawing Amount", width: 108, editable: true, number: true },
+    { key: "enteredBy", label: "Entered By", width: 95 },
+    { key: "enteredOn", label: "Entered On", width: 92 },
+    { key: "entryTime", label: "Entry Time", width: 84 },
+    { key: "lastChangedBy", label: "Last Changed By", width: 108 },
+    { key: "changedOn", label: "Changed On", width: 92 },
+    { key: "timeChanged", label: "Time Changed", width: 92 },
+    { key: "amendmentCheck", label: "Amendment Check", width: 108, editable: true }
+  ];
+
+  function byId(id) {
+    return document.getElementById(id);
+  }
+
+  function htmlEscape(value) {
+    var text = String(value == null ? "" : value);
+    text = text.replace(/&/g, "&amp;");
+    text = text.replace(/</g, "&lt;");
+    text = text.replace(/>/g, "&gt;");
+    text = text.replace(/"/g, "&quot;");
+    return text;
+  }
+
+  function trimValue(value) {
+    return String(value == null ? "" : value).replace(/^\s+|\s+$/g, "");
+  }
+
+  function setStatus(text) {
+    byId("statusText").innerHTML = htmlEscape(text);
+  }
+
+  function showModal(id) {
+    byId(id).style.display = "block";
+  }
+
+  function hideModal(id) {
+    byId(id).style.display = "none";
+  }
+
+  function showToast(message, kind) {
+    var region = byId("toastRegion");
+    var toast;
+    var icon;
+    var body;
+    var title;
+    var text;
+    if (!region || !message) {
+      return;
+    }
+    toast = document.createElement("div");
+    toast.className = "toast " + (kind || "");
+    icon = document.createElement("div");
+    icon.className = "toast-icon";
+    icon.innerHTML = kind === "success" ? "&#10003;" : "i";
+    body = document.createElement("div");
+    body.className = "toast-body";
+    title = document.createElement("div");
+    title.className = "toast-title";
+    title.innerHTML = kind === "success" ? "Success" : "Information";
+    text = document.createElement("div");
+    text.className = "toast-message";
+    text.innerHTML = htmlEscape(message);
+    body.appendChild(title);
+    body.appendChild(text);
+    toast.appendChild(icon);
+    toast.appendChild(body);
+    region.appendChild(toast);
+    window.setTimeout(function () {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 4200);
+  }
+
+  function findDeal(dealId) {
+    var i;
+    for (i = 0; i < DEALS.length; i++) {
+      if (String(DEALS[i].deal) === String(dealId)) {
+        return DEALS[i];
+      }
+    }
+    return null;
+  }
+
+  function renderDealDropdown(selectedDeal) {
+    var select = byId("dDeal");
+    var html = '<option value="">Select Deal ID</option>';
+    var i;
+    var row;
+    for (i = 0; i < DEALS.length; i++) {
+      row = DEALS[i];
+      html += '<option value="' + htmlEscape(row.deal) + '"';
+      if (String(row.deal) === String(selectedDeal || "")) {
+        html += ' selected="selected"';
+      }
+      html += '>' + htmlEscape(row.deal) + '</option>';
+    }
+    select.innerHTML = html;
+  }
+
+  function clearUpperFields() {
+    byId("dEntity").value = "";
+    byId("dBusa").value = "";
+    byId("dStruct").value = "";
+    byId("dStatus").value = "";
+    byId("oNo").value = "";
+    byId("oTenor").value = "";
+    byId("oCat").value = "";
+    byId("oRate").value = "";
+    byId("dNo").value = "";
+    byId("dTenor").value = "";
+    byId("dCat").value = "";
+    byId("dRate").value = "";
+  }
+
+  function renderUpperFields(source) {
+    clearUpperFields();
+    if (!source) {
+      return;
+    }
+    byId("dEntity").value = source.entity || "";
+    byId("dBusa").value = source.busa || "";
+    byId("dStruct").value = source.structure || "";
+    byId("dStatus").value = source.status || "";
+    byId("oNo").value = source.ottk || "";
+    byId("oTenor").value = source.ottk_tenor || "";
+    byId("oCat").value = source.ottk_cat || "";
+    byId("oRate").value = source.ottk_rate || "";
+    byId("dNo").value = source.dttk || "";
+    byId("dTenor").value = source.dttk_tenor || "";
+    byId("dCat").value = source.dttk_cat || "";
+    byId("dRate").value = source.dttk_rate || "";
+  }
+
+  function parseParties(entity) {
+    var text = trimValue(entity);
+    var marker = text.indexOf(" - ");
+    var parts;
+    var clean = [];
+    var i;
+    if (marker >= 0) {
+      text = text.substring(marker + 3);
+    }
+    parts = text.split("-");
+    for (i = 0; i < parts.length; i++) {
+      if (trimValue(parts[i])) {
+        clean.push(trimValue(parts[i]));
+      }
+    }
+    if (clean.length < 3) {
+      clean = ["OGA", "DMCC", "PAN"];
+    }
+    return clean;
+  }
+
+  function formatMoney(value) {
+    var num = parseFloat(String(value == null ? "" : value).replace(/,/g, ""));
+    var fixed;
+    var parts;
+    if (isNaN(num)) {
+      return "";
+    }
+    fixed = num.toFixed(2);
+    parts = fixed.split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts[0] + "." + parts[1];
+  }
+
+  function formatRate(value) {
+    var num = parseFloat(String(value == null ? "" : value).replace(/,/g, ""));
+    if (isNaN(num)) {
+      return "";
+    }
+    return num.toFixed(7);
+  }
+
+  function buildDummyLines(deal) {
+    var parties = parseParties(deal.entity);
+    var output = [];
+    var i;
+    var base;
+    var transfer;
+    var quantity;
+    var price;
+    var amount;
+    var sellers = [parties[0], parties[1], parties[2]];
+    var buyers = [parties[1], parties[2], parties[0]];
+    for (i = 0; i < 3; i++) {
+      quantity = Number(deal.quantity || 0) - (i * 75);
+      price = Number(deal.price || 0) + (i * 0.65);
+      amount = quantity * price;
+      base = {
+        invoiceTypeMain: "I01",
+        drawingAmountA: formatMoney(amount),
+        tradeType: "T" + (i + 1),
+        profitability: i === 1 ? "Approved" : "Review",
+        plannedInvAmt: formatMoney(amount),
+        client: deal.client || "100",
+        dealId: deal.deal,
+        invTrmRefNo: deal.deal + "-T" + (i + 1),
+        invoiceType: "I01",
+        preTicketRefNo: "PT-" + deal.deal + "-" + (i + 1),
+        proposedInvDate: deal.entryDate || "03.09.2026",
+        invoiceDate: deal.entryDate || "03.09.2026",
+        soPoDate: deal.entryDate || "03.09.2026",
+        invoiceNo: "",
+        invoiceCommodity: deal.commodity || "THAI WHITE RICE 5% BROKEN",
+        gtCommodityId: deal.gtCommodityId || "RICE5",
+        partialComplete: i === 2 ? "Partial" : "Complete",
+        fixedMatDate: deal.fixedMatDate || deal.entryDate || "03.09.2026",
+        incoterms: deal.incoterms || "FOB",
+        seller: sellers[i],
+        buyer: buyers[i],
+        mcRefPurchase: "MC-P-" + deal.deal.slice(-4) + "-" + (i + 1),
+        mcRefSale: "MC-S-" + deal.deal.slice(-4) + "-" + (i + 1),
+        mcReferenceNo: "MC-REF-" + deal.deal.slice(-4) + "-" + (i + 1),
+        quantity: formatMoney(quantity),
+        price: formatMoney(price),
+        invPriceUsd: formatMoney(price),
+        invAmountUsd: formatMoney(amount),
+        differenceInvAmount: i === 2 ? "125.00" : "0.00",
+        finalInvAmt: formatMoney(amount + (i === 2 ? 125 : 0)),
+        invoiceCurrency: deal.currency || "USD",
+        exchangeRate: deal.exchangeRate || "1.0000000",
+        plannedExchangeRate: deal.plannedExchangeRate || "1.0000000",
+        invoiceTransferred: "No",
+        payTerms: i === 0 ? deal.payTerms : "CAD",
+        companyCode: deal.companyCode || "AE11",
+        int4: String(i),
+        businessPartner: buyers[i],
+        houseBank: "HB" + deal.companyCode.slice(-2) + (i + 1),
+        accountId: "ACC" + deal.deal.slice(-3) + (i + 1),
+        bankDetailsId: "BD" + deal.deal.slice(-3) + (i + 1),
+        prepaymentDiscount: i === 1 ? "250.00" : "0.00",
+        netAmount: formatMoney(amount - (i === 1 ? 250 : 0)),
+        profitMargin: deal.profitMargin || "2.2500",
+        blDate: deal.blDate || "01.09.2026",
+        drawingAmountB: formatMoney(amount),
+        enteredBy: "SESHAIAHB",
+        enteredOn: "08.09.2026",
+        entryTime: "15:20:00",
+        lastChangedBy: "",
+        changedOn: "",
+        timeChanged: "00:00:00",
+        amendmentCheck: ""
+      };
+      output.push(base);
+      transfer = copyObject(base);
+      transfer.invoiceTypeMain = "";
+      transfer.drawingAmountA = "";
+      transfer.tradeType = "T" + (i + 1) + "-T";
+      transfer.profitability = "";
+      transfer.plannedInvAmt = "";
+      transfer.invoiceType = "";
+      transfer.preTicketRefNo = "";
+      transfer.invoiceCommodity = "";
+      transfer.gtCommodityId = "";
+      transfer.partialComplete = "";
+      transfer.fixedMatDate = "";
+      transfer.incoterms = "";
+      transfer.seller = "";
+      transfer.buyer = "";
+      transfer.mcRefPurchase = "";
+      transfer.mcRefSale = "";
+      transfer.mcReferenceNo = "";
+      transfer.quantity = "0.00";
+      transfer.price = "0.00";
+      transfer.invPriceUsd = formatMoney(price);
+      transfer.differenceInvAmount = "0.00";
+      transfer.payTerms = "";
+      transfer.businessPartner = "";
+      transfer.houseBank = "";
+      transfer.accountId = "";
+      transfer.bankDetailsId = "";
+      transfer.profitMargin = "";
+      transfer.blDate = "";
+      transfer.drawingAmountB = "";
+      output.push(transfer);
+    }
+    return output;
+  }
+
+  function copyObject(source) {
+    var target = {};
+    var key;
+    for (key in source) {
+      if (source.hasOwnProperty(key)) {
+        target[key] = source[key];
+      }
+    }
+    return target;
+  }
+
+  function firstValue(source, keys) {
+    var i;
+    for (i = 0; i < keys.length; i++) {
+      if (source[keys[i]] !== undefined && source[keys[i]] !== null) {
+        return source[keys[i]];
+      }
+    }
+    return "";
+  }
+
+  function normalizeLine(row, dealId) {
+    var out = {};
+    var i;
+    var key;
+    for (i = 0; i < COLUMNS.length; i++) {
+      key = COLUMNS[i].key;
+      out[key] = row[key] == null ? "" : row[key];
+    }
+    out.invoiceTypeMain = firstValue(row, ["invoiceTypeMain", "zinv_type", "invoice_type"]);
+    out.drawingAmountA = firstValue(row, ["drawingAmountA", "drawing_amount", "drawingAmount"]);
+    out.tradeType = firstValue(row, ["tradeType", "ttype", "trade_type"]);
+    out.profitability = firstValue(row, ["profitability", "profit_stat", "profitability_status"]);
+    out.plannedInvAmt = firstValue(row, ["plannedInvAmt", "planned_inv_amt"]);
+    out.client = firstValue(row, ["client", "mandt"]);
+    out.dealId = firstValue(row, ["dealId", "deal", "zdeal_id"]);
+    out.invTrmRefNo = firstValue(row, ["invTrmRefNo", "zinv_ref", "inv_trm_ref_no"]);
+    out.invoiceType = firstValue(row, ["invoiceType", "zinv_type", "invoice_type"]);
+    out.preTicketRefNo = firstValue(row, ["preTicketRefNo", "pre_ticket_ref_no"]);
+    out.proposedInvDate = firstValue(row, ["proposedInvDate", "zinv_pdate", "proposed_inv_date"]);
+    out.invoiceDate = firstValue(row, ["invoiceDate", "zinv_date", "invoice_date"]);
+    out.soPoDate = firstValue(row, ["soPoDate", "zso_date", "so_po_date"]);
+    out.invoiceNo = firstValue(row, ["invoiceNo", "zinv_no", "invoice_no"]);
+    out.invoiceCommodity = firstValue(row, ["invoiceCommodity", "zinv_comm", "invoice_commodity"]);
+    out.gtCommodityId = firstValue(row, ["gtCommodityId", "gt_commodity_id"]);
+    out.partialComplete = firstValue(row, ["partialComplete", "partial_complete"]);
+    out.fixedMatDate = firstValue(row, ["fixedMatDate", "zdue_date", "fixed_mat_date"]);
+    out.incoterms = firstValue(row, ["incoterms", "zinco", "incoterm"]);
+    out.seller = firstValue(row, ["seller", "zsell"]);
+    out.buyer = firstValue(row, ["buyer", "zbuy"]);
+    out.mcRefPurchase = firstValue(row, ["mcRefPurchase", "mc_ref_purchase"]);
+    out.mcRefSale = firstValue(row, ["mcRefSale", "mc_ref_sale"]);
+    out.mcReferenceNo = firstValue(row, ["mcReferenceNo", "mc_reference_no"]);
+    out.quantity = firstValue(row, ["quantity", "zqty"]);
+    out.price = firstValue(row, ["price", "zusd_price"]);
+    out.invPriceUsd = firstValue(row, ["invPriceUsd", "inv_price_usd", "zusd_price"]);
+    out.invAmountUsd = firstValue(row, ["invAmountUsd", "zamt_usd", "inv_amount_usd"]);
+    out.differenceInvAmount = firstValue(row, ["differenceInvAmount", "difference_inv_amount"]);
+    out.finalInvAmt = firstValue(row, ["finalInvAmt", "final_inv_amt", "zamt_usd"]);
+    out.invoiceCurrency = firstValue(row, ["invoiceCurrency", "invoice_currency", "waers"]);
+    out.exchangeRate = firstValue(row, ["exchangeRate", "exchange_rate"]);
+    out.plannedExchangeRate = firstValue(row, ["plannedExchangeRate", "planned_exchange_rate"]);
+    out.invoiceTransferred = firstValue(row, ["invoiceTransferred", "invoice_transferred"]);
+    out.payTerms = firstValue(row, ["payTerms", "zpay_terms"]);
+    out.companyCode = firstValue(row, ["companyCode", "bukrs"]);
+    out.int4 = firstValue(row, ["int4"]);
+    out.businessPartner = firstValue(row, ["businessPartner", "partner"]);
+    out.houseBank = firstValue(row, ["houseBank", "house_bank"]);
+    out.accountId = firstValue(row, ["accountId", "account_id"]);
+    out.bankDetailsId = firstValue(row, ["bankDetailsId", "bank_details_id"]);
+    out.prepaymentDiscount = firstValue(row, ["prepaymentDiscount", "prepayment_discount"]);
+    out.netAmount = firstValue(row, ["netAmount", "net_amount"]);
+    out.profitMargin = firstValue(row, ["profitMargin", "profit_margin"]);
+    out.blDate = firstValue(row, ["blDate", "bl_date"]);
+    out.drawingAmountB = firstValue(row, ["drawingAmountB", "drawing_amount_2"]);
+    out.enteredBy = firstValue(row, ["enteredBy", "entered_by"]);
+    out.enteredOn = firstValue(row, ["enteredOn", "entered_on"]);
+    out.entryTime = firstValue(row, ["entryTime", "entry_time"]);
+    out.lastChangedBy = firstValue(row, ["lastChangedBy", "last_changed_by"]);
+    out.changedOn = firstValue(row, ["changedOn", "changed_on"]);
+    out.timeChanged = firstValue(row, ["timeChanged", "time_changed"]);
+    out.amendmentCheck = firstValue(row, ["amendmentCheck", "amendment_check"]);
+    if (!out.dealId) {
+      out.dealId = dealId || "";
+    }
+    if (!out.invoiceCurrency) {
+      out.invoiceCurrency = "USD";
+    }
+    if (!out.exchangeRate) {
+      out.exchangeRate = "1.0000000";
+    }
+    return out;
+  }
+
+  function normalizeLines(lines, dealId) {
+    var out = [];
+    var i;
+    for (i = 0; i < lines.length; i++) {
+      out.push(normalizeLine(lines[i], dealId));
+    }
+    return out;
+  }
+
+  function hasInvoiceNumbers(lines) {
+    var i;
+    for (i = 0; i < lines.length; i++) {
+      if (trimValue(lines[i].invoiceNo)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function getLinesForDeal(deal) {
+    var lines = [];
+    if (!deal) {
+      return lines;
+    }
+    if (deal.lines && deal.lines.length) {
+      lines = deal.lines;
+    } else if (deal.lineItems && deal.lineItems.length) {
+      lines = deal.lineItems;
+    } else if (SAP_LINES_BY_DEAL && SAP_LINES_BY_DEAL[deal.deal]) {
+      lines = SAP_LINES_BY_DEAL[deal.deal];
+    } else if (SAP_DETAIL && String(SAP_DETAIL.deal) === String(deal.deal) && SAP_LINES.length) {
+      lines = SAP_LINES;
+    } else if (!HAS_SAP_DATA) {
+      if (generatedByDeal[deal.deal]) {
+        lines = generatedByDeal[deal.deal];
+      } else {
+        lines = buildDummyLines(deal);
+        generatedByDeal[deal.deal] = lines;
+      }
+    }
+    return normalizeLines(lines, deal.deal);
+  }
+
+  function renderHeader() {
+    var head = byId("lineHead");
+    var row = "<tr>";
+    var i;
+    var col;
+    var cls;
+    for (i = 0; i < COLUMNS.length; i++) {
+      col = COLUMNS[i];
+      cls = "sortable" + (col.number ? " number" : "");
+      row += '<th data-col-index="' + i + '" class="' + cls + '"';
+      row += ' style="width:' + col.width + 'px;min-width:' + col.width + 'px;max-width:';
+      row += col.width + 'px;" title="Sort ' + htmlEscape(col.label) + '">';
+      row += '<span class="sort-label">' + htmlEscape(col.label) + '</span>';
+      row += '<span class="sort-arrows"><span class="sort-up"></span>';
+      row += '<span class="sort-down"></span></span></th>';
+    }
+    row += "</tr>";
+    head.innerHTML = row;
+    bindSortHeaders();
+    updateHeaderSortState();
+  }
+
+  function bindSortHeaders() {
+    var headers = byId("lineHead").getElementsByTagName("th");
+    var i;
+    for (i = 0; i < headers.length; i++) {
+      headers[i].onclick = function () {
+        var index = parseInt(this.getAttribute("data-col-index"), 10);
+        if (!isNaN(index)) {
+          sortTableByColumn(index);
+        }
+      };
+    }
+  }
+
+  function updateHeaderSortState() {
+    var headers = byId("lineHead").getElementsByTagName("th");
+    var i;
+    for (i = 0; i < headers.length; i++) {
+      headers[i].className = "sortable" + (COLUMNS[i].number ? " number" : "");
+      if (i === sortColumnIndex && sortDirection === "asc") {
+        headers[i].className += " sort-asc";
+      } else if (i === sortColumnIndex && sortDirection === "desc") {
+        headers[i].className += " sort-desc";
+      }
+    }
+  }
+
+  function dateSortValue(value) {
+    var text = trimValue(value);
+    var match;
+    if (!text) {
+      return "";
+    }
+    match = text.match(/^(\d{2})[.\/-](\d{2})[.\/-](\d{4})$/);
+    if (match) {
+      return match[3] + match[2] + match[1];
+    }
+    match = text.match(/^(\d{4})[.\/-](\d{2})[.\/-](\d{2})$/);
+    if (match) {
+      return match[1] + match[2] + match[3];
+    }
+    return text.toLowerCase();
+  }
+
+  function columnSortValue(row, col) {
+    var raw = row[col.key];
+    var text = trimValue(raw);
+    var numeric;
+    if (!text) {
+      return null;
+    }
+    if (col.number) {
+      numeric = parseFloat(text.replace(/,/g, ""));
+      return isNaN(numeric) ? 0 : numeric;
+    }
+    if (/date|enteredon|changedon/i.test(col.key)) {
+      return dateSortValue(text);
+    }
+    return text.toLowerCase();
+  }
+
+  function sortTableByColumn(index) {
+    var col = COLUMNS[index];
+    var direction;
+    var decorated = [];
+    var i;
+    if (!col) {
+      return;
+    }
+    syncInputsToRows();
+    direction = sortColumnIndex === index && sortDirection === "asc" ? "desc" : "asc";
+    sortColumnIndex = index;
+    sortDirection = direction;
+    for (i = 0; i < currentLines.length; i++) {
+      decorated.push({ row: currentLines[i], original: i });
+    }
+    decorated.sort(function (a, b) {
+      var av = columnSortValue(a.row, col);
+      var bv = columnSortValue(b.row, col);
+      if (av === null && bv === null) {
+        return a.original - b.original;
+      }
+      if (av === null) {
+        return 1;
+      }
+      if (bv === null) {
+        return -1;
+      }
+      if (av < bv) {
+        return direction === "asc" ? -1 : 1;
+      }
+      if (av > bv) {
+        return direction === "asc" ? 1 : -1;
+      }
+      return a.original - b.original;
+    });
+    currentLines = [];
+    for (i = 0; i < decorated.length; i++) {
+      currentLines.push(decorated[i].row);
+    }
+    renderLines();
+    updateHeaderSortState();
+  }
+
+  function renderLines() {
+    var body = byId("lineBody");
+    var html = "";
+    var i;
+    var j;
+    var row;
+    var col;
+    var value;
+    var cls;
+    var inputCls;
+    var readonlyText;
+    for (i = 0; i < currentLines.length; i++) {
+      row = currentLines[i];
+      html += '<tr data-row-index="' + i + '">';
+      for (j = 0; j < COLUMNS.length; j++) {
+        col = COLUMNS[j];
+        value = row[col.key] == null ? "" : row[col.key];
+        cls = col.number ? "number" : "";
+        if (col.key === "invoiceNo" && trimValue(value)) {
+          cls += (cls ? " " : "") + "invoice-number-cell";
+        }
+        if (col.editable) {
+          cls += (cls ? " " : "") + "editable-cell";
+          inputCls = "grid-input" + (col.number ? " number" : "");
+          readonlyText = "";
+          if (tableLocked) {
+            inputCls += " locked-input";
+            readonlyText = ' readonly="readonly" tabindex="-1"';
+          }
+          html += '<td class="' + cls + '"';
+          html += ' style="width:' + col.width + 'px;min-width:' + col.width + 'px;max-width:';
+          html += col.width + 'px;">';
+          html += '<input class="' + inputCls + '" type="text"' + readonlyText;
+          html += ' data-row="' + i + '" data-key="' + htmlEscape(col.key) + '"';
+          html += ' value="' + htmlEscape(value) + '"></td>';
+        } else {
+          html += '<td class="' + cls + '"';
+          html += ' style="width:' + col.width + 'px;min-width:' + col.width + 'px;max-width:';
+          html += col.width + 'px;" title="' + htmlEscape(value) + '">';
+          html += htmlEscape(value) + "</td>";
+        }
+      }
+      html += "</tr>";
+    }
+    body.innerHTML = html;
+    updateLockVisual();
+  }
+
+  function updateLockVisual() {
+    var panel = byId("adjustedPanel");
+    panel.className = tableLocked ? "panel adjusted-panel locked" : "panel adjusted-panel";
+  }
+
+  function recalcRow(row) {
+    var qty = parseFloat(String(row.quantity || "0").replace(/,/g, "")) || 0;
+    var price = parseFloat(String(row.price || "0").replace(/,/g, "")) || 0;
+    var rate = parseFloat(String(row.exchangeRate || "1").replace(/,/g, "")) || 1;
+    var diff = parseFloat(String(row.differenceInvAmount || "0").replace(/,/g, "")) || 0;
+    var discount = parseFloat(String(row.prepaymentDiscount || "0").replace(/,/g, "")) || 0;
+    var invPrice = price * rate;
+    var invAmount = qty > 0 ? qty * invPrice : parseFloat(String(row.invAmountUsd || "0").replace(/,/g, "")) || 0;
+    var finalAmount = invAmount + diff;
+    row.invPriceUsd = formatMoney(invPrice);
+    row.invAmountUsd = formatMoney(invAmount);
+    row.finalInvAmt = formatMoney(finalAmount);
+    row.netAmount = formatMoney(finalAmount - discount);
+    if (qty > 0) {
+      row.drawingAmountA = formatMoney(invAmount);
+      row.drawingAmountB = formatMoney(invAmount);
+      row.plannedInvAmt = formatMoney(invAmount);
+    }
+  }
+
+  function calculateAll() {
+    var i;
+    syncInputsToRows();
+    for (i = 0; i < currentLines.length; i++) {
+      recalcRow(currentLines[i]);
+    }
+    renderLines();
+    setStatus("Calculated for review");
+  }
+
+  function syncInputsToRows() {
+    var inputs = byId("lineBody").getElementsByTagName("input");
+    var i;
+    var rowIndex;
+    var key;
+    for (i = 0; i < inputs.length; i++) {
+      rowIndex = parseInt(inputs[i].getAttribute("data-row"), 10);
+      key = inputs[i].getAttribute("data-key");
+      if (!isNaN(rowIndex) && currentLines[rowIndex] && key) {
+        currentLines[rowIndex][key] = inputs[i].value;
+      }
+    }
+  }
+
+  function getDealId() {
+    return byId("dDeal").value || "";
+  }
+
+  function selectDeal(dealId) {
+    var source;
+    if (!dealId) {
+      currentDeal = null;
+      currentLines = [];
+      tableLocked = false;
+      clearUpperFields();
+      renderLines();
+      setStatus("Select a Deal ID to load the trade details");
+      return;
+    }
+    source = findDeal(dealId);
+    if (SAP_DETAIL && String(SAP_DETAIL.deal) === String(dealId)) {
+      source = SAP_DETAIL;
+    }
+    currentDeal = source;
+    renderUpperFields(source);
+    currentLines = getLinesForDeal(source);
+    tableLocked = hasInvoiceNumbers(currentLines);
+    renderLines();
+    setStatus("Deal " + dealId + " loaded");
+  }
+
+  function generateInvoiceNumbers() {
+    var map = {};
+    var next = 34;
+    var i;
+    var baseType;
+    syncInputsToRows();
+    for (i = 0; i < currentLines.length; i++) {
+      baseType = String(currentLines[i].tradeType || "").replace(/-T$/, "");
+      if (!map[baseType]) {
+        map[baseType] = padInvoice(next);
+        next += 1;
+      }
+      currentLines[i].invoiceNo = map[baseType];
+    }
+    if (currentDeal) {
+      currentDeal.status = "02 - Invoices Created";
+      byId("dStatus").value = currentDeal.status;
+      generatedByDeal[currentDeal.deal] = currentLines;
+    }
+    tableLocked = true;
+    renderLines();
+    showToast("Invoice numbers generated successfully.", "success");
+    setStatus("Invoice generation completed");
+  }
+
+  function padInvoice(value) {
+    var text = String(value);
+    while (text.length < 10) {
+      text = "0" + text;
+    }
+    return text;
+  }
+
+  function clearInvoiceNumbers() {
+    var i;
+    for (i = 0; i < currentLines.length; i++) {
+      currentLines[i].invoiceNo = "";
+    }
+    if (currentDeal) {
+      currentDeal.status = "01 - Open";
+      byId("dStatus").value = currentDeal.status;
+      generatedByDeal[currentDeal.deal] = currentLines;
+    }
+    tableLocked = false;
+    renderLines();
+  }
+
+  function padNumber(value, length) {
+    var text = String(value);
+    while (text.length < length) {
+      text = "0" + text;
+    }
+    return text;
+  }
+
+  function buildDummyBlLines() {
+    var rows = [];
+    var i;
+    var j;
+    var deal;
+    var parties;
+    var qty;
+    var price;
+    var amount;
+    var tfNo;
+    var blNo;
+    var contractNo;
+    var bankA = "Bank of America";
+    var bankB = "HSBC Singapore";
+    var bankC = "Bank of China";
+    for (i = 0; i < DUMMY.deals.length; i++) {
+      deal = DUMMY.deals[i];
+      parties = parseParties(deal.entity);
+      for (j = 0; j < 2; j++) {
+        qty = deal.quantity - (j * 125);
+        price = deal.price + (j * 0.45);
+        amount = qty * price;
+        tfNo = padNumber(21 + (i * 2) + j, 10);
+        blNo = padNumber(5000000011 + (i * 2) + j, 10);
+        contractNo = "P-" + deal.deal + "-" + (j + 1);
+        rows.push({
+          selectable: true,
+          check: j === 0 ? "X" : "",
+          client: deal.client,
+          ztf_no: tfNo,
+          ztf_split: j === 0 ? "01" : "02",
+          zbl_no: blNo,
+          zbl_split: j === 0 ? "01" : "02",
+          zbl_reuse: j === 0 ? "00" : "01",
+          zbl_date: deal.blDate,
+          zdeal_id: deal.deal,
+          ztf_assign_date: deal.entryDate,
+          zbl_lot: "LOT-" + (i + 11) + (j + 1),
+          zinv_comm: deal.commodity,
+          gt_commodity_id: deal.gtCommodityId,
+          zinco: deal.incoterms,
+          zinv_date: deal.entryDate,
+          zso_date: deal.entryDate,
+          zinv_type: "I01",
+          tf_upload_date: deal.entryDate,
+          trader: i % 2 === 0 ? "Amit Kumar K" : "Melrone D",
+          bu: i % 2 === 0 ? "Grains" : "Foods",
+          grade: i % 2 === 0 ? "Soyabean" : "Rice Grade A",
+          operator: i % 2 === 0 ? "JASON" : "RACHEL",
+          bl_vessel_name: i % 2 === 0 ? "STENA CONQUEROR" : "PACIFIC MERIDIAN",
+          bu_commodity: i % 2 === 0 ? "Soyabean" : "Rice",
+          p_contract_number: contractNo,
+          purchase_incoterms: j === 0 ? "FOB" : "CFR",
+          purchase_payment_terms: j === 0 ? "CAD" : "30 days from BL Date",
+          purchase_seller_bank: bankA,
+          purchase_buyer_bank: bankB,
+          s_contract_number: "S-" + deal.deal + "-" + (j + 1),
+          sales_incoterms: deal.incoterms,
+          sales_payment_terms: deal.payTerms,
+          sales_seller_bank: bankB,
+          sales_buyer_bank: bankC,
+          oga_title_from: deal.blDate,
+          oga_title_till: deal.entryDate,
+          quantity: formatMoney(qty),
+          contract_price: formatMoney(price - 1.25),
+          cmp_mt: formatMoney(price - 0.75),
+          inv_price_usd: formatMoney(price),
+          invoice_price: formatMoney(price),
+          contract_amt_usd: formatMoney(qty * (price - 1.25)),
+          total_amt_cmp_usd: formatMoney(qty * (price - 0.75)),
+          invoice_amount_usd: formatMoney(amount),
+          port_loading: j === 0 ? "Laem Chabang" : "Ho Chi Minh City",
+          port_destination: j === 0 ? "Jebel Ali" : "Singapore",
+          sailing_date: deal.blDate,
+          bl_number: blNo,
+          number_of_days: 18 + j,
+          eta_discharge: deal.entryDate,
+          consignee_bl: "To Order",
+          lc_details_bl: j === 0 ? "LC Available" : "No LC Details",
+          origin_entity: parties[0],
+          supplier_olam_destination: parties[1],
+          buyer_3p_destination: parties[2],
+          avail_one_third_from_a: deal.blDate,
+          avail_one_third_from_b: deal.blDate,
+          avail_three_third_from: deal.entryDate,
+          avail_three_third_till: deal.entryDate,
+          remarks: j === 0 ? "BL available for TSF" : "Reuse line for review",
+          bl_receipt_date: deal.entryDate,
+          tf_status: "Active",
+          bl_status_1: "01",
+          bl_status_1_desc: "Available",
+          bl_status_2: j === 0 ? "01" : "02",
+          bl_status_2_desc: j === 0 ? "Open" : "Reuse Review",
+          tsf_dms_code_a: "DMS-" + deal.deal + "-A",
+          dms_code_exception: "",
+          tsf_dms_reuse_code: j === 0 ? "" : "REUSE-01",
+          tsf_dms_code_b: "DMS-" + deal.deal + "-B",
+          bl_delete: "No",
+          bl_expired: "No",
+          tf_type: "Merchanting",
+          bl_exception: "No",
+          exception_notes: "",
+          proposed_deal_id: deal.deal,
+          reuse_comments: j === 0 ? "" : "Reuse permitted after review",
+          reuse_awaiting_confirm: j === 0 ? "No" : "Yes",
+          pre_ticket_ref_no: "PT-" + deal.deal + "-" + (j + 1),
+          entered_by: "SESHAIAHB",
+          entered_on: deal.entryDate,
+          entry_time: j === 0 ? "10:15:00" : "10:24:00",
+          last_changed_by: "SESHAIAHB",
+          changed_on: deal.entryDate,
+          time_changed: j === 0 ? "11:10:00" : "11:18:00"
+        });
+      }
+    }
+    return rows;
+  }
+
+  function blFieldValue(row, key) {
+    var aliases = {
+      check: ["check", "chk"],
+      client: ["client", "mandt"],
+      gt_commodity_id: ["gt_commodity_id", "gtCommodityId"],
+      tf_upload_date: ["tf_upload_date", "ztf_upload_date"],
+      bl_vessel_name: ["bl_vessel_name", "vessel_name"],
+      pre_ticket_ref_no: ["pre_ticket_ref_no", "preTicketRefNo"]
+    };
+    var keys = aliases[key] || [key];
+    var i;
+    var value;
+    for (i = 0; i < keys.length; i++) {
+      value = row[keys[i]];
+      if (value !== undefined && value !== null && value !== "") {
+        return value;
+      }
+    }
+    return "";
+  }
+
+  function renderBlHeader() {
+    var head = byId("blListHead");
+    var html = "<tr>";
+    var i;
+    var col;
+    html += '<th style="width:60px;min-width:60px;max-width:60px;">Select</th>';
+    for (i = 0; i < BL_COLUMNS.length; i++) {
+      col = BL_COLUMNS[i];
+      html += '<th style="width:' + col.width + 'px;min-width:' + col.width + 'px;max-width:';
+      html += col.width + 'px;">' + htmlEscape(col.label) + '</th>';
+    }
+    html += "</tr>";
+    head.innerHTML = html;
+  }
+
+  function renderBlList() {
+    var body = byId("blListBody");
+    var html = "";
+    var i;
+    var j;
+    var r;
+    var col;
+    var value;
+    var disabled;
+    var dealId = getDealId();
+    selectedBl = null;
+    for (i = 0; i < BL_LINES.length; i++) {
+      r = BL_LINES[i];
+      if (!HAS_SAP_DATA && dealId && String(r.zdeal_id || "") !== String(dealId)) {
+        continue;
+      }
+      disabled = r.selectable === false ? ' disabled="disabled"' : "";
+      html += '<tr data-index="' + i + '">';
+      html += '<td style="text-align:center;">';
+      html += '<input type="radio" name="blSelect" value="' + i + '"' + disabled + '></td>';
+      for (j = 0; j < BL_COLUMNS.length; j++) {
+        col = BL_COLUMNS[j];
+        value = blFieldValue(r, col.key);
+        if (col.checkbox) {
+          html += '<td style="text-align:center;">';
+          html += '<input type="checkbox" disabled="disabled"';
+          if (String(value).toUpperCase() === "X" || value === true) {
+            html += ' checked="checked"';
+          }
+          html += '></td>';
+        } else {
+          html += '<td' + (col.number ? ' class="number"' : "") + '>';
+          html += htmlEscape(value) + '</td>';
+        }
+      }
+      html += "</tr>";
+    }
+    if (!html) {
+      html = '<tr><td colspan="' + (BL_COLUMNS.length + 1);
+      html += '" class="empty-state">No BL line items available for this Deal ID.</td></tr>';
+    }
+    body.innerHTML = html;
+  }
+
+  function pnlValue(row, keys) {
+    var i;
+    var value;
+    for (i = 0; i < keys.length; i++) {
+      value = row[keys[i]];
+      if (value !== undefined && value !== null && value !== "") {
+        return value;
+      }
+    }
+    return "";
+  }
+
+  function buildDummyPnlLines(deal) {
+    var factor = 1;
+    var seed;
+    if (deal && deal.deal) {
+      seed = parseInt(String(deal.deal).slice(-2), 10);
+      if (!isNaN(seed)) {
+        factor = 0.96 + ((seed % 7) * 0.01);
+      }
+    }
+    function amt(value, negative) {
+      var text = formatMoney(value * factor);
+      return negative ? text + "-" : text;
+    }
+    return [
+      { int_rate: "", days: "", particulars: "Sale", oga: amt(19999798.88), dmcc: amt(19100363.26),
+        pan: amt(19115238.16), total: amt(58215400.30), sno: "", product_type: "", flow_type: "",
+        product_type_description: "", flow_type_description: "", income_expense: "Income", notes: "Trade sale value" },
+      { int_rate: "", days: "", particulars: "Purchase", oga: amt(19115238.16, true), dmcc: amt(19999798.88, true),
+        pan: amt(19100363.26, true), total: amt(58215400.30, true), sno: "", product_type: "", flow_type: "",
+        product_type_description: "", flow_type_description: "", income_expense: "Expense", notes: "Trade purchase value" },
+      { int_rate: "", days: "", particulars: "Margin", oga: amt(884560.72), dmcc: amt(899435.62, true),
+        pan: amt(14874.90), total: "0.00", sno: "", product_type: "", flow_type: "",
+        product_type_description: "", flow_type_description: "", income_expense: "", notes: "Sale less purchase" },
+      { int_rate: "5.8080600", days: "360", particulars: "Deposit Interest Income", oga: "", dmcc: "", pan: "",
+        total: amt(1097837.27), sno: "01", product_type: "266", flow_type: "1215",
+        product_type_description: "SLC - Deposit", flow_type_description: "Upfront Interest",
+        income_expense: "Income", notes: "Deposit interest accrual" },
+      { int_rate: "5.0480600", days: "360", particulars: "Discounting Loan Interest", oga: "", dmcc: "", pan: "",
+        total: amt(961085.67, true), sno: "03", product_type: "278", flow_type: "1215",
+        product_type_description: "SLC - Discounting Loan", flow_type_description: "Upfront Interest",
+        income_expense: "Expense", notes: "Discounting loan interest" },
+      { int_rate: "", days: "", particulars: "LC Issuance Fee", oga: "", dmcc: amt(19999.80, true), pan: "",
+        total: amt(19999.80, true), sno: "08", product_type: "260", flow_type: "1903",
+        product_type_description: "SLC - LC Issued", flow_type_description: "LC Issuance Charge",
+        income_expense: "Expense", notes: "LC issuance fee" },
+      { int_rate: "", days: "", particulars: "LC Confirmation Fee", oga: amt(0.67, true), dmcc: "", pan: "",
+        total: amt(0.67, true), sno: "13", product_type: "27A", flow_type: "1913",
+        product_type_description: "SLC - LC Received", flow_type_description: "LC Confirmation Fee",
+        income_expense: "Expense", notes: "LC confirmation charge" },
+      { int_rate: "", days: "", particulars: "Disc Loan: Negotiation Fee", oga: amt(500.00, true), dmcc: "", pan: "",
+        total: amt(500.00, true), sno: "16", product_type: "27B", flow_type: "1917",
+        product_type_description: "SLC - Discounting Loan", flow_type_description: "Negotiation Fee",
+        income_expense: "Expense", notes: "Discounting loan negotiation fee" },
+      { int_rate: "", days: "", particulars: "P&L", oga: amt(77025.62, true), dmcc: amt(178401.85),
+        pan: amt(14874.90), total: amt(116251.13), sno: "", product_type: "", flow_type: "",
+        product_type_description: "", flow_type_description: "", income_expense: "", notes: "Net P&L" }
+    ];
+  }
+
+  function renderPnl() {
+    var body = byId("pnlBody");
+    var source = PNL_LINES.length ? PNL_LINES : buildDummyPnlLines(currentDeal);
+    var html = "";
+    var i;
+    var r;
+    for (i = 0; i < source.length; i++) {
+      r = source[i];
+      html += '<tr>';
+      html += '<td>' + htmlEscape(pnlValue(r, ["int_rate", "intRate"])) + '</td>';
+      html += '<td>' + htmlEscape(pnlValue(r, ["days"])) + '</td>';
+      html += '<td>' + htmlEscape(pnlValue(r, ["particulars"])) + '</td>';
+      html += '<td class="number">' + htmlEscape(pnlValue(r, ["oga", "entity1"])) + '</td>';
+      html += '<td class="number">' + htmlEscape(pnlValue(r, ["dmcc", "entity2"])) + '</td>';
+      html += '<td class="number">' + htmlEscape(pnlValue(r, ["pan", "entity3"])) + '</td>';
+      html += '<td class="number">' + htmlEscape(pnlValue(r, ["total"])) + '</td>';
+      html += '<td>' + htmlEscape(pnlValue(r, ["sno", "s_code"])) + '</td>';
+      html += '<td>' + htmlEscape(pnlValue(r, ["product_type", "pr_code"])) + '</td>';
+      html += '<td>' + htmlEscape(pnlValue(r, ["flow_type", "flow_code"])) + '</td>';
+      html += '<td>' + htmlEscape(pnlValue(r, ["product_type_description", "product_desc"])) + '</td>';
+      html += '<td>' + htmlEscape(pnlValue(r, ["flow_type_description", "flow_desc"])) + '</td>';
+      html += '<td>' + htmlEscape(pnlValue(r, ["income_expense", "incomeExpense"])) + '</td>';
+      html += '<td>' + htmlEscape(pnlValue(r, ["notes"])) + '</td>';
+      html += '</tr>';
+    }
+    body.innerHTML = html;
+  }
+
+  byId("dDeal").onchange = function () {
+    selectDeal(this.value);
+  };
+
+  byId("calcBtn").onclick = function () {
+    if (!getDealId()) {
+      showToast("Select a Deal ID first.", "warning");
+      return;
+    }
+    if (tableLocked) {
+      showToast("Invoice is already generated for this deal.", "warning");
+      return;
+    }
+    calculateAll();
+  };
+
+  function csvValue(value) {
+    var text = String(value == null ? "" : value);
+    return '"' + text.replace(/"/g, '""') + '"';
+  }
+
+  function downloadCurrentTable() {
+    var rows = [];
+    var header = [];
+    var values;
+    var i;
+    var j;
+    var blob;
+    var fileName;
+    var urlApi;
+    var url;
+    var link;
+    if (!getDealId()) {
+      showToast("Select a Deal ID first.", "warning");
+      return;
+    }
+    syncInputsToRows();
+    for (i = 0; i < COLUMNS.length; i++) {
+      header.push(csvValue(COLUMNS[i].label));
+    }
+    rows.push(header.join(","));
+    for (i = 0; i < currentLines.length; i++) {
+      values = [];
+      for (j = 0; j < COLUMNS.length; j++) {
+        values.push(csvValue(currentLines[i][COLUMNS[j].key]));
+      }
+      rows.push(values.join(","));
+    }
+    blob = new Blob(["\ufeff" + rows.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+    fileName = "FTI_" + getDealId() + ".csv";
+    if (navigator.msSaveBlob) {
+      navigator.msSaveBlob(blob, fileName);
+    } else {
+      urlApi = window.URL || window.webkitURL;
+      url = urlApi.createObjectURL(blob);
+      link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      urlApi.revokeObjectURL(url);
+    }
+    showToast("Table downloaded successfully.", "success");
+  }
+
+  function refreshCurrentTable() {
+    if (!getDealId() || !currentDeal) {
+      showToast("Select a Deal ID first.", "warning");
+      return;
+    }
+    currentLines = getLinesForDeal(currentDeal);
+    tableLocked = hasInvoiceNumbers(currentLines);
+    sortColumnIndex = -1;
+    sortDirection = "";
+    renderLines();
+    updateHeaderSortState();
+    showToast("Invoice table refreshed.", "success");
+    setStatus("Invoice table refreshed");
+  }
+
+  byId("downloadTableBtn").onclick = function () {
+    downloadCurrentTable();
+  };
+
+  byId("refreshTableBtn").onclick = function () {
+    refreshCurrentTable();
+  };
+
+  byId("saveBtn").onclick = function () {
+    var deal = getDealId();
+    if (!deal) {
+      showToast("Select a Deal ID first.", "warning");
+      return;
+    }
+    if (tableLocked) {
+      showToast("Invoice is already generated for this deal.", "warning");
+      return;
+    }
+    syncInputsToRows();
+    calculateAll();
+    if (currentDeal && !HAS_SAP_DATA) {
+      generatedByDeal[currentDeal.deal] = currentLines;
+      showToast("Data saved successfully.", "success");
+      setStatus("Data saved successfully");
+      return;
+    }
+    setStatus("Saving data...");
+  };
+
+  function resetFullScreen() {
+    currentDeal = null;
+    currentLines = [];
+    tableLocked = false;
+    sortColumnIndex = -1;
+    sortDirection = "";
+    selectedBl = null;
+    renderDealDropdown("");
+    byId("dDeal").value = "";
+    clearUpperFields();
+    renderLines();
+    updateHeaderSortState();
+    renderBlList();
+    byId("toastRegion").innerHTML = "";
+    setStatus("Ready");
+  }
+
+  byId("refreshBtn").onclick = function () {
+    resetFullScreen();
+  };
+
+  byId("confirmBtn").onclick = function () {
+    if (!getDealId()) {
+      showToast("Select a Deal ID first.", "warning");
+      return;
+    }
+    if (tableLocked) {
+      showToast("Invoice numbers are already generated for this deal.", "warning");
+      return;
+    }
+    showModal("complianceModal");
+  };
+
+  byId("complianceClose").onclick = function () {
+    hideModal("complianceModal");
+  };
+
+  byId("complianceCancel").onclick = function () {
+    hideModal("complianceModal");
+  };
+
+  byId("complianceYes").onclick = function () {
+    hideModal("complianceModal");
+    if (HAS_SAP_DATA) {
+      setStatus("Generating invoice number...");
+      return;
+    }
+    generateInvoiceNumbers();
+  };
+
+  byId("reverseConfirmBtn").onclick = function () {
+    if (!getDealId()) {
+      showToast("Select a Deal ID first.", "warning");
+      return;
+    }
+    showModal("reverseModal");
+  };
+
+  byId("reverseClose").onclick = function () {
+    hideModal("reverseModal");
+  };
+
+  byId("reverseNo").onclick = function () {
+    hideModal("reverseModal");
+  };
+
+  byId("reverseYes").onclick = function () {
+    hideModal("reverseModal");
+    if (HAS_SAP_DATA) {
+      setStatus("Reversing invoice confirmation...");
+      return;
+    }
+    clearInvoiceNumbers();
+    showToast("Invoice confirmation reversed.", "success");
+    setStatus("Invoice confirmation reversed");
+  };
+
+  byId("viewBlBtn").onclick = function () {
+    if (!getDealId()) {
+      showToast("Select a Deal ID first.", "warning");
+      return;
+    }
+    if (HAS_SAP_DATA) {
+      setStatus("Loading BL list...");
+      return;
+    }
+    renderBlList();
+    showModal("blListModal");
+  };
+
+  byId("blListClose").onclick = function () {
+    hideModal("blListModal");
+  };
+
+  byId("blListCancel").onclick = function () {
+    hideModal("blListModal");
+  };
+
+  byId("blListBody").onclick = function (eventObject) {
+    var e = eventObject || window.event;
+    var target = e.target || e.srcElement;
+    var row = target;
+    var radio;
+    var rows;
+    var i;
+    while (row && row.tagName && row.tagName.toLowerCase() !== "tr") {
+      row = row.parentNode;
+    }
+    if (!row) {
+      return;
+    }
+    radio = row.querySelector ? row.querySelector('input[type="radio"]') : null;
+    if (!radio || radio.disabled) {
+      return;
+    }
+    radio.checked = true;
+    rows = byId("blListBody").getElementsByTagName("tr");
+    for (i = 0; i < rows.length; i++) {
+      rows[i].className = "";
+    }
+    row.className = "bl-selected";
+  };
+
+  byId("deassignBtn").onclick = function () {
+    var checked = document.querySelector('#blListBody input[type="radio"]:checked');
+    var index;
+    if (!checked) {
+      showToast("Select one BL line item before De-assign.", "warning");
+      return;
+    }
+    index = parseInt(checked.value, 10);
+    if (isNaN(index) || !BL_LINES[index]) {
+      showToast("Unable to identify selected BL line.", "warning");
+      return;
+    }
+    selectedBl = BL_LINES[index];
+    byId("deassignRemark").value = "";
+    showModal("remarkModal");
+    byId("deassignRemark").focus();
+  };
+
+  byId("remarkClose").onclick = function () {
+    hideModal("remarkModal");
+  };
+
+  byId("remarkCancel").onclick = function () {
+    hideModal("remarkModal");
+  };
+
+  byId("remarkUpdate").onclick = function () {
+    var remark = byId("deassignRemark").value;
+    if (!remark || !selectedBl) {
+      showToast("Select a BL and enter a remark before Update.", "warning");
+      return;
+    }
+    hideModal("remarkModal");
+    hideModal("blListModal");
+    if (HAS_SAP_DATA) {
+      return;
+    }
+    showToast("BL de-assigned successfully.", "success");
+  };
+
+  byId("pnlBtn").onclick = function () {
+    if (!getDealId()) {
+      showToast("Select a Deal ID first.", "warning");
+      return;
+    }
+    if (HAS_SAP_DATA) {
+      setStatus("Loading P&L...");
+      return;
+    }
+    renderPnl();
+    showModal("pnlModal");
+  };
+
+  byId("pnlClose").onclick = function () {
+    hideModal("pnlModal");
+  };
+
+  byId("pnlCancel").onclick = function () {
+    hideModal("pnlModal");
+  };
+
+  byId("amendBtn").onclick = function () {
+    if (HAS_SAP_DATA) {
+      return;
+    }
+    showToast("Amendment mode opened for the selected deal.", "success");
+  };
+
+  byId("amendConfirmBtn").onclick = function () {
+    if (HAS_SAP_DATA) {
+      return;
+    }
+    showToast("Amendment confirmed successfully.", "success");
+  };
+
+  byId("sblcFeeBtn").onclick = function () {
+    if (HAS_SAP_DATA) {
+      return;
+    }
+    showToast("SBLC Fee Details is ready for SAP data integration.", "success");
+  };
+
+  byId("printFormBtn").onclick = function () {
+    if (HAS_SAP_DATA) {
+      return;
+    }
+    window.print();
+  };
+
+  byId("mergePdfBtn").onclick = function () {
+    if (HAS_SAP_DATA) {
+      return;
+    }
+    showToast("Merge PDF is ready for SAP data integration.", "success");
+  };
+
+  document.onkeydown = function (eventObject) {
+    var e = eventObject || window.event;
+    if (e.keyCode === 27) {
+      hideModal("complianceModal");
+      hideModal("reverseModal");
+      hideModal("blListModal");
+      hideModal("remarkModal");
+      hideModal("pnlModal");
+    }
+    return true;
+  };
+
+  renderHeader();
+  renderBlHeader();
+  renderBlList();
+  renderPnl();
+
+  var initialDeal = SAP_DETAIL && SAP_DETAIL.deal ? SAP_DETAIL.deal : "";
+  if (!initialDeal && !HAS_SAP_DATA) {
+    initialDeal = "10000010";
+  }
+  renderDealDropdown(initialDeal);
+  selectDeal(initialDeal);
+
+  if (OPEN_POPUP === "BL") {
+    showModal("blListModal");
+  } else if (OPEN_POPUP === "PNL") {
+    showModal("pnlModal");
+  }
+
+  if (SAP_MESSAGE) {
+    showToast(SAP_MESSAGE, SAP_MESSAGE_TYPE);
+  }
+})();
+</script>
+
+</body>
+</html>

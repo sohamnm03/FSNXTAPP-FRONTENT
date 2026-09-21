@@ -1,0 +1,32 @@
+# Local secrets - passwords and MCP bearer tokens live here.
+# Never commit. config/sap-systems.json holds the non-secret metadata instead.
+.claude/settings.local.json
+.env
+.env.local
+
+# Generated from config/sap-systems.json by scripts/sync-sap-systems.ps1.
+# Contains only ${VAR} references, but it is a build product - regenerate it.
+.mcp.json
+
+# Node tooling for the ABAP ADT API MCP server
+tools/**/node_modules/
+npm-debug.log*
+
+# Python venv for the SAP GUI Scripting MCP server (recreate, don't commit).
+tools/**/.venv/
+__pycache__/
+
+# Audit trail written by the sap-gui MCP server - may contain business data.
+logs/
+
+# Rendered dashboard output - regenerate with scripts/build-dashboard.ps1, references live worklog data.
+dashboard/output/
+
+# Screenshot evidence - may contain live DS4 business data. Nested per-system
+# (evidence/<system-id>/...), so a plain "evidence/*" + "!evidence/.gitkeep"
+# doesn't reach the per-system .gitkeep -- negation can't see past an ignored
+# parent directory. The three-line recursive form keeps every directory
+# entry and .gitkeep visible while still ignoring the screenshots themselves.
+evidence/**
+!evidence/**/
+!evidence/**/.gitkeep

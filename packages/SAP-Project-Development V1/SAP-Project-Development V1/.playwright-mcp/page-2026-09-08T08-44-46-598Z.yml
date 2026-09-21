@@ -1,0 +1,314 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]: Deal ID CreationZFS_SB_DEALID_O4_API
+      - generic [ref=e9]:
+        - generic "System connected" [ref=e10]
+        - button "Refresh" [ref=e11] [cursor=pointer]
+    - complementary [ref=e15]:
+      - generic [ref=e16]: DTTK Details
+      - generic [ref=e17]:
+        - generic [ref=e18]: DTTK No *
+        - textbox "DTTK No *" [ref=e19]:
+          - /placeholder: Type or pick from the grid
+      - generic [ref=e20]:
+        - generic [ref=e21]: DTTK Trade Value
+        - textbox [ref=e22]
+        - textbox [ref=e23]
+      - generic [ref=e24]:
+        - generic [ref=e25]: DTTK Assigned
+        - textbox [ref=e26]
+      - generic [ref=e27]:
+        - generic [ref=e28]: DTTK Balance
+        - textbox [ref=e29]
+      - generic [ref=e30]: OTTK Details
+      - generic [ref=e31]:
+        - generic [ref=e32]: OTTK No *
+        - generic [ref=e33]:
+          - textbox "OTTK No *" [ref=e34]:
+            - /placeholder: Type or search
+            - text: "100042"
+          - button "🔍" [ref=e35] [cursor=pointer]
+      - generic [ref=e36]:
+        - generic [ref=e37]: OTTK Trade Value
+        - textbox [ref=e38]: 1,000,000.00
+        - textbox [ref=e39]: USD
+      - generic [ref=e40]:
+        - generic [ref=e41]: OTTK Assigned
+        - textbox [ref=e42]: "0.00"
+      - generic [ref=e43]:
+        - generic [ref=e44]: OTTK Balance
+        - textbox [ref=e45]: 1,000,000.00
+      - generic [ref=e46]:
+        - generic [ref=e47]: Entity ID
+        - textbox [ref=e48]: E021 OGA-DMCC-PAN
+      - generic [ref=e49]:
+        - generic [ref=e50]: Structure
+        - textbox [ref=e51]: DSX Deposit Set Off - Cross Border
+      - generic [ref=e52]: Deal ID Details
+      - generic [ref=e53]:
+        - generic [ref=e54]: Deal ID Amt *
+        - textbox "Deal ID Amt *" [ref=e55]:
+          - /placeholder: "0.00"
+        - textbox "Defaults to the selected OTTK's currency" [ref=e56]: USD
+      - generic [ref=e57]:
+        - generic [ref=e58]: Deal ID Desc
+        - textbox "Deal ID Desc" [ref=e59]
+      - generic [ref=e60]:
+        - generic [ref=e61]: Status
+        - textbox "Status" [ref=e62]:
+          - /placeholder: e.g. 01
+      - button "Create Deal ID" [ref=e63] [cursor=pointer]
+    - main [ref=e64]:
+      - generic [ref=e65]:
+        - generic [ref=e66]:
+          - generic [ref=e67]: Open Origination Tickets (OTTK) 5 records
+          - generic [ref=e68]:
+            - textbox "Search OTTK…" [ref=e69]
+            - button "Filter" [ref=e70] [cursor=pointer]
+        - generic [ref=e290]:
+          - generic [ref=e291]: Filter by
+          - combobox [active] [ref=e292]:
+            - option "All types" [selected]
+            - option "01 New"
+            - option "02 With Ref DTTK"
+          - combobox [ref=e293]:
+            - option "All currencies" [selected]
+          - combobox [ref=e294]:
+            - option "All entities" [selected]
+            - option "E021"
+            - option "E024"
+          - combobox [ref=e295]:
+            - option "All structures"
+            - option "DSX — Deposit Set Off - Cross Border" [selected]
+            - option "LCP — LC Prepayment"
+            - option "CC DSX — Cross Currency DSX"
+            - option "CC LCP — Cross Currency LCP"
+          - combobox [ref=e296]:
+            - option "All issuing banks" [selected]
+          - combobox [ref=e297]:
+            - option "All applicants" [selected]
+            - option "DMCC"
+            - option "OGA"
+          - combobox [ref=e298]:
+            - option "All company codes" [selected]
+            - option "AE13"
+            - option "SG03"
+          - combobox [ref=e299]:
+            - option "All beneficiaries" [selected]
+            - option "DMCC"
+            - option "OGA"
+          - button "Clear filters" [ref=e300] [cursor=pointer]
+        - table [ref=e74]:
+          - rowgroup [ref=e75]:
+            - row [ref=e76]:
+              - columnheader "OTTK No" [ref=e77]
+              - columnheader "Type" [ref=e78]
+              - columnheader "Structure" [ref=e79]
+              - columnheader "Entity ID" [ref=e80]
+              - columnheader "Entity String" [ref=e81]
+              - columnheader "LC Issuing Bank" [ref=e82]
+              - columnheader "Trade Value" [ref=e83]
+              - columnheader "Crcy" [ref=e84]
+              - columnheader "Balance" [ref=e85]
+              - columnheader "Expected LC Date" [ref=e86]
+              - columnheader "Tenor" [ref=e87]
+              - columnheader "LC Applicant" [ref=e88]
+              - columnheader "LC Beneficiary" [ref=e89]
+              - columnheader "CoCode" [ref=e90]
+              - columnheader "Deposit Amt" [ref=e91]
+              - columnheader "Interest" [ref=e92]
+              - columnheader "Status" [ref=e93]
+          - rowgroup [ref=e125]:
+            - row [ref=e301]:
+              - cell "100042" [ref=e302] [cursor=pointer]
+              - cell "01 New" [ref=e303]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=e304]
+              - cell "E021" [ref=e305]
+              - cell "OGA-DMCC-PAN" [ref=e306]
+              - cell "3 — BARCLAYS BANK PLC" [ref=e307]
+              - cell "1,000,000.00" [ref=e308]
+              - cell "USD" [ref=e309]
+              - cell "…" [ref=e310]
+              - cell "07.09.2026" [ref=e311]
+              - cell "90" [ref=e312]
+              - cell "DMCC" [ref=e313]
+              - cell "OGA" [ref=e314]
+              - cell "AE13" [ref=e315]
+              - cell "1,000,000.00" [ref=e316]
+              - cell "Fixed 10.00%" [ref=e317]
+              - cell "Draft" [ref=e318]
+            - row [ref=e319]:
+              - cell "100045" [ref=e320] [cursor=pointer]
+              - cell "01 New" [ref=e321]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=e322]
+              - cell "E021" [ref=e323]
+              - cell "OGA-DMCC-PAN" [ref=e324]
+              - cell "3 — BARCLAYS BANK PLC" [ref=e325]
+              - cell "1,500,000.00" [ref=e326]
+              - cell "USD" [ref=e327]
+              - cell "…" [ref=e328]
+              - cell "07.09.2026" [ref=e329]
+              - cell "90" [ref=e330]
+              - cell "DMCC" [ref=e331]
+              - cell "OGA" [ref=e332]
+              - cell "AE13" [ref=e333]
+              - cell "1,000,000.00" [ref=e334]
+              - cell "Fixed 10.00%" [ref=e335]
+              - cell "Draft" [ref=e336]
+            - row [ref=e337]:
+              - cell "100046" [ref=e338] [cursor=pointer]
+              - cell "01 New" [ref=e339]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=e340]
+              - cell "E024" [ref=e341]
+              - cell "DMCC-OGA-PAN" [ref=e342]
+              - cell "100067276 — GSD 400 Testing" [ref=e343]
+              - cell "1,000,000.00" [ref=e344]
+              - cell "USD" [ref=e345]
+              - cell "…" [ref=e346]
+              - cell [ref=e347]
+              - cell "90" [ref=e348]
+              - cell "OGA" [ref=e349]
+              - cell "DMCC" [ref=e350]
+              - cell "SG03" [ref=e351]
+              - cell "0.00" [ref=e352]
+              - cell "Fixed 0.00%" [ref=e353]
+              - cell "Draft" [ref=e354]
+            - row [ref=e355]:
+              - cell "100047" [ref=e356] [cursor=pointer]
+              - cell "01 New" [ref=e357]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=e358]
+              - cell "E024" [ref=e359]
+              - cell "DMCC-OGA-PAN" [ref=e360]
+              - cell "660000645 — DBS BANK LTD" [ref=e361]
+              - cell "2,500,000.00" [ref=e362]
+              - cell "USD" [ref=e363]
+              - cell "…" [ref=e364]
+              - cell "07.09.2026" [ref=e365]
+              - cell "120" [ref=e366]
+              - cell "OGA" [ref=e367]
+              - cell "DMCC" [ref=e368]
+              - cell "AE13" [ref=e369]
+              - cell "1,500,000.00" [ref=e370]
+              - cell "Fixed 10.55%" [ref=e371]
+              - cell "01 - Create New" [ref=e372]
+            - row [ref=e373]:
+              - cell "100048" [ref=e374] [cursor=pointer]
+              - cell "01 New" [ref=e375]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=e376]
+              - cell "E024" [ref=e377]
+              - cell "DMCC-OGA-PAN" [ref=e378]
+              - cell "660000680 — STANDARD CHARTERED BANK SINGAPORE" [ref=e379]
+              - cell "2,500,000.00" [ref=e380]
+              - cell "USD" [ref=e381]
+              - cell "…" [ref=e382]
+              - cell "07.09.2026" [ref=e383]
+              - cell "250" [ref=e384]
+              - cell "OGA" [ref=e385]
+              - cell "DMCC" [ref=e386]
+              - cell "SG03" [ref=e387]
+              - cell "1,500,000.00" [ref=e388]
+              - cell "Fixed 8.00%" [ref=e389]
+              - cell "01 - Create New" [ref=e390]
+        - generic [ref=e94]: Showing 5 of 5
+      - generic [ref=e95]:
+        - generic [ref=e96]:
+          - generic [ref=e97]: Open Distribution Tickets (DTTK) 4 records
+          - generic [ref=e98]:
+            - textbox "Search DTTK…" [ref=e99]
+            - button "Filter" [ref=e100] [cursor=pointer]
+        - table [ref=e104]:
+          - rowgroup [ref=e105]:
+            - row [ref=e106]:
+              - columnheader "DTTK No" [ref=e107]
+              - columnheader "Type 1" [ref=e108]
+              - columnheader "Type 2" [ref=e109]
+              - columnheader "Related OTTK" [ref=e110]
+              - columnheader "Structure" [ref=e111]
+              - columnheader "Entity String" [ref=e112]
+              - columnheader "DTTK Value" [ref=e113]
+              - columnheader "Crcy" [ref=e114]
+              - columnheader "Balance" [ref=e115]
+              - columnheader "Discounting Bank" [ref=e116]
+              - columnheader "Expected LC Date" [ref=e117]
+              - columnheader "Tenor" [ref=e118]
+              - columnheader "LC Applicant" [ref=e119]
+              - columnheader "LC Beneficiary" [ref=e120]
+              - columnheader "CoCode" [ref=e121]
+              - columnheader "Interest" [ref=e122]
+              - columnheader "Status" [ref=e123]
+          - rowgroup [ref=e216]:
+            - row [ref=e217]:
+              - cell "100039" [ref=e218] [cursor=pointer]
+              - cell "02 Discounting Only" [ref=e219]
+              - cell "02 With Ref DTTK" [ref=e220]
+              - cell "100042" [ref=e221]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=e222]
+              - cell "DMCC-OGA-PAN" [ref=e223]
+              - cell "1,000,000.00" [ref=e224]
+              - cell "USD" [ref=e225]
+              - cell "1,000,000.00" [ref=e226]
+              - cell [ref=e227]
+              - cell "07.09.2026" [ref=e228]
+              - cell "90" [ref=e229]
+              - cell "OGA" [ref=e230]
+              - cell "DMCC" [ref=e231]
+              - cell "SG03" [ref=e232]
+              - cell "Fixed 10.00%" [ref=e233]
+              - cell "Draft" [ref=e234]
+            - row [ref=e235]:
+              - cell "100040" [ref=e236] [cursor=pointer]
+              - cell "01 Discounting & Confirmation" [ref=e237]
+              - cell "02 With Ref DTTK" [ref=e238]
+              - cell "100048" [ref=e239]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=e240]
+              - cell "DMCC-OGA-PAN" [ref=e241]
+              - cell "2,500,000.00" [ref=e242]
+              - cell "USD" [ref=e243]
+              - cell "2,500,000.00" [ref=e244]
+              - cell "400000006 — Standard chartered" [ref=e245]
+              - cell "07.09.2026" [ref=e246]
+              - cell "250" [ref=e247]
+              - cell "OGA" [ref=e248]
+              - cell "DMCC" [ref=e249]
+              - cell "SG03" [ref=e250]
+              - cell "Fixed 10.00%" [ref=e251]
+              - cell "Draft" [ref=e252]
+            - row [ref=e253]:
+              - cell "100041" [ref=e254] [cursor=pointer]
+              - cell "01 Discounting & Confirmation" [ref=e255]
+              - cell "02 With Ref DTTK" [ref=e256]
+              - cell "100048" [ref=e257]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=e258]
+              - cell "DMCC-OGA-PAN" [ref=e259]
+              - cell "2,500,000.00" [ref=e260]
+              - cell "USD" [ref=e261]
+              - cell "2,500,000.00" [ref=e262]
+              - cell "400000006 — Standard chartered" [ref=e263]
+              - cell "07.09.2026" [ref=e264]
+              - cell "250" [ref=e265]
+              - cell "OGA" [ref=e266]
+              - cell "DMCC" [ref=e267]
+              - cell "SG03" [ref=e268]
+              - cell "Fixed 10.00%" [ref=e269]
+              - cell "01" [ref=e270]
+            - row [ref=e271]:
+              - cell "100042" [ref=e272] [cursor=pointer]
+              - cell "01 Discounting & Confirmation" [ref=e273]
+              - cell "01 New" [ref=e274]
+              - cell [ref=e275]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=e276]
+              - cell "DMCC-OGA-PAN" [ref=e277]
+              - cell "2,000,000.00" [ref=e278]
+              - cell "USD" [ref=e279]
+              - cell "2,000,000.00" [ref=e280]
+              - cell "660000802 — WESTPAC BANKING CORPORATION" [ref=e281]
+              - cell "08.09.2026" [ref=e282]
+              - cell "90" [ref=e283]
+              - cell "OGA" [ref=e284]
+              - cell "DMCC" [ref=e285]
+              - cell "SG03" [ref=e286]
+              - cell "Fixed 8.00%" [ref=e287]
+              - cell "01" [ref=e288]
+        - generic [ref=e124]: Showing 4 of 4
+  - status

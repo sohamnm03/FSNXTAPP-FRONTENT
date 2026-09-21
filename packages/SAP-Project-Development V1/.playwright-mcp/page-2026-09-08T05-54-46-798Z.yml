@@ -1,0 +1,436 @@
+- generic [ref=f3e1]:
+  - generic [ref=f3e2]:
+    - banner [ref=f3e3]:
+      - generic [ref=f3e4]: Origination Ticket OTTK
+      - generic [ref=f3e9]:
+        - button "Create OTTK" [ref=f3e10] [cursor=pointer]
+        - generic "System connected" [ref=f3e14]
+        - button "Release & Print" [ref=f3e15] [cursor=pointer]
+        - button "Refresh" [ref=f3e19] [cursor=pointer]
+        - button "Copy OTTK" [ref=f3e23] [cursor=pointer]
+    - main [ref=f3e27]:
+      - generic [ref=f3e28]:
+        - generic [ref=f3e29]:
+          - generic [ref=f3e30]: Open Origination Tickets 5 records
+          - generic [ref=f3e31]:
+            - textbox "Search origination tickets" [ref=f3e32]:
+              - /placeholder: Search OTTK…
+            - button "Filter" [ref=f3e33] [cursor=pointer]
+            - button "Export CSV" [ref=f3e36] [cursor=pointer]
+        - table [ref=f3e40]:
+          - rowgroup [ref=f3e58]:
+            - row [ref=f3e59]:
+              - columnheader "OTTK No" [ref=f3e60]
+              - columnheader "Type" [ref=f3e61]
+              - columnheader "Structure" [ref=f3e62]
+              - columnheader "Entity ID" [ref=f3e63]
+              - columnheader "Entity String" [ref=f3e64]
+              - columnheader "LC Issuing Bank" [ref=f3e65]
+              - columnheader "Trade Value" [ref=f3e66]
+              - columnheader "Crcy" [ref=f3e67]
+              - columnheader "Expected LC Date" [ref=f3e68]
+              - columnheader "Tenor" [ref=f3e69]
+              - columnheader "LC Applicant" [ref=f3e70]
+              - columnheader "LC Beneficiary" [ref=f3e71]
+              - columnheader "CoCode" [ref=f3e72]
+              - columnheader "Deposit Amt" [ref=f3e73]
+              - columnheader "Interest" [ref=f3e74]
+              - columnheader "Status" [ref=f3e75]
+          - rowgroup [ref=f3e130]:
+            - row [ref=f3e131]:
+              - cell "100042" [ref=f3e132] [cursor=pointer]
+              - cell "01 New" [ref=f3e133]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f3e134]
+              - cell "E021" [ref=f3e135]
+              - cell "OGA-DMCC-PAN" [ref=f3e136]
+              - cell "3 — BARCLAYS BANK PLC" [ref=f3e137]
+              - cell "1,000,000.00" [ref=f3e138]
+              - cell "USD" [ref=f3e139]
+              - cell "07.09.2026" [ref=f3e140]
+              - cell "90" [ref=f3e141]
+              - cell "DMCC" [ref=f3e142]
+              - cell "OGA" [ref=f3e143]
+              - cell "AE13" [ref=f3e144]
+              - cell "1,000,000.00" [ref=f3e145]
+              - cell "Fixed 10.00%" [ref=f3e146]
+              - cell "Draft" [ref=f3e147]
+            - row [ref=f3e149]:
+              - cell "100045" [ref=f3e150] [cursor=pointer]
+              - cell "01 New" [ref=f3e151]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f3e152]
+              - cell "E021" [ref=f3e153]
+              - cell "OGA-DMCC-PAN" [ref=f3e154]
+              - cell "3 — BARCLAYS BANK PLC" [ref=f3e155]
+              - cell "1,500,000.00" [ref=f3e156]
+              - cell "USD" [ref=f3e157]
+              - cell "07.09.2026" [ref=f3e158]
+              - cell "90" [ref=f3e159]
+              - cell "DMCC" [ref=f3e160]
+              - cell "OGA" [ref=f3e161]
+              - cell "AE13" [ref=f3e162]
+              - cell "1,000,000.00" [ref=f3e163]
+              - cell "Fixed 10.00%" [ref=f3e164]
+              - cell "Draft" [ref=f3e165]
+            - row [ref=f3e167]:
+              - cell "100046" [ref=f3e168] [cursor=pointer]
+              - cell "01 New" [ref=f3e169]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f3e170]
+              - cell "E024" [ref=f3e171]
+              - cell "DMCC-OGA-PAN" [ref=f3e172]
+              - cell "100067276 — GSD 400 Testing" [ref=f3e173]
+              - cell "1,000,000.00" [ref=f3e174]
+              - cell "USD" [ref=f3e175]
+              - cell [ref=f3e176]
+              - cell "90" [ref=f3e177]
+              - cell "OGA" [ref=f3e178]
+              - cell "DMCC" [ref=f3e179]
+              - cell "SG03" [ref=f3e180]
+              - cell "0.00" [ref=f3e181]
+              - cell "Fixed 0.00%" [ref=f3e182]
+              - cell "Draft" [ref=f3e183]
+            - row [ref=f3e185]:
+              - cell "100047" [ref=f3e186] [cursor=pointer]
+              - cell "01 New" [ref=f3e187]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f3e188]
+              - cell "E024" [ref=f3e189]
+              - cell "DMCC-OGA-PAN" [ref=f3e190]
+              - cell "660000645 — DBS BANK LTD" [ref=f3e191]
+              - cell "2,500,000.00" [ref=f3e192]
+              - cell "USD" [ref=f3e193]
+              - cell "07.09.2026" [ref=f3e194]
+              - cell "120" [ref=f3e195]
+              - cell "OGA" [ref=f3e196]
+              - cell "DMCC" [ref=f3e197]
+              - cell "AE13" [ref=f3e198]
+              - cell "1,500,000.00" [ref=f3e199]
+              - cell "Fixed 10.55%" [ref=f3e200]
+              - cell "01 - Create New" [ref=f3e201]
+            - row [ref=f3e203]:
+              - cell "100048" [ref=f3e204] [cursor=pointer]
+              - cell "01 New" [ref=f3e205]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f3e206]
+              - cell "E024" [ref=f3e207]
+              - cell "DMCC-OGA-PAN" [ref=f3e208]
+              - cell "660000680 — STANDARD CHARTERED BANK SINGAPORE" [ref=f3e209]
+              - cell "2,500,000.00" [ref=f3e210]
+              - cell "USD" [ref=f3e211]
+              - cell "07.09.2026" [ref=f3e212]
+              - cell "250" [ref=f3e213]
+              - cell "OGA" [ref=f3e214]
+              - cell "DMCC" [ref=f3e215]
+              - cell "SG03" [ref=f3e216]
+              - cell "1,500,000.00" [ref=f3e217]
+              - cell "Fixed 8.00%" [ref=f3e218]
+              - cell "01 - Create New" [ref=f3e219]
+        - generic [ref=f3e76]:
+          - generic [ref=f3e77]: Showing 5 of 5
+          - generic [ref=f3e78]:
+            - button "‹" [disabled] [ref=f3e79]
+            - button "1" [ref=f3e80] [cursor=pointer]
+            - button "›" [disabled] [ref=f3e81]
+      - generic [ref=f3e82]:
+        - generic [ref=f3e83]:
+          - generic [ref=f3e84]: Open Distribution Tickets 3 records
+          - generic [ref=f3e85]:
+            - textbox "Search distribution tickets" [ref=f3e86]:
+              - /placeholder: Search tickets…
+            - button "Filter" [ref=f3e87] [cursor=pointer]
+            - button "Export CSV" [ref=f3e90] [cursor=pointer]
+        - table [ref=f3e94]:
+          - rowgroup [ref=f3e109]:
+            - row [ref=f3e110]:
+              - columnheader "DTTK No" [ref=f3e111]
+              - columnheader "Type1" [ref=f3e112]
+              - columnheader "Type2" [ref=f3e113]
+              - columnheader "Related OTTK" [ref=f3e114]
+              - columnheader "DTTK Value" [ref=f3e115]
+              - columnheader "Crcy" [ref=f3e116]
+              - columnheader "Expected Date" [ref=f3e117]
+              - columnheader "Tenor" [ref=f3e118]
+              - columnheader "LC Applicant" [ref=f3e119]
+              - columnheader "LC Beneficiary" [ref=f3e120]
+              - columnheader "Company Code" [ref=f3e121]
+              - columnheader "Company Name" [ref=f3e122]
+              - columnheader "Status" [ref=f3e123]
+          - rowgroup [ref=f3e221]:
+            - row [ref=f3e222]:
+              - cell [ref=f3e223] [cursor=pointer]:
+                - button "Display DTTK 100039" [ref=f3e224]: "100039"
+              - cell "02 Discounting Only" [ref=f3e225]
+              - cell "02 With Ref DTTK" [ref=f3e226]
+              - cell "100042" [ref=f3e227]
+              - cell "1,000,000.00" [ref=f3e228]
+              - cell "USD" [ref=f3e229]
+              - cell "07.09.2026" [ref=f3e230]
+              - cell "90" [ref=f3e231]
+              - cell "OGA" [ref=f3e232]
+              - cell "DMCC" [ref=f3e233]
+              - cell "SG03" [ref=f3e234]
+              - cell "OLAM GlobalAgri Pte. Ltd" [ref=f3e235]
+              - cell "Draft" [ref=f3e236]
+            - row [ref=f3e238]:
+              - cell [ref=f3e239] [cursor=pointer]:
+                - button "Display DTTK 100040" [ref=f3e240]: "100040"
+              - cell "01 Discounting & Confirmation" [ref=f3e241]
+              - cell "02 With Ref DTTK" [ref=f3e242]
+              - cell "100048" [ref=f3e243]
+              - cell "2,500,000.00" [ref=f3e244]
+              - cell "USD" [ref=f3e245]
+              - cell "07.09.2026" [ref=f3e246]
+              - cell "250" [ref=f3e247]
+              - cell "OGA" [ref=f3e248]
+              - cell "DMCC" [ref=f3e249]
+              - cell "SG03" [ref=f3e250]
+              - cell "OLAM GlobalAgri Pte. Ltd" [ref=f3e251]
+              - cell "Draft" [ref=f3e252]
+            - row [ref=f3e254]:
+              - cell [ref=f3e255] [cursor=pointer]:
+                - button "Display DTTK 100041" [ref=f3e256]: "100041"
+              - cell "01 Discounting & Confirmation" [ref=f3e257]
+              - cell "02 With Ref DTTK" [ref=f3e258]
+              - cell "100048" [ref=f3e259]
+              - cell "2,500,000.00" [ref=f3e260]
+              - cell "USD" [ref=f3e261]
+              - cell "07.09.2026" [ref=f3e262]
+              - cell "250" [ref=f3e263]
+              - cell "OGA" [ref=f3e264]
+              - cell "DMCC" [ref=f3e265]
+              - cell "SG03" [ref=f3e266]
+              - cell "OLAM GlobalAgri Pte. Ltd" [ref=f3e267]
+              - cell "01" [ref=f3e268]
+        - generic [ref=f3e124]:
+          - generic [ref=f3e125]: Showing 3 of 3
+          - generic [ref=f3e126]:
+            - button "‹" [disabled] [ref=f3e127]
+            - button "1" [ref=f3e128] [cursor=pointer]
+            - button "›" [disabled] [ref=f3e129]
+  - status
+  - iframe [active] [ref=f3e270]:
+    - generic [active] [ref=f4e1]:
+      - dialog [ref=f4e3]:
+        - generic [ref=f4e4]:
+          - generic [ref=f4e5]:
+            - generic [ref=f4e7]:
+              - heading "Display Distribution Ticket" [level=2] [ref=f4e8]
+              - paragraph [ref=f4e9]: Loading DTTK…
+            - generic [ref=f4e10]:
+              - generic [ref=f4e11]: Created By
+              - button "Close modal" [ref=f4e13] [cursor=pointer]: ×
+          - generic [ref=f4e14]:
+            - generic [ref=f4e15]:
+              - generic [ref=f4e16]: Transaction Details
+              - generic [ref=f4e17]:
+                - generic [ref=f4e18]:
+                  - generic [ref=f4e19]: DTTK Type 1
+                  - combobox "DTTK Type 1" [disabled] [ref=f4e20]:
+                    - option "Select" [selected]
+                    - option "01 Discounting & Confirmation"
+                    - option "02 Discounting Only"
+                    - option "03 Confirmation Only"
+                - generic [ref=f4e21]:
+                  - generic [ref=f4e22]: DTTK Type 2
+                  - combobox "DTTK Type 2" [disabled] [ref=f4e23]:
+                    - option "01 New" [selected]
+                    - option "02 With Ref OTTK"
+                - generic [ref=f4e24]:
+                  - generic [ref=f4e25]: Structure
+                  - combobox "Structure" [disabled] [ref=f4e26]:
+                    - option "Select structure" [selected]
+                    - option "DSX — Deposit Set Off - Cross Border"
+                    - option "LCP — LC Prepayment"
+                    - option "CC DSX — Cross Currency DSX"
+                    - option "CC LCP — Cross Currency LCP"
+                - generic [ref=f4e27]:
+                  - generic [ref=f4e28]: Entity String
+                  - combobox "Entity String" [disabled] [ref=f4e29]:
+                    - option "Select entity" [selected]
+            - generic [ref=f4e30]:
+              - generic [ref=f4e31]: Trade Details
+              - generic [ref=f4e32]:
+                - generic [ref=f4e33]:
+                  - generic [ref=f4e34]: Origination Bank
+                  - combobox "Origination Bank" [disabled] [ref=f4e35]:
+                    - option "Select bank" [selected]
+                - generic [ref=f4e36]:
+                  - generic [ref=f4e37]: OTTK Trade Value
+                  - generic [ref=f4e38]:
+                    - 'textbox "Enter a number or use K, M, B, T (example: 1.5M)" [disabled] [ref=f4e39]':
+                      - /placeholder: e.g. 1.5M
+                    - combobox [disabled] [ref=f4e40]:
+                      - option "USD" [selected]
+                      - option "EUR"
+                      - option "GBP"
+                      - option "INR"
+                      - option "AED"
+                      - option "SGD"
+                      - option "AUD"
+                - generic [ref=f4e41]:
+                  - generic [ref=f4e42]: DTTK Trade Value
+                  - generic [ref=f4e43]:
+                    - 'textbox "Enter a number or use K, M, B, T (example: 1.5M)" [disabled] [ref=f4e44]':
+                      - /placeholder: e.g. 1.5M
+                    - combobox [disabled] [ref=f4e45]:
+                      - option "USD" [selected]
+                      - option "EUR"
+                      - option "GBP"
+                      - option "INR"
+                      - option "AED"
+                      - option "SGD"
+                      - option "AUD"
+                - generic [ref=f4e46]:
+                  - generic [ref=f4e47]:
+                    - generic [ref=f4e48]: Expected LC Date
+                    - textbox "Expected LC Date" [disabled] [ref=f4e49]
+                  - generic [ref=f4e50]:
+                    - generic [ref=f4e51]: Expected LC Tenor
+                    - generic [ref=f4e52]:
+                      - textbox "Expected LC Tenor" [disabled] [ref=f4e53]:
+                        - /placeholder: "0"
+                      - generic [ref=f4e54]: days
+                - generic [ref=f4e55]:
+                  - generic [ref=f4e56]:
+                    - generic [ref=f4e57]: LC Applicant
+                    - textbox [disabled] [ref=f4e58]
+                  - generic [ref=f4e59]:
+                    - generic [ref=f4e60]: LC Beneficiary
+                    - textbox [disabled] [ref=f4e61]
+                - generic [ref=f4e62]:
+                  - generic [ref=f4e63]: Company Code
+                  - generic [ref=f4e64]:
+                    - textbox [disabled] [ref=f4e65]
+                    - textbox "(auto)" [disabled] [ref=f4e66]
+                - generic [ref=f4e67]:
+                  - generic [ref=f4e68]: Business Area
+                  - generic [ref=f4e69]:
+                    - textbox "(auto)" [disabled] [ref=f4e70]
+                    - textbox "(auto)" [disabled] [ref=f4e71]
+                - generic [ref=f4e72]:
+                  - generic [ref=f4e73]: RMA With Orig. Bank
+                  - combobox "RMA With Orig. Bank" [disabled] [ref=f4e74]:
+                    - option "Select" [selected]
+                    - option "Y Yes"
+                    - option "N No"
+            - generic [ref=f4e75]:
+              - generic [ref=f4e76]: Discounting Loan Details
+              - generic [ref=f4e77]:
+                - generic [ref=f4e78]:
+                  - generic [ref=f4e79]: Discounting Bank
+                  - combobox "Discounting Bank" [disabled] [ref=f4e80]:
+                    - option "Select bank" [selected]
+                - generic [ref=f4e81]:
+                  - generic [ref=f4e82]: Disc. Calc Method
+                  - combobox "Disc. Calc Method" [disabled] [ref=f4e83]:
+                    - option "Select" [selected]
+                    - option "DTY — Discounted Value"
+                    - option "STR — Full Value"
+                - generic [ref=f4e84]:
+                  - generic [ref=f4e85]: Discounting Loan Amt
+                  - generic [ref=f4e86]:
+                    - textbox "e.g. 700K" [disabled] [ref=f4e87]
+                    - combobox [disabled] [ref=f4e88]:
+                      - option "USD" [selected]
+                      - option "EUR"
+                      - option "GBP"
+                      - option "INR"
+                      - option "AED"
+                      - option "SGD"
+                      - option "AUD"
+                - generic [ref=f4e89]:
+                  - generic [ref=f4e90]: Discounting Rate
+                  - combobox "Discounting Rate" [disabled] [ref=f4e91]:
+                    - option "01 Fixed" [selected]
+                    - option "02 Floating"
+                - generic [ref=f4e92]:
+                  - generic [ref=f4e93]: Interest Rate
+                  - textbox "0.00" [disabled] [ref=f4e94]
+                - generic [ref=f4e95]:
+                  - generic [ref=f4e96]: Interest Frequency
+                  - combobox "Interest Frequency" [disabled] [ref=f4e97]:
+                    - option "Select" [selected]
+                    - option "01 Upfront"
+                    - option "02 Monthly"
+                    - option "03 Quarterly"
+                    - option "04 Half-yearly"
+                    - option "05 Rear-end"
+                    - option "06 NA"
+                - generic [ref=f4e98]:
+                  - generic [ref=f4e99]: Negotiation Fee
+                  - textbox "0.00" [disabled] [ref=f4e100]
+                - generic [ref=f4e101]:
+                  - generic [ref=f4e102]: Other Charges
+                  - textbox "Grand total from the Charges breakdown" [disabled] [ref=f4e104]:
+                    - /placeholder: "0.00"
+                - generic [ref=f4e105]:
+                  - generic [ref=f4e106]: Discounting Trader
+                  - combobox "Discounting Trader" [disabled] [ref=f4e107]:
+                    - option "Select trader" [selected]
+                - generic [ref=f4e108]:
+                  - generic [ref=f4e109]: Region
+                  - textbox [disabled] [ref=f4e110]
+                - generic [ref=f4e111]:
+                  - generic [ref=f4e112]: Discounting / Flow Remark
+                  - textbox [disabled] [ref=f4e113]
+            - generic [ref=f4e114]:
+              - generic [ref=f4e115]: Confirmation Bank
+              - generic [ref=f4e116]:
+                - generic [ref=f4e117]:
+                  - generic [ref=f4e118]: No Confirmation Bank
+                  - checkbox "No Confirmation Bank" [disabled] [ref=f4e119]
+                - generic [ref=f4e120]:
+                  - generic [ref=f4e121]: Confirmation Bank
+                  - combobox "Confirmation Bank" [disabled] [ref=f4e122]:
+                    - option "Select bank" [selected]
+                - generic [ref=f4e123]:
+                  - generic [ref=f4e124]: Conf. Fee From
+                  - combobox "Conf. Fee From" [disabled] [ref=f4e125]:
+                    - option "Select" [selected]
+                    - option "01 Issuance Date"
+                    - option "02 Confirmation Date"
+                - generic [ref=f4e126]:
+                  - generic [ref=f4e127]: Conf. Fee Till
+                  - combobox "Conf. Fee Till" [disabled] [ref=f4e128]:
+                    - option "Select" [selected]
+                    - option "01 LC Maturity Date"
+                    - option "02 Document Presentation Date"
+                - generic [ref=f4e129]:
+                  - generic [ref=f4e130]: Confirmation Trader
+                  - combobox "Confirmation Trader" [disabled] [ref=f4e131]:
+                    - option "Select trader" [selected]
+                - generic [ref=f4e132]:
+                  - generic [ref=f4e133]: Confirmation Fee
+                  - textbox "Grand total from the Confirmation Fee breakdown" [disabled] [ref=f4e135]:
+                    - /placeholder: "0.00"
+                - generic [ref=f4e136]:
+                  - generic [ref=f4e137]: Confirmation Remark
+                  - textbox [disabled] [ref=f4e138]
+            - generic [ref=f4e139]:
+              - generic [ref=f4e140]: Additional Information
+              - generic [ref=f4e141]:
+                - generic [ref=f4e142]:
+                  - generic [ref=f4e143]: Bank Contact
+                  - textbox [disabled] [ref=f4e144]
+                - generic [ref=f4e145]:
+                  - generic [ref=f4e146]: Bank Contact Details
+                  - textbox [disabled] [ref=f4e147]
+                - generic [ref=f4e148]:
+                  - generic [ref=f4e149]: Commitment End Date
+                  - textbox [disabled] [ref=f4e150]
+                - generic [ref=f4e151]:
+                  - generic [ref=f4e152]: Commitment Fee
+                  - textbox "0.00" [disabled] [ref=f4e153]
+                - generic [ref=f4e154]:
+                  - generic [ref=f4e155]: Reservation Start Date
+                  - textbox [disabled] [ref=f4e156]
+                - generic [ref=f4e157]:
+                  - generic [ref=f4e158]: LC Issuance Latest Date
+                  - textbox [disabled] [ref=f4e159]
+                - generic [ref=f4e160]:
+                  - generic [ref=f4e161]: Doc Pres. Latest Date
+                  - textbox [disabled] [ref=f4e162]
+                - generic [ref=f4e163]:
+                  - generic [ref=f4e164]: Repay. of Prev LC Date
+                  - textbox [disabled] [ref=f4e165]
+          - generic [ref=f4e166]:
+            - generic [ref=f4e167]: "* Company Code is required before creation."
+            - button "Close" [ref=f4e169] [cursor=pointer]
+      - status

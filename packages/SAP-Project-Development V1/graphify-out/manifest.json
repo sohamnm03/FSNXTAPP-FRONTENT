@@ -1,0 +1,398 @@
+{
+  "D:\\SAP Tool\\SAP-Project-Development V1\\scripts\\build-dashboard.ps1": {
+    "mtime": 1787578597.5512364,
+    "hash": "d1f95fb76632fac8ea7b5892d410751e"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\scripts\\lib-markdown.ps1": {
+    "mtime": 1787577816.1590483,
+    "hash": "c7cf610b67c4a13e0281861690b6dd1f"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\scripts\\sap-gui-create-tcode.py": {
+    "mtime": 1787403582.1456356,
+    "hash": "f3a31db845a80a979480e3a9b05f974f"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\scripts\\sap-gui-publish-service.py": {
+    "mtime": 1787405097.3244615,
+    "hash": "bcf48fd3b6db145586279fa128c6d8d9"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\scripts\\sync-sap-systems.ps1": {
+    "mtime": 1786880964.2610776,
+    "hash": "4c00805e0012c1c8fac076d420619d62"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\web\\deal-id-console\\proxy.py": {
+    "mtime": 1788888669.7199962,
+    "hash": "b48be6ab8853174e628e5f06ac449c48"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\web\\dttk-console\\proxy.py": {
+    "mtime": 1788888680.636384,
+    "hash": "4eee97db2951445b364b34f564b42da9"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\web\\inv-console\\proxy.py": {
+    "mtime": 1788888606.1075947,
+    "hash": "797a5f3b505fb2ddef15b5e7e0ff4d1b"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\web\\ottk-dttk-console\\proxy.py": {
+    "mtime": 1788888657.7161136,
+    "hash": "212e2b41eaa97d056b1872f5e04d967d"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\web\\tf-manage-console\\proxy.py": {
+    "mtime": 1788888702.4415278,
+    "hash": "6bcb6db48e857f677c78a1715c57b9f6"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\web\\tf-upload-console\\proxy.py": {
+    "mtime": 1788888690.9842925,
+    "hash": "de0b7c704c477f64df6bddee5b1679fa"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\AGENTS.md": {
+    "mtime": 1788526002.712293,
+    "hash": "eed5d3d0d4d66bca80bfd12cb7df8c34"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\CLAUDE.md": {
+    "mtime": 1788525955.4166925,
+    "hash": "2abaa068a5d0957b60eafbc8f8c44d54"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\cookies.txt": {
+    "mtime": 1787392599.1530485,
+    "hash": "0ad1e7c4ece737dc580e3b0ff07a6e18"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\headers.txt": {
+    "mtime": 1787392599.150189,
+    "hash": "06a69f8a56082f93d8bc1bf0866df9bd"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\claude-abap-skills\\README.md": {
+    "mtime": 1786703180.0,
+    "hash": "ea923dabc380b0164d60a848458f2e16"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\claude-abap-skills\\abap-cloud-rap\\CLAUDE.md": {
+    "mtime": 1786703180.0,
+    "hash": "37bfff6938ed4de8855da26bf523608f"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\claude-abap-skills\\abap-cloud-rap\\README.md": {
+    "mtime": 1786703180.0,
+    "hash": "1d14bf76466e54eb59250b1053b30f00"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\claude-abap-skills\\abap-cloud-rap\\atc-remediation\\SKILL.md": {
+    "mtime": 1786703180.0,
+    "hash": "330cb509a77324d842d1f8307cca600a"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\claude-abap-skills\\abap-cloud-rap\\clean-core-check\\SKILL.md": {
+    "mtime": 1786703180.0,
+    "hash": "7c945b569b03a6bda38361e52c8e0543"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\claude-abap-skills\\abap-cloud-rap\\rap-bo-design\\SKILL.md": {
+    "mtime": 1786881681.8030865,
+    "hash": "1b9be458b2d980adb1858f424fb6b9d2"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\claude-abap-skills\\clean-abap\\CLAUDE.md": {
+    "mtime": 1786703180.0,
+    "hash": "d66e71a93d341bdf56ab8c2f9bab8dcd"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\claude-abap-skills\\clean-abap\\README.md": {
+    "mtime": 1786703180.0,
+    "hash": "26269fb3a338dccf0944df11c4c3090a"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\claude-abap-skills\\clean-abap\\refactor\\SKILL.md": {
+    "mtime": 1786703180.0,
+    "hash": "a1bdd61ddf7a5a5de3b22f7b6f6736bd"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\claude-abap-skills\\clean-abap\\review\\SKILL.md": {
+    "mtime": 1786703180.0,
+    "hash": "ec719b48e2b96b0a837f06cb0d57dfae"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\dashboard\\README.md": {
+    "mtime": 1787578396.8531322,
+    "hash": "e82c672defe06b2b003394a091aa4430"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\dashboard\\template.html": {
+    "mtime": 1787578234.8779464,
+    "hash": "b55f6bbdd6bbfdb75898d6878130009e"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\dashboard\\output\\dashboard.html": {
+    "mtime": 1787578680.7045743,
+    "hash": "ba0b493ffbcfae51806a0568330c21cf"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\docs\\abap-mcp-setup.md": {
+    "mtime": 1786875328.4156246,
+    "hash": "6c69b6a3c5f6e09c8670450f7b11bc01"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\docs\\alv-report-standards.md": {
+    "mtime": 1786733791.0,
+    "hash": "bd6d8ccc3a0894bec4721f09d46366c6"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\docs\\ddic-table-template.md": {
+    "mtime": 1786719466.0,
+    "hash": "13b08e32385cc56b054a1075cb376e4d"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\docs\\naming-conventions.md": {
+    "mtime": 1788809046.1251059,
+    "hash": "b4628b70fb6b74962d6e2cc0c991845a"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\docs\\rap-managed-additional-save-pattern.md": {
+    "mtime": 1787405335.0848112,
+    "hash": "e06be9217c2f8600ef4b4179bbe19e62"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\docs\\rap-unmanaged-web-api-pattern.md": {
+    "mtime": 1788544365.7628832,
+    "hash": "4df977441d815fdb44d1ca4fad7f1124"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\docs\\sap-gui-mcp-setup.md": {
+    "mtime": 1786881181.1883085,
+    "hash": "dd679a01c94b15787a0e087734c06005"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\docs\\sap-gui-object-automation.md": {
+    "mtime": 1787404839.5992298,
+    "hash": "2b5c34bcdcfe37082432328400863e07"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\docs\\sap-systems.md": {
+    "mtime": 1786881391.172688,
+    "hash": "db7a9976656e362bab3d6731cfa1942b"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\docs\\message-catalog\\DS4_100_NIIF.md": {
+    "mtime": 1788861235.6803677,
+    "hash": "47aa7e00018eb5aa2c22f2e3804df303"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\docs\\message-catalog\\README.md": {
+    "mtime": 1787421745.7539592,
+    "hash": "135f699d8b252eca7a2fc6d3ae45ee71"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\lessons\\lessons-ledger.md": {
+    "mtime": 1788890979.8156376,
+    "hash": "c53f13c7369881369ff47719fdceb92b"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\tools\\mcp-abap-adt-api\\README.md": {
+    "mtime": 1786875314.0339046,
+    "hash": "785f549927d4f57ca976f4e271b7e917"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\web\\deal-id-console\\index.html": {
+    "mtime": 1788871442.1386988,
+    "hash": "7f0f5b3b19b2d59f310642a950ab0c36"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\web\\dttk-console\\index.html": {
+    "mtime": 1788889755.0681703,
+    "hash": "ec40ee4d7cc300cbffd59a0f37928936"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\web\\dttk-console\\workbench-v43.html": {
+    "mtime": 1788805320.3872328,
+    "hash": "24437b4058be4dcc671ccc1274700fe8"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\web\\inv-console\\index.html": {
+    "mtime": 1788890828.2422676,
+    "hash": "12c0608729a2cebd859e3d07fa9b6c45"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\web\\ottk-dttk-console\\index.html": {
+    "mtime": 1788889268.034547,
+    "hash": "a7bb8d64e9c6aa574bf10141e6972e26"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\web\\tf-manage-console\\index.html": {
+    "mtime": 1788890660.2788968,
+    "hash": "9fa0d2919431fb61319d8ed85489c18c"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\web\\tf-upload-console\\index.html": {
+    "mtime": 1788890498.545502,
+    "hash": "c127cf1704edecfdacdfe20d476b27e8"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\_TEMPLATE.md": {
+    "mtime": 1786878103.6349878,
+    "hash": "4baaaf06bbbeeb31a5a6526450b6b31b"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-08-16-alv-report-zfs-ny-trmt006.md": {
+    "mtime": 1786881766.1613781,
+    "hash": "e1ffb1454bc5794134eda9253778d859"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-08-16-claude-md-refresh.md": {
+    "mtime": 1786884924.8252258,
+    "hash": "13ef67660d7f27471b9e63d3ad527fb6"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-08-16-rap-draft-confirmation-rule.md": {
+    "mtime": 1786885472.45606,
+    "hash": "1d18f47fcca485a52f3f6f9911342b44"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-08-16-rap-managed-trmloan.md": {
+    "mtime": 1786883759.3250985,
+    "hash": "c7e6aacab1b2cd0b1e185607615b62b3"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-08-16-sap-gui-mcp-install.md": {
+    "mtime": 1786881255.287337,
+    "hash": "cd7820dff120f576215e2a1ce0e33093"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-08-16-zfs-t-trm-loan-table.md": {
+    "mtime": 1787421754.157086,
+    "hash": "078e133e5e1eb14457d76343639c56d1"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-08-22-alv-report-usrrec.md": {
+    "mtime": 1787421755.239932,
+    "hash": "3c7fedeef6a12294400b0a0d07253735"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-08-22-per-system-worklog-message-catalog-reorg.md": {
+    "mtime": 1787421963.962013,
+    "hash": "657fdc889fe8f24c146242050e32da88"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-08-22-rap-user-provisioning-api.md": {
+    "mtime": 1787392703.542696,
+    "hash": "6df927f0b5aca3cec00e8237843cc11c"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-08-22-sap-gui-automation-scripts.md": {
+    "mtime": 1787405209.8490517,
+    "hash": "b1a60a7d1b37af5b60bc34484ef95a8c"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-08-24-worklog-dashboard.md": {
+    "mtime": 1787578670.9594274,
+    "hash": "ab1e2689ff1c4c22796937118b7e95a2"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-04-add-validations-zbp-fs-slcdttkdetailtp.md": {
+    "mtime": 1788545216.7838216,
+    "hash": "db3da22a57e7cf3ae4b65b787986b0d3"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-04-add-validations-zbp-fs-slcottkdetailtp.md": {
+    "mtime": 1788544393.5268743,
+    "hash": "623db6d08a0c1bc9bbdb858971b254c8"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-04-copy-zfs-slc-dttk-btp.md": {
+    "mtime": 1788542156.1997218,
+    "hash": "0e3aedd7e051234c8009979aac75ff2c"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-04-fix-zfs-cds-slc-001-activation.md": {
+    "mtime": 1788522738.7523472,
+    "hash": "f17f906ec67c66468e647618ecd58bb2"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-04-fix-zfs-cds-slc-002-activation.md": {
+    "mtime": 1788541702.7750983,
+    "hash": "04342d1de44dce1c108e11feb2d0daf7"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-04-inline-comments-slcottk-slcdttk-behavior-classes.md": {
+    "mtime": 1788545776.9499562,
+    "hash": "bb49032b45d5b9b8620d6e1f1cb3e01b"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-04-rap-unmanaged-slc-ottk.md": {
+    "mtime": 1788512903.8813696,
+    "hash": "9f3138d7f1a92866cb7c4364c67f6e54"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-04-rap-unmanaged-slcdttkdetail.md": {
+    "mtime": 1788543150.9521573,
+    "hash": "33fb2fbaf9d18a747af4d2d0fed0b6fe"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-04-rap-unmanaged-slcottkdetail.md": {
+    "mtime": 1788525809.620498,
+    "hash": "0703f83a67ead703eabbad2666269280"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-05-lookup-service-urls-and-mock-data-slcottk-slcdttk.md": {
+    "mtime": 1788593565.8836641,
+    "hash": "ac5570146d927236312724b5277ab6bb"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-07-dttk-workbench-console-live-odata.md": {
+    "mtime": 1788806130.8119235,
+    "hash": "908220dcd0a9610e81fa5da0075f5e38"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-07-fix-ottk-status-wiped-on-edit.md": {
+    "mtime": 1788803534.6754305,
+    "hash": "6d8dc0786505f7ddbbfbc6d108376f6a"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-07-log-audit-fields-slcottkdetail-slcdttkdetail.md": {
+    "mtime": 1788789407.9397113,
+    "hash": "88fda5122c9e46e02885b140740f5dee"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-07-ottk-charges-popup-and-feedata-odata.md": {
+    "mtime": 1788795375.6189907,
+    "hash": "4cb06d8a0dcf767461723225fcba8718"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-07-ottk-dttk-web-console-odata-integration.md": {
+    "mtime": 1788779863.5435257,
+    "hash": "577136a70a5e3a6640a2da5d76a6b64c"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-07-slc-cocode-lookup-and-bank-business-area.md": {
+    "mtime": 1788782178.064946,
+    "hash": "2ea60de353e4886a7e166b878c44db28"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-07-slc-entity-string-lookup-and-ottk-only-console.md": {
+    "mtime": 1788781249.2115495,
+    "hash": "eb94d24fb0691f037c560ed71f4b49b5"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-07-slc-refint-lookup-variable-interest-and-entity-mapping-fix.md": {
+    "mtime": 1788784470.789132,
+    "hash": "51485fd4c4fb30c498683c00b9185824"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-align-tf-and-inv-consoles-to-ottk-design-system.md": {
+    "mtime": 1788890951.0302415,
+    "hash": "288710c74d35684340a640e4255c3b8e"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-deal-id-console-alpha-fix-amount-suffix-column-fit.md": {
+    "mtime": 1788858987.1029892,
+    "hash": "096cd8f23aa166c91bb889346ac286c5"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-deal-id-console-ux-and-currency-followups.md": {
+    "mtime": 1788857704.721893,
+    "hash": "998aad7a3672cb3473406ab05a4c467b"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-deal-id-create-optimize-and-coding-standards.md": {
+    "mtime": 1788861255.1115222,
+    "hash": "5d911b79be4bbef333725a62138ec8e6"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-deal-id-ottk-dttk-status-hard-filter.md": {
+    "mtime": 1788863079.3991728,
+    "hash": "162bae62c98b439510615597efa56135"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-deal-id-ottk-dttk-status-update-and-acc-type-classification.md": {
+    "mtime": 1788859986.1781776,
+    "hash": "f51b56a8eaa31d537bbd571465da4a76"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-deal-id-rap-unmanaged-bo-and-console.md": {
+    "mtime": 1788850864.25618,
+    "hash": "a8b6f1b56f65e91c3758e6f501baa200"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-deal-id-status-join-and-list-popup.md": {
+    "mtime": 1788862857.776064,
+    "hash": "de3517e3481c11c2fe02c1eb17e628e4"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-dealid-status-pill-style-match.md": {
+    "mtime": 1788865736.2597728,
+    "hash": "56b4ec01fd52cd90ac62f17e38061295"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-dttk-console-remove-no-confirmation-bank-checkbox.md": {
+    "mtime": 1788889847.6196716,
+    "hash": "cf2665f46ef9410c4fc507994f3aed52"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-dttk-fee-entities-and-charges-popups.md": {
+    "mtime": 1788809208.047482,
+    "hash": "a6f3e3ecbbc9590105dfaca23351491b"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-dttk-popup-click-bug-and-type1-confbank-visibility.md": {
+    "mtime": 1788847130.749559,
+    "hash": "4a3f5417e2cdabdf6c424e2199d518a4"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-dttk-status-join-and-display.md": {
+    "mtime": 1788864110.4217885,
+    "hash": "c64a83042f61c38127e4e9a0abeada54"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-fix-dttk-update-blanking-omitted-fields.md": {
+    "mtime": 1788807170.24582,
+    "hash": "425a80a7829ae12419f921122466a068"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-inv-console-scaffold.md": {
+    "mtime": 1788886953.5664017,
+    "hash": "6bc8142ccf2ed4e9608423eb0b14f6d9"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-ottk-console-lcp-prepayment-labels.md": {
+    "mtime": 1788889348.3296628,
+    "hash": "35172697c84fe772c1c42ed02a1f6648"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-ottk-dttk-console-status-hard-filter.md": {
+    "mtime": 1788869191.8995607,
+    "hash": "2109437d5e9eb576b869f2d4f824e70c"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-ottk-search-popup-balance-fix.md": {
+    "mtime": 1788872719.8805566,
+    "hash": "f72d4241673ab584e5cdc1e15168b5b0"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-resume-claude-dttk-display-modal.md": {
+    "mtime": 1788812433.1998596,
+    "hash": "b0008b14324f5bd17403974e5588cc0f"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-tf-manage-console-scaffold.md": {
+    "mtime": 1788887491.4532216,
+    "hash": "1298cba31675828b11f72feb549f855c"
+  },
+  "D:\\SAP Tool\\SAP-Project-Development V1\\worklog\\DS4_100_NIIF\\2026-09-08-trdflow-unmanaged-rap-web-api.md": {
+    "mtime": 1788873792.2188487,
+    "hash": "b96300cba104b45b06658a5c85fa69c6"
+  }
+}
