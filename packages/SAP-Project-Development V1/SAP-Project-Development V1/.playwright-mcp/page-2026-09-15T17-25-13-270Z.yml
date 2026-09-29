@@ -1,0 +1,181 @@
+- generic [ref=f71e2]:
+  - banner [ref=f71e3]:
+    - generic [ref=f71e4]:
+      - img "Fourth Signal" [ref=f71e5]
+      - generic [ref=f71e6]: Dynamic Gateway v2 DYNGW
+    - generic [ref=f71e7]:
+      - button "Create OTTK" [ref=f71e8] [cursor=pointer]
+      - generic "System connected" [ref=f71e12]
+      - button "Release & Print" [ref=f71e13] [cursor=pointer]
+      - button "Refresh" [ref=f71e17] [cursor=pointer]
+      - button "Copy OTTK" [ref=f71e21] [cursor=pointer]
+  - main [ref=f71e25]:
+    - generic [ref=f71e26]:
+      - generic [ref=f71e27]:
+        - generic [ref=f71e28]: Provisioning
+        - generic [ref=f71e29]: 8 target(s) registered
+      - generic [ref=f71e30]:
+        - table [ref=f71e31]:
+          - rowgroup [ref=f71e32]:
+            - row [ref=f71e33]:
+              - columnheader "Target" [ref=f71e34]
+              - columnheader "Used for" [ref=f71e35]
+              - columnheader "Status" [ref=f71e36]
+          - rowgroup [ref=f71e37]:
+            - row [ref=f71e38]:
+              - cell "ZFS_CDS_SLC_001" [ref=f71e39]
+              - cell "OTTK list (Task 3)" [ref=f71e40]
+              - cell "Active" [ref=f71e41]
+            - row [ref=f71e42]:
+              - cell "ZFS_CDS_SLC_002" [ref=f71e43]
+              - cell "DTTK list (Task 3)" [ref=f71e44]
+              - cell "Active" [ref=f71e45]
+            - row [ref=f71e46]:
+              - cell "ZSGSLCTR_BPEXT" [ref=f71e47]
+              - cell "bank lookup" [ref=f71e48]
+              - cell "Active" [ref=f71e49]
+            - row [ref=f71e50]:
+              - cell "T000" [ref=f71e51]
+              - cell "liveness check" [ref=f71e52]
+              - cell "Active" [ref=f71e53]
+        - button "Provision targets" [ref=f71e54] [cursor=pointer]
+        - generic [ref=f71e55]:
+          - generic [ref=f71e56]: Diagnostics (dynCall proof)
+          - generic [ref=f71e57]:
+            - button "Run liveness check (T000)" [ref=f71e58] [cursor=pointer]
+            - button "Run refusal check (ZZ_UNKNOWN)" [ref=f71e59] [cursor=pointer]
+          - generic [ref=f71e60]: Not run yet.
+    - generic [ref=f71e61]:
+      - generic [ref=f71e62]:
+        - generic [ref=f71e63]: Open Origination Tickets 0 records
+        - generic [ref=f71e64]:
+          - textbox "Search origination tickets" [ref=f71e65]:
+            - /placeholder: Search OTTK…
+          - button "Filter" [ref=f71e66] [cursor=pointer]
+          - button "Export CSV" [ref=f71e69] [cursor=pointer]
+      - table [ref=f71e73]:
+        - rowgroup [ref=f71e91]:
+          - row [ref=f71e92]:
+            - columnheader "OTTK No" [ref=f71e93]
+            - columnheader "Type" [ref=f71e94]
+            - columnheader "Structure" [ref=f71e95]
+            - columnheader "Entity ID" [ref=f71e96]
+            - columnheader "Entity String" [ref=f71e97]
+            - columnheader "LC Issuing Bank" [ref=f71e98]
+            - columnheader "Trade Value" [ref=f71e99]
+            - columnheader "Crcy" [ref=f71e100]
+            - columnheader "Expected LC Date" [ref=f71e101]
+            - columnheader "Tenor" [ref=f71e102]
+            - columnheader "LC Applicant" [ref=f71e103]
+            - columnheader "LC Beneficiary" [ref=f71e104]
+            - columnheader "CoCode" [ref=f71e105]
+            - columnheader "Deposit Amt" [ref=f71e106]
+            - columnheader "Interest" [ref=f71e107]
+            - columnheader "Status" [ref=f71e108]
+        - rowgroup
+      - generic [ref=f71e109]:
+        - generic [ref=f71e110]: Showing 0 of 0
+        - generic [ref=f71e111]:
+          - button "‹" [disabled] [ref=f71e112]
+          - button "1" [ref=f71e113] [cursor=pointer]
+          - button "›" [disabled] [ref=f71e114]
+    - generic [ref=f71e115]:
+      - generic [ref=f71e116]:
+        - generic [ref=f71e117]: Open Distribution Tickets 0 records
+        - generic [ref=f71e118]:
+          - textbox "Search distribution tickets" [ref=f71e119]:
+            - /placeholder: Search tickets…
+          - button "Filter" [ref=f71e120] [cursor=pointer]
+          - button "Export CSV" [ref=f71e123] [cursor=pointer]
+      - table [ref=f71e127]:
+        - rowgroup [ref=f71e142]:
+          - row [ref=f71e143]:
+            - columnheader "DTTK No" [ref=f71e144]
+            - columnheader "Type1" [ref=f71e145]
+            - columnheader "Type2" [ref=f71e146]
+            - columnheader "Related OTTK" [ref=f71e147]
+            - columnheader "DTTK Value" [ref=f71e148]
+            - columnheader "Crcy" [ref=f71e149]
+            - columnheader "Expected Date" [ref=f71e150]
+            - columnheader "Tenor" [ref=f71e151]
+            - columnheader "LC Applicant" [ref=f71e152]
+            - columnheader "LC Beneficiary" [ref=f71e153]
+            - columnheader "Company Code" [ref=f71e154]
+            - columnheader "Company Name" [ref=f71e155]
+            - columnheader "Status" [ref=f71e156]
+        - rowgroup
+      - generic [ref=f71e157]:
+        - generic [ref=f71e158]: Showing 0 of 0
+        - generic [ref=f71e159]:
+          - button "‹" [disabled] [ref=f71e160]
+          - button "1" [ref=f71e161] [cursor=pointer]
+          - button "›" [disabled] [ref=f71e162]
+    - generic [ref=f71e163]:
+      - generic [ref=f71e164]:
+        - generic [ref=f71e165]: Gateway Trace Refreshing…
+        - button "⟳" [ref=f71e167] [cursor=pointer]
+      - generic [ref=f71e168]:
+        - generic [ref=f71e169]:
+          - generic [ref=f71e170]: Call
+          - generic [ref=f71e171]: —
+          - generic [ref=f71e172]: —
+        - generic [ref=f71e173]:
+          - generic [ref=f71e174]: Step
+          - generic [ref=f71e175]: —
+          - generic [ref=f71e176]: —
+        - generic [ref=f71e177]:
+          - generic [ref=f71e178]: Reg
+          - generic [ref=f71e179]: —
+          - generic [ref=f71e180]: —
+        - generic [ref=f71e181]:
+          - generic [ref=f71e182]: Regh
+          - generic [ref=f71e183]: —
+          - generic [ref=f71e184]: —
+        - generic [ref=f71e185]:
+          - generic [ref=f71e186]: Probe
+          - generic [ref=f71e187]: —
+          - generic [ref=f71e188]: —
+      - generic [ref=f71e189]:
+        - table [ref=f71e191]:
+          - rowgroup [ref=f71e204]:
+            - row [ref=f71e205]:
+              - columnheader [ref=f71e206]
+              - columnheader "Executed At" [ref=f71e207]
+              - columnheader "Action" [ref=f71e208]
+              - columnheader "Status" [ref=f71e209]
+              - columnheader "Err Cat" [ref=f71e210]
+              - columnheader "Result" [ref=f71e211]
+              - columnheader "Dur ms" [ref=f71e212]
+              - columnheader "Replayed" [ref=f71e213]
+              - columnheader "Committed" [ref=f71e214]
+              - columnheader "Rolled Back" [ref=f71e215]
+              - columnheader "Header Message" [ref=f71e216]
+          - rowgroup
+        - generic [ref=f71e217]:
+          - generic [ref=f71e218]: Registry
+          - table [ref=f71e220]:
+            - rowgroup [ref=f71e221]:
+              - row [ref=f71e222]:
+                - columnheader "Kind" [ref=f71e223]
+                - columnheader "Target" [ref=f71e224]
+                - columnheader "Active" [ref=f71e225]
+                - columnheader "Read" [ref=f71e226]
+                - columnheader "Write" [ref=f71e227]
+                - columnheader "Gen" [ref=f71e228]
+                - columnheader "GenNrObj" [ref=f71e229]
+                - columnheader "Mode" [ref=f71e230]
+                - columnheader "MaxRows" [ref=f71e231]
+            - rowgroup
+          - generic [ref=f71e232]: Registry History
+          - table [ref=f71e234]:
+            - rowgroup [ref=f71e235]:
+              - row [ref=f71e236]:
+                - columnheader "Chg" [ref=f71e237]
+                - columnheader "Kind" [ref=f71e238]
+                - columnheader "Target" [ref=f71e239]
+                - columnheader "Src" [ref=f71e240]
+                - columnheader "By" [ref=f71e241]
+                - columnheader "At" [ref=f71e242]
+            - rowgroup
+      - generic [ref=f71e243]: Panel not yet refreshed
+  - status

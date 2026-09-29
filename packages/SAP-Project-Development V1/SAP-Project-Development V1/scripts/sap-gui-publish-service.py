@@ -70,7 +70,7 @@ def assert_dev_system(controller: SAPGUIController) -> None:
         )
 
 
-def find_unpublished_row(controller: SAPGUIController, group_id: str) -> dict | None:
+def find_unpublished_row(controller: SAPGUIController, group_id: str, system_alias: str = "LOCAL") -> dict | None:
     """Filter the publish-candidates grid to group_id, return its row or None.
 
     An exact GROUP_ID that is already published or does not exist pops a
@@ -79,6 +79,12 @@ def find_unpublished_row(controller: SAPGUIController, group_id: str) -> dict | 
     report "not found" rather than treating it as an error.
     """
     c = controller
+    # L-246: "Get Service Groups" refuses a blank System Alias with an
+    # Information popup ("Specify a System Alias") and returns NO grid at all.
+    # Without this the lookup reports "not in the unpublished-candidates list"
+    # for a group that is sitting right there unpublished - which is exactly
+    # what it did on 2026-09-13 for ZFS_SB_DYNGW_O4_API.
+    c.set_field("wnd[0]/usr/ctxtIP_SYSTEM_ALIAS", system_alias)
     c.set_field("wnd[0]/usr/txtIP_GROUP_ID", group_id)
     c.press_button("wnd[0]/tbar[1]/btn[8]")  # Get Service Groups
 
@@ -94,7 +100,7 @@ def find_unpublished_row(controller: SAPGUIController, group_id: str) -> dict | 
     return None
 
 
-def publish_service_group(controller: SAPGUIController, group_id: str) -> dict:
+def publish_service_group(controller: SAPGUIController, group_id: str, system_alias: str = "LOCAL") -> dict:
     if not (group_id.upper().startswith("Z") or group_id.startswith("/")):
         raise PublishError(
             f"Refusing to publish {group_id!r}: does not look like a custom "
@@ -106,7 +112,7 @@ def publish_service_group(controller: SAPGUIController, group_id: str) -> dict:
     assert_dev_system(c)
     c.press_button("wnd[0]/tbar[1]/btn[2]")  # Publish Service Groups
 
-    row = find_unpublished_row(c, group_id)
+    row = find_unpublished_row(c, group_id, system_alias)
     if row is None:
         raise PublishError(
             f"{group_id!r} is not in the unpublished-candidates list — already "
@@ -139,7 +145,7 @@ def publish_service_group(controller: SAPGUIController, group_id: str) -> dict:
 
     published = "successfully published" in message.lower()
 
-    still_unpublished = find_unpublished_row(c, group_id) is not None
+    still_unpublished = find_unpublished_row(c, group_id, system_alias) is not None
 
     return {
         "group_id": group_id,
@@ -152,6 +158,7 @@ def publish_service_group(controller: SAPGUIController, group_id: str) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--group-id", required=True)
+    parser.add_argument("--system-alias", default="LOCAL", help="System Alias for Get Service Groups (L-246). Default LOCAL.")
     parser.add_argument("--yes", action="store_true", help="Actually publish. Without it, only looks up status.")
     args = parser.parse_args()
 
@@ -162,7 +169,7 @@ def main() -> int:
     if not args.yes:
         controller.execute_transaction("/IWFND/V4_ADMIN")
         controller.press_button("wnd[0]/tbar[1]/btn[2]")
-        row = find_unpublished_row(controller, args.group_id)
+        row = find_unpublished_row(controller, args.group_id, args.system_alias)
         if row is None:
             print(f"{args.group_id!r} is not in the unpublished list (already published, or name is wrong).")
         else:
@@ -173,7 +180,7 @@ def main() -> int:
 
     print(f"About to publish service group {args.group_id!r}.")
     try:
-        result = publish_service_group(controller, args.group_id)
+        result = publish_service_group(controller, args.group_id, args.system_alias)
     except Exception as exc:  # noqa: BLE001 - report and stop, no silent retry
         log({"event": "publish_failed", "group_id": args.group_id, "error": str(exc)})
         print(f"FAILED: {exc}", file=sys.stderr)

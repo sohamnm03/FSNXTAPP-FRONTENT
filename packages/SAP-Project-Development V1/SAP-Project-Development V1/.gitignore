@@ -22,11 +22,35 @@ logs/
 # Rendered dashboard output - regenerate with scripts/build-dashboard.ps1, references live worklog data.
 dashboard/output/
 
-# Screenshot evidence - may contain live DS4 business data. Nested per-system
-# (evidence/<system-id>/...), so a plain "evidence/*" + "!evidence/.gitkeep"
-# doesn't reach the per-system .gitkeep -- negation can't see past an ignored
-# parent directory. The three-line recursive form keeps every directory
-# entry and .gitkeep visible while still ignoring the screenshots themselves.
-evidence/**
-!evidence/**/
-!evidence/**/.gitkeep
+# Evidence is NOT ignored. It lives beside the worklog that produced it, at
+# worklog/<system-id>/<YYYY-MM>/evidence/<worklog-stem>/, and is committed -- the
+# screenshots and transcripts are the proof a run happened and are worthless to a
+# later session if they only exist on one machine. The old top-level evidence/
+# root and its "evidence/**" ignore rule were retired on 2026-09-13 (L-502): the
+# rule was unanchored, so it also shadowed the worklog evidence that 108 already
+# committed files show was always meant to be tracked.
+
+# Raw browser-MCP tool output (console/network dumps, page snapshots). Moved out of
+# the repo root on 2026-09-14 (L-505) -- it is tool noise, not a build product and not
+# evidence. Curated screenshots that prove a run happened belong in the worklog's
+# evidence folder instead, and are committed. Covered by the logs/ rule above; named
+# here so the reason survives.
+logs/playwright-mcp/
+
+# Graphify AST cache -- regenerate with `graphify update .` (AST-only, no API cost).
+# The graph outputs themselves (GRAPH_REPORT.md, graph.json, graph.html, manifest.json)
+# stay tracked: CLAUDE.md tells every agent to read them before answering architecture
+# questions, so they must survive a fresh clone.
+graphify-out/cache/
+
+# Live-session artifacts from OData smoke tests. cookies.txt holds a real
+# SAP_SESSIONID_<SID>_<client> and headers.txt a real x-csrf-token -- never commit either.
+# Untracked on 2026-09-14 (L-506); git history was deliberately NOT rewritten, the
+# captured DS4 dev session expired long ago.
+cookies.txt
+headers.txt
+**/cookies.txt
+**/headers.txt
+
+# Python bytecode from the web console proxies (web/*/proxy.py).
+*.pyc

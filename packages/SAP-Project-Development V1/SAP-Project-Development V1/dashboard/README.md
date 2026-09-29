@@ -89,11 +89,16 @@ type separately.
 
 ## Evidence linking
 
-`evidence/<system-id>/` is gitignored (it may hold screenshots with live DS4 business data). A
-worklog author references a screenshot by relative path in prose or an Object-list `Status`
-cell — the dashboard does **not** parse, validate, or embed these links; they are plain files a
-human maintains by hand, the same way any other link in a markdown file works when the drawer
+Evidence lives beside the worklog that produced it, at
+`worklog/<system-id>/<YYYY-MM>/evidence/<worklog-stem>/`, and is committed. The folder name
+matches the worklog file's stem, so worklog and evidence pair up by name. A worklog author
+references a screenshot by relative path in prose or an Object-list `Status` cell — the
+dashboard does **not** parse, validate, or embed these links; they are plain files a human
+maintains by hand, the same way any other link in a markdown file works when the drawer
 renders it.
+
+The old top-level `evidence/<system-id>/` root was retired on 2026-09-13 (L-502) — it was
+empty, and its gitignore rule silently shadowed the evidence actually in use.
 
 ## Payload schema
 
@@ -125,8 +130,8 @@ renders it.
         ]
       },
       "lessons":     ["L-227", "L-228"],           // L-nnn refs from "## Lessons raised"
-      "worklogPath": "worklog/DS4_100_NIIF/2026-08-22-rap-user-provisioning-api.md",
-      "worklogUrl":  "../../worklog/DS4_100_NIIF/2026-08-22-rap-user-provisioning-api.md",
+      "worklogPath": "worklog/DS4_100_NIIF/2026-08/2026-08-22-1719-rap-user-provisioning-api.md",
+      "worklogUrl":  "../../worklog/DS4_100_NIIF/2026-08/2026-08-22-1719-rap-user-provisioning-api.md",
       "detail":      "# RAP OData V4 …"            // optional: full worklog markdown, opens in the drawer
     }
   ]

@@ -1,0 +1,41 @@
+{
+  "_comment": [
+    "Non-secret config for the DYNGW v2 DTTK console -- distribution tickets reached through the",
+    "dynamic gateway (ZFS_SB_DYNGW_O4_API) instead of the dedicated DTTK service. The page is a",
+    "copy of web/individual/dttk-console with its transport rerouted: every read and write goes",
+    "through RunQuery / ExecuteTableCrud, and the gateway's raw DDIC column names are converted to",
+    "the OData-style property names the page already expects.",
+    "No password here: it is read from the environment variable named below, falling back to the",
+    "gitignored .claude/settings.local.json 'env' block at the repo root.",
+    "Port 8776 keeps this server clear of web/individual/ (8765-8772), dyngw-v2-console (8773),",
+    "dyngw-admin-console (8774) and dyngw-menu-console (8775)."
+  ],
+  "systemId": "DS4_100_NIIF",
+  "user": "FS_DEV3",
+  "passwordEnvVar": "SAP_DS4_100_NIIF_PASSWORD",
+  "tlsVerify": false,
+  "port": 8776,
+  "indexFile": "index.html",
+  "services": {
+    "ottk": {
+      "base": "https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_slcottkdetail_o4_api/srvd_a2x/sap/zfs_sd_slcottkdetail/0001",
+      "client": "100"
+    },
+    "dttk": {
+      "base": "https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_slcdttkdetail_o4_api/srvd_a2x/sap/zfs_sd_slcdttkdetail/0001",
+      "client": "100"
+    },
+    "dealid": {
+      "base": "https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dealid_o4_api/srvd_a2x/sap/zfs_sd_dealid/0001",
+      "client": "100"
+    },
+    "tf": {
+      "base": "https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trdflow_o4_api/srvd_a2x/sap/zfs_sd_trdflow/0001",
+      "client": "100"
+    },
+    "dyngw": {
+      "base": "https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001",
+      "client": "100"
+    }
+  }
+}

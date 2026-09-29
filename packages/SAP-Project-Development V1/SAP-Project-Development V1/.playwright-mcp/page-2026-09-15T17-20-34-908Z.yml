@@ -1,0 +1,162 @@
+- generic [ref=f70e2]:
+  - banner [ref=f70e3]:
+    - generic [ref=f70e4]:
+      - img "Fourth Signal" [ref=f70e5]
+      - generic [ref=f70e6]: Dynamic Gateway v2 DYNGW
+    - generic [ref=f70e7]:
+      - button "Create OTTK" [ref=f70e8] [cursor=pointer]
+      - generic "System connected" [ref=f70e12]
+  - main [ref=f70e13]:
+    - generic [ref=f70e14]:
+      - generic [ref=f70e15]:
+        - generic [ref=f70e16]: Provisioning
+        - generic [ref=f70e17]: Reading registry…
+      - generic [ref=f70e18]:
+        - table [ref=f70e19]:
+          - rowgroup [ref=f70e20]:
+            - row [ref=f70e21]:
+              - columnheader "Target" [ref=f70e22]
+              - columnheader "Used for" [ref=f70e23]
+              - columnheader "Status" [ref=f70e24]
+          - rowgroup
+        - button "Provision targets" [ref=f70e25] [cursor=pointer]
+        - generic [ref=f70e26]:
+          - generic [ref=f70e27]: Diagnostics (dynCall proof)
+          - generic [ref=f70e28]:
+            - button "Run liveness check (T000)" [ref=f70e29] [cursor=pointer]
+            - button "Run refusal check (ZZ_UNKNOWN)" [ref=f70e30] [cursor=pointer]
+          - generic [ref=f70e31]: Not run yet.
+    - generic [ref=f70e32]:
+      - generic [ref=f70e33]:
+        - generic [ref=f70e34]: Open Origination Tickets 0 records
+        - generic [ref=f70e35]:
+          - textbox "Search origination tickets" [ref=f70e36]:
+            - /placeholder: Search OTTK…
+          - button "Filter" [ref=f70e37] [cursor=pointer]
+          - button "Export CSV" [ref=f70e40] [cursor=pointer]
+      - table [ref=f70e44]:
+        - rowgroup [ref=f70e62]:
+          - row [ref=f70e63]:
+            - columnheader "OTTK No" [ref=f70e64]
+            - columnheader "Type" [ref=f70e65]
+            - columnheader "Structure" [ref=f70e66]
+            - columnheader "Entity ID" [ref=f70e67]
+            - columnheader "Entity String" [ref=f70e68]
+            - columnheader "LC Issuing Bank" [ref=f70e69]
+            - columnheader "Trade Value" [ref=f70e70]
+            - columnheader "Crcy" [ref=f70e71]
+            - columnheader "Expected LC Date" [ref=f70e72]
+            - columnheader "Tenor" [ref=f70e73]
+            - columnheader "LC Applicant" [ref=f70e74]
+            - columnheader "LC Beneficiary" [ref=f70e75]
+            - columnheader "CoCode" [ref=f70e76]
+            - columnheader "Deposit Amt" [ref=f70e77]
+            - columnheader "Interest" [ref=f70e78]
+            - columnheader "Status" [ref=f70e79]
+        - rowgroup
+      - generic [ref=f70e80]:
+        - generic [ref=f70e81]: Showing 0 of 0
+        - generic [ref=f70e82]:
+          - button "‹" [disabled] [ref=f70e83]
+          - button "1" [ref=f70e84] [cursor=pointer]
+          - button "›" [disabled] [ref=f70e85]
+    - generic [ref=f70e86]:
+      - generic [ref=f70e87]:
+        - generic [ref=f70e88]: Open Distribution Tickets 0 records
+        - generic [ref=f70e89]:
+          - textbox "Search distribution tickets" [ref=f70e90]:
+            - /placeholder: Search tickets…
+          - button "Filter" [ref=f70e91] [cursor=pointer]
+          - button "Export CSV" [ref=f70e94] [cursor=pointer]
+      - table [ref=f70e98]:
+        - rowgroup [ref=f70e113]:
+          - row [ref=f70e114]:
+            - columnheader "DTTK No" [ref=f70e115]
+            - columnheader "Type1" [ref=f70e116]
+            - columnheader "Type2" [ref=f70e117]
+            - columnheader "Related OTTK" [ref=f70e118]
+            - columnheader "DTTK Value" [ref=f70e119]
+            - columnheader "Crcy" [ref=f70e120]
+            - columnheader "Expected Date" [ref=f70e121]
+            - columnheader "Tenor" [ref=f70e122]
+            - columnheader "LC Applicant" [ref=f70e123]
+            - columnheader "LC Beneficiary" [ref=f70e124]
+            - columnheader "Company Code" [ref=f70e125]
+            - columnheader "Company Name" [ref=f70e126]
+            - columnheader "Status" [ref=f70e127]
+        - rowgroup
+      - generic [ref=f70e128]:
+        - generic [ref=f70e129]: Showing 0 of 0
+        - generic [ref=f70e130]:
+          - button "‹" [disabled] [ref=f70e131]
+          - button "1" [ref=f70e132] [cursor=pointer]
+          - button "›" [disabled] [ref=f70e133]
+    - generic [ref=f70e134]:
+      - generic [ref=f70e135]:
+        - generic [ref=f70e136]: Gateway Trace Refreshing…
+        - button "⟳" [ref=f70e138] [cursor=pointer]
+      - generic [ref=f70e139]:
+        - generic [ref=f70e140]:
+          - generic [ref=f70e141]: Call
+          - generic [ref=f70e142]: —
+          - generic [ref=f70e143]: —
+        - generic [ref=f70e144]:
+          - generic [ref=f70e145]: Step
+          - generic [ref=f70e146]: —
+          - generic [ref=f70e147]: —
+        - generic [ref=f70e148]:
+          - generic [ref=f70e149]: Reg
+          - generic [ref=f70e150]: —
+          - generic [ref=f70e151]: —
+        - generic [ref=f70e152]:
+          - generic [ref=f70e153]: Regh
+          - generic [ref=f70e154]: —
+          - generic [ref=f70e155]: —
+        - generic [ref=f70e156]:
+          - generic [ref=f70e157]: Probe
+          - generic [ref=f70e158]: —
+          - generic [ref=f70e159]: —
+      - generic [ref=f70e160]:
+        - table [ref=f70e162]:
+          - rowgroup [ref=f70e175]:
+            - row [ref=f70e176]:
+              - columnheader [ref=f70e177]
+              - columnheader "Executed At" [ref=f70e178]
+              - columnheader "Action" [ref=f70e179]
+              - columnheader "Status" [ref=f70e180]
+              - columnheader "Err Cat" [ref=f70e181]
+              - columnheader "Result" [ref=f70e182]
+              - columnheader "Dur ms" [ref=f70e183]
+              - columnheader "Replayed" [ref=f70e184]
+              - columnheader "Committed" [ref=f70e185]
+              - columnheader "Rolled Back" [ref=f70e186]
+              - columnheader "Header Message" [ref=f70e187]
+          - rowgroup
+        - generic [ref=f70e188]:
+          - generic [ref=f70e189]: Registry
+          - table [ref=f70e191]:
+            - rowgroup [ref=f70e192]:
+              - row [ref=f70e193]:
+                - columnheader "Kind" [ref=f70e194]
+                - columnheader "Target" [ref=f70e195]
+                - columnheader "Active" [ref=f70e196]
+                - columnheader "Read" [ref=f70e197]
+                - columnheader "Write" [ref=f70e198]
+                - columnheader "Gen" [ref=f70e199]
+                - columnheader "GenNrObj" [ref=f70e200]
+                - columnheader "Mode" [ref=f70e201]
+                - columnheader "MaxRows" [ref=f70e202]
+            - rowgroup
+          - generic [ref=f70e203]: Registry History
+          - table [ref=f70e205]:
+            - rowgroup [ref=f70e206]:
+              - row [ref=f70e207]:
+                - columnheader "Chg" [ref=f70e208]
+                - columnheader "Kind" [ref=f70e209]
+                - columnheader "Target" [ref=f70e210]
+                - columnheader "Src" [ref=f70e211]
+                - columnheader "By" [ref=f70e212]
+                - columnheader "At" [ref=f70e213]
+            - rowgroup
+      - generic [ref=f70e214]: Panel not yet refreshed
+  - status

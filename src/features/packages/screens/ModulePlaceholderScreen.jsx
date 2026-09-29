@@ -30,7 +30,7 @@ export default function ModulePlaceholderScreen({ module, onBack, onUninstalled 
           <Icon name="arrowLeft" />
           <span>Back to workspace</span>
         </button>
-        <strong>FS Pilot</strong>
+        <strong>FS Sprint</strong>
       </header>
       <section className="module-placeholder">
         <div className="module-placeholder__icon"><Icon name={module.icon} size={46} /></div>

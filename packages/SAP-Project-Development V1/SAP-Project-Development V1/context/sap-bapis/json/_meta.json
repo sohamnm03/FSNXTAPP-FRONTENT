@@ -1,0 +1,33 @@
+{
+ "system": "DS4_100_NIIF",
+ "client": "100",
+ "extractedOn": "2026-09-14",
+ "source": "ADT data preview (/sap/bc/adt/datapreview/freestyle)",
+ "sourceTables": [
+  "ENLFDIR",
+  "TFDIR",
+  "TFTIT",
+  "FUPARAREF",
+  "TADIR",
+  "TDEVC",
+  "DF14L",
+  "DF14T",
+  "DD03L",
+  "DD02T",
+  "DD04T"
+ ],
+ "trmComponents": "PS_POSID LIKE FIN-FSCM-TRM%",
+ "fiComponents": "PS_POSID = FI, AC-INT, or LIKE FI-GL%/FI-AP%/FI-AR%/FI-AA%/FI-BL%",
+ "counts": {
+  "trmBapis": 380,
+  "fiBapis": 150,
+  "structures": 834,
+  "released": 458,
+  "obsolete": 1,
+  "notInReleasedObjectsDirectory": 72
+ },
+ "releaseSource": "RODIR (Released Objects Directory) - the classic BAPI/RFC customer-release flag. ARS_* (ABAP Cloud C1 release contracts) are empty on this system, so the C1 language-version state is still not determinable here.",
+ "knownGaps": [
+  "IF_FAA_POSTING_CORE_TYPES=>TY_T_ACCOUNTING_DOC skipped: class-based type, not a DDIC structure"
+ ]
+}

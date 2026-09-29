@@ -1,0 +1,208 @@
+- generic [ref=f130e1]:
+  - generic [ref=f130e2]:
+    - banner [ref=f130e3]:
+      - generic [ref=f130e4]:
+        - img "Fourth Signal" [ref=f130e5]
+        - generic [ref=f130e6]: Origination Ticket OTTK
+      - generic [ref=f130e7]:
+        - button "Create OTTK" [ref=f130e8] [cursor=pointer]
+        - generic "System connected" [ref=f130e12]
+        - button "Release & Print" [ref=f130e13] [cursor=pointer]
+        - button "Refresh" [ref=f130e17] [cursor=pointer]
+        - button "Copy OTTK" [ref=f130e21] [cursor=pointer]
+    - main [ref=f130e25]:
+      - generic [ref=f130e26]:
+        - generic [ref=f130e27]:
+          - generic [ref=f130e28]: Open Origination Tickets 3 records
+          - generic [ref=f130e29]:
+            - textbox "Search origination tickets" [ref=f130e30]:
+              - /placeholder: Search OTTK…
+            - button "Filter" [ref=f130e31] [cursor=pointer]
+            - button "Export CSV" [ref=f130e34] [cursor=pointer]
+        - table [ref=f130e38]:
+          - rowgroup [ref=f130e56]:
+            - row [ref=f130e57]:
+              - columnheader "OTTK No" [ref=f130e58]
+              - columnheader "Type" [ref=f130e59]
+              - columnheader "Structure" [ref=f130e60]
+              - columnheader "Entity ID" [ref=f130e61]
+              - columnheader "Entity String" [ref=f130e62]
+              - columnheader "LC Issuing Bank" [ref=f130e63]
+              - columnheader "Trade Value" [ref=f130e64]
+              - columnheader "Crcy" [ref=f130e65]
+              - columnheader "Expected LC Date" [ref=f130e66]
+              - columnheader "Tenor" [ref=f130e67]
+              - columnheader "LC Applicant" [ref=f130e68]
+              - columnheader "LC Beneficiary" [ref=f130e69]
+              - columnheader "CoCode" [ref=f130e70]
+              - columnheader "Deposit Amt" [ref=f130e71]
+              - columnheader "Interest" [ref=f130e72]
+              - columnheader "Status" [ref=f130e73]
+          - rowgroup [ref=f130e128]:
+            - row [ref=f130e129]:
+              - cell "100049" [ref=f130e130] [cursor=pointer]
+              - cell "01 New" [ref=f130e131]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f130e132]
+              - cell "E024" [ref=f130e133]
+              - cell "DMCC-OGA-PAN" [ref=f130e134]
+              - cell "660000680 — STANDARD CHARTERED BANK SINGAPORE" [ref=f130e135]
+              - cell "2,000,000.00" [ref=f130e136]
+              - cell "USD" [ref=f130e137]
+              - cell "08.09.2026" [ref=f130e138]
+              - cell "180" [ref=f130e139]
+              - cell "OGA" [ref=f130e140]
+              - cell "DMCC" [ref=f130e141]
+              - cell "SG03" [ref=f130e142]
+              - cell "2,000,000.00" [ref=f130e143]
+              - cell "Fixed 10.00%" [ref=f130e144]
+              - cell "05 - Partially Assigned to Deal ID" [ref=f130e145]
+            - row [ref=f130e147]:
+              - cell "100050" [ref=f130e148] [cursor=pointer]
+              - cell "01 New" [ref=f130e149]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f130e150]
+              - cell "E024" [ref=f130e151]
+              - cell "DMCC-OGA-PAN" [ref=f130e152]
+              - cell "660000680 — STANDARD CHARTERED BANK SINGAPORE" [ref=f130e153]
+              - cell "1,000,000.00" [ref=f130e154]
+              - cell "USD" [ref=f130e155]
+              - cell "08.09.2026" [ref=f130e156]
+              - cell "180" [ref=f130e157]
+              - cell "OGA" [ref=f130e158]
+              - cell "DMCC" [ref=f130e159]
+              - cell "SG03" [ref=f130e160]
+              - cell "1,000,000.00" [ref=f130e161]
+              - cell "Variable 0.00%" [ref=f130e162]
+              - cell "01 - Create New" [ref=f130e163]
+            - row [ref=f130e165]:
+              - cell "100056" [ref=f130e166] [cursor=pointer]
+              - cell "01 New" [ref=f130e167]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f130e168]
+              - cell "E021" [ref=f130e169]
+              - cell "OGA-DMCC-PAN" [ref=f130e170]
+              - cell "660000680 — STANDARD CHARTERED BANK SINGAPORE" [ref=f130e171]
+              - cell "1,000,000.00" [ref=f130e172]
+              - cell "USD" [ref=f130e173]
+              - cell "15.09.2026" [ref=f130e174]
+              - cell "180" [ref=f130e175]
+              - cell "DMCC" [ref=f130e176]
+              - cell "OGA" [ref=f130e177]
+              - cell "AE13" [ref=f130e178]
+              - cell "1,000,000.00" [ref=f130e179]
+              - cell "Fixed 10.00%" [ref=f130e180]
+              - cell "01 - Create New" [ref=f130e181]
+        - generic [ref=f130e74]:
+          - generic [ref=f130e75]: Showing 3 of 3
+          - generic [ref=f130e76]:
+            - button "‹" [disabled] [ref=f130e77]
+            - button "1" [ref=f130e78] [cursor=pointer]
+            - button "›" [disabled] [ref=f130e79]
+      - generic [ref=f130e80]:
+        - generic [ref=f130e81]:
+          - generic [ref=f130e82]: Open Distribution Tickets 1 records
+          - generic [ref=f130e83]:
+            - textbox "Search distribution tickets" [ref=f130e84]:
+              - /placeholder: Search tickets…
+            - button "Filter" [ref=f130e85] [cursor=pointer]
+            - button "Export CSV" [ref=f130e88] [cursor=pointer]
+        - table [ref=f130e92]:
+          - rowgroup [ref=f130e107]:
+            - row [ref=f130e108]:
+              - columnheader "DTTK No" [ref=f130e109]
+              - columnheader "Type1" [ref=f130e110]
+              - columnheader "Type2" [ref=f130e111]
+              - columnheader "Related OTTK" [ref=f130e112]
+              - columnheader "DTTK Value" [ref=f130e113]
+              - columnheader "Crcy" [ref=f130e114]
+              - columnheader "Expected Date" [ref=f130e115]
+              - columnheader "Tenor" [ref=f130e116]
+              - columnheader "LC Applicant" [ref=f130e117]
+              - columnheader "LC Beneficiary" [ref=f130e118]
+              - columnheader "Company Code" [ref=f130e119]
+              - columnheader "Company Name" [ref=f130e120]
+              - columnheader "Status" [ref=f130e121]
+          - rowgroup [ref=f130e183]:
+            - row [ref=f130e184]:
+              - cell [ref=f130e185] [cursor=pointer]:
+                - button "Display DTTK 100043" [ref=f130e186]: "100043"
+              - cell "02 Discounting Only" [ref=f130e187]
+              - cell "02 With Ref DTTK" [ref=f130e188]
+              - cell "100049" [ref=f130e189]
+              - cell "2,000,000.00" [ref=f130e190]
+              - cell "USD" [ref=f130e191]
+              - cell "08.09.2026" [ref=f130e192]
+              - cell "180" [ref=f130e193]
+              - cell "OGA" [ref=f130e194]
+              - cell "DMCC" [ref=f130e195]
+              - cell "SG03" [ref=f130e196]
+              - cell "OLAM GlobalAgri Pte. Ltd" [ref=f130e197]
+              - cell "05 - Partially Assigned to Deal ID" [ref=f130e198]
+        - generic [ref=f130e122]:
+          - generic [ref=f130e123]: Showing 1 of 1
+          - generic [ref=f130e124]:
+            - button "‹" [disabled] [ref=f130e125]
+            - button "1" [ref=f130e126] [cursor=pointer]
+            - button "›" [disabled] [ref=f130e127]
+  - status
+  - iframe [active] [ref=f130e200]:
+    - generic [active] [ref=f131e1]:
+      - generic [ref=f131e2]:
+        - option "Select" [selected]
+        - option "01 Discounting & Confirmation"
+        - option "02 Discounting Only"
+        - option "03 Confirmation Only"
+        - option "01 New" [selected]
+        - option "02 With Ref OTTK"
+        - option "Select structure" [selected]
+        - option "DSX — Deposit Set Off - Cross Border"
+        - option "LCP — LC Prepayment"
+        - option "CC DSX — Cross Currency DSX"
+        - option "CC LCP — Cross Currency LCP"
+        - option "Select entity" [selected]
+        - option "Select bank" [selected]
+        - option "USD" [selected]
+        - option "EUR"
+        - option "GBP"
+        - option "INR"
+        - option "AED"
+        - option "SGD"
+        - option "AUD"
+        - option "USD" [selected]
+        - option "EUR"
+        - option "GBP"
+        - option "INR"
+        - option "AED"
+        - option "SGD"
+        - option "AUD"
+        - option "Select" [selected]
+        - option "Y Yes"
+        - option "N No"
+        - option "Select bank" [selected]
+        - option "Select" [selected]
+        - option "DTY — Discounted Value"
+        - option "STR — Full Value"
+        - option "USD" [selected]
+        - option "EUR"
+        - option "GBP"
+        - option "INR"
+        - option "AED"
+        - option "SGD"
+        - option "AUD"
+        - option "01 Fixed" [selected]
+        - option "02 Floating"
+        - option "Select" [selected]
+        - option "01 Upfront"
+        - option "02 Monthly"
+        - option "03 Quarterly"
+        - option "04 Half-yearly"
+        - option "05 Rear-end"
+        - option "06 NA"
+        - option "Select trader" [selected]
+        - option "Select bank" [selected]
+        - option "Select" [selected]
+        - option "01 Issuance Date"
+        - option "02 Confirmation Date"
+        - option "Select" [selected]
+        - option "01 LC Maturity Date"
+        - option "02 Document Presentation Date"
+        - option "Select trader" [selected]
+      - status

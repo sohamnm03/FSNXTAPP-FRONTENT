@@ -1,0 +1,41 @@
+# Keeps the workspace consistent across Claude Code, Codex, Copilot and Cursor, which
+# all read this repo. No ABAP source lives here -- these settings cover the control
+# plane: markdown records, PowerShell/Python automation and the web consoles.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# The worklog, lessons ledger and docs are the durable record. Trailing whitespace is
+# significant in markdown (two spaces = hard line break), so it is not trimmed here.
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = 100
+
+[*.{ps1,psm1,psd1}]
+indent_size = 4
+# PowerShell tooling on Windows is happier with CRLF, and these scripts only ever run
+# on the Windows host that drives SAP GUI.
+end_of_line = crlf
+
+[*.py]
+indent_size = 4
+max_line_length = 100
+
+[*.{json,jsonc}]
+indent_size = 2
+
+# Generated or vendored -- do not reformat.
+[{.mcp.json,graphify-out/**,logs/**,tools/**,dashboard/output/**}]
+trim_trailing_whitespace = false
+insert_final_newline = false
+
+# Append-only line-oriented audit trails.
+[*.jsonl]
+insert_final_newline = true
+trim_trailing_whitespace = false

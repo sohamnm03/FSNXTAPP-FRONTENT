@@ -1,0 +1,880 @@
+- generic [ref=f94e1]:
+  - generic [ref=f94e2]:
+    - banner [ref=f94e3]:
+      - generic [ref=f94e4]:
+        - img "Fourth Signal" [ref=f94e5]
+        - generic [ref=f94e6]: Distribution Ticket DTTK
+      - generic [ref=f94e7]:
+        - button "Create DTTK" [ref=f94e8] [cursor=pointer]
+        - generic "System connected" [ref=f94e12]
+        - button "Release & Print" [ref=f94e13] [cursor=pointer]
+        - button "Refresh" [ref=f94e17] [cursor=pointer]
+        - button "Copy DTTK" [ref=f94e21] [cursor=pointer]
+    - dialog [ref=f94e100]:
+      - generic [ref=f94e101]:
+        - generic [ref=f94e102]:
+          - generic [ref=f94e104]:
+            - heading "Create Distribution Ticket" [level=2] [ref=f94e105]
+            - paragraph [ref=f94e106]: Distribution · New | USD | Draft
+          - generic [ref=f94e107]:
+            - generic [ref=f94e108]: Created By
+            - button "Close modal" [ref=f94e110] [cursor=pointer]: ×
+        - generic [ref=f94e111]:
+          - generic [ref=f94e112]:
+            - generic [ref=f94e113]: Transaction Details
+            - generic [ref=f94e114]:
+              - generic [ref=f94e115]:
+                - generic [ref=f94e116]: DTTK Type 1
+                - combobox "DTTK Type 1" [active] [ref=f94e117]:
+                  - option "Select" [selected]
+                  - option "01 Discounting & Confirmation"
+                  - option "02 Discounting Only"
+                  - option "03 Confirmation Only"
+              - generic [ref=f94e118]:
+                - generic [ref=f94e119]: DTTK Type 2
+                - combobox "DTTK Type 2" [ref=f94e120]:
+                  - option "01 New" [selected]
+                  - option "02 With Ref OTTK"
+              - generic [ref=f94e121]:
+                - generic [ref=f94e122]: Structure
+                - combobox "Structure" [ref=f94e123]:
+                  - option "Select structure" [selected]
+                  - option "DSX — Deposit Set Off - Cross Border"
+                  - option "LCP — LC Prepayment"
+                  - option "CC DSX — Cross Currency DSX"
+                  - option "CC LCP — Cross Currency LCP"
+              - generic [ref=f94e124]:
+                - generic [ref=f94e125]: Entity String
+                - combobox "Entity String" [ref=f94e126]:
+                  - option "Select entity" [selected]
+                  - option "E020 — OGA-OSML-DMCC"
+                  - option "E021 — OGA-DMCC-PAN"
+                  - option "E022 — OGA-AMBER-DMCC"
+                  - option "E023 — SEDA-DMCC-OGA"
+                  - option "E024 — DMCC-OGA-PAN"
+                  - option "E025 — OGA-OSIPL-PAN"
+                  - option "E026 — OGA-OSIPL-DMCC"
+          - generic [ref=f94e127]:
+            - generic [ref=f94e128]: Trade Details
+            - generic [ref=f94e129]:
+              - generic [ref=f94e130]:
+                - generic [ref=f94e131]: Origination Bank
+                - combobox "Origination Bank" [ref=f94e132]:
+                  - option "Select bank" [selected]
+                  - option "44 — ICICI new bank"
+                  - option "660013467 — DUBAI ISLAMIC BANK"
+                  - option "660000894 — test case 5"
+                  - option "660017186 — Eastern Bank Limited"
+                  - option "660000885 — mat kar lala"
+                  - option "660001100 — ICICI Bank Limited Singapore"
+                  - option "660012173 — JPMORGAN CHASE BANK NA SINGAPO"
+                  - option "660013366 — BANCO BRADESCO EUROPA S.A."
+                  - option "660000830 — SBI_mumbai"
+                  - option "660013411 —"
+                  - option "660013448 —"
+                  - option "660000835 — SBI_hyderabad"
+                  - option "660014660 — State Bank Of Mauritius"
+                  - option "660000805 — BNP PARIBAS"
+                  - option "660000877 — LMAO"
+                  - option "660000782 — TEST Bank 5"
+                  - option "660013382 — BANCO ALIADOS.A. AND SUBSIDIARIES"
+                  - option "660013364 — BANCO BOCOM BBM S.A."
+                  - option "660014662 — Itau Corpabanca"
+                  - option "660000680 — STANDARD CHARTERED BANK SINGAPORE"
+                  - option "660000857 — Bank test 12"
+                  - option "660013370 — ACCESS BANK PLC"
+                  - option "660000874 — ICICI new bank"
+                  - option "660000851 — Bank test 6"
+                  - option "660013377 — BANCO BRADESCO S.A."
+                  - option "660013381 — BANCO INTERNACIONAL DE COSTA RICA S"
+                  - option "660013708 — BAC International Bank, Inc"
+                  - option "660013380 — MULTIBANK, INC & SUBS."
+                  - option "660001110 — Bank of China, Shanghai"
+                  - option "660015532 — Bank of Communications, Shanghai"
+                  - option "660001107 — Citibank N.A Abu Dhabi Branch"
+                  - option "660015991 — DOHA BANK"
+                  - option "660012194 — DEUTSCHE BANK AG LONDON BRANCH"
+                  - option "660012172 — BARCLAYS BANK PLC"
+                  - option "660016984 — Mikrokredit Bank"
+                  - option "660000003 — Test vendor SG32"
+                  - option "660013372 — UNION BANK OF NIGERIA"
+                  - option "660012542 —"
+                  - option "660014519 — BANCO DAYCOVAL S.A."
+                  - option "660013384 — ZENITH BANK, NIGERIA"
+                  - option "660000850 — Bank test 5"
+                  - option "660012956 — Westpac Banking Corporation"
+                  - option "660013457 — BANCO DE BOGOTA S.A."
+                  - option "660013456 — BANCO GUAYAQUIL S.A."
+                  - option "660000809 — RABOBANK INTERNATIONAL SINGAPORE"
+                  - option "100571180 — PHU QUI TRADING EXPORT IMPORT COMPA"
+                  - option "21 — Group branch"
+                  - option "660000802 — WESTPAC BANKING CORPORATION"
+                  - option "660013455 — BANCO CONTINENTAL S.A.E.C.A"
+                  - option "660000884 — TEST 2"
+                  - option "660001109 — Bank of China, Tianjin"
+                  - option "660014134 — Bank of China Ltd, Luxembourg Branc"
+                  - option "660015531 — Bank of Nanjing, Shanghai"
+                  - option "660013383 — FIRST BANK OF NIGERIA LIMITED"
+                  - option "660013412 — QATAR NATIONAL BANK (QPSC)"
+                  - option "660000831 — SBI_pune"
+                  - option "660000841 — Bank of Baroda_pune"
+                  - option "660013371 — CORONATION MERCHANT BANK LIMITED,"
+                  - option "660000856 — Bank test 11"
+                  - option "ICICI —"
+                  - option "660000893 — test case 4"
+                  - option "660015535 — China Construction Bank, Shanghai"
+                  - option "660000825 — Standard Chartered_Mumbai"
+                  - option "660014649 — RBL Bank"
+                  - option "660015534 — Bank of China, Shanghai"
+                  - option "660013367 — BANCO INDUSTRIAL S.A."
+                  - option "660001117 — HOCHIMINH CITY DEVELOPMENT"
+                  - option "660013362 — ITAU UNIBANCO S.A., NASSAU BRANCH"
+                  - option "660015685 — Huaxia Bank, Shanghai"
+                  - option "660013460 — BANCO LATINOAMERICANO DE COMERCIO"
+                  - option "660012300 — ICICI Bank Limited Singapore"
+                  - option "660015537 — Shanghai Pudong Development Bank, S"
+                  - option "660013541 — STERLING BANK PLC"
+                  - option "660013357 —"
+                  - option "660013414 — INDUSTRIAL AND COMMERCIAL BANK OF C"
+                  - option "400000005 — Union Bank"
+                  - option "660013363 — BANCO VOTORANTIM S.A."
+                  - option "660000810 — STANDARD CHARTERED BANK SINGAPORE"
+                  - option "660001090 — SAIGON-HANOI COMMERCIAL JOINT"
+                  - option "660017057 — Bank of Tianjin Co Ltd Shanghai Bra"
+                  - option "660013466 — CREDICORP BANK S.A"
+                  - option "660013375 — DEUTSCHE BANK, SG"
+                  - option "660012539 — YES BANK LIMITED, INDIA"
+                  - option "ITAU GRP — Itau Uni Group"
+                  - option "660000821 — Bank of America_mumbai"
+                  - option "660000855 — Bank test 10"
+                  - option "660013385 — GULF BANK KSCP"
+                  - option "660015686 — Bank of Shanghai, Shanghai"
+                  - option "660000876 — fewgnwi"
+                  - option "660012992 — BANCO DO BRASIL S.A."
+                  - option "660000780 — TEST Bank 3"
+                  - option "100067276 — GSD 400 Testing"
+                  - option "660013550 — ITAU UNIBANCO SA"
+                  - option "660013461 — BANCO PICHINCHA C A"
+                  - option "660013459 — BANCO DE LA PRODUCCION S.A. PRODUBA"
+                  - option "660000866 — Bank test 21"
+                  - option "660000806 — CITIBANK NA"
+                  - option "660001104 — BANCO BRADESCO S.A."
+                  - option "660000840 — Bank of Baroda_mumbai"
+                  - option "660000854 — Bank test 9"
+                  - option "660000889 — test case 3"
+                  - option "660013378 — CHINA CONSTRUCTION BANK (BRASIL) BA"
+                  - option "660000886 — test case 1"
+                  - option "660013464 — BANCO DO BRASIL S.A"
+                  - option "660013368 — BANESCO (PANAMA) S.A."
+                  - option "660016776 — Banco Industrial do Brasil S.A"
+                  - option "660000807 — HSBC SINGAPORE"
+                  - option "660015684 — China CITIC Bank, Shanghai"
+                  - option "660013379 — BANCO ABC BRASIL S.A."
+                  - option "660000867 — Bank test 22"
+                  - option "660016714 — Banco G&T Continental, SA"
+                  - option "660001106 — CREDIT AGRICOLE"
+                  - option "100571179 — Bao Chau Import Export and Trading"
+                  - option "660001108 — Citibank N.A London Branch"
+                  - option "660001105 — CREDIT AGRICOLE CORPORATE AND INVES"
+                  - option "660012933 — FEDERAL BANK"
+                  - option "660012545 —"
+                  - option "660000865 — Bank test 20"
+                  - option "3 — BARCLAYS BANK PLC"
+                  - option "660013458 — BANCO DEL PACIFICO S.A."
+                  - option "660014135 — Bank of China Limited London Branch"
+                  - option "660001101 — DEUTSCHE BANK AG"
+                  - option "660013369 — CHINA MERCHANTS BANK"
+                  - option "660014136 — FIDELITY BANK PLC"
+                  - option "660001102 — DEUTSCHE BANK, SG"
+                  - option "660000868 — Bank test 23"
+                  - option "660000848 — Bank test 3"
+                  - option "660000820 — Bank of America_Pune"
+                  - option "660000895 — test case 6"
+                  - option "660014570 — Banco de América Central, S.A. Guat"
+                  - option "660012783 — ECOBANK NIGERIA LTD"
+                  - option "660000645 — DBS BANK LTD"
+                  - option "660013365 — BANCO SAFRA S.A."
+                  - option "660013465 — BANCO REGIONAL S.A.E.C.A."
+                  - option "660013454 — THE ACCESS BANK UK"
+                  - option "660013376 —"
+                  - option "660013553 — BANK OF CHINA LIMITED, PANAMA BRANC"
+                  - option "660000826 — Standard Chartered_Bangalore"
+                  - option "660001091 — HOCHIMINH CITY DEVELOPMENT"
+                  - option "660013545 —"
+                  - option "660015533 — Industrial and Commercial Bank of C"
+                  - option "660015696 — Banco do Brasil S.A. – New York Bra"
+                  - option "660000875 — TEST Bank 1"
+                  - option "660000759 — QATAR NATIONAL BANK (QPSC)"
+                  - option "660013680 — BANCO DO BRASIL S A"
+                  - option "660012175 — STANDARD CHARTERED BANK SINGAPORE"
+                  - option "660015538 — Agricultural Bank of China, Tianjin"
+                  - option "660012716 — INDUSIND BANK LIMITED"
+                  - option "660013463 — SUDAMERIS BANK S.A.E.C.A."
+                  - option "660012547 —"
+                  - option "660013462 — GLOBAL BANK CORPORATION AND SUBSIDI"
+                  - option "660016610 — BANCO DEL PAIS S.A."
+                  - option "660001103 — BANCO BRADESCO S.A. -NY BRANCH"
+                  - option "660000781 — TEST Bank 4"
+                  - option "660013544 — BANCO BRADESCO S.A. -NY BRANCH"
+                  - option "660001111 — Bank of China Limited London Branch"
+                  - option "660017187 — Industrial Bank Co. Ltd"
+                  - option "660016985 — IS Bank"
+                  - option "660016760 — Banco Financiera Comercial Honduren"
+                  - option "660000829 — Bank test"
+                  - option "660000883 — kyuki"
+                  - option "660014661 — Banistmo S.A"
+                  - option "660013413 — CAPITAL BANK INC & SUBS"
+              - generic [ref=f94e133]:
+                - generic [ref=f94e134]: OTTK Trade Value
+                - generic [ref=f94e135]:
+                  - 'textbox "Enter a number or use K, M, B, T (example: 1.5M)" [ref=f94e136]':
+                    - /placeholder: e.g. 1.5M
+                  - combobox [ref=f94e137]:
+                    - option "USD" [selected]
+                    - option "EUR"
+                    - option "GBP"
+                    - option "INR"
+                    - option "AED"
+                    - option "SGD"
+                    - option "AUD"
+              - generic [ref=f94e138]:
+                - generic [ref=f94e139]: DTTK Trade Value
+                - generic [ref=f94e140]:
+                  - 'textbox "Enter a number or use K, M, B, T (example: 1.5M)" [ref=f94e141]':
+                    - /placeholder: e.g. 1.5M
+                  - combobox [ref=f94e142]:
+                    - option "USD" [selected]
+                    - option "EUR"
+                    - option "GBP"
+                    - option "INR"
+                    - option "AED"
+                    - option "SGD"
+                    - option "AUD"
+              - generic [ref=f94e143]:
+                - generic [ref=f94e144]:
+                  - generic [ref=f94e145]: Expected LC Date
+                  - textbox "Expected LC Date" [ref=f94e146]
+                - generic [ref=f94e147]:
+                  - generic [ref=f94e148]: Expected LC Tenor
+                  - generic [ref=f94e149]:
+                    - textbox "Expected LC Tenor" [ref=f94e150]:
+                      - /placeholder: "0"
+                    - generic [ref=f94e151]: days
+              - generic [ref=f94e152]:
+                - generic [ref=f94e153]:
+                  - generic [ref=f94e154]: LC Applicant
+                  - textbox [ref=f94e155]
+                - generic [ref=f94e156]:
+                  - generic [ref=f94e157]: LC Beneficiary
+                  - textbox [ref=f94e158]
+              - generic [ref=f94e159]:
+                - generic [ref=f94e160]: Company Code
+                - generic [ref=f94e161]:
+                  - textbox [ref=f94e162]
+                  - textbox "(auto)" [ref=f94e163]
+              - generic [ref=f94e164]:
+                - generic [ref=f94e165]: Business Area
+                - generic [ref=f94e166]:
+                  - textbox "(auto)" [ref=f94e167]
+                  - textbox "(auto)" [ref=f94e168]
+              - generic [ref=f94e169]:
+                - generic [ref=f94e170]: RMA With Orig. Bank
+                - combobox "RMA With Orig. Bank" [ref=f94e171]:
+                  - option "Select" [selected]
+                  - option "Y Yes"
+                  - option "N No"
+          - generic [ref=f94e172]:
+            - generic [ref=f94e173]: Discounting Loan Details
+            - generic [ref=f94e174]:
+              - generic [ref=f94e175]:
+                - generic [ref=f94e176]: Discounting Bank
+                - combobox "Discounting Bank" [ref=f94e177]:
+                  - option "Select bank" [selected]
+                  - option "660012542 —"
+                  - option "660013357 —"
+                  - option "660013411 —"
+                  - option "660013443 —"
+                  - option "660013448 —"
+                  - option "660013545 —"
+                  - option "GROUP 7 —"
+                  - option "660013430 — ABANCA CORPORACIÓN BANCARIA S.A"
+                  - option "660012816 — ABSA BANK LIMITED"
+                  - option "660015538 — Agricultural Bank of China, Tianjin"
+                  - option "660013468 — ARAB BANKING CORPORATION B S C"
+                  - option "660012171 — AUSTRALIA AND NEW ZEALAND BANKING"
+                  - option "660013440 — AXIS BANK LIMITED"
+                  - option "660013382 — BANCO ALIADOS.A. AND SUBSIDIARIES"
+                  - option "660013354 — BANCO BILBAO VIZCAYA ARGENTARIA SA,"
+                  - option "660013355 — BANCO BILBAO VIZCAYA ARGENTARIA SA,"
+                  - option "660012601 — Banco Bilbao Vizcaya Argentaria, S."
+                  - option "660001103 — BANCO BRADESCO S.A. -NY BRANCH"
+                  - option "660013455 — BANCO CONTINENTAL S.A.E.C.A"
+                  - option "660013596 — BANCO DE CHILE"
+                  - option "660013441 — BANCO DE CREDITO E INVERSIONES"
+                  - option "660013442 — BANCO DE CREDITO E INVERSIONES"
+                  - option "660013680 — BANCO DO BRASIL S A"
+                  - option "660013464 — BANCO DO BRASIL S.A"
+                  - option "660012992 — BANCO DO BRASIL S.A."
+                  - option "660015696 — Banco do Brasil S.A. – New York Bra"
+                  - option "660013542 — BANISI S.A"
+                  - option "660014663 — Bank of Africa United Kingdom PLC"
+                  - option "660012614 — Bank of Baroda"
+                  - option "660001111 — Bank of China Limited London Branch"
+                  - option "660014135 — Bank of China Limited London Branch"
+                  - option "660013553 — BANK OF CHINA LIMITED, PANAMA BRANC"
+                  - option "660014134 — Bank of China Ltd, Luxembourg Branc"
+                  - option "660001110 — Bank of China, Shanghai"
+                  - option "660015534 — Bank of China, Shanghai"
+                  - option "660001109 — Bank of China, Tianjin"
+                  - option "660015532 — Bank of Communications, Shanghai"
+                  - option "660013374 — BANK OF MONTREAL"
+                  - option "660015686 — Bank of Shanghai, Shanghai"
+                  - option "660013543 — BANK SINOPAC"
+                  - option "660000845 — Bank test"
+                  - option "660000846 — Bank test 1"
+                  - option "660000858 — Bank test 13"
+                  - option "660000859 — Bank test 14"
+                  - option "660000860 — Bank test 15"
+                  - option "660000861 — Bank test 16"
+                  - option "660000862 — Bank test 17"
+                  - option "660000863 — Bank test 18"
+                  - option "660000864 — Bank test 19"
+                  - option "660000847 — Bank test 2"
+                  - option "660000869 — Bank test 24"
+                  - option "660000871 — Bank test 25"
+                  - option "660000872 — Bank test 26"
+                  - option "660000873 — Bank test 27"
+                  - option "660000849 — Bank test 4"
+                  - option "660000852 — Bank test 7"
+                  - option "660000853 — Bank test 8"
+                  - option "660013444 — BANKIA SA"
+                  - option "660013445 — BANKINTER SA"
+                  - option "660013446 — BANQUE CANTONALE DE GENEVE"
+                  - option "100571179 — Bao Chau Import Export and Trading"
+                  - option "3 — BARCLAYS BANK PLC"
+                  - option "660012172 — BARCLAYS BANK PLC"
+                  - option "660013469 — BMCE BANK INTERNATIONAL PLC"
+                  - option "660000805 — BNP PARIBAS"
+                  - option "660013356 — BRITISH ARAB COMMERCIAL BANK PLC LO"
+                  - option "660013470 — CAIXA GERAL DE DEPOSITOS CGD"
+                  - option "660015684 — China CITIC Bank, Shanghai"
+                  - option "660015535 — China Construction Bank, Shanghai"
+                  - option "660013369 — CHINA MERCHANTS BANK"
+                  - option "660015536 — China Merchants Bank, Shanghai"
+                  - option "660001107 — Citibank N.A Abu Dhabi Branch"
+                  - option "660013631 — Citibank N.A Abu Dhabi Branch"
+                  - option "660001108 — Citibank N.A London Branch"
+                  - option "660013630 — Citibank N.A London Branch"
+                  - option "660000806 — CITIBANK NA"
+                  - option "660012191 — CITIBANK NA"
+                  - option "660012581 — Citibank, N.A. New York"
+                  - option "660012887 — COBANK ACB"
+                  - option "660016042 — Commercial Bank of Dubai"
+                  - option "660001106 — CREDIT AGRICOLE"
+                  - option "660012615 — CREDIT AGRICOLE"
+                  - option "660001105 — CREDIT AGRICOLE CORPORATE AND INVES"
+                  - option "660013552 — DBS BANK INDIA LTD."
+                  - option "660000645 — DBS BANK LTD"
+                  - option "660012192 — DBS BANK LTD"
+                  - option "660000832 — DBS_mumbai"
+                  - option "660000833 — DBS_pune"
+                  - option "660001101 — DEUTSCHE BANK AG"
+                  - option "660012194 — DEUTSCHE BANK AG LONDON BRANCH"
+                  - option "660013449 — DEUTSCHE BANK TRUST COMPANY AMERICA"
+                  - option "660001102 — DEUTSCHE BANK, SG"
+                  - option "660013375 — DEUTSCHE BANK, SG"
+                  - option "660012670 — EMIRATES NATIONAL BANK OF DUBAI"
+                  - option "660013450 — ERSTE GROUP BANK AG"
+                  - option "660016654 — Fidelity Bank UK Limited"
+                  - option "100067276 — GSD 400 Testing"
+                  - option "660001091 — HOCHIMINH CITY DEVELOPMENT"
+                  - option "660012676 — HSBC BANK PLC"
+                  - option "660013471 — HSBC BANK PLC"
+                  - option "660000807 — HSBC SINGAPORE"
+                  - option "660012195 — HSBC SINGAPORE"
+                  - option "660000827 — HSBC_Mumbai"
+                  - option "660000828 — HSBC_Pune"
+                  - option "660015685 — Huaxia Bank, Shanghai"
+                  - option "660013358 — HUNTINGTON NATIONAL BANK"
+                  - option "660013597 — ICICI BANK CANADA"
+                  - option "660001100 — ICICI Bank Limited Singapore"
+                  - option "660012300 — ICICI Bank Limited Singapore"
+                  - option "660015533 — Industrial and Commercial Bank of C"
+                  - option "660012776 — INTESA SANPAOLO NY"
+                  - option "660012501 — Intesa Sanpaolo S p A"
+                  - option "660013451 — INTESA SANPAOLO SPA"
+                  - option "ITAU GRP — Itau Uni Group"
+                  - option "660013362 — ITAU UNIBANCO S.A., NASSAU BRANCH"
+                  - option "660015882 — JPM Morgan SE Frankfurt"
+                  - option "660012580 — JPMorgan Chase Bank N.A. London"
+                  - option "660012173 — JPMORGAN CHASE BANK NA SINGAPO"
+                  - option "660014622 — JPMORGAN CHASE BANK NA, NY"
+                  - option "660013472 — Malayan Banking berhad Maybank"
+                  - option "660013452 — MUFG BANK LTD LONDON"
+                  - option "660012280 — MUFG Bank Ltd Singapore Branch"
+                  - option "660013599 — NATIONAL BANK OF RAS AL KHAIMAH P S"
+                  - option "660016655 — Natixis Bank"
+                  - option "100571180 — PHU QUI TRADING EXPORT IMPORT COMPA"
+                  - option "660013400 — PT.BANK RAKYAT INDONESIA (Persero)T"
+                  - option "660000759 — QATAR NATIONAL BANK (QPSC)"
+                  - option "660013412 — QATAR NATIONAL BANK (QPSC)"
+                  - option "660000809 — RABOBANK INTERNATIONAL SINGAPORE"
+                  - option "660012818 — RAND MERCHANT BAN"
+                  - option "660014649 — RBL Bank"
+                  - option "660016462 — Regions Bank"
+                  - option "660001090 — SAIGON-HANOI COMMERCIAL JOINT"
+                  - option "660015537 — Shanghai Pudong Development Bank, S"
+                  - option "660013373 — SHINHAN BANK"
+                  - option "660012820 — STANDARD BANK OF SOUTH AFRICA"
+                  - option "400000006 — Standard chartered"
+                  - option "660013394 — STANDARD CHARTERED BANK PLC LONDON"
+                  - option "660000680 — STANDARD CHARTERED BANK SINGAPORE"
+                  - option "660000810 — STANDARD CHARTERED BANK SINGAPORE"
+                  - option "660012175 — STANDARD CHARTERED BANK SINGAPORE"
+                  - option "660000842 — Standard Chartered_Mumbai"
+                  - option "660000843 — Standard Chartered_Pune"
+                  - option "660013397 — SUMITOMO MITSUI BANKING CORPORATION"
+                  - option "660013453 — SUMITOMO MITSUI BANKING CORPORATION"
+                  - option "660013551 — SUMITOMO MITSUI TRUST BANK, LIMITED"
+                  - option "660000784 — TEST Bank 7"
+                  - option "660000003 — Test vendor SG32"
+                  - option "660013454 — THE ACCESS BANK UK"
+                  - option "660013392 — THE BANK OF NEW YORK MELLON - NEW Y"
+                  - option "660012952 — The Bank of Nova Scotia"
+                  - option "660013361 — THE KOREA DEVELOPMENT BANK"
+                  - option "100571232 — THOGAL JOINT STOCK COMPANY"
+                  - option "660012701 — UNICREDIT BANK AG, HAMBURG"
+                  - option "660013391 — UNITED BANK FOR AFRICA - NEW YORK B"
+                  - option "660012951 — Wells Fargo Bank NA,"
+                  - option "660013359 — WELLS FARGO BANK, N.A."
+                  - option "660013360 — WELLS FARGO BANK, N.A."
+                  - option "660000802 — WESTPAC BANKING CORPORATION"
+                  - option "660012956 — Westpac Banking Corporation"
+                  - option "660013420 — WOORI BANK"
+                  - option "660000822 — Yes Bank_Mumbai"
+                  - option "660000823 — Yes Bank_Pune"
+                  - option "660014665 — Zenith Bank (UK) Ltd"
+              - generic [ref=f94e178]:
+                - generic [ref=f94e179]: Disc. Calc Method
+                - combobox "Disc. Calc Method" [ref=f94e180]:
+                  - option "Select" [selected]
+                  - option "DTY — Discounted Value"
+                  - option "STR — Full Value"
+              - generic [ref=f94e181]:
+                - generic [ref=f94e182]: Discounting Loan Amt
+                - generic [ref=f94e183]:
+                  - textbox "e.g. 700K" [ref=f94e184]
+                  - combobox [ref=f94e185]:
+                    - option "USD" [selected]
+                    - option "EUR"
+                    - option "GBP"
+                    - option "INR"
+                    - option "AED"
+                    - option "SGD"
+                    - option "AUD"
+              - generic [ref=f94e186]:
+                - generic [ref=f94e187]: Discounting Rate
+                - combobox "Discounting Rate" [ref=f94e188]:
+                  - option "01 Fixed" [selected]
+                  - option "02 Floating"
+              - generic [ref=f94e189]:
+                - generic [ref=f94e190]: Interest Rate
+                - textbox "0.00" [ref=f94e191]
+              - generic [ref=f94e192]:
+                - generic [ref=f94e193]: Interest Frequency
+                - combobox "Interest Frequency" [ref=f94e194]:
+                  - option "Select" [selected]
+                  - option "01 Upfront"
+                  - option "02 Monthly"
+                  - option "03 Quarterly"
+                  - option "04 Half-yearly"
+                  - option "05 Rear-end"
+                  - option "06 NA"
+              - generic [ref=f94e195]:
+                - generic [ref=f94e196]: Negotiation Fee
+                - textbox "0.00" [ref=f94e197]
+              - generic [ref=f94e198]:
+                - generic [ref=f94e199]: Other Charges
+                - generic [ref=f94e200]:
+                  - textbox "Grand total from the Charges breakdown" [ref=f94e201]:
+                    - /placeholder: "0.00"
+                  - button "Other Charges breakdown" [ref=f94e202] [cursor=pointer]
+              - generic [ref=f94e205]:
+                - generic [ref=f94e206]: Discounting Trader
+                - combobox "Discounting Trader" [ref=f94e207]:
+                  - option "Select trader" [selected]
+                  - option "OTL"
+              - generic [ref=f94e208]:
+                - generic [ref=f94e209]: Region
+                - textbox [ref=f94e210]
+              - generic [ref=f94e211]:
+                - generic [ref=f94e212]: Discounting / Flow Remark
+                - textbox [ref=f94e213]
+          - generic [ref=f94e214]:
+            - generic [ref=f94e215]: Confirmation Bank
+            - generic [ref=f94e216]:
+              - generic [ref=f94e217]:
+                - generic [ref=f94e218]: Confirmation Bank
+                - combobox "Confirmation Bank" [ref=f94e219]:
+                  - option "Select bank" [selected]
+                  - option "660012542 —"
+                  - option "660013357 —"
+                  - option "660013411 —"
+                  - option "660013443 —"
+                  - option "660013448 —"
+                  - option "660013545 —"
+                  - option "GROUP 7 —"
+                  - option "660013430 — ABANCA CORPORACIÓN BANCARIA S.A"
+                  - option "660012816 — ABSA BANK LIMITED"
+                  - option "660015538 — Agricultural Bank of China, Tianjin"
+                  - option "660013468 — ARAB BANKING CORPORATION B S C"
+                  - option "660012171 — AUSTRALIA AND NEW ZEALAND BANKING"
+                  - option "660013440 — AXIS BANK LIMITED"
+                  - option "660013382 — BANCO ALIADOS.A. AND SUBSIDIARIES"
+                  - option "660013354 — BANCO BILBAO VIZCAYA ARGENTARIA SA,"
+                  - option "660013355 — BANCO BILBAO VIZCAYA ARGENTARIA SA,"
+                  - option "660012601 — Banco Bilbao Vizcaya Argentaria, S."
+                  - option "660001103 — BANCO BRADESCO S.A. -NY BRANCH"
+                  - option "660013455 — BANCO CONTINENTAL S.A.E.C.A"
+                  - option "660013596 — BANCO DE CHILE"
+                  - option "660013441 — BANCO DE CREDITO E INVERSIONES"
+                  - option "660013442 — BANCO DE CREDITO E INVERSIONES"
+                  - option "660013680 — BANCO DO BRASIL S A"
+                  - option "660013464 — BANCO DO BRASIL S.A"
+                  - option "660012992 — BANCO DO BRASIL S.A."
+                  - option "660015696 — Banco do Brasil S.A. – New York Bra"
+                  - option "660013542 — BANISI S.A"
+                  - option "660014663 — Bank of Africa United Kingdom PLC"
+                  - option "660012614 — Bank of Baroda"
+                  - option "660001111 — Bank of China Limited London Branch"
+                  - option "660014135 — Bank of China Limited London Branch"
+                  - option "660013553 — BANK OF CHINA LIMITED, PANAMA BRANC"
+                  - option "660014134 — Bank of China Ltd, Luxembourg Branc"
+                  - option "660001110 — Bank of China, Shanghai"
+                  - option "660015534 — Bank of China, Shanghai"
+                  - option "660001109 — Bank of China, Tianjin"
+                  - option "660015532 — Bank of Communications, Shanghai"
+                  - option "660013374 — BANK OF MONTREAL"
+                  - option "660015686 — Bank of Shanghai, Shanghai"
+                  - option "660013543 — BANK SINOPAC"
+                  - option "660000845 — Bank test"
+                  - option "660000846 — Bank test 1"
+                  - option "660000858 — Bank test 13"
+                  - option "660000859 — Bank test 14"
+                  - option "660000860 — Bank test 15"
+                  - option "660000861 — Bank test 16"
+                  - option "660000862 — Bank test 17"
+                  - option "660000863 — Bank test 18"
+                  - option "660000864 — Bank test 19"
+                  - option "660000847 — Bank test 2"
+                  - option "660000869 — Bank test 24"
+                  - option "660000871 — Bank test 25"
+                  - option "660000872 — Bank test 26"
+                  - option "660000873 — Bank test 27"
+                  - option "660000849 — Bank test 4"
+                  - option "660000852 — Bank test 7"
+                  - option "660000853 — Bank test 8"
+                  - option "660013444 — BANKIA SA"
+                  - option "660013445 — BANKINTER SA"
+                  - option "660013446 — BANQUE CANTONALE DE GENEVE"
+                  - option "100571179 — Bao Chau Import Export and Trading"
+                  - option "3 — BARCLAYS BANK PLC"
+                  - option "660012172 — BARCLAYS BANK PLC"
+                  - option "660013469 — BMCE BANK INTERNATIONAL PLC"
+                  - option "660000805 — BNP PARIBAS"
+                  - option "660013356 — BRITISH ARAB COMMERCIAL BANK PLC LO"
+                  - option "660013470 — CAIXA GERAL DE DEPOSITOS CGD"
+                  - option "660015684 — China CITIC Bank, Shanghai"
+                  - option "660015535 — China Construction Bank, Shanghai"
+                  - option "660013369 — CHINA MERCHANTS BANK"
+                  - option "660015536 — China Merchants Bank, Shanghai"
+                  - option "660001107 — Citibank N.A Abu Dhabi Branch"
+                  - option "660013631 — Citibank N.A Abu Dhabi Branch"
+                  - option "660001108 — Citibank N.A London Branch"
+                  - option "660013630 — Citibank N.A London Branch"
+                  - option "660000806 — CITIBANK NA"
+                  - option "660012191 — CITIBANK NA"
+                  - option "660012581 — Citibank, N.A. New York"
+                  - option "660012887 — COBANK ACB"
+                  - option "660016042 — Commercial Bank of Dubai"
+                  - option "660001106 — CREDIT AGRICOLE"
+                  - option "660012615 — CREDIT AGRICOLE"
+                  - option "660001105 — CREDIT AGRICOLE CORPORATE AND INVES"
+                  - option "660013552 — DBS BANK INDIA LTD."
+                  - option "660000645 — DBS BANK LTD"
+                  - option "660012192 — DBS BANK LTD"
+                  - option "660000832 — DBS_mumbai"
+                  - option "660000833 — DBS_pune"
+                  - option "660001101 — DEUTSCHE BANK AG"
+                  - option "660012194 — DEUTSCHE BANK AG LONDON BRANCH"
+                  - option "660013449 — DEUTSCHE BANK TRUST COMPANY AMERICA"
+                  - option "660001102 — DEUTSCHE BANK, SG"
+                  - option "660013375 — DEUTSCHE BANK, SG"
+                  - option "660012670 — EMIRATES NATIONAL BANK OF DUBAI"
+                  - option "660013450 — ERSTE GROUP BANK AG"
+                  - option "660016654 — Fidelity Bank UK Limited"
+                  - option "100067276 — GSD 400 Testing"
+                  - option "660001091 — HOCHIMINH CITY DEVELOPMENT"
+                  - option "660012676 — HSBC BANK PLC"
+                  - option "660013471 — HSBC BANK PLC"
+                  - option "660000807 — HSBC SINGAPORE"
+                  - option "660012195 — HSBC SINGAPORE"
+                  - option "660000827 — HSBC_Mumbai"
+                  - option "660000828 — HSBC_Pune"
+                  - option "660015685 — Huaxia Bank, Shanghai"
+                  - option "660013358 — HUNTINGTON NATIONAL BANK"
+                  - option "660013597 — ICICI BANK CANADA"
+                  - option "660001100 — ICICI Bank Limited Singapore"
+                  - option "660012300 — ICICI Bank Limited Singapore"
+                  - option "660015533 — Industrial and Commercial Bank of C"
+                  - option "660012776 — INTESA SANPAOLO NY"
+                  - option "660012501 — Intesa Sanpaolo S p A"
+                  - option "660013451 — INTESA SANPAOLO SPA"
+                  - option "ITAU GRP — Itau Uni Group"
+                  - option "660013362 — ITAU UNIBANCO S.A., NASSAU BRANCH"
+                  - option "660015882 — JPM Morgan SE Frankfurt"
+                  - option "660012580 — JPMorgan Chase Bank N.A. London"
+                  - option "660012173 — JPMORGAN CHASE BANK NA SINGAPO"
+                  - option "660014622 — JPMORGAN CHASE BANK NA, NY"
+                  - option "660013472 — Malayan Banking berhad Maybank"
+                  - option "660013452 — MUFG BANK LTD LONDON"
+                  - option "660012280 — MUFG Bank Ltd Singapore Branch"
+                  - option "660013599 — NATIONAL BANK OF RAS AL KHAIMAH P S"
+                  - option "660016655 — Natixis Bank"
+                  - option "100571180 — PHU QUI TRADING EXPORT IMPORT COMPA"
+                  - option "660013400 — PT.BANK RAKYAT INDONESIA (Persero)T"
+                  - option "660000759 — QATAR NATIONAL BANK (QPSC)"
+                  - option "660013412 — QATAR NATIONAL BANK (QPSC)"
+                  - option "660000809 — RABOBANK INTERNATIONAL SINGAPORE"
+                  - option "660012818 — RAND MERCHANT BAN"
+                  - option "660014649 — RBL Bank"
+                  - option "660016462 — Regions Bank"
+                  - option "660001090 — SAIGON-HANOI COMMERCIAL JOINT"
+                  - option "660015537 — Shanghai Pudong Development Bank, S"
+                  - option "660013373 — SHINHAN BANK"
+                  - option "660012820 — STANDARD BANK OF SOUTH AFRICA"
+                  - option "400000006 — Standard chartered"
+                  - option "660013394 — STANDARD CHARTERED BANK PLC LONDON"
+                  - option "660000680 — STANDARD CHARTERED BANK SINGAPORE"
+                  - option "660000810 — STANDARD CHARTERED BANK SINGAPORE"
+                  - option "660012175 — STANDARD CHARTERED BANK SINGAPORE"
+                  - option "660000842 — Standard Chartered_Mumbai"
+                  - option "660000843 — Standard Chartered_Pune"
+                  - option "660013397 — SUMITOMO MITSUI BANKING CORPORATION"
+                  - option "660013453 — SUMITOMO MITSUI BANKING CORPORATION"
+                  - option "660013551 — SUMITOMO MITSUI TRUST BANK, LIMITED"
+                  - option "660000784 — TEST Bank 7"
+                  - option "660000003 — Test vendor SG32"
+                  - option "660013454 — THE ACCESS BANK UK"
+                  - option "660013392 — THE BANK OF NEW YORK MELLON - NEW Y"
+                  - option "660012952 — The Bank of Nova Scotia"
+                  - option "660013361 — THE KOREA DEVELOPMENT BANK"
+                  - option "100571232 — THOGAL JOINT STOCK COMPANY"
+                  - option "660012701 — UNICREDIT BANK AG, HAMBURG"
+                  - option "660013391 — UNITED BANK FOR AFRICA - NEW YORK B"
+                  - option "660012951 — Wells Fargo Bank NA,"
+                  - option "660013359 — WELLS FARGO BANK, N.A."
+                  - option "660013360 — WELLS FARGO BANK, N.A."
+                  - option "660000802 — WESTPAC BANKING CORPORATION"
+                  - option "660012956 — Westpac Banking Corporation"
+                  - option "660013420 — WOORI BANK"
+                  - option "660000822 — Yes Bank_Mumbai"
+                  - option "660000823 — Yes Bank_Pune"
+                  - option "660014665 — Zenith Bank (UK) Ltd"
+              - generic [ref=f94e220]:
+                - generic [ref=f94e221]: Conf. Fee From
+                - combobox "Conf. Fee From" [ref=f94e222]:
+                  - option "Select" [selected]
+                  - option "01 Issuance Date"
+                  - option "02 Confirmation Date"
+              - generic [ref=f94e223]:
+                - generic [ref=f94e224]: Conf. Fee Till
+                - combobox "Conf. Fee Till" [ref=f94e225]:
+                  - option "Select" [selected]
+                  - option "01 LC Maturity Date"
+                  - option "02 Document Presentation Date"
+              - generic [ref=f94e226]:
+                - generic [ref=f94e227]: Confirmation Trader
+                - combobox "Confirmation Trader" [ref=f94e228]:
+                  - option "Select trader" [selected]
+                  - option "OTL"
+              - generic [ref=f94e229]:
+                - generic [ref=f94e230]: Confirmation Fee
+                - generic [ref=f94e231]:
+                  - textbox "Grand total from the Confirmation Fee breakdown" [ref=f94e232]:
+                    - /placeholder: "0.00"
+                  - button "Confirmation Fee breakdown" [ref=f94e233] [cursor=pointer]
+              - generic [ref=f94e236]:
+                - generic [ref=f94e237]: Confirmation Remark
+                - textbox [ref=f94e238]
+          - generic [ref=f94e239]:
+            - generic [ref=f94e240]: Additional Information
+            - generic [ref=f94e241]:
+              - generic [ref=f94e242]:
+                - generic [ref=f94e243]: Bank Contact
+                - textbox [ref=f94e244]
+              - generic [ref=f94e245]:
+                - generic [ref=f94e246]: Bank Contact Details
+                - textbox [ref=f94e247]
+              - generic [ref=f94e248]:
+                - generic [ref=f94e249]: Commitment End Date
+                - textbox [ref=f94e250]
+              - generic [ref=f94e251]:
+                - generic [ref=f94e252]: Commitment Fee
+                - textbox "0.00" [ref=f94e253]
+              - generic [ref=f94e254]:
+                - generic [ref=f94e255]: Reservation Start Date
+                - textbox [ref=f94e256]
+              - generic [ref=f94e257]:
+                - generic [ref=f94e258]: LC Issuance Latest Date
+                - textbox [ref=f94e259]
+              - generic [ref=f94e260]:
+                - generic [ref=f94e261]: Doc Pres. Latest Date
+                - textbox [ref=f94e262]
+              - generic [ref=f94e263]:
+                - generic [ref=f94e264]: Repay. of Prev LC Date
+                - textbox [ref=f94e265]
+        - generic [ref=f94e266]:
+          - generic [ref=f94e267]: "* Company Code is required before creation."
+          - generic [ref=f94e268]:
+            - button "Clear" [ref=f94e269] [cursor=pointer]
+            - button "Cancel" [ref=f94e270] [cursor=pointer]
+            - button "Create DTTK" [ref=f94e271] [cursor=pointer]
+    - main [ref=f94e25]:
+      - generic [ref=f94e26]:
+        - generic [ref=f94e27]:
+          - generic [ref=f94e28]: Open Distribution Tickets 1 records
+          - generic [ref=f94e29]:
+            - textbox "Search distribution tickets" [ref=f94e30]:
+              - /placeholder: Search DTTK…
+            - button "Filter" [ref=f94e31] [cursor=pointer]
+            - button "Export CSV" [ref=f94e34] [cursor=pointer]
+        - table [ref=f94e38]:
+          - rowgroup [ref=f94e39]:
+            - row [ref=f94e40]:
+              - columnheader "DTTK No" [ref=f94e41]
+              - columnheader "Type 1" [ref=f94e42]
+              - columnheader "Type 2" [ref=f94e43]
+              - columnheader "Related OTTK" [ref=f94e44]
+              - columnheader "Structure" [ref=f94e45]
+              - columnheader "Entity String" [ref=f94e46]
+              - columnheader "DTTK Value" [ref=f94e47]
+              - columnheader "Crcy" [ref=f94e48]
+              - columnheader "Discounting Bank" [ref=f94e49]
+              - columnheader "Expected LC Date" [ref=f94e50]
+              - columnheader "Tenor" [ref=f94e51]
+              - columnheader "LC Applicant" [ref=f94e52]
+              - columnheader "LC Beneficiary" [ref=f94e53]
+              - columnheader "CoCode" [ref=f94e54]
+              - columnheader "Interest" [ref=f94e55]
+              - columnheader "Status" [ref=f94e56]
+          - rowgroup [ref=f94e272]:
+            - row [ref=f94e273]:
+              - cell "100043" [ref=f94e274] [cursor=pointer]
+              - cell "02 Discounting Only" [ref=f94e275]
+              - cell "02 With Ref DTTK" [ref=f94e276]
+              - cell "100049" [ref=f94e277]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f94e278]
+              - cell "DMCC-OGA-PAN" [ref=f94e279]
+              - cell "2,000,000.00" [ref=f94e280]
+              - cell "USD" [ref=f94e281]
+              - cell "660000645 — DBS BANK LTD" [ref=f94e282]
+              - cell "08.09.2026" [ref=f94e283]
+              - cell "180" [ref=f94e284]
+              - cell "OGA" [ref=f94e285]
+              - cell "DMCC" [ref=f94e286]
+              - cell "SG03" [ref=f94e287]
+              - cell "Fixed 10.00%" [ref=f94e288]
+              - cell "05 - Partially Assigned to Deal ID" [ref=f94e289]
+        - generic [ref=f94e57]:
+          - generic [ref=f94e58]: Showing 1 of 1
+          - generic [ref=f94e59]:
+            - button "‹" [disabled] [ref=f94e60]
+            - button "1" [ref=f94e61] [cursor=pointer]
+            - button "›" [disabled] [ref=f94e62]
+      - generic [ref=f94e63]:
+        - generic [ref=f94e64]:
+          - generic [ref=f94e65]: Open Origination Tickets 3 records
+          - generic [ref=f94e66]:
+            - textbox "Search origination tickets" [ref=f94e67]:
+              - /placeholder: Search OTTK…
+            - button "Filter" [ref=f94e68] [cursor=pointer]
+            - button "Export CSV" [ref=f94e71] [cursor=pointer]
+        - table [ref=f94e75]:
+          - rowgroup [ref=f94e76]:
+            - row [ref=f94e77]:
+              - columnheader "OTTK No" [ref=f94e78]
+              - columnheader "Type" [ref=f94e79]
+              - columnheader "Structure" [ref=f94e80]
+              - columnheader "Entity ID" [ref=f94e81]
+              - columnheader "Entity String" [ref=f94e82]
+              - columnheader "LC Issuing Bank" [ref=f94e83]
+              - columnheader "Trade Value" [ref=f94e84]
+              - columnheader "Crcy" [ref=f94e85]
+              - columnheader "Expected LC Date" [ref=f94e86]
+              - columnheader "Tenor" [ref=f94e87]
+              - columnheader "LC Applicant" [ref=f94e88]
+              - columnheader "LC Beneficiary" [ref=f94e89]
+              - columnheader "CoCode" [ref=f94e90]
+              - columnheader "Deposit Amt" [ref=f94e91]
+              - columnheader "Interest" [ref=f94e92]
+              - columnheader "Status" [ref=f94e93]
+          - rowgroup [ref=f94e291]:
+            - row [ref=f94e292]:
+              - cell "100049" [ref=f94e293] [cursor=pointer]
+              - cell "01 New" [ref=f94e294]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f94e295]
+              - cell "E024" [ref=f94e296]
+              - cell "DMCC-OGA-PAN" [ref=f94e297]
+              - cell "660000680 — STANDARD CHARTERED BANK SINGAPORE" [ref=f94e298]
+              - cell "2,000,000.00" [ref=f94e299]
+              - cell "USD" [ref=f94e300]
+              - cell "08.09.2026" [ref=f94e301]
+              - cell "180" [ref=f94e302]
+              - cell "OGA" [ref=f94e303]
+              - cell "DMCC" [ref=f94e304]
+              - cell "SG03" [ref=f94e305]
+              - cell "2,000,000.00" [ref=f94e306]
+              - cell "Fixed 10.00%" [ref=f94e307]
+              - cell "05 - Partially Assigned to Deal ID" [ref=f94e308]
+            - row [ref=f94e310]:
+              - cell "100050" [ref=f94e311] [cursor=pointer]
+              - cell "01 New" [ref=f94e312]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f94e313]
+              - cell "E024" [ref=f94e314]
+              - cell "DMCC-OGA-PAN" [ref=f94e315]
+              - cell "660000680 — STANDARD CHARTERED BANK SINGAPORE" [ref=f94e316]
+              - cell "1,000,000.00" [ref=f94e317]
+              - cell "USD" [ref=f94e318]
+              - cell "08.09.2026" [ref=f94e319]
+              - cell "180" [ref=f94e320]
+              - cell "OGA" [ref=f94e321]
+              - cell "DMCC" [ref=f94e322]
+              - cell "SG03" [ref=f94e323]
+              - cell "1,000,000.00" [ref=f94e324]
+              - cell "Variable 0.00%" [ref=f94e325]
+              - cell "01 - Create New" [ref=f94e326]
+            - row [ref=f94e328]:
+              - cell "100056" [ref=f94e329] [cursor=pointer]
+              - cell "01 New" [ref=f94e330]
+              - cell "DSX Deposit Set Off - Cross Border" [ref=f94e331]
+              - cell "E021" [ref=f94e332]
+              - cell "OGA-DMCC-PAN" [ref=f94e333]
+              - cell "660000680 — STANDARD CHARTERED BANK SINGAPORE" [ref=f94e334]
+              - cell "1,000,000.00" [ref=f94e335]
+              - cell "USD" [ref=f94e336]
+              - cell "15.09.2026" [ref=f94e337]
+              - cell "180" [ref=f94e338]
+              - cell "DMCC" [ref=f94e339]
+              - cell "OGA" [ref=f94e340]
+              - cell "AE13" [ref=f94e341]
+              - cell "1,000,000.00" [ref=f94e342]
+              - cell "Fixed 10.00%" [ref=f94e343]
+              - cell "01 - Create New" [ref=f94e344]
+        - generic [ref=f94e94]:
+          - generic [ref=f94e95]: Showing 3 of 3
+          - generic [ref=f94e96]:
+            - button "‹" [disabled] [ref=f94e97]
+            - button "1" [ref=f94e98] [cursor=pointer]
+            - button "›" [disabled] [ref=f94e99]
+  - status

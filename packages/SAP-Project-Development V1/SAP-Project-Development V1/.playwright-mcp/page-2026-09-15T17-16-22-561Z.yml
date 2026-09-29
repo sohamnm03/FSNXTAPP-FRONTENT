@@ -1,0 +1,95 @@
+- generic [ref=f48e2]:
+  - banner [ref=f48e3]:
+    - generic [ref=f48e4]:
+      - img "Fourth Signal" [ref=f48e5]
+      - generic [ref=f48e6]: Dynamic Gateway v2 REGISTRY
+      - navigation [ref=f48e7]:
+        - link "Registry" [ref=f48e8] [cursor=pointer]:
+          - /url: index.html
+        - link "Linkage report" [ref=f48e9] [cursor=pointer]:
+          - /url: report.html
+        - link "Documentation" [ref=f48e10] [cursor=pointer]:
+          - /url: docs.html
+    - generic [ref=f48e11]:
+      - button "Refresh" [ref=f48e12] [cursor=pointer]
+      - button "New target" [ref=f48e16] [cursor=pointer]
+      - generic "System connected" [ref=f48e20]
+  - main [ref=f48e21]:
+    - generic [ref=f48e22]:
+      - generic [ref=f48e23]: Allow-list at a glance Reading…
+      - generic [ref=f48e25]:
+        - generic [ref=f48e26]:
+          - generic [ref=f48e27]: Targets
+          - generic [ref=f48e28]: —
+        - generic [ref=f48e29]:
+          - generic [ref=f48e30]: Active
+          - generic [ref=f48e31]: —
+        - generic [ref=f48e32]:
+          - generic [ref=f48e33]: Inactive
+          - generic [ref=f48e34]: —
+          - generic [ref=f48e35]: kill switch on
+        - generic [ref=f48e36]:
+          - generic [ref=f48e37]: Qury
+          - generic [ref=f48e38]: —
+        - generic [ref=f48e39]:
+          - generic [ref=f48e40]: Tabl
+          - generic [ref=f48e41]: —
+        - generic [ref=f48e42]:
+          - generic [ref=f48e43]: Func
+          - generic [ref=f48e44]: —
+        - generic [ref=f48e45]:
+          - generic [ref=f48e46]: Subm
+          - generic [ref=f48e47]: —
+        - generic [ref=f48e48]:
+          - generic [ref=f48e49]: Write
+          - generic [ref=f48e50]: —
+          - generic [ref=f48e51]: AllowWrite
+        - generic [ref=f48e52]:
+          - generic [ref=f48e53]: Gen
+          - generic [ref=f48e54]: —
+          - generic [ref=f48e55]: AllowGen
+        - generic [ref=f48e56]:
+          - generic [ref=f48e57]: Unused
+          - generic [ref=f48e58]: —
+          - generic [ref=f48e59]: 0 steps
+    - generic [ref=f48e60]:
+      - generic [ref=f48e61]:
+        - generic [ref=f48e62]: Registry 0 targets
+        - generic [ref=f48e63]:
+          - textbox "Search the registry" [ref=f48e64]:
+            - /placeholder: Search target, operation, description…
+          - combobox "Filter by kind" [ref=f48e65]:
+            - option "All kinds" [selected]
+            - option "QURY"
+            - option "TABL"
+            - option "FUNC"
+            - option "SUBM"
+          - combobox "Filter by status" [ref=f48e66]:
+            - option "Active + inactive" [selected]
+            - option "Active only"
+            - option "Inactive only"
+          - combobox "Filter by permission" [ref=f48e67]:
+            - option "Any permission" [selected]
+            - option "Write-enabled"
+            - option "Generation-enabled"
+            - option "Read-only"
+          - button "Export the filtered list as CSV" [ref=f48e68] [cursor=pointer]
+      - table [ref=f48e72]:
+        - rowgroup [ref=f48e73]:
+          - row [ref=f48e74]:
+            - columnheader "Kind" [ref=f48e75]
+            - columnheader "Target name" [ref=f48e76]
+            - columnheader "Operation" [ref=f48e77]
+            - columnheader "Status" [ref=f48e78]
+            - columnheader "R / W / G" [ref=f48e79]
+            - columnheader "Call mode" [ref=f48e80]
+            - columnheader "Max rows" [ref=f48e81]
+            - columnheader "Log" [ref=f48e82]
+            - columnheader "Number range" [ref=f48e83]
+            - columnheader "Description" [ref=f48e84]
+            - columnheader "Steps run" [ref=f48e85]
+            - columnheader "Last changed" [ref=f48e86]
+            - columnheader "By" [ref=f48e87]
+            - columnheader [ref=f48e88]
+        - rowgroup
+      - generic [ref=f48e89]: Showing 0 of 0

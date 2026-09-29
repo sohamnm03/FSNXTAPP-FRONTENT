@@ -1,0 +1,143 @@
+- generic [ref=f90e2]:
+  - banner [ref=f90e3]:
+    - generic [ref=f90e4]:
+      - img "Fourth Signal" [ref=f90e5]
+      - generic [ref=f90e6]: Dynamic Gateway v2 DYNGW
+    - generic [ref=f90e7]:
+      - button "Create OTTK" [ref=f90e8] [cursor=pointer]
+      - generic "System connected" [ref=f90e12]
+      - button "Release & Print" [ref=f90e13] [cursor=pointer]
+      - button "Refresh" [ref=f90e17] [cursor=pointer]
+      - button "Copy OTTK" [ref=f90e21] [cursor=pointer]
+  - main [ref=f90e25]:
+    - generic [ref=f90e26]:
+      - generic [ref=f90e27]:
+        - generic [ref=f90e28]: Open Origination Tickets 3 records
+        - generic [ref=f90e29]:
+          - textbox "Search origination tickets" [ref=f90e30]:
+            - /placeholder: Search OTTK…
+          - button "Filter" [ref=f90e31] [cursor=pointer]
+          - button "Export CSV" [ref=f90e34] [cursor=pointer]
+      - table [ref=f90e38]:
+        - rowgroup [ref=f90e56]:
+          - row [ref=f90e57]:
+            - columnheader "OTTK No" [ref=f90e58]
+            - columnheader "Type" [ref=f90e59]
+            - columnheader "Structure" [ref=f90e60]
+            - columnheader "Entity ID" [ref=f90e61]
+            - columnheader "Entity String" [ref=f90e62]
+            - columnheader "LC Issuing Bank" [ref=f90e63]
+            - columnheader "Trade Value" [ref=f90e64]
+            - columnheader "Crcy" [ref=f90e65]
+            - columnheader "Expected LC Date" [ref=f90e66]
+            - columnheader "Tenor" [ref=f90e67]
+            - columnheader "LC Applicant" [ref=f90e68]
+            - columnheader "LC Beneficiary" [ref=f90e69]
+            - columnheader "CoCode" [ref=f90e70]
+            - columnheader "Deposit Amt" [ref=f90e71]
+            - columnheader "Interest" [ref=f90e72]
+            - columnheader "Status" [ref=f90e73]
+        - rowgroup [ref=f90e74]:
+          - row [ref=f90e75]:
+            - cell "100049" [ref=f90e76] [cursor=pointer]
+            - cell "01 New" [ref=f90e77]
+            - cell "DSX Deposit Set Off - Cross Border" [ref=f90e78]
+            - cell "E024" [ref=f90e79]
+            - cell "DMCC-OGA-PAN" [ref=f90e80]
+            - cell "660000680 — STANDARD CHARTERED BANK SINGAPORE" [ref=f90e81]
+            - cell "2,000,000.00" [ref=f90e82]
+            - cell "USD" [ref=f90e83]
+            - cell "08.09.2026" [ref=f90e84]
+            - cell "180" [ref=f90e85]
+            - cell "OGA" [ref=f90e86]
+            - cell "DMCC" [ref=f90e87]
+            - cell "SG03" [ref=f90e88]
+            - cell "2,000,000.00" [ref=f90e89]
+            - cell "Fixed 10.00%" [ref=f90e90]
+            - cell "05 - Partially Assigned to Deal ID" [ref=f90e91]
+          - row [ref=f90e93]:
+            - cell "100050" [ref=f90e94] [cursor=pointer]
+            - cell "01 New" [ref=f90e95]
+            - cell "DSX Deposit Set Off - Cross Border" [ref=f90e96]
+            - cell "E024" [ref=f90e97]
+            - cell "DMCC-OGA-PAN" [ref=f90e98]
+            - cell "660000680 — STANDARD CHARTERED BANK SINGAPORE" [ref=f90e99]
+            - cell "1,000,000.00" [ref=f90e100]
+            - cell "USD" [ref=f90e101]
+            - cell "08.09.2026" [ref=f90e102]
+            - cell "180" [ref=f90e103]
+            - cell "OGA" [ref=f90e104]
+            - cell "DMCC" [ref=f90e105]
+            - cell "SG03" [ref=f90e106]
+            - cell "1,000,000.00" [ref=f90e107]
+            - cell "Variable 0.00%" [ref=f90e108]
+            - cell "01 - Create New" [ref=f90e109]
+          - row [ref=f90e111]:
+            - cell "100056" [ref=f90e112] [cursor=pointer]
+            - cell "01 New" [ref=f90e113]
+            - cell "DSX Deposit Set Off - Cross Border" [ref=f90e114]
+            - cell "E021" [ref=f90e115]
+            - cell "OGA-DMCC-PAN" [ref=f90e116]
+            - cell "660000680 — STANDARD CHARTERED BANK SINGAPORE" [ref=f90e117]
+            - cell "1,000,000.00" [ref=f90e118]
+            - cell "USD" [ref=f90e119]
+            - cell "15.09.2026" [ref=f90e120]
+            - cell "180" [ref=f90e121]
+            - cell "DMCC" [ref=f90e122]
+            - cell "OGA" [ref=f90e123]
+            - cell "AE13" [ref=f90e124]
+            - cell "1,000,000.00" [ref=f90e125]
+            - cell "Fixed 10.00%" [ref=f90e126]
+            - cell "01 - Create New" [ref=f90e127]
+      - generic [ref=f90e129]:
+        - generic [ref=f90e130]: Showing 3 of 3
+        - generic [ref=f90e131]:
+          - button "‹" [disabled] [ref=f90e132]
+          - button "1" [ref=f90e133] [cursor=pointer]
+          - button "›" [disabled] [ref=f90e134]
+    - generic [ref=f90e135]:
+      - generic [ref=f90e136]:
+        - generic [ref=f90e137]: Open Distribution Tickets 1 records
+        - generic [ref=f90e138]:
+          - textbox "Search distribution tickets" [ref=f90e139]:
+            - /placeholder: Search tickets…
+          - button "Filter" [ref=f90e140] [cursor=pointer]
+          - button "Export CSV" [ref=f90e143] [cursor=pointer]
+      - table [ref=f90e147]:
+        - rowgroup [ref=f90e162]:
+          - row [ref=f90e163]:
+            - columnheader "DTTK No" [ref=f90e164]
+            - columnheader "Type1" [ref=f90e165]
+            - columnheader "Type2" [ref=f90e166]
+            - columnheader "Related OTTK" [ref=f90e167]
+            - columnheader "DTTK Value" [ref=f90e168]
+            - columnheader "Crcy" [ref=f90e169]
+            - columnheader "Expected Date" [ref=f90e170]
+            - columnheader "Tenor" [ref=f90e171]
+            - columnheader "LC Applicant" [ref=f90e172]
+            - columnheader "LC Beneficiary" [ref=f90e173]
+            - columnheader "Company Code" [ref=f90e174]
+            - columnheader "Company Name" [ref=f90e175]
+            - columnheader "Status" [ref=f90e176]
+        - rowgroup [ref=f90e177]:
+          - row [ref=f90e178]:
+            - cell [ref=f90e179] [cursor=pointer]:
+              - button "Display DTTK 100043" [ref=f90e180]: "100043"
+            - cell "02 Discounting Only" [ref=f90e181]
+            - cell "02 With Ref DTTK" [ref=f90e182]
+            - cell "100049" [ref=f90e183]
+            - cell "2,000,000.00" [ref=f90e184]
+            - cell "USD" [ref=f90e185]
+            - cell "08.09.2026" [ref=f90e186]
+            - cell "180" [ref=f90e187]
+            - cell "OGA" [ref=f90e188]
+            - cell "DMCC" [ref=f90e189]
+            - cell "SG03" [ref=f90e190]
+            - cell "OLAM GlobalAgri Pte. Ltd" [ref=f90e191]
+            - cell "05 - Partially Assigned to Deal ID" [ref=f90e192]
+      - generic [ref=f90e194]:
+        - generic [ref=f90e195]: Showing 1 of 1
+        - generic [ref=f90e196]:
+          - button "‹" [disabled] [ref=f90e197]
+          - button "1" [ref=f90e198] [cursor=pointer]
+          - button "›" [disabled] [ref=f90e199]

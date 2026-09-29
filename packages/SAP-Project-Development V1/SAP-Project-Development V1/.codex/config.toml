@@ -1,0 +1,22 @@
+# SAP server settings and credentials remain in the existing generated configuration.
+[mcp_servers.mcp-abap-abap-adt-api]
+command = 'C:\Program Files\nodejs\node.exe'
+args = ['D:\SAP Tool\SAP-Project-Development V1\scripts\codex-sap-mcp-launcher.mjs', 'mcp-abap-abap-adt-api']
+cwd = 'D:\SAP Tool\SAP-Project-Development V1'
+startup_timeout_sec = 60
+tool_timeout_sec = 600
+enabled = true
+
+[mcp_servers.mcp-abap-abap-adt-api.tools.healthcheck]
+approval_mode = "approve"
+
+[mcp_servers.mcp-abap-abap-adt-api.tools.searchObject]
+approval_mode = "approve"
+
+[mcp_servers.sap-gui]
+command = 'C:\Program Files\nodejs\node.exe'
+args = ['D:\SAP Tool\SAP-Project-Development V1\scripts\codex-sap-mcp-launcher.mjs', 'sap-gui']
+cwd = 'D:\SAP Tool\SAP-Project-Development V1'
+startup_timeout_sec = 60
+tool_timeout_sec = 120
+enabled = true

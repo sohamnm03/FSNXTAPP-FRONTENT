@@ -16,6 +16,23 @@ const DISPLAY_GUIDANCE = [
   'Follow every safety and write-confirmation rule in this SAP Testing Automation project.',
 ].join(' ');
 
+const INVALID_CREDENTIALS_MESSAGE = 'Invalid User ID or Password. Please check your credentials and try again.';
+
+// The SAP GUI helper scripts report str(exception), so a failed logon can reach
+// the UI as a raw COM error such as "(-2147417848, 'The object invoked has
+// disconnected from its clients.', None, None)". Those carry no meaning for the
+// user — a rejected logon is what they almost always mean — so swap them for
+// a plain message. Readable reasons (e.g. SAP's own popup text) pass through.
+function isRawConnectionError(reason) {
+  return /^\s*\(\s*-?\d{4,}\s*,/.test(reason)
+    || /com_error|disconnected from its clients|RPC server is unavailable|did not reach an authenticated session|0x8[0-9a-f]{7}/i.test(reason);
+}
+
+function userFacingConnectionReason(reason, fallback = INVALID_CREDENTIALS_MESSAGE) {
+  const text = typeof reason === 'string' ? reason.trim() : '';
+  return isRawConnectionError(text) ? fallback : text;
+}
+
 function validateProject(projectRoot) {
   if (!projectRoot || typeof projectRoot !== 'string') return false;
   return [
@@ -972,7 +989,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
             finish({
               connected: result.connected === true,
               serverName: String(system.label || system.sapGui.logonDescription || system.id),
-              reason: typeof result.reason === 'string' ? result.reason : '',
+              reason: userFacingConnectionReason(result.reason),
             });
           } catch {
             finish({ connected: false, reason: 'The SAP connection check returned an invalid result.' });
@@ -1039,7 +1056,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
             finish({
               opened: result.connected === true,
               user: typeof result.user === 'string' ? result.user : '',
-              reason: typeof result.reason === 'string' ? result.reason : '',
+              reason: userFacingConnectionReason(result.reason, 'The SAP GUI window closed unexpectedly.'),
             });
           } catch {
             finish({ opened: false, reason: 'The SAP session opener returned an invalid result.' });

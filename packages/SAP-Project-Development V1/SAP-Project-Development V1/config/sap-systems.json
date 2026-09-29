@@ -63,18 +63,26 @@
     {
       "id": "DS4_100_TFSIN",
       "label": "TFS India S/4HANA Development (DS4, client 100)",
-      "enabled": false,
+      "enabled": true,
       "role": "development",
       "developmentModel": "s4-onprem-abap-cloud",
 
       "$comment": [
         "Mirrors the VS Code ADT destination 'DS4_100_TFSIN' (~/.adtls/destinations.json).",
-        "UNVERIFIED: adt.url is a placeholder derived from the RFC application server",
-        "and the default ICM HTTPS port for instance 00. The host was unreachable when",
-        "this entry was written (no ping, no TCP on 44300/8000/3200/3300), so nothing",
-        "could be probed. Confirm the real ADT host/port, add",
-        "SAP_DS4_100_TFSIN_PASSWORD to .claude/settings.local.json, then set",
-        "enabled=true and rerun scripts/sync-sap-systems.ps1."
+        "VERIFIED 2026-09-17 (supersedes the earlier UNVERIFIED note; see lessons L-540).",
+        "  * https://vhtfqds4ap01.sap.tfsin.co.in:44300 -> 10.110.0.33",
+        "  * /sap/bc/adt/discovery answers HTTP 200 for FS_DEV",
+        "  * /sap/bc/adt/core/http/systeminformation reports systemID=DS4, client=100,",
+        "    user=FS_DEV ('FS Executive')",
+        "  * port 8000 answers 307 (redirect to HTTPS), so 44300 is the ADT endpoint",
+        "  * certificate: DigiCert/RapidSSL, CN=*.sap.tfsin.co.in, 2026-07-27 to 2027-02-10",
+        "  * genuinely a different box from DS4_100_NIIF despite the identical SID+client:",
+        "    it serves its own package set (ZFS_TOOLKIT, ZFS_TCL, ZFS_BASIS, ZFS_FI_TFSIN, ...)",
+        "tlsRejectUnauthorized stays TRUE: the certificate is valid and trusted, so the URL",
+        "MUST use the FQDN, not the IP. The FQDN has no DNS record reachable from the dev",
+        "workstation, so it needs a line in the Windows hosts file",
+        "    10.110.0.33 vhtfqds4ap01.sap.tfsin.co.in",
+        "which is exactly how DS4_100_NIIF already resolves. Adding it needs elevation."
       ],
 
       "systemId": "DS4",
@@ -84,8 +92,8 @@
       "mcpServerName": "abap-adt-ds4-100-tfsin",
 
       "adt": {
-        "url": "https://10.110.0.33:44300",
-        "user": "FS_DEV",
+        "url": "https://vhtfqds4ap01.sap.tfsin.co.in:44300",
+        "user": "FS_DEV3",
         "passwordEnvVar": "SAP_DS4_100_TFSIN_PASSWORD",
         "tlsRejectUnauthorized": true
       },

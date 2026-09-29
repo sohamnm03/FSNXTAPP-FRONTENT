@@ -1,2 +1,0 @@
-[   41678ms] [ERROR] Failed to launch 'sapevent:OPEN_FAC_WORKBENCH' because the scheme does not have a registered handler. @ http://localhost:8771/:0
-[   42670ms] [ERROR] Failed to launch 'sapevent:OPEN_FAC_CONFIRM' because the scheme does not have a registered handler. @ http://localhost:8771/:0

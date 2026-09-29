@@ -1,0 +1,258 @@
+- generic [ref=f95e2]:
+  - banner [ref=f95e3]:
+    - generic [ref=f95e4]:
+      - img "Fourth Signal" [ref=f95e5]
+      - generic [ref=f95e6]: Dynamic Gateway v2 DYNGW
+    - generic [ref=f95e7]:
+      - button "Create OTTK" [ref=f95e8] [cursor=pointer]
+      - generic "System connected" [ref=f95e12]
+      - button "Release & Print" [ref=f95e13] [cursor=pointer]
+      - button "Refresh" [ref=f95e17] [cursor=pointer]
+      - button "Copy OTTK" [ref=f95e21] [cursor=pointer]
+  - dialog [ref=f95e128]:
+    - generic [ref=f95e129]:
+      - generic [ref=f95e130]:
+        - generic [ref=f95e132]:
+          - heading "Create Origination Ticket" [level=2] [ref=f95e133]
+          - paragraph [ref=f95e134]: Origination · New | USD | Draft
+        - button "Close modal" [ref=f95e136] [cursor=pointer]: ×
+      - generic [ref=f95e137]:
+        - generic [ref=f95e138]:
+          - generic [ref=f95e139]: Transaction Details
+          - generic [ref=f95e140]:
+            - generic [ref=f95e141]:
+              - generic [ref=f95e142]: OTTK Type
+              - combobox "OTTK Type" [active] [ref=f95e143]:
+                - option "01 New" [selected]
+                - option "02 With Ref DTTK"
+            - generic [ref=f95e144]:
+              - generic [ref=f95e145]: Structure
+              - combobox "Structure" [ref=f95e146]:
+                - option "Select structure" [selected]
+                - option "DSX — Deposit Set Off - Cross Border"
+                - option "LCP — LC Prepayment"
+                - option "CC DSX — Cross Currency DSX"
+                - option "CC LCP — Cross Currency LCP"
+            - generic [ref=f95e147]:
+              - generic [ref=f95e148]: Entity String
+              - generic [ref=f95e149]:
+                - combobox "Entity String" [ref=f95e150]:
+                  - option "Select entity" [selected]
+                - textbox "(auto)" [ref=f95e151]
+            - generic [ref=f95e152]:
+              - generic [ref=f95e153]: OT Trader
+              - combobox "OT Trader" [ref=f95e154]:
+                - option "Select trader" [selected]
+                - option "OTL"
+                - option "OGA"
+        - generic [ref=f95e155]:
+          - generic [ref=f95e156]: Trade Details
+          - generic [ref=f95e157]:
+            - generic [ref=f95e158]:
+              - generic [ref=f95e159]: LC Issuing Bank
+              - combobox "LC Issuing Bank" [ref=f95e160]:
+                - option "Select bank" [selected]
+            - generic [ref=f95e161]:
+              - generic [ref=f95e162]: OTTK Trade Value
+              - generic [ref=f95e163]:
+                - 'textbox "Enter a number or use K, M, B, T (example: 1.5M)" [ref=f95e164]':
+                  - /placeholder: e.g. 1.5M
+                - combobox [ref=f95e165]:
+                  - option "USD" [selected]
+                  - option "EUR"
+                  - option "GBP"
+                  - option "INR"
+                  - option "AED"
+                  - option "SGD"
+            - generic [ref=f95e166]:
+              - generic [ref=f95e167]: Expected LC Date
+              - textbox "Expected LC Date" [ref=f95e168]
+            - generic [ref=f95e169]:
+              - generic [ref=f95e170]: Expected LC Tenor
+              - generic [ref=f95e171]:
+                - textbox "0" [ref=f95e172]
+                - generic [ref=f95e173]: days
+            - generic [ref=f95e174]:
+              - generic [ref=f95e175]: Payment Terms
+              - combobox [ref=f95e176]:
+                - option "Select" [selected]
+                - option "01 Negotiation Date"
+                - option "02 Acceptance Date"
+                - option "03 Fixed Maturity Date"
+            - generic [ref=f95e177]:
+              - generic [ref=f95e178]: Other Charges
+              - 'textbox "Enter a number or use K, M, B, T (example: 5K) -- no Charges breakdown popup in this console, see worklog" [ref=f95e179]':
+                - /placeholder: "0.00"
+            - generic [ref=f95e180]:
+              - generic [ref=f95e181]: BL Type
+              - combobox "BL Type" [ref=f95e182]:
+                - option "Select" [selected]
+                - option "01 Original Copy"
+                - option "02 Copy BL"
+            - generic [ref=f95e183]:
+              - generic [ref=f95e184]: LC Applicant
+              - textbox [ref=f95e185]
+            - generic [ref=f95e186]:
+              - generic [ref=f95e187]: LC Beneficiary
+              - textbox [ref=f95e188]
+            - generic [ref=f95e189]:
+              - generic [ref=f95e190]: Company Code
+              - generic [ref=f95e191]:
+                - textbox [ref=f95e192]
+                - textbox "(auto)" [ref=f95e193]
+            - generic [ref=f95e194]:
+              - generic [ref=f95e195]: Business Area
+              - generic [ref=f95e196]:
+                - textbox "(auto)" [ref=f95e197]
+                - textbox "(auto)" [ref=f95e198]
+        - generic [ref=f95e199]:
+          - generic [ref=f95e200]: Deposit / Prepayment
+          - generic [ref=f95e201]:
+            - generic [ref=f95e202]:
+              - generic [ref=f95e203]: Deposit Value
+              - combobox [ref=f95e204]:
+                - option "Select" [selected]
+                - option "DTY — Discounted Value"
+                - option "STR — Full Value"
+            - generic [ref=f95e205]:
+              - generic [ref=f95e206]: Deposit Amount
+              - generic [ref=f95e207]:
+                - 'textbox "Enter a number or use K, M, B, T (example: 50K)" [ref=f95e208]':
+                  - /placeholder: e.g. 50K
+                - combobox [ref=f95e209]:
+                  - option "USD" [selected]
+                  - option "EUR"
+                  - option "GBP"
+                  - option "INR"
+                  - option "AED"
+                  - option "SGD"
+            - generic [ref=f95e210]:
+              - generic [ref=f95e211]: Expected Date
+              - textbox [ref=f95e212]
+            - generic [ref=f95e213]:
+              - generic [ref=f95e214]: Interest Category
+              - combobox [ref=f95e215]:
+                - option "Select" [selected]
+                - option "01 Fixed"
+                - option "02 Variable"
+                - option "03 Fixed with Benchmark"
+                - option "04 Bank COF"
+            - generic [ref=f95e216]:
+              - generic [ref=f95e217]: Interest Rate
+              - textbox "0.00" [ref=f95e218]
+            - generic [ref=f95e219]:
+              - generic [ref=f95e220]: 1st Interest Date
+              - textbox [ref=f95e221]
+            - generic [ref=f95e222]:
+              - generic [ref=f95e223]: Reset Frequency
+              - combobox [ref=f95e224]:
+                - option "Select" [selected]
+                - option "01 Monthly"
+                - option "02 Quarterly"
+                - option "03 Half Yearly"
+            - generic [ref=f95e225]:
+              - generic [ref=f95e226]: Interest Frequency
+              - combobox [ref=f95e227]:
+                - option "Select" [selected]
+                - option "01 Upfront"
+                - option "02 Monthly"
+                - option "03 Quarterly"
+                - option "04 Half-yearly"
+                - option "05 Rear-end"
+        - generic [ref=f95e228]:
+          - generic [ref=f95e229]: Commercial Summary
+          - generic [ref=f95e230]:
+            - generic [ref=f95e231]:
+              - generic [ref=f95e232]: Expected P&L %
+              - textbox "0.00" [ref=f95e233]
+            - generic [ref=f95e234]:
+              - generic [ref=f95e235]: Expected P&L Amt
+              - 'textbox "Enter a number or use K, M, B, T (example: 100K)" [ref=f95e236]':
+                - /placeholder: e.g. 100K
+            - generic [ref=f95e237]:
+              - generic [ref=f95e238]: Remarks / Flow remark
+              - textbox [ref=f95e239]
+        - generic [ref=f95e240]:
+          - generic [ref=f95e241]: Contact & Commitment
+          - generic [ref=f95e242]:
+            - generic [ref=f95e243]:
+              - generic [ref=f95e244]: Bank Contact
+              - textbox [ref=f95e245]
+            - generic [ref=f95e246]:
+              - generic [ref=f95e247]: Bank Contact Details
+              - textbox [ref=f95e248]
+            - generic [ref=f95e249]:
+              - generic [ref=f95e250]: Commitment End Date
+              - textbox [ref=f95e251]
+      - generic [ref=f95e252]:
+        - generic [ref=f95e253]: "* Company Code is required before creation."
+        - generic [ref=f95e254]:
+          - button "Clear" [ref=f95e255] [cursor=pointer]
+          - button "Cancel" [ref=f95e256] [cursor=pointer]
+          - button "Create OTTK" [ref=f95e257] [cursor=pointer]
+  - main [ref=f95e25]:
+    - generic [ref=f95e26]:
+      - generic [ref=f95e27]:
+        - generic [ref=f95e28]: Open Origination Tickets 0 records
+        - generic [ref=f95e29]:
+          - textbox "Search origination tickets" [ref=f95e30]:
+            - /placeholder: Search OTTK…
+          - button "Filter" [ref=f95e31] [cursor=pointer]
+          - button "Export CSV" [ref=f95e34] [cursor=pointer]
+      - table [ref=f95e38]:
+        - rowgroup [ref=f95e56]:
+          - row [ref=f95e57]:
+            - columnheader "OTTK No" [ref=f95e58]
+            - columnheader "Type" [ref=f95e59]
+            - columnheader "Structure" [ref=f95e60]
+            - columnheader "Entity ID" [ref=f95e61]
+            - columnheader "Entity String" [ref=f95e62]
+            - columnheader "LC Issuing Bank" [ref=f95e63]
+            - columnheader "Trade Value" [ref=f95e64]
+            - columnheader "Crcy" [ref=f95e65]
+            - columnheader "Expected LC Date" [ref=f95e66]
+            - columnheader "Tenor" [ref=f95e67]
+            - columnheader "LC Applicant" [ref=f95e68]
+            - columnheader "LC Beneficiary" [ref=f95e69]
+            - columnheader "CoCode" [ref=f95e70]
+            - columnheader "Deposit Amt" [ref=f95e71]
+            - columnheader "Interest" [ref=f95e72]
+            - columnheader "Status" [ref=f95e73]
+        - rowgroup
+      - generic [ref=f95e74]:
+        - generic [ref=f95e75]: Showing 0 of 0
+        - generic [ref=f95e76]:
+          - button "‹" [disabled] [ref=f95e77]
+          - button "1" [ref=f95e78] [cursor=pointer]
+          - button "›" [disabled] [ref=f95e79]
+    - generic [ref=f95e80]:
+      - generic [ref=f95e81]:
+        - generic [ref=f95e82]: Open Distribution Tickets 0 records
+        - generic [ref=f95e83]:
+          - textbox "Search distribution tickets" [ref=f95e84]:
+            - /placeholder: Search tickets…
+          - button "Filter" [ref=f95e85] [cursor=pointer]
+          - button "Export CSV" [ref=f95e88] [cursor=pointer]
+      - table [ref=f95e92]:
+        - rowgroup [ref=f95e107]:
+          - row [ref=f95e108]:
+            - columnheader "DTTK No" [ref=f95e109]
+            - columnheader "Type1" [ref=f95e110]
+            - columnheader "Type2" [ref=f95e111]
+            - columnheader "Related OTTK" [ref=f95e112]
+            - columnheader "DTTK Value" [ref=f95e113]
+            - columnheader "Crcy" [ref=f95e114]
+            - columnheader "Expected Date" [ref=f95e115]
+            - columnheader "Tenor" [ref=f95e116]
+            - columnheader "LC Applicant" [ref=f95e117]
+            - columnheader "LC Beneficiary" [ref=f95e118]
+            - columnheader "Company Code" [ref=f95e119]
+            - columnheader "Company Name" [ref=f95e120]
+            - columnheader "Status" [ref=f95e121]
+        - rowgroup
+      - generic [ref=f95e122]:
+        - generic [ref=f95e123]: Showing 0 of 0
+        - generic [ref=f95e124]:
+          - button "‹" [disabled] [ref=f95e125]
+          - button "1" [ref=f95e126] [cursor=pointer]
+          - button "›" [disabled] [ref=f95e127]

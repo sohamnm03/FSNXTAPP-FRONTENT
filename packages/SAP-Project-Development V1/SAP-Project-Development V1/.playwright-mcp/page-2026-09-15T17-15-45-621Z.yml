@@ -1,0 +1,51 @@
+- generic [active] [ref=f46e1]:
+  - banner [ref=f46e2]:
+    - generic [ref=f46e3]:
+      - img "Fourth Signal" [ref=f46e4]
+      - generic [ref=f46e5]:
+        - heading "Dynamic Gateway" [level=1] [ref=f46e6]
+        - paragraph [ref=f46e7]: FS • DS4 / 100
+    - generic "ZFS_SB_DYNGW_O4_API" [ref=f46e8]
+  - main [ref=f46e9]:
+    - generic [ref=f46e10]: SLC
+    - generic [ref=f46e11]: Applications
+    - generic [ref=f46e13] [cursor=pointer]:
+      - generic [ref=f46e17]: OTTK via Dynamic Gateway
+      - generic [ref=f46e18]: Origination tickets read and written entirely through the gateway — no dedicated OData service — with a live trace of the gateway's own call log.
+      - generic [ref=f46e19]:
+        - generic [ref=f46e20]: Console
+        - generic [ref=f46e21]: →
+    - generic [ref=f46e22]: Administration
+    - generic [ref=f46e23]:
+      - generic [ref=f46e24] [cursor=pointer]:
+        - generic [ref=f46e28]: Registry
+        - generic [ref=f46e29]: "The allow-list: every registered target with its kind, permissions and usage. Register, edit, deactivate or delete a target; every write is audited."
+        - generic [ref=f46e30]:
+          - generic [ref=f46e31]: Admin
+          - generic [ref=f46e32]: →
+      - generic [ref=f46e33] [cursor=pointer]:
+        - generic [ref=f46e37]: Linkage Report
+        - generic [ref=f46e38]: How the four tables join. Pick a registry row and trace its change history, every step it authorised, and the calls those steps belonged to.
+        - generic [ref=f46e39]:
+          - generic [ref=f46e40]: Report
+          - generic [ref=f46e41]: →
+    - generic [ref=f46e42]: Reference
+    - generic [ref=f46e43]:
+      - generic [ref=f46e44] [cursor=pointer]:
+        - generic [ref=f46e48]: How to Call It
+        - generic [ref=f46e49]: "The endpoint, step by step: the URL shape, a first call you can copy, a card per action with its exact POST URL and parameters, and the traps."
+        - generic [ref=f46e50]:
+          - generic [ref=f46e51]: Docs
+          - generic [ref=f46e52]: →
+      - generic [ref=f46e53] [cursor=pointer]:
+        - generic [ref=f46e57]: Service $metadata
+        - generic [ref=f46e58]: The service's own contract as SAP publishes it — entity types, action signatures and result shape. Opens as raw XML.
+        - generic [ref=f46e59]:
+          - generic [ref=f46e60]: Raw
+          - generic [ref=f46e61]: →
+      - generic [ref=f46e62] [cursor=pointer]:
+        - generic [ref=f46e66]: Registry (raw JSON)
+        - generic [ref=f46e67]: The allow-list straight from the entity set, unrendered — useful when you want to see exactly what the service returns.
+        - generic [ref=f46e68]:
+          - generic [ref=f46e69]: Raw
+          - generic [ref=f46e70]: →

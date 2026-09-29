@@ -1,6 +1,6 @@
 {
   "name": "fsnxtapp-frontend",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Windows desktop testing platform for FSNXT modules",
   "author": "FSNXT",
   "main": "electron/main.js",
@@ -30,7 +30,7 @@
     "@eslint/js": "^9.39.5",
     "@vitejs/plugin-react": "^6.1.0",
     "concurrently": "^10.0.5",
-    "electron": "^43.4.1",
+    "electron": "^43.7.5",
     "electron-builder": "^26.15.3",
     "eslint": "^9.39.5",
     "eslint-plugin-react": "^7.37.5",
@@ -41,7 +41,7 @@
   },
   "build": {
     "appId": "com.fsnxt.testing",
-    "productName": "FS Pilot",
+    "productName": "FS Sprint",
     "asar": true,
     "asarUnpack": [
       "packages/**/*",
@@ -57,9 +57,17 @@
       "scripts/sapAutomationPayload.js",
       "packages/**/*",
       "!packages/sap-testing-automation/**/*",
+      "!packages/**/tools/mcp-abap-adt-api/node_modules{,/**/*}",
+      "!packages/**/.claude/settings.local.json",
+      "!packages/**/.mcp.json",
+      "!packages/**/.env",
+      "!packages/**/.venv{,/**/*}",
       "!packages/**/.pytest_cache{,/**/*}",
       "!packages/**/__pycache__{,/**/*}",
       "!packages/**/*.pyc",
+      "!packages/**/cookies.txt",
+      "!packages/**/headers.txt",
+      "!packages/**/response_*.json",
       "package.json"
     ],
     "extraResources": [
@@ -74,6 +82,14 @@
       {
         "from": ".build/python-runtime/python",
         "to": "python"
+      },
+      {
+        "from": ".build/node-runtime/node",
+        "to": "node"
+      },
+      {
+        "from": ".build/sap-development-mcp",
+        "to": "sap-development-mcp"
       }
     ],
     "win": {

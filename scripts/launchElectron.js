@@ -4,9 +4,14 @@ const electronPath = require('electron');
 const electronEnvironment = { ...process.env };
 delete electronEnvironment.ELECTRON_RUN_AS_NODE;
 
-const electronProcess = spawn(electronPath, ['.'], {
+// Wrap electronPath in double quotes to handle spaces in folder paths
+const command = `"${electronPath}"`;
+
+const electronProcess = spawn(command, ['.'], {
   env: electronEnvironment,
   stdio: 'inherit',
+  shell: true,
+  windowsVerbatimArguments: true, // Prevents Windows from removing quotes
 });
 
 electronProcess.on('exit', (code) => {

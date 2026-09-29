@@ -1,0 +1,348 @@
+- generic [ref=f32e1]:
+  - generic [ref=f32e2]:
+    - banner [ref=f32e3]:
+      - generic [ref=f32e4]:
+        - img "Fourth Signal" [ref=f32e5]
+        - generic [ref=f32e6]: Dynamic Gateway v2 REGISTRY
+        - navigation [ref=f32e7]:
+          - link "Registry" [ref=f32e8] [cursor=pointer]:
+            - /url: index.html
+          - link "Linkage report" [ref=f32e9] [cursor=pointer]:
+            - /url: report.html
+      - generic [ref=f32e10]:
+        - button "Refresh" [ref=f32e11] [cursor=pointer]
+        - button "New target" [ref=f32e15] [cursor=pointer]
+        - generic "System connected" [ref=f32e19]
+    - main [ref=f32e20]:
+      - generic [ref=f32e21]:
+        - generic [ref=f32e22]: Allow-list at a glance Read 10:27:11 PM
+        - generic [ref=f32e24]:
+          - generic [ref=f32e25]:
+            - generic [ref=f32e26]: Targets
+            - generic [ref=f32e27]: "8"
+          - generic [ref=f32e28]:
+            - generic [ref=f32e29]: Active
+            - generic [ref=f32e30]: "8"
+          - generic [ref=f32e31]:
+            - generic [ref=f32e32]: Inactive
+            - generic [ref=f32e33]: "0"
+            - generic [ref=f32e34]: kill switch on
+          - generic [ref=f32e35]:
+            - generic [ref=f32e36]: Qury
+            - generic [ref=f32e37]: "5"
+          - generic [ref=f32e38]:
+            - generic [ref=f32e39]: Tabl
+            - generic [ref=f32e40]: "2"
+          - generic [ref=f32e41]:
+            - generic [ref=f32e42]: Func
+            - generic [ref=f32e43]: "1"
+          - generic [ref=f32e44]:
+            - generic [ref=f32e45]: Subm
+            - generic [ref=f32e46]: "0"
+          - generic [ref=f32e47]:
+            - generic [ref=f32e48]: Write
+            - generic [ref=f32e49]: "3"
+            - generic [ref=f32e50]: AllowWrite
+          - generic [ref=f32e51]:
+            - generic [ref=f32e52]: Gen
+            - generic [ref=f32e53]: "1"
+            - generic [ref=f32e54]: AllowGen
+          - generic [ref=f32e55]:
+            - generic [ref=f32e56]: Unused
+            - generic [ref=f32e57]: "1"
+            - generic [ref=f32e58]: 0 steps
+      - generic [ref=f32e59]:
+        - generic [ref=f32e60]:
+          - generic [ref=f32e61]: Registry 8 targets
+          - generic [ref=f32e62]:
+            - textbox "Search the registry" [ref=f32e63]:
+              - /placeholder: Search target, operation, description…
+            - combobox "Filter by kind" [ref=f32e64]:
+              - option "All kinds" [selected]
+              - option "QURY"
+              - option "TABL"
+              - option "FUNC"
+              - option "SUBM"
+            - combobox "Filter by status" [ref=f32e65]:
+              - option "Active + inactive" [selected]
+              - option "Active only"
+              - option "Inactive only"
+            - combobox "Filter by permission" [ref=f32e66]:
+              - option "Any permission" [selected]
+              - option "Write-enabled"
+              - option "Generation-enabled"
+              - option "Read-only"
+            - button "Export the filtered list as CSV" [ref=f32e67] [cursor=pointer]
+        - table [ref=f32e71]:
+          - rowgroup [ref=f32e72]:
+            - row [ref=f32e73]:
+              - columnheader "Kind" [ref=f32e74]
+              - columnheader "Target name" [ref=f32e75]
+              - columnheader "Operation" [ref=f32e76]
+              - columnheader "Status" [ref=f32e77]
+              - columnheader "R / W / G" [ref=f32e78]
+              - columnheader "Call mode" [ref=f32e79]
+              - columnheader "Max rows" [ref=f32e80]
+              - columnheader "Log" [ref=f32e81]
+              - columnheader "Number range" [ref=f32e82]
+              - columnheader "Description" [ref=f32e83]
+              - columnheader "Steps run" [ref=f32e84]
+              - columnheader "Last changed" [ref=f32e85]
+              - columnheader "By" [ref=f32e86]
+              - columnheader [ref=f32e87]
+          - rowgroup [ref=f32e90]:
+            - row [ref=f32e91]:
+              - cell "FUNC" [ref=f32e92]
+              - cell "NUMBER_GET_NEXT" [ref=f32e94]
+              - cell "—" [ref=f32e95]
+              - cell "Active" [ref=f32e96]
+              - cell "R W G" [ref=f32e98]:
+                - generic "AllowRead" [ref=f32e99]: R
+                - generic "AllowWrite" [ref=f32e100]: W
+                - generic "AllowGen" [ref=f32e101]: G
+              - cell "L" [ref=f32e102]
+              - cell "0" [ref=f32e103]
+              - cell "blank" [ref=f32e104]
+              - cell "—" [ref=f32e105]
+              - cell [ref=f32e106]
+              - cell "1" [ref=f32e107]
+              - cell "15-09-2026 16:07" [ref=f32e108]
+              - cell "FS_DEV3" [ref=f32e109]
+              - cell [ref=f32e110]:
+                - generic [ref=f32e111]:
+                  - button "✎" [ref=f32e112] [cursor=pointer]
+                  - button "⏻" [ref=f32e113] [cursor=pointer]
+                  - button "🗑" [ref=f32e114] [cursor=pointer]
+            - row [ref=f32e115]:
+              - cell "QURY" [ref=f32e116]
+              - cell "T000" [ref=f32e118]
+              - cell "SELECT" [ref=f32e119]
+              - cell "Active" [ref=f32e120]
+              - cell "R W G" [ref=f32e122]:
+                - generic "AllowRead" [ref=f32e123]: R
+                - generic "AllowWrite" [ref=f32e124]: W
+                - generic "AllowGen" [ref=f32e125]: G
+              - cell "blank" [ref=f32e126]
+              - cell "100" [ref=f32e127]
+              - cell "blank" [ref=f32e128]
+              - cell "—" [ref=f32e129]
+              - cell [ref=f32e130]
+              - cell "6" [ref=f32e131]
+              - cell "15-09-2026 17:13" [ref=f32e132]
+              - cell "FS_DEV3" [ref=f32e133]
+              - cell [ref=f32e134]:
+                - generic [ref=f32e135]:
+                  - button "✎" [ref=f32e136] [cursor=pointer]
+                  - button "⏻" [ref=f32e137] [cursor=pointer]
+                  - button "🗑" [ref=f32e138] [cursor=pointer]
+            - row [ref=f32e139]:
+              - cell "QURY" [ref=f32e140]
+              - cell "ZFS_CDS_SLC_001" [ref=f32e142]
+              - cell "SELECT" [ref=f32e143]
+              - cell "Active" [ref=f32e144]
+              - cell "R W G" [ref=f32e146]:
+                - generic "AllowRead" [ref=f32e147]: R
+                - generic "AllowWrite" [ref=f32e148]: W
+                - generic "AllowGen" [ref=f32e149]: G
+              - cell "blank" [ref=f32e150]
+              - cell "100" [ref=f32e151]
+              - cell "blank" [ref=f32e152]
+              - cell "—" [ref=f32e153]
+              - cell [ref=f32e154]
+              - cell "22" [ref=f32e155]
+              - cell "15-09-2026 17:13" [ref=f32e156]
+              - cell "FS_DEV3" [ref=f32e157]
+              - cell [ref=f32e158]:
+                - generic [ref=f32e159]:
+                  - button "✎" [ref=f32e160] [cursor=pointer]
+                  - button "⏻" [ref=f32e161] [cursor=pointer]
+                  - button "🗑" [ref=f32e162] [cursor=pointer]
+            - row [ref=f32e163]:
+              - cell "QURY" [ref=f32e164]
+              - cell "ZFS_CDS_SLC_002" [ref=f32e166]
+              - cell "SELECT" [ref=f32e167]
+              - cell "Active" [ref=f32e168]
+              - cell "R W G" [ref=f32e170]:
+                - generic "AllowRead" [ref=f32e171]: R
+                - generic "AllowWrite" [ref=f32e172]: W
+                - generic "AllowGen" [ref=f32e173]: G
+              - cell "blank" [ref=f32e174]
+              - cell "100" [ref=f32e175]
+              - cell "blank" [ref=f32e176]
+              - cell "—" [ref=f32e177]
+              - cell [ref=f32e178]
+              - cell "14" [ref=f32e179]
+              - cell "15-09-2026 17:13" [ref=f32e180]
+              - cell "FS_DEV3" [ref=f32e181]
+              - cell [ref=f32e182]:
+                - generic [ref=f32e183]:
+                  - button "✎" [ref=f32e184] [cursor=pointer]
+                  - button "⏻" [ref=f32e185] [cursor=pointer]
+                  - button "🗑" [ref=f32e186] [cursor=pointer]
+            - row [ref=f32e187]:
+              - cell "TABL" [ref=f32e188]
+              - cell "ZFS_SLC_OTTK_BTP" [ref=f32e190]
+              - cell "—" [ref=f32e191]
+              - cell "Active" [ref=f32e192]
+              - cell "R W G" [ref=f32e194]:
+                - generic "AllowRead" [ref=f32e195]: R
+                - generic "AllowWrite" [ref=f32e196]: W
+                - generic "AllowGen" [ref=f32e197]: G
+              - cell "blank" [ref=f32e198]
+              - cell "0" [ref=f32e199]
+              - cell "blank" [ref=f32e200]
+              - cell "ZFS_OTTK_D" [ref=f32e201]
+              - cell [ref=f32e202]
+              - cell "18" [ref=f32e203]
+              - cell "15-09-2026 16:12" [ref=f32e204]
+              - cell "FS_DEV3" [ref=f32e205]
+              - cell [ref=f32e206]:
+                - generic [ref=f32e207]:
+                  - button "✎" [ref=f32e208] [cursor=pointer]
+                  - button "⏻" [ref=f32e209] [cursor=pointer]
+                  - button "🗑" [ref=f32e210] [cursor=pointer]
+            - row [ref=f32e211]:
+              - cell "QURY" [ref=f32e212]
+              - cell "ZFS_SLC_OTTK_BTP" [ref=f32e214]
+              - cell "SELECT" [ref=f32e215]
+              - cell "Active" [ref=f32e216]
+              - cell "R W G" [ref=f32e218]:
+                - generic "AllowRead" [ref=f32e219]: R
+                - generic "AllowWrite" [ref=f32e220]: W
+                - generic "AllowGen" [ref=f32e221]: G
+              - cell "blank" [ref=f32e222]
+              - cell "100" [ref=f32e223]
+              - cell "blank" [ref=f32e224]
+              - cell "—" [ref=f32e225]
+              - cell [ref=f32e226]
+              - cell "9" [ref=f32e227]
+              - cell "15-09-2026 17:57" [ref=f32e228]
+              - cell "FS_DEV3" [ref=f32e229]
+              - cell [ref=f32e230]:
+                - generic [ref=f32e231]:
+                  - button "✎" [ref=f32e232] [cursor=pointer]
+                  - button "⏻" [ref=f32e233] [cursor=pointer]
+                  - button "🗑" [ref=f32e234] [cursor=pointer]
+            - row [ref=f32e235]:
+              - cell "TABL" [ref=f32e236]
+              - cell "ZFS_T_TRM_PROBE" [ref=f32e238]
+              - cell "—" [ref=f32e239]
+              - cell "Active" [ref=f32e240]
+              - cell "R W G" [ref=f32e242]:
+                - generic "AllowRead" [ref=f32e243]: R
+                - generic "AllowWrite" [ref=f32e244]: W
+                - generic "AllowGen" [ref=f32e245]: G
+              - cell "blank" [ref=f32e246]
+              - cell "0" [ref=f32e247]
+              - cell "blank" [ref=f32e248]
+              - cell "—" [ref=f32e249]
+              - cell [ref=f32e250]
+              - cell "1" [ref=f32e251]
+              - cell "15-09-2026 16:40" [ref=f32e252]
+              - cell "FS_DEV3" [ref=f32e253]
+              - cell [ref=f32e254]:
+                - generic [ref=f32e255]:
+                  - button "✎" [ref=f32e256] [cursor=pointer]
+                  - button "⏻" [ref=f32e257] [cursor=pointer]
+                  - button "🗑" [ref=f32e258] [cursor=pointer]
+            - row [ref=f32e259]:
+              - cell "QURY" [ref=f32e260]
+              - cell "ZSGSLCTR_BPEXT" [ref=f32e262]
+              - cell "SELECT" [ref=f32e263]
+              - cell "Active" [ref=f32e264]
+              - cell "R W G" [ref=f32e266]:
+                - generic "AllowRead" [ref=f32e267]: R
+                - generic "AllowWrite" [ref=f32e268]: W
+                - generic "AllowGen" [ref=f32e269]: G
+              - cell "blank" [ref=f32e270]
+              - cell "100" [ref=f32e271]
+              - cell "blank" [ref=f32e272]
+              - cell "—" [ref=f32e273]
+              - cell [ref=f32e274]
+              - cell "0" [ref=f32e275]
+              - cell "15-09-2026 17:13" [ref=f32e276]
+              - cell "FS_DEV3" [ref=f32e277]
+              - cell [ref=f32e278]:
+                - generic [ref=f32e279]:
+                  - button "✎" [ref=f32e280] [cursor=pointer]
+                  - button "⏻" [ref=f32e281] [cursor=pointer]
+                  - button "🗑" [ref=f32e282] [cursor=pointer]
+        - generic [ref=f32e88]: Showing 8 of 8
+  - dialog [ref=f32e283]:
+    - generic [ref=f32e284]:
+      - generic [ref=f32e285]:
+        - generic [ref=f32e286]:
+          - heading "Register target" [level=2] [ref=f32e287]
+          - paragraph [ref=f32e288]: Allow-list entry · ZFS_T_DYN_REG
+        - button "Close" [ref=f32e289] [cursor=pointer]: ×
+      - generic [ref=f32e290]:
+        - generic [ref=f32e291]:
+          - generic [ref=f32e292]: Target
+          - generic [ref=f32e293]:
+            - generic [ref=f32e294]:
+              - generic [ref=f32e295]: Target kind
+              - combobox "Target kind" [ref=f32e296]:
+                - option "QURY — dynamic SELECT" [selected]
+                - option "TABL — INSERT / MODIFY / DELETE"
+                - option "FUNC — CALL FUNCTION"
+                - option "SUBM — SUBMIT a report"
+            - generic [ref=f32e297]:
+              - generic [ref=f32e298]: Operation
+              - combobox "Operation" [ref=f32e299]:
+                - option "SELECT" [selected]
+                - option "(none)"
+            - generic [ref=f32e300]:
+              - generic [ref=f32e301]: Target name
+              - combobox "Target name" [active] [ref=f32e302]
+              - generic [ref=f32e303]: A kind and a name together decide what an action may use — a row registered TABL is refused by RunQuery, whose own step kind is QURY (L-526).
+            - generic [ref=f32e304]:
+              - generic [ref=f32e305]: Description
+              - textbox "Description" [ref=f32e306]:
+                - /placeholder: Why this target is registered
+        - generic [ref=f32e307]:
+          - generic [ref=f32e308]: Permissions
+          - generic [ref=f32e309]:
+            - generic [ref=f32e310]:
+              - checkbox "Active" [checked] [ref=f32e311]
+              - generic [ref=f32e312]: Active
+            - generic [ref=f32e313]:
+              - checkbox "Allow read" [checked] [ref=f32e314]
+              - generic [ref=f32e315]: Allow read
+            - generic [ref=f32e316]:
+              - checkbox "Allow write" [ref=f32e317]
+              - generic [ref=f32e318]: Allow write
+            - generic [ref=f32e319]:
+              - checkbox "Allow generation" [ref=f32e320]
+              - generic [ref=f32e321]: Allow generation
+            - generic [ref=f32e322]: Clearing Active is an instant kill switch — it takes effect on the next call and needs no transport.
+        - generic [ref=f32e324]:
+          - generic [ref=f32e325]: Execution
+          - generic [ref=f32e326]:
+            - generic [ref=f32e327]:
+              - generic [ref=f32e328]: Call mode
+              - combobox "Call mode" [disabled] [ref=f32e329]:
+                - option "(blank — falls back to TFDIR-FMODE)" [selected]
+                - option "L — local, inside the batch LUW"
+                - option "R — RFC, outside the rollback"
+            - generic [ref=f32e330]:
+              - generic [ref=f32e331]: Max rows
+              - combobox "Max rows" [ref=f32e332]:
+                - option "0 — no override" [selected]
+                - option "100"
+                - option "500"
+                - option "1000"
+                - option "5000"
+                - option "Custom…"
+            - generic [ref=f32e333]:
+              - generic [ref=f32e334]: Log level
+              - combobox "Log level" [ref=f32e335]:
+                - option "A — all" [selected]
+                - option "E — errors"
+                - option "N — none"
+            - generic [ref=f32e336]: Call mode applies to FUNC targets only.
+            - generic [ref=f32e338]: 0 means “this target sets no override”, never “unlimited” — the framework's own budget still applies.
+      - generic [ref=f32e340]:
+        - generic [ref=f32e341]: Every write here is audited into RegistryHistory with a before/after snapshot.
+        - generic [ref=f32e342]:
+          - button "Cancel" [ref=f32e343] [cursor=pointer]
+          - button "Save" [ref=f32e344] [cursor=pointer]

@@ -1,0 +1,11 @@
+[   42136ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8773/api/dyngw/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.RunQuery?sap-client=100:0
+[   42147ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8773/api/dyngw/Registry?sap-client=100:0
+[   42157ms] TypeError: Cannot set properties of null (setting 'textContent')
+    at loadRegistry (http://localhost:8773/:359:57)
+[   42176ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8773/api/dyngw/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.RunQuery?sap-client=100:0
+[   42176ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8773/api/dyngw/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.RunQuery?sap-client=100:0
+[   42177ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8773/api/dyngw/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.RunQuery?sap-client=100:0
+[   42177ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8773/api/dyngw/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.RunQuery?sap-client=100:0
+[   84227ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8773/api/dyngw/Registry?$filter=TargetName%20eq%20%27ZFS_SLC_OTTK_BTP%27%20and%20TargetKind%20eq%20%27QURY%27&sap-client=100:0
+[   84236ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8773/api/dyngw/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.RunQuery?sap-client=100:0
+[  126296ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8773/api/dyngw/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.ExecuteBatch?sap-client=100:0

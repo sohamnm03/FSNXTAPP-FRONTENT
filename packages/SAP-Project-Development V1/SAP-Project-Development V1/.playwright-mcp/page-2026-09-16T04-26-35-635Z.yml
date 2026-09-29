@@ -1,0 +1,82 @@
+- generic [active] [ref=f147e1]:
+  - generic [ref=f147e2]:
+    - banner [ref=f147e3]:
+      - generic [ref=f147e4]:
+        - img "Fourth Signal" [ref=f147e5]
+        - generic [ref=f147e6]: Distribution Ticket DTTK
+      - generic [ref=f147e7]:
+        - button "Create DTTK" [ref=f147e8] [cursor=pointer]
+        - generic "System connected" [ref=f147e12]
+        - button "Release & Print" [ref=f147e13] [cursor=pointer]
+        - button "Refresh" [ref=f147e17] [cursor=pointer]
+        - button "Copy DTTK" [ref=f147e21] [cursor=pointer]
+    - main [ref=f147e25]:
+      - generic [ref=f147e26]:
+        - generic [ref=f147e27]:
+          - generic [ref=f147e28]: Open Distribution Tickets 0 records
+          - generic [ref=f147e29]:
+            - textbox "Search distribution tickets" [ref=f147e30]:
+              - /placeholder: Search DTTK…
+            - button "Filter" [ref=f147e31] [cursor=pointer]
+            - button "Export CSV" [ref=f147e34] [cursor=pointer]
+        - table [ref=f147e38]:
+          - rowgroup [ref=f147e39]:
+            - row [ref=f147e40]:
+              - columnheader "DTTK No" [ref=f147e41]
+              - columnheader "Type 1" [ref=f147e42]
+              - columnheader "Type 2" [ref=f147e43]
+              - columnheader "Related OTTK" [ref=f147e44]
+              - columnheader "Structure" [ref=f147e45]
+              - columnheader "Entity String" [ref=f147e46]
+              - columnheader "DTTK Value" [ref=f147e47]
+              - columnheader "Crcy" [ref=f147e48]
+              - columnheader "Discounting Bank" [ref=f147e49]
+              - columnheader "Expected LC Date" [ref=f147e50]
+              - columnheader "Tenor" [ref=f147e51]
+              - columnheader "LC Applicant" [ref=f147e52]
+              - columnheader "LC Beneficiary" [ref=f147e53]
+              - columnheader "CoCode" [ref=f147e54]
+              - columnheader "Interest" [ref=f147e55]
+              - columnheader "Status" [ref=f147e56]
+          - rowgroup
+        - generic [ref=f147e57]:
+          - generic [ref=f147e58]: Showing 0 of 0
+          - generic [ref=f147e59]:
+            - button "‹" [disabled] [ref=f147e60]
+            - button "1" [ref=f147e61] [cursor=pointer]
+            - button "›" [disabled] [ref=f147e62]
+      - generic [ref=f147e63]:
+        - generic [ref=f147e64]:
+          - generic [ref=f147e65]: Open Origination Tickets 0 records
+          - generic [ref=f147e66]:
+            - textbox "Search origination tickets" [ref=f147e67]:
+              - /placeholder: Search OTTK…
+            - button "Filter" [ref=f147e68] [cursor=pointer]
+            - button "Export CSV" [ref=f147e71] [cursor=pointer]
+        - table [ref=f147e75]:
+          - rowgroup [ref=f147e76]:
+            - row [ref=f147e77]:
+              - columnheader "OTTK No" [ref=f147e78]
+              - columnheader "Type" [ref=f147e79]
+              - columnheader "Structure" [ref=f147e80]
+              - columnheader "Entity ID" [ref=f147e81]
+              - columnheader "Entity String" [ref=f147e82]
+              - columnheader "LC Issuing Bank" [ref=f147e83]
+              - columnheader "Trade Value" [ref=f147e84]
+              - columnheader "Crcy" [ref=f147e85]
+              - columnheader "Expected LC Date" [ref=f147e86]
+              - columnheader "Tenor" [ref=f147e87]
+              - columnheader "LC Applicant" [ref=f147e88]
+              - columnheader "LC Beneficiary" [ref=f147e89]
+              - columnheader "CoCode" [ref=f147e90]
+              - columnheader "Deposit Amt" [ref=f147e91]
+              - columnheader "Interest" [ref=f147e92]
+              - columnheader "Status" [ref=f147e93]
+          - rowgroup
+        - generic [ref=f147e94]:
+          - generic [ref=f147e95]: Showing 0 of 0
+          - generic [ref=f147e96]:
+            - button "‹" [disabled] [ref=f147e97]
+            - button "1" [ref=f147e98] [cursor=pointer]
+            - button "›" [disabled] [ref=f147e99]
+  - status

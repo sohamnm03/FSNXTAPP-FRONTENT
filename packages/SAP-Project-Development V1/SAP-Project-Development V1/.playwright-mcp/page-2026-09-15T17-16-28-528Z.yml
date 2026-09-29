@@ -1,0 +1,52 @@
+- generic [active] [ref=f49e1]:
+  - banner [ref=f49e2]:
+    - generic [ref=f49e3]:
+      - img "Fourth Signal" [ref=f49e4]
+      - generic [ref=f49e5]:
+        - heading "Dynamic Gateway" [level=1] [ref=f49e6]
+        - paragraph [ref=f49e7]: FS • DS4 / 100
+    - generic "ZFS_SB_DYNGW_O4_API" [ref=f49e8]
+  - main [ref=f49e9]:
+    - generic [ref=f49e10]: Dynamic Gateway v2
+    - generic [ref=f49e11]: One allow-listed endpoint on DS4 client 100 — ZFS_SB_DYNGW_O4_API. Each tile opens a console served by its own proxy.
+    - generic [ref=f49e12]: Applications
+    - generic [ref=f49e14] [cursor=pointer]:
+      - generic [ref=f49e18]: OTTK via Dynamic Gateway
+      - generic [ref=f49e19]: Origination tickets read and written entirely through the gateway — no dedicated OData service — with a live trace of the gateway's own call log.
+      - generic [ref=f49e20]:
+        - generic [ref=f49e21]: Console
+        - generic [ref=f49e22]: →
+    - generic [ref=f49e23]: Administration
+    - generic [ref=f49e24]:
+      - generic [ref=f49e25] [cursor=pointer]:
+        - generic [ref=f49e29]: Registry
+        - generic [ref=f49e30]: "The allow-list: every registered target with its kind, permissions and usage. Register, edit, deactivate or delete a target; every write is audited."
+        - generic [ref=f49e31]:
+          - generic [ref=f49e32]: Admin
+          - generic [ref=f49e33]: →
+      - generic [ref=f49e34] [cursor=pointer]:
+        - generic [ref=f49e38]: Linkage Report
+        - generic [ref=f49e39]: How the four tables join. Pick a registry row and trace its change history, every step it authorised, and the calls those steps belonged to.
+        - generic [ref=f49e40]:
+          - generic [ref=f49e41]: Report
+          - generic [ref=f49e42]: →
+    - generic [ref=f49e43]: Reference
+    - generic [ref=f49e44]:
+      - generic [ref=f49e45] [cursor=pointer]:
+        - generic [ref=f49e49]: How to Call It
+        - generic [ref=f49e50]: "The endpoint, step by step: the URL shape, a first call you can copy, a card per action with its exact POST URL and parameters, and the traps."
+        - generic [ref=f49e51]:
+          - generic [ref=f49e52]: Docs
+          - generic [ref=f49e53]: →
+      - generic [ref=f49e54] [cursor=pointer]:
+        - generic [ref=f49e58]: Service $metadata
+        - generic [ref=f49e59]: The service's own contract as SAP publishes it — entity types, action signatures and result shape. Opens as raw XML.
+        - generic [ref=f49e60]:
+          - generic [ref=f49e61]: Raw
+          - generic [ref=f49e62]: →
+      - generic [ref=f49e63] [cursor=pointer]:
+        - generic [ref=f49e67]: Registry (raw JSON)
+        - generic [ref=f49e68]: The allow-list straight from the entity set, unrendered — useful when you want to see exactly what the service returns.
+        - generic [ref=f49e69]:
+          - generic [ref=f49e70]: Raw
+          - generic [ref=f49e71]: →

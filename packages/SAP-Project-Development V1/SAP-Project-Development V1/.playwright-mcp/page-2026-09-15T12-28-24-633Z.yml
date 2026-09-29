@@ -1,0 +1,1189 @@
+- generic [ref=f5e2]:
+  - banner [ref=f5e3]:
+    - generic [ref=f5e4]:
+      - img "Fourth Signal" [ref=f5e5]
+      - generic [ref=f5e6]: Dynamic Gateway v2 DYNGW
+    - generic [ref=f5e7]:
+      - button "Create OTTK" [ref=f5e8] [cursor=pointer]
+      - generic "System connected" [ref=f5e12]
+  - dialog [ref=f5e1081]:
+    - generic [ref=f5e1082]:
+      - generic [ref=f5e1083]:
+        - generic [ref=f5e1085]:
+          - heading "Edit Origination Ticket" [level=2] [ref=f5e1086]
+          - paragraph [ref=f5e1087]: Origination · 100054 | USD
+        - generic [ref=f5e1088]:
+          - generic [ref=f5e1089]:
+            - generic [ref=f5e1090]: Created By
+            - generic [ref=f5e1091]: FS_DEV3
+          - button "Close modal" [ref=f5e1092] [cursor=pointer]: ×
+      - generic [ref=f5e1093]:
+        - generic [ref=f5e1094]:
+          - generic [ref=f5e1095]: Transaction Details
+          - generic [ref=f5e1096]:
+            - generic [ref=f5e1097]:
+              - generic [ref=f5e1098]: OTTK Type
+              - combobox "OTTK Type" [ref=f5e1099]:
+                - option "01 New" [selected]
+                - option "02 With Ref DTTK"
+            - generic [ref=f5e1100]:
+              - generic [ref=f5e1101]: Structure
+              - combobox "Structure" [ref=f5e1102]:
+                - option "Select structure"
+                - option "DSX — Deposit Set Off - Cross Border" [selected]
+                - option "LCP — LC Prepayment"
+                - option "CC DSX — Cross Currency DSX"
+                - option "CC LCP — Cross Currency LCP"
+            - generic [ref=f5e1103]:
+              - generic [ref=f5e1104]: Entity String
+              - generic [ref=f5e1105]:
+                - combobox "Entity String" [ref=f5e1106]:
+                  - option "Select entity" [selected]
+                - textbox "(auto)" [ref=f5e1107]
+            - generic [ref=f5e1108]:
+              - generic [ref=f5e1109]: OT Trader
+              - combobox "OT Trader" [ref=f5e1110]:
+                - option "Select trader"
+                - option "OTL" [selected]
+                - option "OGA"
+        - generic [ref=f5e1111]:
+          - generic [ref=f5e1112]: Trade Details
+          - generic [ref=f5e1113]:
+            - generic [ref=f5e1114]:
+              - generic [ref=f5e1115]: LC Issuing Bank
+              - combobox "LC Issuing Bank" [ref=f5e1116]:
+                - option "Select bank" [selected]
+            - generic [ref=f5e1117]:
+              - generic [ref=f5e1118]: OTTK Trade Value
+              - generic [ref=f5e1119]:
+                - 'textbox "Enter a number or use K, M, B, T (example: 1.5M)" [ref=f5e1120]':
+                  - /placeholder: e.g. 1.5M
+                  - text: 500,000
+                - combobox [ref=f5e1121]:
+                  - option "USD" [selected]
+                  - option "EUR"
+                  - option "GBP"
+                  - option "INR"
+                  - option "AED"
+                  - option "SGD"
+            - generic [ref=f5e1122]:
+              - generic [ref=f5e1123]: Expected LC Date
+              - textbox "Expected LC Date" [ref=f5e1124]: 2026-10-15
+            - generic [ref=f5e1125]:
+              - generic [ref=f5e1126]: Expected LC Tenor
+              - generic [ref=f5e1127]:
+                - textbox "0" [ref=f5e1128]: "90"
+                - generic [ref=f5e1129]: days
+            - generic [ref=f5e1130]:
+              - generic [ref=f5e1131]: Payment Terms
+              - combobox [ref=f5e1132]:
+                - option "Select"
+                - option "01 Negotiation Date" [selected]
+                - option "02 Acceptance Date"
+                - option "03 Fixed Maturity Date"
+            - generic [ref=f5e1133]:
+              - generic [ref=f5e1134]: Other Charges
+              - 'textbox "Enter a number or use K, M, B, T (example: 5K) -- no Charges breakdown popup in this console, see worklog" [ref=f5e1135]':
+                - /placeholder: "0.00"
+            - generic [ref=f5e1136]:
+              - generic [ref=f5e1137]: BL Type
+              - combobox "BL Type" [ref=f5e1138]:
+                - option "Select"
+                - option "01 Original Copy" [selected]
+                - option "02 Copy BL"
+            - generic [ref=f5e1139]:
+              - generic [ref=f5e1140]: LC Applicant
+              - textbox [ref=f5e1141]: OGA
+            - generic [ref=f5e1142]:
+              - generic [ref=f5e1143]: LC Beneficiary
+              - textbox [ref=f5e1144]: DMCC
+            - generic [ref=f5e1145]:
+              - generic [ref=f5e1146]: Company Code
+              - generic [ref=f5e1147]:
+                - textbox [ref=f5e1148]: SG03
+                - textbox "(auto)" [ref=f5e1149]
+            - generic [ref=f5e1150]:
+              - generic [ref=f5e1151]: Business Area
+              - generic [ref=f5e1152]:
+                - textbox "(auto)" [ref=f5e1153]
+                - textbox "(auto)" [ref=f5e1154]
+        - generic [ref=f5e1155]:
+          - generic [ref=f5e1156]: Deposit / Prepayment
+          - generic [ref=f5e1157]:
+            - generic [ref=f5e1158]:
+              - generic [ref=f5e1159]: Deposit Value
+              - combobox [ref=f5e1160]:
+                - option "Select"
+                - option "DTY — Discounted Value" [selected]
+                - option "STR — Full Value"
+            - generic [ref=f5e1161]:
+              - generic [ref=f5e1162]: Deposit Amount
+              - generic [ref=f5e1163]:
+                - 'textbox "Enter a number or use K, M, B, T (example: 50K)" [ref=f5e1164]':
+                  - /placeholder: e.g. 50K
+                  - text: 500,000
+                - combobox [ref=f5e1165]:
+                  - option "USD" [selected]
+                  - option "EUR"
+                  - option "GBP"
+                  - option "INR"
+                  - option "AED"
+                  - option "SGD"
+            - generic [ref=f5e1166]:
+              - generic [ref=f5e1167]: Expected Date
+              - textbox [ref=f5e1168]
+            - generic [ref=f5e1169]:
+              - generic [ref=f5e1170]: Interest Category
+              - combobox [ref=f5e1171]:
+                - option "Select"
+                - option "01 Fixed" [selected]
+                - option "02 Variable"
+                - option "03 Fixed with Benchmark"
+                - option "04 Bank COF"
+            - generic [ref=f5e1172]:
+              - generic [ref=f5e1173]: Interest Rate
+              - textbox "0.00" [ref=f5e1174]: "5"
+            - generic [ref=f5e1175]:
+              - generic [ref=f5e1176]: 1st Interest Date
+              - textbox [ref=f5e1177]
+            - generic [ref=f5e1178]:
+              - generic [ref=f5e1179]: Reset Frequency
+              - combobox [ref=f5e1180]:
+                - option "Select" [selected]
+                - option "01 Monthly"
+                - option "02 Quarterly"
+                - option "03 Half Yearly"
+            - generic [ref=f5e1181]:
+              - generic [ref=f5e1182]: Interest Frequency
+              - combobox [ref=f5e1183]:
+                - option "Select" [selected]
+                - option "01 Upfront"
+                - option "02 Monthly"
+                - option "03 Quarterly"
+                - option "04 Half-yearly"
+                - option "05 Rear-end"
+        - generic [ref=f5e1184]:
+          - generic [ref=f5e1185]: Commercial Summary
+          - generic [ref=f5e1186]:
+            - generic [ref=f5e1187]:
+              - generic [ref=f5e1188]: Expected P&L %
+              - textbox "0.00" [ref=f5e1189]: "0"
+            - generic [ref=f5e1190]:
+              - generic [ref=f5e1191]: Expected P&L Amt
+              - 'textbox "Enter a number or use K, M, B, T (example: 100K)" [ref=f5e1192]':
+                - /placeholder: e.g. 100K
+            - generic [ref=f5e1193]:
+              - generic [ref=f5e1194]: Remarks / Flow remark
+              - textbox [ref=f5e1195]: Task 5 console create test -- dyngw v2 console, ExecuteTableCrud INSERT proof
+        - generic [ref=f5e1196]:
+          - generic [ref=f5e1197]: Contact & Commitment
+          - generic [ref=f5e1198]:
+            - generic [ref=f5e1199]:
+              - generic [ref=f5e1200]: Bank Contact
+              - textbox [ref=f5e1201]: SCB
+            - generic [ref=f5e1202]:
+              - generic [ref=f5e1203]: Bank Contact Details
+              - textbox [ref=f5e1204]: Mumbai
+            - generic [ref=f5e1205]:
+              - generic [ref=f5e1206]: Commitment End Date
+              - textbox [ref=f5e1207]
+      - generic [ref=f5e1208]:
+        - generic [ref=f5e1209]: "* Company Code is required before creation."
+        - generic [ref=f5e1210]:
+          - button "Delete" [ref=f5e1211] [cursor=pointer]
+          - button "Clear" [ref=f5e1212] [cursor=pointer]
+          - button "Cancel" [ref=f5e1213] [cursor=pointer]
+          - button "Save Changes" [ref=f5e1214] [cursor=pointer]
+  - main [ref=f5e13]:
+    - generic [ref=f5e14]:
+      - generic [ref=f5e15]:
+        - generic [ref=f5e16]: Provisioning
+        - generic [ref=f5e17]: 8 target(s) registered
+      - generic [ref=f5e18]:
+        - table [ref=f5e19]:
+          - rowgroup [ref=f5e20]:
+            - row [ref=f5e21]:
+              - columnheader "Target" [ref=f5e22]
+              - columnheader "Used for" [ref=f5e23]
+              - columnheader "Status" [ref=f5e24]
+          - rowgroup [ref=f5e25]:
+            - row [ref=f5e304]:
+              - cell "ZFS_CDS_SLC_001" [ref=f5e305]
+              - cell "OTTK list (Task 3)" [ref=f5e306]
+              - cell "Active" [ref=f5e307]
+            - row [ref=f5e308]:
+              - cell "ZFS_CDS_SLC_002" [ref=f5e309]
+              - cell "DTTK list (Task 3)" [ref=f5e310]
+              - cell "Active" [ref=f5e311]
+            - row [ref=f5e312]:
+              - cell "ZSGSLCTR_BPEXT" [ref=f5e313]
+              - cell "bank lookup" [ref=f5e314]
+              - cell "Active" [ref=f5e315]
+            - row [ref=f5e316]:
+              - cell "T000" [ref=f5e317]
+              - cell "liveness check" [ref=f5e318]
+              - cell "Active" [ref=f5e319]
+        - button "Provision targets" [ref=f5e42] [cursor=pointer]
+        - generic [ref=f5e43]:
+          - generic [ref=f5e44]: Diagnostics (dynCall proof)
+          - generic [ref=f5e45]:
+            - button "Run liveness check (T000)" [ref=f5e46] [cursor=pointer]
+            - button "Run refusal check (ZZ_UNKNOWN)" [ref=f5e47] [cursor=pointer]
+          - generic [ref=f5e48]: Not run yet.
+    - generic [ref=f5e49]:
+      - generic [ref=f5e50]:
+        - generic [ref=f5e51]: Open Origination Tickets 3 records
+        - generic [ref=f5e52]:
+          - textbox "Search origination tickets" [ref=f5e53]:
+            - /placeholder: Search OTTK…
+          - button "Filter" [ref=f5e54] [cursor=pointer]
+          - button "Export CSV" [ref=f5e57] [cursor=pointer]
+      - table [ref=f5e61]:
+        - rowgroup [ref=f5e79]:
+          - row [ref=f5e80]:
+            - columnheader "OTTK No" [ref=f5e81]
+            - columnheader "Type" [ref=f5e82]
+            - columnheader "Structure" [ref=f5e83]
+            - columnheader "Entity ID" [ref=f5e84]
+            - columnheader "Entity String" [ref=f5e85]
+            - columnheader "LC Issuing Bank" [ref=f5e86]
+            - columnheader "Trade Value" [ref=f5e87]
+            - columnheader "Crcy" [ref=f5e88]
+            - columnheader "Expected LC Date" [ref=f5e89]
+            - columnheader "Tenor" [ref=f5e90]
+            - columnheader "LC Applicant" [ref=f5e91]
+            - columnheader "LC Beneficiary" [ref=f5e92]
+            - columnheader "CoCode" [ref=f5e93]
+            - columnheader "Deposit Amt" [ref=f5e94]
+            - columnheader "Interest" [ref=f5e95]
+            - columnheader "Status" [ref=f5e96]
+        - rowgroup [ref=f5e97]:
+          - row [ref=f5e98]:
+            - cell "100054" [ref=f5e99] [cursor=pointer]
+            - cell "01" [ref=f5e100]
+            - cell "DSX" [ref=f5e101]
+            - cell [ref=f5e102]
+            - cell [ref=f5e103]
+            - cell [ref=f5e104]
+            - cell "500,000.00" [ref=f5e105]
+            - cell "USD" [ref=f5e106]
+            - cell "15.10.2026" [ref=f5e107]
+            - cell [ref=f5e108]
+            - cell [ref=f5e109]
+            - cell [ref=f5e110]
+            - cell "SG03 SG03 - OLAM GlobalAgri Pte. Ltd" [ref=f5e111]
+            - cell [ref=f5e112]
+            - cell [ref=f5e113]
+            - cell "Draft" [ref=f5e114]
+          - row [ref=f5e116]:
+            - cell "100050" [ref=f5e117] [cursor=pointer]
+            - cell "01" [ref=f5e118]
+            - cell "DSX" [ref=f5e119]
+            - cell "E024" [ref=f5e120]
+            - cell [ref=f5e121]
+            - cell "0660000680 — STANDARD CHARTERED BANK SINGAPORE" [ref=f5e122]
+            - cell "1,000,000.00" [ref=f5e123]
+            - cell "USD" [ref=f5e124]
+            - cell "08.09.2026" [ref=f5e125]
+            - cell [ref=f5e126]
+            - cell [ref=f5e127]
+            - cell [ref=f5e128]
+            - cell "SG03 SG03 - OLAM GlobalAgri Pte. Ltd" [ref=f5e129]
+            - cell [ref=f5e130]
+            - cell [ref=f5e131]
+            - cell "01 - Create New" [ref=f5e132]
+          - row [ref=f5e134]:
+            - cell "100049" [ref=f5e135] [cursor=pointer]
+            - cell "01" [ref=f5e136]
+            - cell "DSX" [ref=f5e137]
+            - cell "E024" [ref=f5e138]
+            - cell [ref=f5e139]
+            - cell "0660000680 — STANDARD CHARTERED BANK SINGAPORE" [ref=f5e140]
+            - cell "2,000,000.00" [ref=f5e141]
+            - cell "USD" [ref=f5e142]
+            - cell "08.09.2026" [ref=f5e143]
+            - cell [ref=f5e144]
+            - cell [ref=f5e145]
+            - cell [ref=f5e146]
+            - cell "SG03 SG03 - OLAM GlobalAgri Pte. Ltd" [ref=f5e147]
+            - cell [ref=f5e148]
+            - cell [ref=f5e149]
+            - cell "05 - Partially Assigned to Deal ID" [ref=f5e150]
+      - generic [ref=f5e152]:
+        - generic [ref=f5e153]: Showing 3 of 3
+        - generic [ref=f5e154]:
+          - button "‹" [disabled] [ref=f5e155]
+          - button "1" [ref=f5e156] [cursor=pointer]
+          - button "›" [disabled] [ref=f5e157]
+    - generic [ref=f5e158]:
+      - generic [ref=f5e159]:
+        - generic [ref=f5e160]: Open Distribution Tickets 1 records
+        - generic [ref=f5e161]:
+          - textbox "Search distribution tickets" [ref=f5e162]:
+            - /placeholder: Search tickets…
+          - button "Filter" [ref=f5e163] [cursor=pointer]
+          - button "Export CSV" [ref=f5e166] [cursor=pointer]
+      - table [ref=f5e170]:
+        - rowgroup [ref=f5e185]:
+          - row [ref=f5e186]:
+            - columnheader "DTTK No" [ref=f5e187]
+            - columnheader "Type1" [ref=f5e188]
+            - columnheader "Type2" [ref=f5e189]
+            - columnheader "Related OTTK" [ref=f5e190]
+            - columnheader "DTTK Value" [ref=f5e191]
+            - columnheader "Crcy" [ref=f5e192]
+            - columnheader "Expected Date" [ref=f5e193]
+            - columnheader "Tenor" [ref=f5e194]
+            - columnheader "LC Applicant" [ref=f5e195]
+            - columnheader "LC Beneficiary" [ref=f5e196]
+            - columnheader "Company Code" [ref=f5e197]
+            - columnheader "Company Name" [ref=f5e198]
+            - columnheader "Status" [ref=f5e199]
+        - rowgroup [ref=f5e200]:
+          - row [ref=f5e201]:
+            - cell "100043" [ref=f5e202] [cursor=pointer]
+            - cell "02" [ref=f5e203]
+            - cell "02" [ref=f5e204]
+            - cell "100049" [ref=f5e205]
+            - cell "2,000,000.00" [ref=f5e206]
+            - cell "USD" [ref=f5e207]
+            - cell "08.09.2026" [ref=f5e208]
+            - cell [ref=f5e209]
+            - cell [ref=f5e210]
+            - cell [ref=f5e211]
+            - cell "SG03" [ref=f5e212]
+            - cell [ref=f5e213]
+            - cell "05 - Partially Assigned to Deal ID" [ref=f5e214]
+      - generic [ref=f5e216]:
+        - generic [ref=f5e217]: Showing 1 of 1
+        - generic [ref=f5e218]:
+          - button "‹" [disabled] [ref=f5e219]
+          - button "1" [ref=f5e220] [cursor=pointer]
+          - button "›" [disabled] [ref=f5e221]
+    - generic [ref=f5e222]:
+      - generic [ref=f5e223]:
+        - generic [ref=f5e224]: Gateway Trace Refreshed 5:57:14 PM
+        - button "⟳" [ref=f5e226] [cursor=pointer]
+      - generic [ref=f5e227]:
+        - generic [ref=f5e228]:
+          - generic [ref=f5e229]: Call
+          - generic [ref=f5e230]: "71"
+          - generic [ref=f5e231]: "+4"
+        - generic [ref=f5e232]:
+          - generic [ref=f5e233]: Step
+          - generic [ref=f5e234]: "78"
+          - generic [ref=f5e235]: "+2"
+        - generic [ref=f5e236]:
+          - generic [ref=f5e237]: Reg
+          - generic [ref=f5e238]: "8"
+          - generic [ref=f5e239]: "+1"
+        - generic [ref=f5e240]:
+          - generic [ref=f5e241]: Regh
+          - generic [ref=f5e242]: "11"
+          - generic [ref=f5e243]: "+1"
+        - generic [ref=f5e244]:
+          - generic [ref=f5e245]: Probe
+          - generic [ref=f5e246]: —
+          - generic [ref=f5e247]: —
+          - generic [ref=f5e320]: not registered
+      - generic [ref=f5e248]:
+        - table [ref=f5e250]:
+          - rowgroup [ref=f5e263]:
+            - row [ref=f5e264]:
+              - columnheader [ref=f5e265]
+              - columnheader "Executed At" [ref=f5e266]
+              - columnheader "Action" [ref=f5e267]
+              - columnheader "Status" [ref=f5e268]
+              - columnheader "Err Cat" [ref=f5e269]
+              - columnheader "Result" [ref=f5e270]
+              - columnheader "Dur ms" [ref=f5e271]
+              - columnheader "Replayed" [ref=f5e272]
+              - columnheader "Committed" [ref=f5e273]
+              - columnheader "Rolled Back" [ref=f5e274]
+              - columnheader "Header Message" [ref=f5e275]
+          - rowgroup [ref=f5e321]:
+            - row [ref=f5e322] [cursor=pointer]:
+              - cell "▸" [ref=f5e323]
+              - cell "9/15/2026, 5:57:13 PM" [ref=f5e324]
+              - cell "RunQuery" [ref=f5e325]
+              - cell "E" [ref=f5e326]
+              - cell "CLIENT" [ref=f5e327]
+              - cell "0" [ref=f5e328]
+              - cell "0" [ref=f5e329]
+              - cell "No" [ref=f5e330]
+              - cell "n/a" [ref=f5e331]
+              - cell "n/a" [ref=f5e332]
+              - 'cell "045: Batch aborted at step 1: Target ZFS_T_TRM_PROBE is not registered for the d" [ref=f5e333]'
+            - row [ref=f5e334] [cursor=pointer]:
+              - cell "▸" [ref=f5e335]
+              - cell "9/15/2026, 5:57:13 PM" [ref=f5e336]
+              - cell "ExecuteBatch" [ref=f5e337]
+              - cell "S" [ref=f5e338]
+              - cell [ref=f5e339]
+              - cell "1" [ref=f5e340]
+              - cell "0" [ref=f5e341]
+              - cell "No" [ref=f5e342]
+              - cell "n/a" [ref=f5e343]
+              - cell "n/a" [ref=f5e344]
+              - cell "000:" [ref=f5e345]
+            - row [ref=f5e346] [cursor=pointer]:
+              - cell "▸" [ref=f5e347]
+              - cell "9/15/2026, 5:57:13 PM" [ref=f5e348]
+              - cell "RunQuery" [ref=f5e349]
+              - cell "S" [ref=f5e350]
+              - cell [ref=f5e351]
+              - cell "1" [ref=f5e352]
+              - cell "0" [ref=f5e353]
+              - cell "No" [ref=f5e354]
+              - cell "n/a" [ref=f5e355]
+              - cell "n/a" [ref=f5e356]
+              - cell "000:" [ref=f5e357]
+            - row [ref=f5e358] [cursor=pointer]:
+              - cell "▸" [ref=f5e359]
+              - cell "9/15/2026, 5:57:13 PM" [ref=f5e360]
+              - cell "RunQuery" [ref=f5e361]
+              - cell "S" [ref=f5e362]
+              - cell [ref=f5e363]
+              - cell "3" [ref=f5e364]
+              - cell "0" [ref=f5e365]
+              - cell "No" [ref=f5e366]
+              - cell "n/a" [ref=f5e367]
+              - cell "n/a" [ref=f5e368]
+              - cell "000:" [ref=f5e369]
+            - row [ref=f5e370] [cursor=pointer]:
+              - cell "▸" [ref=f5e371]
+              - cell "9/15/2026, 5:47:13 PM" [ref=f5e372]
+              - cell "RunQuery" [ref=f5e373]
+              - cell "S" [ref=f5e374]
+              - cell [ref=f5e375]
+              - cell "3" [ref=f5e376]
+              - cell "0" [ref=f5e377]
+              - cell "No" [ref=f5e378]
+              - cell "n/a" [ref=f5e379]
+              - cell "n/a" [ref=f5e380]
+              - cell "000:" [ref=f5e381]
+            - row [ref=f5e382] [cursor=pointer]:
+              - cell "▸" [ref=f5e383]
+              - cell "9/15/2026, 5:47:13 PM" [ref=f5e384]
+              - cell "ExecuteTableCrud" [ref=f5e385]
+              - cell "S" [ref=f5e386]
+              - cell [ref=f5e387]
+              - cell "1" [ref=f5e388]
+              - cell "0" [ref=f5e389]
+              - cell "No" [ref=f5e390]
+              - cell "n/a" [ref=f5e391]
+              - cell "n/a" [ref=f5e392]
+              - cell "000:" [ref=f5e393]
+            - row [ref=f5e394] [cursor=pointer]:
+              - cell "▸" [ref=f5e395]
+              - cell "9/15/2026, 5:46:19 PM" [ref=f5e396]
+              - cell "RunQuery" [ref=f5e397]
+              - cell "E" [ref=f5e398]
+              - cell "CLIENT" [ref=f5e399]
+              - cell "0" [ref=f5e400]
+              - cell "0" [ref=f5e401]
+              - cell "No" [ref=f5e402]
+              - cell "n/a" [ref=f5e403]
+              - cell "n/a" [ref=f5e404]
+              - 'cell "045: Batch aborted at step 1: Target ZFS_T_TRM_PROBE is not registered for the d" [ref=f5e405]'
+            - row [ref=f5e406] [cursor=pointer]:
+              - cell "▸" [ref=f5e407]
+              - cell "9/15/2026, 5:46:18 PM" [ref=f5e408]
+              - cell "RunQuery" [ref=f5e409]
+              - cell "S" [ref=f5e410]
+              - cell [ref=f5e411]
+              - cell "2" [ref=f5e412]
+              - cell "0" [ref=f5e413]
+              - cell "No" [ref=f5e414]
+              - cell "n/a" [ref=f5e415]
+              - cell "n/a" [ref=f5e416]
+              - cell "000:" [ref=f5e417]
+            - row [ref=f5e418] [cursor=pointer]:
+              - cell "▸" [ref=f5e419]
+              - cell "9/15/2026, 5:46:18 PM" [ref=f5e420]
+              - cell "RunQuery" [ref=f5e421]
+              - cell "S" [ref=f5e422]
+              - cell [ref=f5e423]
+              - cell "1" [ref=f5e424]
+              - cell "0" [ref=f5e425]
+              - cell "No" [ref=f5e426]
+              - cell "n/a" [ref=f5e427]
+              - cell "n/a" [ref=f5e428]
+              - cell "000:" [ref=f5e429]
+            - row [ref=f5e430] [cursor=pointer]:
+              - cell "▸" [ref=f5e431]
+              - cell "9/15/2026, 5:46:18 PM" [ref=f5e432]
+              - cell "RunQuery" [ref=f5e433]
+              - cell "S" [ref=f5e434]
+              - cell [ref=f5e435]
+              - cell "1" [ref=f5e436]
+              - cell "0" [ref=f5e437]
+              - cell "No" [ref=f5e438]
+              - cell "n/a" [ref=f5e439]
+              - cell "n/a" [ref=f5e440]
+              - cell "000:" [ref=f5e441]
+            - row [ref=f5e442] [cursor=pointer]:
+              - cell "▸" [ref=f5e443]
+              - cell "9/15/2026, 5:46:18 PM" [ref=f5e444]
+              - cell "RunQuery" [ref=f5e445]
+              - cell "S" [ref=f5e446]
+              - cell [ref=f5e447]
+              - cell "2" [ref=f5e448]
+              - cell "0" [ref=f5e449]
+              - cell "No" [ref=f5e450]
+              - cell "n/a" [ref=f5e451]
+              - cell "n/a" [ref=f5e452]
+              - cell "000:" [ref=f5e453]
+            - row [ref=f5e454] [cursor=pointer]:
+              - cell "▸" [ref=f5e455]
+              - cell "9/15/2026, 5:36:46 PM" [ref=f5e456]
+              - cell "RunQuery" [ref=f5e457]
+              - cell "E" [ref=f5e458]
+              - cell "CLIENT" [ref=f5e459]
+              - cell "0" [ref=f5e460]
+              - cell "0" [ref=f5e461]
+              - cell "No" [ref=f5e462]
+              - cell "n/a" [ref=f5e463]
+              - cell "n/a" [ref=f5e464]
+              - 'cell "045: Batch aborted at step 1: Target ZFS_T_TRM_PROBE is not registered for the d" [ref=f5e465]'
+            - row [ref=f5e466] [cursor=pointer]:
+              - cell "▸" [ref=f5e467]
+              - cell "9/15/2026, 5:36:46 PM" [ref=f5e468]
+              - cell "RunQuery" [ref=f5e469]
+              - cell "S" [ref=f5e470]
+              - cell [ref=f5e471]
+              - cell "1" [ref=f5e472]
+              - cell "0" [ref=f5e473]
+              - cell "No" [ref=f5e474]
+              - cell "n/a" [ref=f5e475]
+              - cell "n/a" [ref=f5e476]
+              - cell "000:" [ref=f5e477]
+            - row [ref=f5e478] [cursor=pointer]:
+              - cell "▸" [ref=f5e479]
+              - cell "9/15/2026, 5:36:46 PM" [ref=f5e480]
+              - cell "RunQuery" [ref=f5e481]
+              - cell "S" [ref=f5e482]
+              - cell [ref=f5e483]
+              - cell "2" [ref=f5e484]
+              - cell "0" [ref=f5e485]
+              - cell "No" [ref=f5e486]
+              - cell "n/a" [ref=f5e487]
+              - cell "n/a" [ref=f5e488]
+              - cell "000:" [ref=f5e489]
+            - row [ref=f5e490] [cursor=pointer]:
+              - cell "▸" [ref=f5e491]
+              - cell "9/15/2026, 5:35:54 PM" [ref=f5e492]
+              - cell "RunQuery" [ref=f5e493]
+              - cell "S" [ref=f5e494]
+              - cell [ref=f5e495]
+              - cell "2" [ref=f5e496]
+              - cell "0" [ref=f5e497]
+              - cell "No" [ref=f5e498]
+              - cell "n/a" [ref=f5e499]
+              - cell "n/a" [ref=f5e500]
+              - cell "000:" [ref=f5e501]
+            - row [ref=f5e502] [cursor=pointer]:
+              - cell "▸" [ref=f5e503]
+              - cell "9/15/2026, 5:35:19 PM" [ref=f5e504]
+              - cell "RunQuery" [ref=f5e505]
+              - cell "E" [ref=f5e506]
+              - cell "CLIENT" [ref=f5e507]
+              - cell "0" [ref=f5e508]
+              - cell "0" [ref=f5e509]
+              - cell "No" [ref=f5e510]
+              - cell "n/a" [ref=f5e511]
+              - cell "n/a" [ref=f5e512]
+              - 'cell "045: Batch aborted at step 1: Target ZFS_T_TRM_PROBE is not registered for the d" [ref=f5e513]'
+            - row [ref=f5e514] [cursor=pointer]:
+              - cell "▸" [ref=f5e515]
+              - cell "9/15/2026, 5:35:12 PM" [ref=f5e516]
+              - cell "RunQuery" [ref=f5e517]
+              - cell "E" [ref=f5e518]
+              - cell "CLIENT" [ref=f5e519]
+              - cell "0" [ref=f5e520]
+              - cell "0" [ref=f5e521]
+              - cell "No" [ref=f5e522]
+              - cell "n/a" [ref=f5e523]
+              - cell "n/a" [ref=f5e524]
+              - 'cell "045: Batch aborted at step 1: Target ZFS_T_TRM_PROBE is not registered for the d" [ref=f5e525]'
+            - row [ref=f5e526] [cursor=pointer]:
+              - cell "▸" [ref=f5e527]
+              - cell "9/15/2026, 5:35:12 PM" [ref=f5e528]
+              - cell "RunQuery" [ref=f5e529]
+              - cell "S" [ref=f5e530]
+              - cell [ref=f5e531]
+              - cell "1" [ref=f5e532]
+              - cell "0" [ref=f5e533]
+              - cell "No" [ref=f5e534]
+              - cell "n/a" [ref=f5e535]
+              - cell "n/a" [ref=f5e536]
+              - cell "000:" [ref=f5e537]
+            - row [ref=f5e538] [cursor=pointer]:
+              - cell "▸" [ref=f5e539]
+              - cell "9/15/2026, 5:35:12 PM" [ref=f5e540]
+              - cell "RunQuery" [ref=f5e541]
+              - cell "S" [ref=f5e542]
+              - cell [ref=f5e543]
+              - cell "2" [ref=f5e544]
+              - cell "0" [ref=f5e545]
+              - cell "No" [ref=f5e546]
+              - cell "n/a" [ref=f5e547]
+              - cell "n/a" [ref=f5e548]
+              - cell "000:" [ref=f5e549]
+            - row [ref=f5e550] [cursor=pointer]:
+              - cell "▸" [ref=f5e551]
+              - cell "9/15/2026, 5:35:08 PM" [ref=f5e552]
+              - cell "RunQuery" [ref=f5e553]
+              - cell "E" [ref=f5e554]
+              - cell "CLIENT" [ref=f5e555]
+              - cell "0" [ref=f5e556]
+              - cell "0" [ref=f5e557]
+              - cell "No" [ref=f5e558]
+              - cell "n/a" [ref=f5e559]
+              - cell "n/a" [ref=f5e560]
+              - 'cell "045: Batch aborted at step 1: Target ZFS_T_TRM_PROBE is not registered for the d" [ref=f5e561]'
+            - row [ref=f5e562] [cursor=pointer]:
+              - cell "▸" [ref=f5e563]
+              - cell "9/15/2026, 5:35:07 PM" [ref=f5e564]
+              - cell "RunQuery" [ref=f5e565]
+              - cell "S" [ref=f5e566]
+              - cell [ref=f5e567]
+              - cell "1" [ref=f5e568]
+              - cell "0" [ref=f5e569]
+              - cell "No" [ref=f5e570]
+              - cell "n/a" [ref=f5e571]
+              - cell "n/a" [ref=f5e572]
+              - cell "000:" [ref=f5e573]
+            - row [ref=f5e574] [cursor=pointer]:
+              - cell "▸" [ref=f5e575]
+              - cell "9/15/2026, 5:35:07 PM" [ref=f5e576]
+              - cell "RunQuery" [ref=f5e577]
+              - cell "S" [ref=f5e578]
+              - cell [ref=f5e579]
+              - cell "2" [ref=f5e580]
+              - cell "0" [ref=f5e581]
+              - cell "No" [ref=f5e582]
+              - cell "n/a" [ref=f5e583]
+              - cell "n/a" [ref=f5e584]
+              - cell "000:" [ref=f5e585]
+            - row [ref=f5e586] [cursor=pointer]:
+              - cell "▸" [ref=f5e587]
+              - cell "9/15/2026, 5:34:58 PM" [ref=f5e588]
+              - cell "RunQuery" [ref=f5e589]
+              - cell "S" [ref=f5e590]
+              - cell [ref=f5e591]
+              - cell "3" [ref=f5e592]
+              - cell "0" [ref=f5e593]
+              - cell "No" [ref=f5e594]
+              - cell "n/a" [ref=f5e595]
+              - cell "n/a" [ref=f5e596]
+              - cell "000:" [ref=f5e597]
+            - row [ref=f5e598] [cursor=pointer]:
+              - cell "▸" [ref=f5e599]
+              - cell "9/15/2026, 5:34:41 PM" [ref=f5e600]
+              - cell "RunQuery" [ref=f5e601]
+              - cell "E" [ref=f5e602]
+              - cell "CLIENT" [ref=f5e603]
+              - cell "0" [ref=f5e604]
+              - cell "0" [ref=f5e605]
+              - cell "No" [ref=f5e606]
+              - cell "n/a" [ref=f5e607]
+              - cell "n/a" [ref=f5e608]
+              - 'cell "045: Batch aborted at step 1: Target ZFS_T_TRM_PROBE is not registered for the d" [ref=f5e609]'
+            - row [ref=f5e610] [cursor=pointer]:
+              - cell "▸" [ref=f5e611]
+              - cell "9/15/2026, 5:34:40 PM" [ref=f5e612]
+              - cell "RunQuery" [ref=f5e613]
+              - cell "S" [ref=f5e614]
+              - cell [ref=f5e615]
+              - cell "1" [ref=f5e616]
+              - cell "0" [ref=f5e617]
+              - cell "No" [ref=f5e618]
+              - cell "n/a" [ref=f5e619]
+              - cell "n/a" [ref=f5e620]
+              - cell "000:" [ref=f5e621]
+            - row [ref=f5e622] [cursor=pointer]:
+              - cell "▸" [ref=f5e623]
+              - cell "9/15/2026, 5:34:40 PM" [ref=f5e624]
+              - cell "RunQuery" [ref=f5e625]
+              - cell "S" [ref=f5e626]
+              - cell [ref=f5e627]
+              - cell "2" [ref=f5e628]
+              - cell "0" [ref=f5e629]
+              - cell "No" [ref=f5e630]
+              - cell "n/a" [ref=f5e631]
+              - cell "n/a" [ref=f5e632]
+              - cell "000:" [ref=f5e633]
+            - row [ref=f5e634] [cursor=pointer]:
+              - cell "▸" [ref=f5e635]
+              - cell "9/15/2026, 5:31:24 PM" [ref=f5e636]
+              - cell "RunQuery" [ref=f5e637]
+              - cell "S" [ref=f5e638]
+              - cell [ref=f5e639]
+              - cell "1" [ref=f5e640]
+              - cell "0" [ref=f5e641]
+              - cell "No" [ref=f5e642]
+              - cell "n/a" [ref=f5e643]
+              - cell "n/a" [ref=f5e644]
+              - cell "000:" [ref=f5e645]
+            - row [ref=f5e646] [cursor=pointer]:
+              - cell "▸" [ref=f5e647]
+              - cell "9/15/2026, 5:31:24 PM" [ref=f5e648]
+              - cell "RunQuery" [ref=f5e649]
+              - cell "S" [ref=f5e650]
+              - cell [ref=f5e651]
+              - cell "2" [ref=f5e652]
+              - cell "0" [ref=f5e653]
+              - cell "No" [ref=f5e654]
+              - cell "n/a" [ref=f5e655]
+              - cell "n/a" [ref=f5e656]
+              - cell "000:" [ref=f5e657]
+            - row [ref=f5e658] [cursor=pointer]:
+              - cell "▸" [ref=f5e659]
+              - cell "9/15/2026, 5:30:00 PM" [ref=f5e660]
+              - cell "RunQuery" [ref=f5e661]
+              - cell "E" [ref=f5e662]
+              - cell "CLIENT" [ref=f5e663]
+              - cell "0" [ref=f5e664]
+              - cell "0" [ref=f5e665]
+              - cell "No" [ref=f5e666]
+              - cell "n/a" [ref=f5e667]
+              - cell "n/a" [ref=f5e668]
+              - 'cell "045: Batch aborted at step 1: Target ZFS_T_TRM_PROBE is not registered for the d" [ref=f5e669]'
+            - row [ref=f5e670] [cursor=pointer]:
+              - cell "▸" [ref=f5e671]
+              - cell "9/15/2026, 5:29:53 PM" [ref=f5e672]
+              - cell "RunQuery" [ref=f5e673]
+              - cell "E" [ref=f5e674]
+              - cell "CLIENT" [ref=f5e675]
+              - cell "0" [ref=f5e676]
+              - cell "0" [ref=f5e677]
+              - cell "No" [ref=f5e678]
+              - cell "n/a" [ref=f5e679]
+              - cell "n/a" [ref=f5e680]
+              - 'cell "045: Batch aborted at step 1: Target ZFS_T_TRM_PROBE is not registered for the d" [ref=f5e681]'
+            - row [ref=f5e682] [cursor=pointer]:
+              - cell "▸" [ref=f5e683]
+              - cell "9/15/2026, 5:26:01 PM" [ref=f5e684]
+              - cell "RunQuery" [ref=f5e685]
+              - cell "S" [ref=f5e686]
+              - cell [ref=f5e687]
+              - cell "3" [ref=f5e688]
+              - cell "0" [ref=f5e689]
+              - cell "No" [ref=f5e690]
+              - cell "n/a" [ref=f5e691]
+              - cell "n/a" [ref=f5e692]
+              - cell "000:" [ref=f5e693]
+            - row [ref=f5e694] [cursor=pointer]:
+              - cell "▸" [ref=f5e695]
+              - cell "9/15/2026, 5:25:58 PM" [ref=f5e696]
+              - cell "RunQuery" [ref=f5e697]
+              - cell "E" [ref=f5e698]
+              - cell "CLIENT" [ref=f5e699]
+              - cell "0" [ref=f5e700]
+              - cell "0" [ref=f5e701]
+              - cell "No" [ref=f5e702]
+              - cell "n/a" [ref=f5e703]
+              - cell "n/a" [ref=f5e704]
+              - 'cell "045: Batch aborted at step 1: Target ZZ_UNKNOWN is not registered for the dynami" [ref=f5e705]'
+            - row [ref=f5e706] [cursor=pointer]:
+              - cell "▸" [ref=f5e707]
+              - cell "9/15/2026, 5:25:55 PM" [ref=f5e708]
+              - cell "RunQuery" [ref=f5e709]
+              - cell "S" [ref=f5e710]
+              - cell [ref=f5e711]
+              - cell "3" [ref=f5e712]
+              - cell "0" [ref=f5e713]
+              - cell "No" [ref=f5e714]
+              - cell "n/a" [ref=f5e715]
+              - cell "n/a" [ref=f5e716]
+              - cell "000:" [ref=f5e717]
+            - row [ref=f5e718] [cursor=pointer]:
+              - cell "▸" [ref=f5e719]
+              - cell "9/15/2026, 5:25:46 PM" [ref=f5e720]
+              - cell "ExecuteBatch" [ref=f5e721]
+              - cell "E" [ref=f5e722]
+              - cell "BUSINESS" [ref=f5e723]
+              - cell "0" [ref=f5e724]
+              - cell "0" [ref=f5e725]
+              - cell "No" [ref=f5e726]
+              - cell "n/a" [ref=f5e727]
+              - cell "n/a" [ref=f5e728]
+              - 'cell "045: Batch aborted at step 1: Target ZFS_CDS_SLC_001 is already registered" [ref=f5e729]'
+            - row [ref=f5e730] [cursor=pointer]:
+              - cell "▸" [ref=f5e731]
+              - cell "9/15/2026, 5:25:43 PM" [ref=f5e732]
+              - cell "RunQuery" [ref=f5e733]
+              - cell "S" [ref=f5e734]
+              - cell [ref=f5e735]
+              - cell "1" [ref=f5e736]
+              - cell "0" [ref=f5e737]
+              - cell "No" [ref=f5e738]
+              - cell "n/a" [ref=f5e739]
+              - cell "n/a" [ref=f5e740]
+              - cell "000:" [ref=f5e741]
+            - row [ref=f5e742] [cursor=pointer]:
+              - cell "▸" [ref=f5e743]
+              - cell "9/15/2026, 5:25:43 PM" [ref=f5e744]
+              - cell "RunQuery" [ref=f5e745]
+              - cell "S" [ref=f5e746]
+              - cell [ref=f5e747]
+              - cell "2" [ref=f5e748]
+              - cell "0" [ref=f5e749]
+              - cell "No" [ref=f5e750]
+              - cell "n/a" [ref=f5e751]
+              - cell "n/a" [ref=f5e752]
+              - cell "000:" [ref=f5e753]
+            - row [ref=f5e754] [cursor=pointer]:
+              - cell "▸" [ref=f5e755]
+              - cell "9/15/2026, 5:22:53 PM" [ref=f5e756]
+              - cell "RunQuery" [ref=f5e757]
+              - cell "S" [ref=f5e758]
+              - cell [ref=f5e759]
+              - cell "1" [ref=f5e760]
+              - cell "1000" [ref=f5e761]
+              - cell "No" [ref=f5e762]
+              - cell "n/a" [ref=f5e763]
+              - cell "n/a" [ref=f5e764]
+              - cell "000:" [ref=f5e765]
+            - row [ref=f5e766] [cursor=pointer]:
+              - cell "▸" [ref=f5e767]
+              - cell "9/15/2026, 5:22:52 PM" [ref=f5e768]
+              - cell "RunQuery" [ref=f5e769]
+              - cell "S" [ref=f5e770]
+              - cell [ref=f5e771]
+              - cell "2" [ref=f5e772]
+              - cell "0" [ref=f5e773]
+              - cell "No" [ref=f5e774]
+              - cell "n/a" [ref=f5e775]
+              - cell "n/a" [ref=f5e776]
+              - cell "000:" [ref=f5e777]
+            - row [ref=f5e778] [cursor=pointer]:
+              - cell "▸" [ref=f5e779]
+              - cell "9/15/2026, 5:22:37 PM" [ref=f5e780]
+              - cell "RunQuery" [ref=f5e781]
+              - cell "E" [ref=f5e782]
+              - cell "CLIENT" [ref=f5e783]
+              - cell "0" [ref=f5e784]
+              - cell "0" [ref=f5e785]
+              - cell "No" [ref=f5e786]
+              - cell "n/a" [ref=f5e787]
+              - cell "n/a" [ref=f5e788]
+              - 'cell "045: Batch aborted at step 1: Requested row count" [ref=f5e789]'
+            - row [ref=f5e790] [cursor=pointer]:
+              - cell "▸" [ref=f5e791]
+              - cell "9/15/2026, 5:22:20 PM" [ref=f5e792]
+              - cell "RunQuery" [ref=f5e793]
+              - cell "E" [ref=f5e794]
+              - cell "CLIENT" [ref=f5e795]
+              - cell "0" [ref=f5e796]
+              - cell "0" [ref=f5e797]
+              - cell "No" [ref=f5e798]
+              - cell "n/a" [ref=f5e799]
+              - cell "n/a" [ref=f5e800]
+              - 'cell "045: Batch aborted at step 1: Requested row count" [ref=f5e801]'
+            - row [ref=f5e802] [cursor=pointer]:
+              - cell "▸" [ref=f5e803]
+              - cell "9/15/2026, 5:22:20 PM" [ref=f5e804]
+              - cell "RunQuery" [ref=f5e805]
+              - cell "E" [ref=f5e806]
+              - cell "CLIENT" [ref=f5e807]
+              - cell "0" [ref=f5e808]
+              - cell "0" [ref=f5e809]
+              - cell "No" [ref=f5e810]
+              - cell "n/a" [ref=f5e811]
+              - cell "n/a" [ref=f5e812]
+              - 'cell "045: Batch aborted at step 1: Requested row count" [ref=f5e813]'
+            - row [ref=f5e814] [cursor=pointer]:
+              - cell "▸" [ref=f5e815]
+              - cell "9/15/2026, 5:15:09 PM" [ref=f5e816]
+              - cell "RunQuery" [ref=f5e817]
+              - cell "E" [ref=f5e818]
+              - cell "CLIENT" [ref=f5e819]
+              - cell "0" [ref=f5e820]
+              - cell "0" [ref=f5e821]
+              - cell "No" [ref=f5e822]
+              - cell "n/a" [ref=f5e823]
+              - cell "n/a" [ref=f5e824]
+              - 'cell "045: Batch aborted at step 1: Target ZZ_UNKNOWN is not registered for the dynami" [ref=f5e825]'
+            - row [ref=f5e826] [cursor=pointer]:
+              - cell "▸" [ref=f5e827]
+              - cell "9/15/2026, 5:15:00 PM" [ref=f5e828]
+              - cell "RunQuery" [ref=f5e829]
+              - cell "S" [ref=f5e830]
+              - cell [ref=f5e831]
+              - cell "3" [ref=f5e832]
+              - cell "0" [ref=f5e833]
+              - cell "No" [ref=f5e834]
+              - cell "n/a" [ref=f5e835]
+              - cell "n/a" [ref=f5e836]
+              - cell "000:" [ref=f5e837]
+            - row [ref=f5e838] [cursor=pointer]:
+              - cell "▸" [ref=f5e839]
+              - cell "9/15/2026, 5:13:15 PM" [ref=f5e840]
+              - cell "RunQuery" [ref=f5e841]
+              - cell "E" [ref=f5e842]
+              - cell "CLIENT" [ref=f5e843]
+              - cell "0" [ref=f5e844]
+              - cell "0" [ref=f5e845]
+              - cell "No" [ref=f5e846]
+              - cell "n/a" [ref=f5e847]
+              - cell "n/a" [ref=f5e848]
+              - 'cell "045: Batch aborted at step 1: Target ZZ_UNKNOWN is not registered for the dynami" [ref=f5e849]'
+            - row [ref=f5e850] [cursor=pointer]:
+              - cell "▸" [ref=f5e851]
+              - cell "9/15/2026, 5:13:15 PM" [ref=f5e852]
+              - cell "RunQuery" [ref=f5e853]
+              - cell "S" [ref=f5e854]
+              - cell [ref=f5e855]
+              - cell "3" [ref=f5e856]
+              - cell "0" [ref=f5e857]
+              - cell "No" [ref=f5e858]
+              - cell "n/a" [ref=f5e859]
+              - cell "n/a" [ref=f5e860]
+              - cell "000:" [ref=f5e861]
+            - row [ref=f5e862] [cursor=pointer]:
+              - cell "▸" [ref=f5e863]
+              - cell "9/15/2026, 5:13:03 PM" [ref=f5e864]
+              - cell "ExecuteBatch" [ref=f5e865]
+              - cell "S" [ref=f5e866]
+              - cell [ref=f5e867]
+              - cell "4" [ref=f5e868]
+              - cell "0" [ref=f5e869]
+              - cell "No" [ref=f5e870]
+              - cell "n/a" [ref=f5e871]
+              - cell "n/a" [ref=f5e872]
+              - cell "000:" [ref=f5e873]
+            - row [ref=f5e874] [cursor=pointer]:
+              - cell "▸" [ref=f5e875]
+              - cell "9/15/2026, 4:45:20 PM" [ref=f5e876]
+              - cell "ExecuteTableCrud" [ref=f5e877]
+              - cell "S" [ref=f5e878]
+              - cell [ref=f5e879]
+              - cell "3" [ref=f5e880]
+              - cell "0" [ref=f5e881]
+              - cell "No" [ref=f5e882]
+              - cell "n/a" [ref=f5e883]
+              - cell "n/a" [ref=f5e884]
+              - cell "000:" [ref=f5e885]
+            - row [ref=f5e886] [cursor=pointer]:
+              - cell "▸" [ref=f5e887]
+              - cell "9/15/2026, 4:44:20 PM" [ref=f5e888]
+              - cell "ExecuteTableCrud" [ref=f5e889]
+              - cell "S" [ref=f5e890]
+              - cell "BUSINESS" [ref=f5e891]
+              - cell "0" [ref=f5e892]
+              - cell "0" [ref=f5e893]
+              - cell "No" [ref=f5e894]
+              - cell "n/a" [ref=f5e895]
+              - cell "n/a" [ref=f5e896]
+              - cell "000:" [ref=f5e897]
+            - row [ref=f5e898] [cursor=pointer]:
+              - cell "▸" [ref=f5e899]
+              - cell "9/15/2026, 4:43:03 PM" [ref=f5e900]
+              - cell "RunQuery" [ref=f5e901]
+              - cell "E" [ref=f5e902]
+              - cell "CLIENT" [ref=f5e903]
+              - cell "0" [ref=f5e904]
+              - cell "0" [ref=f5e905]
+              - cell "No" [ref=f5e906]
+              - cell "n/a" [ref=f5e907]
+              - cell "n/a" [ref=f5e908]
+              - 'cell "045: Batch aborted at step 1: Target ZFS_SLC_OTTK_BTP is not registered for the" [ref=f5e909]'
+            - row [ref=f5e910] [cursor=pointer]:
+              - cell "▸" [ref=f5e911]
+              - cell "9/15/2026, 4:40:06 PM" [ref=f5e912]
+              - cell "RegisterTarget" [ref=f5e913]
+              - cell "S" [ref=f5e914]
+              - cell [ref=f5e915]
+              - cell "1" [ref=f5e916]
+              - cell "0" [ref=f5e917]
+              - cell "No" [ref=f5e918]
+              - cell "n/a" [ref=f5e919]
+              - cell "n/a" [ref=f5e920]
+              - cell "000:" [ref=f5e921]
+        - generic [ref=f5e276]:
+          - generic [ref=f5e277]: Registry
+          - table [ref=f5e279]:
+            - rowgroup [ref=f5e280]:
+              - row [ref=f5e281]:
+                - columnheader "Kind" [ref=f5e282]
+                - columnheader "Target" [ref=f5e283]
+                - columnheader "Active" [ref=f5e284]
+                - columnheader "Read" [ref=f5e285]
+                - columnheader "Write" [ref=f5e286]
+                - columnheader "Gen" [ref=f5e287]
+                - columnheader "GenNrObj" [ref=f5e288]
+                - columnheader "Mode" [ref=f5e289]
+                - columnheader "MaxRows" [ref=f5e290]
+            - rowgroup [ref=f5e922]:
+              - row [ref=f5e923]:
+                - cell "FUNC" [ref=f5e924]
+                - cell "NUMBER_GET_NEXT" [ref=f5e925]
+                - cell "Yes" [ref=f5e926]
+                - cell "Yes" [ref=f5e927]
+                - cell "Yes" [ref=f5e928]
+                - cell "No" [ref=f5e929]
+                - cell [ref=f5e930]
+                - cell "L" [ref=f5e931]
+                - cell "0" [ref=f5e932]
+              - row [ref=f5e933]:
+                - cell "QURY" [ref=f5e934]
+                - cell "T000" [ref=f5e935]
+                - cell "Yes" [ref=f5e936]
+                - cell "Yes" [ref=f5e937]
+                - cell "No" [ref=f5e938]
+                - cell "No" [ref=f5e939]
+                - cell [ref=f5e940]
+                - cell [ref=f5e941]
+                - cell "100" [ref=f5e942]
+              - row [ref=f5e943]:
+                - cell "QURY" [ref=f5e944]
+                - cell "ZFS_CDS_SLC_001" [ref=f5e945]
+                - cell "Yes" [ref=f5e946]
+                - cell "Yes" [ref=f5e947]
+                - cell "No" [ref=f5e948]
+                - cell "No" [ref=f5e949]
+                - cell [ref=f5e950]
+                - cell [ref=f5e951]
+                - cell "100" [ref=f5e952]
+              - row [ref=f5e953]:
+                - cell "QURY" [ref=f5e954]
+                - cell "ZFS_CDS_SLC_002" [ref=f5e955]
+                - cell "Yes" [ref=f5e956]
+                - cell "Yes" [ref=f5e957]
+                - cell "No" [ref=f5e958]
+                - cell "No" [ref=f5e959]
+                - cell [ref=f5e960]
+                - cell [ref=f5e961]
+                - cell "100" [ref=f5e962]
+              - row [ref=f5e963]:
+                - cell "TABL" [ref=f5e964]
+                - cell "ZFS_SLC_OTTK_BTP" [ref=f5e965]
+                - cell "Yes" [ref=f5e966]
+                - cell "Yes" [ref=f5e967]
+                - cell "Yes" [ref=f5e968]
+                - cell "Yes" [ref=f5e969]
+                - cell "ZFS_OTTK_D" [ref=f5e970]
+                - cell [ref=f5e971]
+                - cell "0" [ref=f5e972]
+              - row [ref=f5e973]:
+                - cell "QURY" [ref=f5e974]
+                - cell "ZFS_SLC_OTTK_BTP" [ref=f5e975]
+                - cell "Yes" [ref=f5e976]
+                - cell "Yes" [ref=f5e977]
+                - cell "No" [ref=f5e978]
+                - cell "No" [ref=f5e979]
+                - cell [ref=f5e980]
+                - cell [ref=f5e981]
+                - cell "100" [ref=f5e982]
+              - row [ref=f5e983]:
+                - cell "TABL" [ref=f5e984]
+                - cell "ZFS_T_TRM_PROBE" [ref=f5e985]
+                - cell "Yes" [ref=f5e986]
+                - cell "Yes" [ref=f5e987]
+                - cell "Yes" [ref=f5e988]
+                - cell "No" [ref=f5e989]
+                - cell [ref=f5e990]
+                - cell [ref=f5e991]
+                - cell "0" [ref=f5e992]
+              - row [ref=f5e993]:
+                - cell "QURY" [ref=f5e994]
+                - cell "ZSGSLCTR_BPEXT" [ref=f5e995]
+                - cell "Yes" [ref=f5e996]
+                - cell "Yes" [ref=f5e997]
+                - cell "No" [ref=f5e998]
+                - cell "No" [ref=f5e999]
+                - cell [ref=f5e1000]
+                - cell [ref=f5e1001]
+                - cell "100" [ref=f5e1002]
+          - generic [ref=f5e291]: Registry History
+          - table [ref=f5e293]:
+            - rowgroup [ref=f5e294]:
+              - row [ref=f5e295]:
+                - columnheader "Chg" [ref=f5e296]
+                - columnheader "Kind" [ref=f5e297]
+                - columnheader "Target" [ref=f5e298]
+                - columnheader "Src" [ref=f5e299]
+                - columnheader "By" [ref=f5e300]
+                - columnheader "At" [ref=f5e301]
+            - rowgroup [ref=f5e1003]:
+              - row [ref=f5e1004]:
+                - cell "I" [ref=f5e1005]
+                - cell "QURY" [ref=f5e1006]
+                - cell "ZFS_SLC_OTTK_BTP" [ref=f5e1007]
+                - cell "REGI" [ref=f5e1008]
+                - cell "FS_DEV3" [ref=f5e1009]
+                - cell "9/15/2026, 5:57:13 PM" [ref=f5e1010]
+              - row [ref=f5e1011]:
+                - cell "I" [ref=f5e1012]
+                - cell "QURY" [ref=f5e1013]
+                - cell "T000" [ref=f5e1014]
+                - cell "REGI" [ref=f5e1015]
+                - cell "FS_DEV3" [ref=f5e1016]
+                - cell "9/15/2026, 5:13:03 PM" [ref=f5e1017]
+              - row [ref=f5e1018]:
+                - cell "I" [ref=f5e1019]
+                - cell "QURY" [ref=f5e1020]
+                - cell "ZSGSLCTR_BPEXT" [ref=f5e1021]
+                - cell "REGI" [ref=f5e1022]
+                - cell "FS_DEV3" [ref=f5e1023]
+                - cell "9/15/2026, 5:13:03 PM" [ref=f5e1024]
+              - row [ref=f5e1025]:
+                - cell "I" [ref=f5e1026]
+                - cell "QURY" [ref=f5e1027]
+                - cell "ZFS_CDS_SLC_002" [ref=f5e1028]
+                - cell "REGI" [ref=f5e1029]
+                - cell "FS_DEV3" [ref=f5e1030]
+                - cell "9/15/2026, 5:13:03 PM" [ref=f5e1031]
+              - row [ref=f5e1032]:
+                - cell "I" [ref=f5e1033]
+                - cell "QURY" [ref=f5e1034]
+                - cell "ZFS_CDS_SLC_001" [ref=f5e1035]
+                - cell "REGI" [ref=f5e1036]
+                - cell "FS_DEV3" [ref=f5e1037]
+                - cell "9/15/2026, 5:13:03 PM" [ref=f5e1038]
+              - row [ref=f5e1039]:
+                - cell "U" [ref=f5e1040]
+                - cell "TABL" [ref=f5e1041]
+                - cell "ZFS_T_TRM_PROBE" [ref=f5e1042]
+                - cell "REGI" [ref=f5e1043]
+                - cell "FS_DEV3" [ref=f5e1044]
+                - cell "9/15/2026, 4:40:06 PM" [ref=f5e1045]
+              - row [ref=f5e1046]:
+                - cell "U" [ref=f5e1047]
+                - cell "TABL" [ref=f5e1048]
+                - cell "ZFS_T_TRM_PROBE" [ref=f5e1049]
+                - cell "REGI" [ref=f5e1050]
+                - cell "FS_DEV3" [ref=f5e1051]
+                - cell "9/15/2026, 4:32:25 PM" [ref=f5e1052]
+              - row [ref=f5e1053]:
+                - cell "U" [ref=f5e1054]
+                - cell "TABL" [ref=f5e1055]
+                - cell "ZFS_SLC_OTTK_BTP" [ref=f5e1056]
+                - cell "ODAT" [ref=f5e1057]
+                - cell "FS_DEV3" [ref=f5e1058]
+                - cell "9/15/2026, 4:12:29 PM" [ref=f5e1059]
+              - row [ref=f5e1060]:
+                - cell "I" [ref=f5e1061]
+                - cell "TABL" [ref=f5e1062]
+                - cell "ZFS_SLC_OTTK_BTP" [ref=f5e1063]
+                - cell "REGI" [ref=f5e1064]
+                - cell "FS_DEV3" [ref=f5e1065]
+                - cell "9/15/2026, 4:10:49 PM" [ref=f5e1066]
+              - row [ref=f5e1067]:
+                - cell "I" [ref=f5e1068]
+                - cell "FUNC" [ref=f5e1069]
+                - cell "NUMBER_GET_NEXT" [ref=f5e1070]
+                - cell "REGI" [ref=f5e1071]
+                - cell "FS_DEV3" [ref=f5e1072]
+                - cell "9/15/2026, 4:07:22 PM" [ref=f5e1073]
+              - row [ref=f5e1074]:
+                - cell "I" [ref=f5e1075]
+                - cell "TABL" [ref=f5e1076]
+                - cell "ZFS_T_TRM_PROBE" [ref=f5e1077]
+                - cell "REGI" [ref=f5e1078]
+                - cell "FS_DEV3" [ref=f5e1079]
+                - cell "9/15/2026, 4:07:22 PM" [ref=f5e1080]
+      - generic [ref=f5e302]: Call log table shows the latest 50 of 71 total call(s) ($top=50 cap -- the CALL counter above is the true total via $count, not the page size).
+  - status

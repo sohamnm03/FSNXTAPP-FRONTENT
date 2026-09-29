@@ -1,6 +1,14 @@
+<!--
+  Copy to worklog/<system-id>/<YYYY-MM>/<YYYY-MM-DD>-<HHmm>-<slug>.md
+  e.g. worklog/DS4_100_NIIF/2026-09/2026-09-13-1430-dyngw-v2-cleanup-wave.md
+  HHmm is the 24h local time the activity started -- it is what orders several
+  entries on the same day, which is routine here (21 on 2026-09-08).
+-->
+
 # <Activity title>
 
 - **Date:** YYYY-MM-DD
+- **Started:** HH:MM  <!-- 24h local, matches the HHmm in this file's name -->
 - **System:** DS4_100_NIIF | DS4_100_TFSIN
 - **Package:** ZFS_...
 - **Transport:** DS4K......
@@ -45,6 +53,13 @@ NAMING: <NAME> -> matches <pattern row | exception row>
 - [ ] ABAP Unit green (or "none applicable" with a reason)
 - [ ] Text symbols and selection texts maintained
 - [ ] Object list confirmed in the transport
+
+## Evidence
+
+Screenshots, transcripts, payload dumps and exported reports for this activity go in
+`worklog/<system-id>/<YYYY-MM>/evidence/<this file's stem>/` — the folder name matches this
+file's name without `.md`, so worklog and evidence pair up by name. Link them by relative
+path; delete this section if the activity produced none.
 
 ## Lessons raised
 

@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SLC Hub -- Fourth Signal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root{
+--bg:#f0f4f8;--bg2:#e8eef5;--white:#ffffff;
+--border:rgba(204,224,245,0.7);--border2:#b0ceeb;--blue-dark:#1565c0;
+--blue:#1e88e5;--blue-mid:#42a5f5;--blue-pale:#e3f2fd;--blue-pale2:#bbdefb;
+--teal:#00acc1;--text:#0d2a4a;--text-sub:#2e6090;--text-muted:#6a9cbf;
+--shadow-md:0 10px 15px -3px rgba(0,0,0,0.05),0 4px 6px -2px rgba(0,0,0,0.02),0 0 0 1px rgba(204,224,245,0.5);
+--radius:10px;--radius-lg:16px;--header-h:52px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;font-family:"Inter",sans-serif;}
+body{background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--blue-mid);border-radius:4px;}
+header{height:var(--header-h);background:var(--white);border-bottom:1px solid var(--border);
+display:flex;align-items:center;justify-content:space-between;padding:0 22px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-logo{width:36px;height:36px;object-fit:contain;flex-shrink:0;}
+.brand-text h1{font-size:15px;font-weight:800;color:#2c5aa0;letter-spacing:-0.01em;}
+.brand-text p{font-size:10px;font-weight:700;color:#7a8ca5;letter-spacing:1.2px;text-transform:uppercase;margin-top:1px;}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px var(--teal);
+animation:pulse 2.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}
+
+main{width:75%;max-width:1700px;margin:0;padding:32px 24px 48px 52px;}
+.hub-title{font-size:22px;font-weight:800;color:var(--text);margin-bottom:4px;}
+.hub-sub{font-size:13px;color:var(--text-muted);font-weight:500;margin-bottom:28px;}
+
+.group-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;
+color:var(--text-muted);margin:24px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--blue-pale2);
+display:flex;align-items:center;gap:7px;}
+.group-label:first-of-type{margin-top:0;}
+.group-label::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--blue-mid);flex-shrink:0;}
+
+.tile-grid{display:flex;flex-wrap:wrap;gap:16px;justify-content:flex-start;}
+
+.tile{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);
+padding:20px;box-shadow:var(--shadow-md);cursor:pointer;transition:transform 0.18s ease,box-shadow 0.18s ease,border-color 0.18s ease;
+display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden;
+flex:0 0 300px;width:300px;}
+.tile::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;
+background:linear-gradient(90deg,var(--blue-dark),var(--blue-mid));transform:scaleX(0);
+transform-origin:left;transition:transform 0.25s ease;}
+.tile:hover{transform:translateY(-3px);box-shadow:0 16px 28px -8px rgba(21,101,192,0.22),0 0 0 1px var(--blue-pale2);
+border-color:var(--blue-pale2);}
+.tile:hover::before{transform:scaleX(1);}
+.tile:active{transform:translateY(-1px);}
+
+.tile.folder:hover{box-shadow:0 16px 28px -8px rgba(21,101,192,0.22),0 0 0 1px var(--blue-pale2);border-color:var(--blue-pale2);}
+
+.tile-icon{width:40px;height:40px;border-radius:10px;background:var(--blue-pale);
+display:flex;align-items:center;justify-content:center;color:var(--blue);flex-shrink:0;}
+.tile.folder .tile-icon{background:var(--blue-pale);color:var(--blue);}
+.tile-title{font-size:14.5px;font-weight:700;color:var(--text);}
+.tile-desc{font-size:12px;color:var(--text-muted);line-height:1.5;flex:1;}
+.tile-foot{display:flex;align-items:center;justify-content:space-between;margin-top:2px;}
+.tile-tag{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;
+color:var(--blue-dark);background:var(--blue-pale);padding:3px 8px;border-radius:20px;}
+.tile-arrow{color:var(--text-muted);font-size:15px;transition:transform 0.18s ease,color 0.18s ease;}
+.tile:hover .tile-arrow{transform:translateX(3px);color:var(--blue-dark);}
+
+.path-switch{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;
+color:var(--blue-dark);background:var(--white);border:1px solid var(--border2);padding:7px 13px;
+border-radius:20px;text-decoration:none;transition:background 0.15s,transform 0.15s;}
+.path-switch:hover{background:var(--blue-pale);transform:translateX(2px);}
+.path-switch .ps-label{color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;font-size:9.5px;}
+.header-right{display:flex;align-items:center;gap:14px;}
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--blue-dark);
+background:var(--white);border:1px solid var(--border2);padding:8px 14px;border-radius:9px;cursor:pointer;
+box-shadow:var(--shadow-md);transition:background 0.15s,transform 0.15s;margin-bottom:20px;}
+.back-btn:hover{background:var(--blue-pale);transform:translateX(-2px);}
+
+.toast{position:fixed;bottom:24px;right:24px;max-width:320px;padding:12px 18px;border-radius:10px;
+font-size:12px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,0.18);display:none;align-items:center;
+gap:10px;z-index:9999;background:var(--blue-pale);border:1px solid var(--blue-pale2);color:var(--blue-dark);}
+.toast.show{display:flex;animation:toastUp 0.25s ease both;}
+@keyframes toastUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+@media (max-width:640px){
+main{padding:20px 16px 40px;}
+.tile{flex:1 1 100%;width:100%;}
+}
+</style>
+</head>
+<body>
+
+<header>
+<div class="brand">
+<img class="brand-logo" alt="Fourth Signal"
+src="https://raw.githubusercontent.com/ryannayak/fs-assets/e82f35a83e28689167b22b4300d4994a249acee0/fs-short-logo.png"/>
+<div class="brand-text">
+<h1>SLC</h1>
+<p>FS &bull; VISTA</p>
+</div>
+</div>
+<div class="header-right">
+<a class="path-switch" href="http://localhost:8775/" title="Applications that reach SAP through the dynamic gateway">
+<span class="ps-label">Other path</span> Dynamic Gateway &rarr;</a>
+<div class="status-dot" title="SAP TRM connected"></div>
+</div>
+</header>
+
+<main id="main"></main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ---------------------------------------------------------------------
+// Menu data. Each top-level GROUP always renders as a plain header
+// (never a clickable tile) with its tiles directly underneath -- the
+// whole home page is always visible, nothing to expand or drill into
+// at this level.
+//
+// A group either has "items" (leaf programs -> rendered directly as
+// program tiles) or "subgroups" (LC/BG Process -> each subgroup itself
+// renders as a folder tile; clicking ONE folder tile shows just that
+// subgroup's program tiles, with a Back button to return home).
+// ---------------------------------------------------------------------
+var GROUPS = [
+  { label: "Trade Flows", items: [
+    { url:"http://localhost:8768/", code:"tf-upload-console", title:"Trade Flow Upload", tag:"Console",
+      desc:"Upload trade flows from the Excel template and validate them before posting.",
+      icon:'M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z' },
+    { url:"http://localhost:8770/", code:"tf-manage-console", title:"Manage Trade Flows", tag:"Console",
+      desc:"Review, amend and maintain trade flows that are already posted.",
+      icon:'M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z' }
+  ]},
+  { label: "Front Office", items: [
+    { url:"http://localhost:8765/", code:"ottk-dttk-console", title:"Origination Ticket (OTTK)", tag:"Console",
+      desc:"Capture and maintain origination tickets, their structures and pricing details.",
+      icon:'M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 20H4v-4h4v4zm0-6H4v-4h4v4zm0-6H4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4z' },
+    { url:"http://localhost:8766/", code:"dttk-console", title:"Distribution Ticket (DTTK)", tag:"Console",
+      desc:"Capture and maintain distribution tickets against an origination ticket.",
+      icon:'M4 14h4v-4H4v4zm0 5h4v-4H4v4zM4 9h4V5H4v4zm5 5h12v-4H9v4zm0 5h12v-4H9v4zM9 5v4h12V5H9z' }
+  ]},
+  { label: "Mid Office", subgroups: [
+    { label: "Manage Deal ID & Trade Ticket", items: [
+      { url:"http://localhost:8767/", code:"deal-id-console", title:"Deal ID Creation", tag:"Console",
+        desc:"Create a deal ID and link its origination and distribution ticket legs.",
+        icon:'M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16z' }
+    ]},
+    { label: "Manage Trade Invoices", items: [
+      { url:"http://localhost:8769/", code:"inv-console", title:"Amend BLs & Finalise Invoices", tag:"Console",
+        desc:"Amend the selected bills of lading and finalise the trade invoices for a deal.",
+        icon:'M18 17H6v-2h12v2zm0-4H6v-2h12v2zm0-4H6V7h12v2zM3 22l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20z' }
+    ]},
+    { label: "Manage ICLs", subgroups: [] },
+    { label: "Manage Deposits", subgroups: [] },
+    { label: "Manage LCs", subgroups: [
+      { label: "LC Issuance Process", items: [
+        { action:"OPEN_LC_REQ_CREATE", code:"ZFS_TL_DEM57", title:"LC Request Creation", tag:"Create",
+          desc:"Create a new letter of credit request against a PO and beneficiary.",
+          icon:'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 14H7v-2h10v2zm0-4H7v-2h10v2zm-3-5V3.5L18.5 8H14z' },
+        { action:"OPEN_LC_REQ_CONFIRM", code:"ZFS_TL_DEM63", title:"LC Request Confirmation", tag:"Confirm",
+          desc:"Approve or reject pending LC requests.",
+          icon:'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z' },
+        { action:"OPEN_LC_BANK_ALLOC", code:"ZFS_TL_DEM60", title:"LC Bank Allocation", tag:"Confirm",
+          desc:"Route approved LC requests to the issuing bank.",
+          icon:'M11.99 2L4 6v2h16V6l-7.99-4zM4 10v7H2v2h20v-2h-2v-7h-2v7h-3v-7h-2v7H9v-7H4z' },
+        { action:"OPEN_LC_CONFIRM", code:"ZFS_TL_DEM64", title:"LC Confirmation", tag:"Confirm",
+          desc:"Confirm the LC has been issued by the bank.",
+          icon:'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z' }
+      ]},
+      { label: "LC Acceptance & Presentation", items: [
+        { action:"OPEN_LC_PRES_REQUEST", code:"ZFS_TL_DEM66", title:"LC Presentation Request", tag:"Create",
+          desc:"Submit shipping / trade documents for presentation under an LC.",
+          icon:'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 14H7v-2h10v2zm0-4H7v-2h10v2zm-3-5V3.5L18.5 8H14z' },
+        { action:"OPEN_LC_PRES_REQ_CONFIRM", code:"ZFS_TL_DEM86", title:"LC Presentation Request Confirmation", tag:"Confirm",
+          desc:"Approve or reject pending LC presentation requests.",
+          icon:'M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-2 14l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z' },
+        { action:"OPEN_LC_PRES_APPROVAL", code:"ZFS_TL_DEM69", title:"LC Presentation", tag:"Confirm",
+          desc:"Create the presentation and its linked transaction under the LC.",
+          icon:'M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z' },
+        { action:"OPEN_LC_PRES_CONFIRM", code:"ZFS_TL_DEM75", title:"LC Presentation Confirmation", tag:"Confirm",
+          desc:"Settle the presentation and its linked transaction.",
+          icon:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z' }
+      ]},
+      { label: "LC Amendment Process", items: [
+        { action:"OPEN_LC_AMEND_REQUEST", code:"ZFS_TL_DEM65", title:"LC Amendment Request", tag:"Create",
+          desc:"Request a change to amount, tolerance, expiry, or shipment date on an eligible LC.",
+          icon:'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z' },
+        { action:"OPEN_LC_AMEND_CONFIRM", code:"ZFS_TL_DEM68", title:"LC Amendment Confirmation", tag:"Confirm",
+          desc:"Approve or reject amendments currently pending, and review past decisions.",
+          icon:'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z' }
+      ]},
+      { label: "LC Termination Process", items: [
+        { action:"OPEN_LC_TERMINATION", code:"ZFS_TL_DEM59", title:"LC Termination", tag:"Create",
+          desc:"Initiate closure of a live LC and submit it for termination approval.",
+          icon:'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z' },
+        { action:"OPEN_LC_TERM_CONFIRM", code:"ZFS_TL_DEM61", title:"LC Termination Confirmation", tag:"Confirm",
+          desc:"Approve or reject termination requests and settle closed LCs.",
+          icon:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z' }
+      ]}
+    ]},
+    { label: "Manage Discounting Loans", subgroups: [] },
+    { label: "Manage IRS", subgroups: [] },
+    { label: "Manage Prepayments", subgroups: [] },
+    { label: "Manage SBLCs", subgroups: [] },
+    { label: "Special Cases", subgroups: [] },
+    { label: "Manage Limits", subgroups: [] }
+  ]},
+  { label: "BG Process", subgroups: [
+    { label: "BG Issuance Process", items: [
+      { action:"OPEN_BG_REQ_CREATE", code:"ZFS_TL_DEM77", title:"BG Request Creation", tag:"Create",
+        desc:"Create a new bank guarantee request against a PO, beneficiary and product type.",
+        icon:'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 14H7v-2h10v2zm0-4H7v-2h10v2zm-3-5V3.5L18.5 8H14z' },
+      { action:"OPEN_BG_REQ_CONFIRM", code:"ZFS_TL_DEM78", title:"BG Request Confirmation", tag:"Confirm",
+        desc:"Approve or reject pending BG requests.",
+        icon:'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z' },
+      { action:"OPEN_BG_BANK_ALLOC", code:"ZFS_TL_DEM80", title:"BG Bank Allocation", tag:"Confirm",
+        desc:"Review and approve or reject BG requests routed for bank allocation.",
+        icon:'M11.99 2L4 6v2h16V6l-7.99-4zM4 10v7H2v2h20v-2h-2v-7h-2v7h-3v-7h-2v7H9v-7H4z' },
+      { action:"OPEN_BG_CONFIRM", code:"ZFS_TL_DEM79", title:"BG Confirmation", tag:"Confirm",
+        desc:"Confirm the BG has been issued by the bank.",
+        icon:'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z' }
+    ]},
+    { label: "BG Amendment Process", items: [
+      { action:"OPEN_BG_AMEND_REQUEST", code:"ZFS_TL_DEM81", title:"BG Amendment Request", tag:"Create",
+        desc:"Request a change to amount, tolerance, expiry, or shipment date on an eligible BG.",
+        icon:'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z' },
+      { action:"OPEN_BG_AMEND_CONFIRM", code:"ZFS_TL_DEM82", title:"BG Amendment Confirmation", tag:"Confirm",
+        desc:"Approve or reject amendments currently pending, and review past decisions.",
+        icon:'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z' }
+    ]},
+    { label: "BG Termination Process", items: [
+      { action:"OPEN_BG_TERMINATION", code:"ZFS_TL_DEM83", title:"BG Termination", tag:"Create",
+        desc:"Initiate closure of a live BG and submit it for termination approval.",
+        icon:'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z' },
+      { action:"OPEN_BG_TERM_CONFIRM", code:"ZFS_TL_DEM84", title:"BG Termination Confirmation", tag:"Confirm",
+        desc:"Approve or reject termination requests and settle closed BGs.",
+        icon:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z' }
+    ]}
+  ]},
+  { label: "Accounting", items: [
+    { action:"OPEN_FEES_POSTING", code:"ZFS_TL_DEM76", title:"Posting of Fees", tag:"Process",
+      desc:"Post accrued LC / BG fees and charges to the ledger.",
+      icon:'M19 14V6c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2zm-9-1c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm10 3H2v2h18v-2z' }
+  ]},
+  { label: "Dashboard Reporting", items: [
+    { action:"OPEN_LIMIT_TRACKER", code:"ZFS_TL_DEM72", title:"Limit Utilization Tracker", tag:"Dashboard",
+      desc:"Track sanctioned limit usage across facilities in real time.",
+      icon:'M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z' },
+    { action:"OPEN_FEES_TRACKER", code:"ZFS_TL_DEM74", title:"Fees Tracker", tag:"Dashboard",
+      desc:"Monitor fee accrual and posting status across all requests.",
+      icon:'M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z' }
+  ]},
+  { label: "Reporting", items: [
+    { action:"OPEN_LC_REGISTER", code:"ZFSTFR001", title:"LC Register", tag:"Report",
+      desc:"Full register of LC requests across all statuses.",
+      icon:'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z' },
+    { action:"OPEN_FAC_REGISTER", code:"ZFSTFR002", title:"Facility Register", tag:"Report",
+      desc:"Full register of sanctioned facilities and their utilization.",
+      icon:'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z' },
+    { action:"OPEN_LC_AMEND_REGISTER", code:"ZFSTFR005", title:"LC Amendment Register", tag:"Report",
+      desc:"Full register of LC amendments, pending and processed.",
+      icon:'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z' },
+    { action:"OPEN_FEES_REGISTER", code:"ZFSTFR006", title:"Fees & Chargers Register", tag:"Report",
+      desc:"Full register of posted fees and charges.",
+      icon:'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z' }
+  ]}
+];
+
+// VIEW.path addresses the node on screen as a list of indices:
+//   []           -> home: every group rendered as a plain header
+//   [gi, si]     -> GROUPS[gi].subgroups[si]          (one folder deep)
+//   [gi, si, ti] -> ...that folder's subgroups[ti]     (two folders deep)
+// A group is never itself a tile, so a path is never length 1. The depth is
+// not fixed: Mid Office -> Manage LCs -> LC Issuance Process is two folders,
+// and nothing here cares if a third is added.
+var VIEW = { path: [] };
+
+function escapeHtml(v){
+  return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function folderSvg(){
+  return 'M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z';
+}
+
+// Registries of what the CURRENT view rendered: onclick carries an index into
+// one of these rather than data smuggled through an HTML attribute, so
+// launch()/openFolder() are handed the real item or the real path. renderAll()
+// clears both before every re-render -- a registry that survived a re-render
+// would hand the next click the wrong item.
+var TILES = [];
+var FOLDERS = [];
+function registerTile(it){ TILES.push(it); return TILES.length - 1; }
+function registerFolder(path){ FOLDERS.push(path.slice()); return FOLDERS.length - 1; }
+
+function nodeAt(path){
+  var node = GROUPS[path[0]];
+  for (var i = 1; i < path.length; i++) { node = node.subgroups[path[i]]; }
+  return node;
+}
+// Labels along a path, outermost first: ["Mid Office", "Manage LCs", ...].
+function trailAt(path){
+  var out = [], node = GROUPS[path[0]];
+  out.push(node.label);
+  for (var i = 1; i < path.length; i++) { node = node.subgroups[path[i]]; out.push(node.label); }
+  return out;
+}
+// A node holds either programs ("items") or more folders ("subgroups").
+function childrenOf(node){ return node.subgroups || node.items || []; }
+
+function renderProgramTile(it){
+  return '<div class="tile" onclick="launch('+registerTile(it)+')">'
+    + '<div class="tile-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="'+it.icon+'"/></svg></div>'
+    + '<div class="tile-title">'+escapeHtml(it.title)+'</div>'
+    + '<div class="tile-desc">'+escapeHtml(it.desc)+'</div>'
+    + '<div class="tile-foot"><span class="tile-tag">'+escapeHtml(it.tag)+'</span><span class="tile-arrow">&#8594;</span></div>'
+    + '</div>';
+}
+
+function renderFolderTile(path){
+  var sg = nodeAt(path);
+  var kids = childrenOf(sg);
+  var desc;
+  if (!kids.length) {
+    desc = 'Not set up yet.';
+  } else if (sg.subgroups) {
+    desc = kids.length + ' folder' + (kids.length !== 1 ? 's' : '') + ' in this area.';
+  } else {
+    desc = kids.length + ' screen' + (kids.length !== 1 ? 's' : '') + ' in this sub-process.';
+  }
+  return '<div class="tile folder" onclick="openFolder('+registerFolder(path)+')">'
+    + '<div class="tile-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="'+folderSvg()+'"/></svg></div>'
+    + '<div class="tile-title">'+escapeHtml(sg.label)+'</div>'
+    + '<div class="tile-desc">'+escapeHtml(desc)+'</div>'
+    + '<div class="tile-foot"><span class="tile-tag">Folder</span><span class="tile-arrow">&#8594;</span></div>'
+    + '</div>';
+}
+
+function renderHome(){
+  var html = '<div class="hub-title">SLC</div>'
+           + '<div class="hub-sub">Applications on their own dedicated OData service. '
+           + 'Anything that reaches SAP through the dynamic gateway lives on the Dynamic Gateway hub.</div>';
+  GROUPS.forEach(function(g, gi){
+    html += '<div class="group-label">'+escapeHtml(g.label)+'</div><div class="tile-grid">';
+    if (g.items) {
+      html += g.items.map(renderProgramTile).join("");
+    } else {
+      g.subgroups.forEach(function(sg, si){ html += renderFolderTile([gi, si]); });
+    }
+    html += '</div>';
+  });
+  document.getElementById("main").innerHTML = html;
+}
+
+function renderFolderDetail(path){
+  var node = nodeAt(path);
+  var trail = trailAt(path);
+  var kids = childrenOf(node);
+  // Back goes up exactly one level: to the parent folder, or home from the top.
+  var backLabel = path.length > 2 ? trail[trail.length - 2] : "SLC Menu Path";
+  var html = '<div class="back-btn" onclick="goUp()">&#8592; Back to '+escapeHtml(backLabel)+'</div>'
+    + '<div class="hub-title">'+escapeHtml(node.label)+'</div>'
+    + '<div class="hub-sub">'+escapeHtml(trail.slice(0, -1).join(" \u203a "))+'. Pick a '
+    + (node.subgroups ? 'folder' : 'screen') + ' below.</div>'
+    + '<div class="tile-grid">';
+  if (node.subgroups) {
+    kids.forEach(function(sg, si){ html += renderFolderTile(path.concat(si)); });
+  } else {
+    html += kids.map(renderProgramTile).join("");
+  }
+  html += '</div>';
+  document.getElementById("main").innerHTML = html;
+}
+
+function renderAll(){
+  TILES = [];
+  FOLDERS = [];
+  if (!VIEW.path.length) { renderHome(); } else { renderFolderDetail(VIEW.path); }
+}
+
+// An empty folder does not open a dead-end screen -- it says it is empty, the
+// same way an un-wired program tile does.
+function openFolder(folderIdx){
+  var path = FOLDERS[folderIdx];
+  if (!path) { return; }
+  var node = nodeAt(path);
+  if (!childrenOf(node).length) { showToast(node.label + " has nothing in it yet."); return; }
+  VIEW = { path: path.slice() };
+  renderAll();
+  window.scrollTo(0,0);
+}
+function goUp(){
+  VIEW = { path: VIEW.path.length > 2 ? VIEW.path.slice(0, -1) : [] };
+  renderAll();
+  window.scrollTo(0,0);
+}
+function goHome(){
+  VIEW = { path: [] };
+  renderAll();
+  window.scrollTo(0,0);
+}
+
+function showToast(msg){
+  var t=document.getElementById("toast");
+  t.textContent=msg;
+  t.className="toast show";
+  clearTimeout(t._timer);
+  t._timer=setTimeout(function(){t.classList.remove("show");},2200);
+}
+// ---------------------------------------------------------------------
+// Navigation. This page is the TOP-LEVEL HTML application: it calls the
+// other applications by URL. There is deliberately no "sapevent:" branch
+// and no isSapGui() sniff -- nothing here runs inside an ABAP HTML viewer
+// control, so no action string is ever handed to on_sapevent. (L-299
+// records what the sapevent build did instead, and why it logged scheme
+// errors when opened in a browser.)
+//
+// A tile with a "url" navigates straight to it. Each sibling console is
+// served by its own proxy.py on its own port (8765 OTTK, 8766 DTTK,
+// 8767 Deal ID, 8768 TF Upload, 8770 TF Manage), so a tile only works while
+// that console's proxy is running -- if it is not, the browser reports a
+// refused connection. That is the console being down, not a fault in this page.
+//
+// A tile with no "url" has no application behind it yet and says so
+// rather than failing silently. Its "action" name stays in GROUPS as a
+// record of the intent, unused until something is wired up.
+// ---------------------------------------------------------------------
+function launch(tileIdx){
+  var it = TILES[tileIdx];
+  if (!it) { return; }
+  if (it.url) {
+    showToast("Opening " + it.title + "\u2026");
+    window.location.href = it.url;
+    return;
+  }
+  showToast(it.title + " is not wired up yet.");
+}
+
+renderAll();
+</script>
+</body>
+</html>                              

@@ -8,6 +8,7 @@ const statusLabels = {
   running: 'AI Assistant is working',
   completed: 'Ready',
   failed: 'Needs attention',
+  finalizing: 'Generating report',
   stopped: 'Stopped',
   stopping: 'Stopping',
 };
@@ -64,12 +65,12 @@ export default function SapChatPanel({
           </div>
         ) : messages.map((message) => (
           <article className={`sap-message sap-message--${message.role}`} key={message.id}>
-            <span>{message.role === 'user' ? 'You' : 'AI Assistant'}</span>
+            <span>{{ user: 'You', runner: 'System' }[message.role] || 'AI Assistant'}</span>
             <div>{message.text}</div>
           </article>
         ))}
-        {status === 'running' || status === 'stopping' ? (
-          <div className="sap-thinking"><span /><span /><span /> SAP Development Assistant is working...</div>
+        {status === 'running' || status === 'stopping' || status === 'finalizing' ? (
+          <div className="sap-thinking"><span /><span /><span /> {status === 'finalizing' ? 'Generating development activity report...' : 'SAP Development Assistant is working...'}</div>
         ) : null}
       </div>
 

@@ -2,9 +2,9 @@
 
 How to call `ZFS_SB_DYNGATEWAY_O4_API` from BTP, Postman, PowerShell or any HTTP client.
 Built 2026-09-09/10; every example below was run against `DS4/100` and its real output pasted in.
-Design rationale and test evidence: `worklog/DS4_100_NIIF/2026-09-09-dynamic-odata-gateway.md`.
+Design rationale and test evidence: `worklog/DS4_100_NIIF/2026-09/2026-09-09-2233-dynamic-odata-gateway.md`.
 Worked end-to-end examples (mock inserts, CDS reads, `BAPI_FTR_IRATE_CREATE`,
-`BAPI_BUPA_CREATE_FROM_DATA`): **`dyngateway-live-test-2026-09-10.md`**.
+`BAPI_BUPA_CREATE_FROM_DATA`): **`dyngateway-live-test-2026-09-10-1520.md`**.
 
 ## 1 · Endpoint
 
@@ -156,8 +156,9 @@ drive several BAPIs, write several tables and read several tables/views. A targe
 ```
 
 A step takes the same field names as the single-shot actions, plus
-`Kind` = `FUNC` | `TABL` | `QURY` | `SUBM`. `SUBM` exists **only** as a batch step — there is no
-single-shot `SubmitProgram` action — so even one report runs through `ExecuteBatch`. See §11.
+`Kind` = `FUNC` | `TABL` | `QURY` | `SUBM` | `REGI`. `SUBM` exists **only** as a batch step — there
+is no single-shot `SubmitProgram` action — so even one report runs through `ExecuteBatch`. See §11.
+`REGI` (register an allow-list target, §12) is batch-only for the same reason.
 
 `RowsJson` comes back as the per-step array — note the keys are **upper case** here:
 
@@ -177,10 +178,17 @@ Per-step fields: `STEP`, `KIND`, `TARGETNAME`, `OPERATION`, `EXECSTATUS`, `MESSA
 
 - **Any step fails validation** (unregistered, no permission, bad operator/field/operation) →
   nothing executes at all, HTTP 200, `ExecStatus=E`, every step reported.
-- **A step fails at runtime** → the whole call aborts: RFC session rolled back, table writes rolled
-  back, and the answer is **HTTP 400 with an empty body**. Nothing partial is ever committed, but
-  the reason does not reach you (L-313). Validate inputs client-side for anything you need
-  diagnosed.
+- **A step fails at runtime** → the call aborts and the answer is **HTTP 400**, now **carrying the
+  reason** in the error body (message 020 naming the failing step). The empty body of L-313 is
+  fixed, and the call log survives the abort — query `ZFS_T_SLC_DYNGW` by the `GwUuid` you were
+  given, or by `PARENT_UUID` for the per-step rows.
+- **Do not rely on an aborted call being atomic.** The wording here used to promise "RFC session
+  rolled back, table writes rolled back, nothing partial is ever committed". That is **not true**:
+  the durable log write on the abort path is a synchronous RFC, which implicitly commits the
+  caller's LUW, so writes made by earlier steps in the same call can survive the abort
+  (**L-350** — measured, not theoretical). Treat a failed batch as *possibly partially applied*
+  and make your steps idempotent or check the outcome. This is under review; until it is resolved,
+  the safe assumption is the pessimistic one.
 
 ### Transactions
 
@@ -188,8 +196,10 @@ FUNC steps share one `DESTINATION 'NONE'` RFC session, so several BAPIs commit t
 `BAPI_TRANSACTION_COMMIT` — `CommitMode` `AUTO` commits only if every FUNC step succeeded, `ALWAYS`
 commits regardless, `NEVER` leaves it to you. TABL steps commit in the RAP LUW.
 `SUBM` steps are a **third, separate group**: the report runs behind its own
-`DESTINATION 'NONE'` session and commits or not on its own, before control returns.
-**Each group is atomic in itself; none of the three is atomic with the others.**
+`DESTINATION 'NONE'` session and commits or not on its own, before control returns. `REGI` steps
+write through Open SQL in the RAP LUW, so they belong to the TABL group.
+**Each group is atomic in itself; none of the three is atomic with the others** — and per L-350
+above, even the RAP-LUW group is not reliably rolled back once a call aborts.
 
 One consequence, deliberate: a failed `SUBM` step is reported as a per-step error with HTTP 200
 rather than aborting the batch — there is nothing to roll back, and aborting would replace the
@@ -223,7 +233,7 @@ Create body:
 | `AllowRead` / `AllowWrite` | `QURY` needs read; `TABL` and **all `FUNC`** need write |
 | `Operation` | pin a `TABL` row to one operation, or blank for all three |
 | `CallMode` | `R` = `DESTINATION 'NONE'`, `L` = local, blank = auto from `TFDIR-FMODE` |
-| `MaxRows` | ceiling for `RunQuery` |
+| `MaxRows` | ceiling for `RunQuery`/`SUBM`. **`0` = no ceiling** (added 2026-09-11, L-356) — every matching row/line comes back, not a fixed default |
 
 Currently registered on `DS4/100` (24 rows; inactive ones marked):
 
@@ -256,6 +266,11 @@ component · 024 operator not supported · 025 row count over the limit · 026 s
 `SUBM` adds 027–032: 027 program does not exist or is not executable · 028 output mode not
 supported · 029 selection value invalid or over length · 030 variant does not exist for the
 program · 031 not authorised to submit the program · 032 no output could be captured in that mode.
+
+`REGI` adds 033–035: 033 not authorised to register the target · 034 invalid registration payload
+(the reason is in the message) · 035 target is already registered. It reuses 017 for an `UPDATE`
+against a target that does not exist, 018 for a step `Operation` other than
+`INSERT`/`UPDATE`/`UPSERT`, 022 for unparseable `ImportJson`, and 026 on success.
 It reuses 017, 018, 022, 023, 024, 025 and 026 unchanged.
 
 ## 11 · Running an executable report — `Kind = 'SUBM'`
@@ -284,7 +299,7 @@ Field mapping for a `SUBM` step:
 | `Operation` | capture mode, as above; blank defaults to `SALV` |
 | `FilterJson` | the **selection table**: `[{"Field":"SO_DATE","Op":"BT","Low":"20260101","High":"20260131"}]` — `Kind` and `Sign` optional, `Sign` defaults `I`, `Kind` is taken from the program's real selection screen |
 | `ImportJson` | run envelope: `{"Variant":"ZDEFAULT","MemoryId":"GW_JSON"}` |
-| `MaxRows` | cap on rows/lines returned, ceilinged by the registry row |
+| `MaxRows` | cap on rows/lines returned, ceilinged by the registry row. **`0` on the registry row = no ceiling** — the caller may still lower it per call, never raise it |
 
 `EXPORTJSON` always carries the run envelope, in every mode:
 
@@ -359,3 +374,38 @@ unrelated ALV in that session.
   (L-329).
 - `MEMO` mode is implemented but **unproven** — it needs a report that exports a single `GW_JSON`
   string, and none exists yet.
+
+
+## 12 · Registering a target in the same call — `Kind = 'REGI'`
+
+Allow-list rows are `deliveryClass #A` application data and **do not travel with the transport**,
+so a freshly imported system answers `017` to everything until every target is registered on it
+(L-335). `REGI` makes that one call instead of one `POST` per target.
+
+```json
+{ "TargetName":"", "Operation":"", "ImportJson":"", "TablesJson":"", "FieldsJson":"",
+  "FilterJson":"", "OrderByJson":"", "MaxRows":0, "CommitMode":"NEVER",
+  "StepsJson":"[{\"Kind\":\"REGI\",\"TargetName\":\"T001\",\"Operation\":\"INSERT\",\"ImportJson\":\"{\\\"TargetKind\\\":\\\"QURY\\\",\\\"Operation\\\":\\\"SELECT\\\",\\\"IsActive\\\":\\\"X\\\",\\\"AllowRead\\\":\\\"X\\\",\\\"MaxRows\\\":5}\"}]" }
+```
+
+**The two `Operation` fields do different jobs.** The *step's* `Operation` is
+`INSERT` | `UPDATE` | `UPSERT`, exactly as `TABL` uses that field. The one inside `ImportJson` is
+the registration's own `Operation` column — the operation the registered target gets pinned to.
+
+`ImportJson` carries the allow-list columns you may set: `TargetKind` (`FUNC`/`TABL`/`QURY`/`SUBM`
+— `REGI` itself is not registrable), `Operation`, `IsActive`, `AllowRead`, `AllowWrite`,
+`CallMode`, `MaxRows`, `Descr`, `LogLevel`. The key, `EntryType` and the audit fields are set by
+the gateway, never by you.
+
+| Rule | Behaviour |
+|---|---|
+| `INSERT` is the default | and it **fails with 035** if the target already exists. Widening an existing registration — flipping `IsActive` back on, raising a `MaxRows` ceiling — has to be typed out as `UPDATE`, so it cannot happen by accident |
+| `UPDATE` is a partial merge | only the columns actually present in `ImportJson` are changed; the rest keep their committed values. `UPDATE` on a target that does not exist answers 017 |
+| `UPSERT` | resolves to whichever applies, decided during validation |
+| Register and use in **one** call | a step may use a target an earlier `REGI` step in the same batch declared. Validation resolves against committed rows *plus* the pending declarations, in step order, so fail-fast still holds and a forward reference still fails in phase 1 (L-344) |
+| Who may register | `ZCL_FS_SLC_GW_REGPOL` decides. It ships in **`OPEN`** mode for the current testing phase: any caller permitted to call the gateway may also register. `AUTH` and `OFF` both refuse today. Switch to `AUTH` before the first non-development consumer or before import beyond `DS4/100`, whichever comes first |
+| Audit | every `REGI` step is logged with its payload. A change to the security boundary is the last thing that should be invisible |
+
+**Caveat.** `REGI` writes in the RAP LUW, so the intent was that a later step's failure rolls the
+whole provisioning back and you never get a half-registered system. Per **L-350** that does not
+hold once a call aborts — check the result rather than assuming all-or-nothing.

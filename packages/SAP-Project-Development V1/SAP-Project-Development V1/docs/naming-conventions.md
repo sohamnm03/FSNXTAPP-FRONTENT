@@ -4,6 +4,10 @@ All custom objects begin with **ZFS**. Pattern: `ZFS_<TYPE>_<AREA>_<NAME>` where
 2–4 char module code (SD, MM, FI, PP, EWM, HR, TRM, XA=cross-app). Max lengths per SAP object type apply.
 `HR` added 2026-08-03 on human decision at the `ZFS_T_HR_EMPLOYEE` intake — employee/personnel
 objects had no conformant home, and `XA` (cross-app) was the only alternative.
+`DYN` added 2026-09-12 on human decision at the dynamic-gateway v2 intake (package `ZFS_DYN_GW`),
+covering the generic dynamic-dispatch framework — see `lessons-ledger.md` L-376. A human who
+supplies a prefix such as "`ZFS_DYN*`" is naming the **area**, not asking for a literal prefix:
+the tier marker still comes first, so the conformant table is `ZFS_T_DYN_REG`, not `ZFS_DYN_REG`.
 
 **A derived name never inherits non-conformance.** When an object is a copy, variant or successor
 of an existing object, its name is validated against the pattern table below **independently of

@@ -5,8 +5,11 @@ function localDevelopmentTerminal() {
 }
 
 export const sapDevelopmentService = {
-  getStatus() {
-    return localDevelopmentTerminal().getStatus();
+  getStatus(username) {
+    return localDevelopmentTerminal().getStatus(username);
+  },
+  chooseReportDirectory() {
+    return localDevelopmentTerminal().chooseReportDirectory();
   },
   getAuthStatus() {
     return localDevelopmentTerminal().getAuthStatus();
@@ -19,6 +22,9 @@ export const sapDevelopmentService = {
   },
   start(prompt, sessionId, systemId, credentials) {
     return localDevelopmentTerminal().start(prompt, sessionId, systemId, credentials);
+  },
+  async focusApp() {
+    await window.desktopAPI?.app?.focusWindow?.();
   },
   getRun(runId) {
     return localDevelopmentTerminal().getRun(runId);

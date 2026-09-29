@@ -14,8 +14,14 @@ let sapTerminalManager;
 
 function registerSapDevelopmentHandlers() {
   const claudeTokenStore = createClaudeTokenStore(app, safeStorage);
-  sapDevelopmentManager = createSapDevelopmentManager(app, claudeTokenStore);
-  ipcMain.handle('sap-development:get-status', () => sapDevelopmentManager.getStatus());
+  sapDevelopmentManager = createSapDevelopmentManager(app, claudeTokenStore, {
+    chooseDirectory: (ownerWindow, options) => dialog.showOpenDialog(ownerWindow, options),
+    openPath: (filePath) => shell.openPath(filePath),
+  });
+  ipcMain.handle('sap-development:get-status', (_event, username) => sapDevelopmentManager.getStatus(username));
+  ipcMain.handle('sap-development:choose-report-directory', (event) => (
+    sapDevelopmentManager.chooseReportDirectory(BrowserWindow.fromWebContents(event.sender))
+  ));
   ipcMain.handle('sap-development:get-auth-status', () => sapDevelopmentManager.getAuthStatus());
   ipcMain.handle('sap-development:configure-token', (_event, token) => sapDevelopmentManager.configureToken(token));
   ipcMain.handle('sap-development:clear-token', () => sapDevelopmentManager.clearToken());
@@ -67,7 +73,7 @@ function createWindow() {
     minHeight: 640,
     backgroundColor: '#f4f7fc',
     show: false,
-    title: 'FS Pilot',
+    title: 'FS Sprint',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -119,7 +125,25 @@ function createWindow() {
   }
 }
 
+// Brings this window back in front of SAP GUI. Windows often refuses a plain
+// focus() from a background app, so briefly pin the window on top as well.
+function registerWindowHandlers() {
+  ipcMain.handle('app:focus-window', (event) => {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    if (!window || window.isDestroyed()) return false;
+    if (window.isMinimized()) window.restore();
+    window.show();
+    window.setAlwaysOnTop(true);
+    window.focus();
+    window.setAlwaysOnTop(false);
+    app.focus({ steal: true });
+    window.webContents.focus();
+    return true;
+  });
+}
+
 app.whenReady().then(async () => {
+  registerWindowHandlers();
   registerGoogleAuthHandlers();
   await registerSapTerminalHandlers();
   registerSapDevelopmentHandlers();

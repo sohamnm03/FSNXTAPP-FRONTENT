@@ -1,0 +1,105 @@
+{
+  "info": {
+    "name": "ZVIM_SRV - PARK_SIMPLE",
+    "description": "Live test of the SEGW OData V2 service ZVIM_SRV on DS4 client 100 (DS4_100_NIIF). Request 3 PARKS A REAL FI DOCUMENT on every run. Credentials are never stored here: pass --env-var sap_user=... --env-var sap_password=... at run time.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "basic",
+    "basic": [
+      { "key": "username", "value": "{{sap_user}}", "type": "string" },
+      { "key": "password", "value": "{{sap_password}}", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "host", "value": "https://vhnlqds4ap01.sap.niififl.in:44300" },
+    { "key": "client", "value": "100" }
+  ],
+  "item": [
+    {
+      "name": "1 Fetch CSRF token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "const tok = pm.response.headers.get('x-csrf-token');",
+              "pm.test('CSRF token returned', () => pm.expect(tok).to.be.a('string').and.not.empty);",
+              "pm.collectionVariables.set('csrf', tok);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "X-CSRF-Token", "value": "Fetch" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": "{{host}}/sap/opu/odata/sap/ZVIM_SRV/?sap-client={{client}}"
+      }
+    },
+    {
+      "name": "2 PARK_SIMPLE missing mandatory (no write)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+              "pm.test('Mandatory-field message', () => pm.expect(pm.response.json().error.message.value).to.include('Mandatory'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-CSRF-Token", "value": "{{csrf}}" },
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"FileName\": \"\",\n  \"FileId\": \"\",\n  \"Bukrs\": \"1000\",\n  \"Message\": \"PARK_SIMPLE\",\n  \"Getdata\": \"bukrs=1000\"\n}"
+        },
+        "url": "{{host}}/sap/opu/odata/sap/ZVIM_SRV/ExtractSet?sap-client={{client}}"
+      }
+    },
+    {
+      "name": "3 PARK_SIMPLE park vendor invoice (WRITES)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "const d = pm.response.json().d;",
+              "pm.test('FileId is a 10-digit document number', () => pm.expect(d.FileId).to.match(/^\\d{10}$/));",
+              "pm.test('Message reports PARKED', () => pm.expect(d.Message).to.match(/^PARKED \\d{10} 1000 \\d{4}$/));",
+              "pm.test('Bukrs echoed as 1000', () => pm.expect(d.Bukrs).to.eql('1000'));",
+              "console.log('Parked document: ' + d.Message);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-CSRF-Token", "value": "{{csrf}}" },
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"FileName\": \"\",\n  \"FileId\": \"\",\n  \"Bukrs\": \"1000\",\n  \"Message\": \"PARK_SIMPLE\",\n  \"Getdata\": \"bukrs=1000&doc_date=20260924&pstng_date=20260924&reference=API-TEST-001&header_txt=API%20park%20test&vendor=9842&gl_account=101000&amount=100000.00&currency=INR&item_text=Inter%20Co%20Loan\"\n}"
+        },
+        "url": "{{host}}/sap/opu/odata/sap/ZVIM_SRV/ExtractSet?sap-client={{client}}"
+      }
+    }
+  ]
+}

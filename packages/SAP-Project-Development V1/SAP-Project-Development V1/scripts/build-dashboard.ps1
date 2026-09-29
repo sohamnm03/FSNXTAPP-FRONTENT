@@ -1,12 +1,16 @@
-<#
+﻿<#
 .SYNOPSIS
     Builds the worklog activity dashboard from the files under worklog/<system-id>/.
 
 .DESCRIPTION
-    Scans worklog/<system-id>/*.md across every system subfolder (skipping
-    _TEMPLATE.md, which lives at worklog/ root, not inside a subfolder),
+    Scans worklog/<system-id>/<YYYY-MM>/*.md across every system subfolder
+    (skipping _TEMPLATE.md, which lives at worklog/ root, not inside a subfolder,
+    and skipping the evidence/ folders nested inside each month folder),
     extracts one dashboard entry per worklog file, and renders
     dashboard/template.html with that payload injected.
+
+    A worklog file is named <YYYY-MM-DD>-<HHmm>-<slug>.md. Every worklog carries an
+    HHmm segment as of 2026-09-14 (L-507); the parser still tolerates its absence.
 
     Output:
       dashboard/output/dashboard.html          the dashboard, open it in a browser
@@ -287,15 +291,25 @@ else {
     $systemsSeen = @()
     foreach ($sysDir in $systemDirs) {
         $system = $sysDir.Name
-        $files = Get-ChildItem -Path $sysDir.FullName -Filter '*.md' |
-                 Where-Object { $_.Name -ne '_TEMPLATE.md' } |
+        # Recurse: worklogs live in month folders (worklog/<system>/<YYYY-MM>/).
+        # Exclude evidence/, which sits inside each month folder and may hold .md
+        # transcripts that are not worklog entries.
+        $files = Get-ChildItem -Path $sysDir.FullName -Filter '*.md' -Recurse -File |
+                 Where-Object { $_.Name -ne '_TEMPLATE.md' -and
+                                $_.FullName -notmatch '[\/]evidence[\/]' } |
                  Sort-Object Name
 
         foreach ($f in $files) {
             $text = Get-Content -Path $f.FullName -Raw -Encoding UTF8
 
-            $dateMatch = [regex]::Match($f.BaseName, '^(\d{4}-\d{2}-\d{2})')
+            # <YYYY-MM-DD>[-<HHmm>]-<slug>. Every file carries HHmm since L-507;
+            # the group stays optional so a hand-added file without one still
+            # parses (reporting a null time) rather than being dropped.
+            $dateMatch = [regex]::Match($f.BaseName, '^(\d{4}-\d{2}-\d{2})(?:-(\d{2})(\d{2}))?')
             $date = if ($dateMatch.Success) { $dateMatch.Groups[1].Value } else { $null }
+            $time = if ($dateMatch.Groups[2].Success) {
+                        '{0}:{1}' -f $dateMatch.Groups[2].Value, $dateMatch.Groups[3].Value
+                    } else { $null }
 
             $titleMatch = [regex]::Match($text, '(?m)^#\s+(.+?)\s*$')
             $title = if ($titleMatch.Success) { $titleMatch.Groups[1].Value.Trim() } else { $null }
@@ -312,6 +326,7 @@ else {
                 id             = $f.BaseName
                 system         = $system
                 date           = $date
+                time           = $time
                 title          = $title
                 package        = Clean-Value (Get-Field $text 'Package')
                 transport      = Clean-Value (Get-Field $text 'Transport')
@@ -321,8 +336,8 @@ else {
                 status         = $status
                 objects        = $objects
                 lessons        = $lessons
-                worklogPath    = "worklog/$system/$($f.Name)"
-                worklogUrl     = "../../worklog/$system/$($f.Name)"
+                worklogPath    = "worklog/$system/$($f.Directory.Name)/$($f.Name)"
+                worklogUrl     = "../../worklog/$system/$($f.Directory.Name)/$($f.Name)"
             }
             if (-not $NoDetail) { $run.detail = $text }
 

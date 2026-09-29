@@ -71,12 +71,104 @@ Read back with
 | 031 | E | You are not authorized to submit program &1 | &1 = program name | `ZFS_RFC_DYNGW_SUBMIT` — explicit `AUTHORITY-CHECK OBJECT 'S_PROGRAM'` on `TRDIR-SECU` before the `SUBMIT`, so a failure is a clean refusal rather than an empty body (L-313) |
 | 032 | E | No output could be captured from program &1 in mode &2 | &1 = program name, &2 = capture mode | `ZFS_RFC_DYNGW_SUBMIT` — SALV interception returned nothing, or the list memory / ABAP memory id was empty. Distinguishes "this report is not SALV" from "the report legitimately returned no rows" |
 
-All 32 are flagged **self-explanatory**, so no long text is required.
+| 033 | E | You are not authorized to register gateway target &1 | &1 = target name | `ZCL_FS_SLC_GW_REGI` — `REGI` step refused by `ZCL_FS_SLC_GW_REGPOL` (`AUTH` mode without the registration authorization, or `OFF` mode) |
+| 034 | E | Invalid registration payload for target &1: &2 | &1 = target name, &2 = reason | `ZCL_FS_SLC_GW_REGI` — `ImportJson` is not a valid registration row: unparseable, unknown `TargetKind`, or a missing mandatory column |
+| 035 | E | Target &1 is already registered | &1 = target name | `ZCL_FS_SLC_GW_REGI` — `Operation` `INSERT` (the default) against a target that already has a registry row. Widening an existing registration must be typed out as `UPDATE` (L-344) |
+| 036 | S | Target &1 registered, &2 row(s) affected | &1 = target name, &2 = row count | `ZCL_FS_SLC_GW_REGI` — success path of a `REGI` step. **Not** the generic 026: 026 reads "&1 executed successfully", which for a `REGI` step names the target being *registered* and so asserted an execution that never happened (L-370) |
+| 037 | E | Request exceeds the &1 budget: &2 | &1 = budget name/kind, &2 = detail | `ZCL_FS_DYN_BUDGET` (dyngw v2, not yet built — Task 8+) — request-cost/budget guard |
+| 038 | S | Request &1 replayed from call &2 | &1 = `RequestId`, &2 = original call UUID | dyngw v2 orchestrator — idempotency hit on a repeated `RequestId` |
+| 039 | E | Target &1 belongs to the gateway framework and is not a permitted target | &1 = target name | dyngw v2 self-protection, **three consumers**: Task 4's RAP `validateTarget` (at registration), `ZCL_FS_DYN_HDL_TABLE=>REJECT_OWN_OBJECT` (a `TABL` step at execution — a **write**, where nothing is being registered) and `ZCL_FS_DYN_HDL_REGI=>REJECT_OWN_OBJECT` (a `REGI` step). **Reworded 2026-09-13** from "…and cannot be registered", which was false on the TABL route: a refused caller was told about an operation they never attempted. One concept, three routes, one route-neutral text |
+| 040 | E | You are not authorized to &1 gateway targets | &1 = attempted operation (e.g. "register", "execute") | `ZCL_FS_DYN_AUTH` (dyngw v2) — `ZFS_DYNGW` authorization object check failed |
+| 041 | E | &1 returned a business error: &2 | &1 = target name, &2 = business error text | dyngw v2 dispatcher — `BAPIRET2`/`RETURN` scan classifies the outcome as `ErrorCategory = BUSINESS` |
+| 042 | E | Paging requires a stable sort order for &1 | &1 = source name | dyngw v2 `RunQuery` — a `Skip`/paged read was requested without an explicit, stable sort |
+| 043 | E | Program &1 cannot be submitted: &2 | &1 = program name, &2 = reason | dyngw v2 `RegisterTarget` — `SUBM` target qualification at registration time (disqualifies e.g. a `CL_GUI_*` reference) |
+| 044 | S | &1 call log row(s) and &2 step row(s) deleted | &1 = call rows deleted, &2 = step rows deleted | dyngw v2 `ZFS_R_DYN_PURGE` (not yet built) — retention/purge report success |
+| 045 | E | Batch aborted at step &1: &2 | &1 = step index, &2 = abort reason | dyngw v2 `ExecuteBatch` — abort mid-batch (v1 overloaded 020 for this; v2 gives it its own number) |
+| 046 | E | Retention age &1 days is below the minimum &2 days | &1 = requested `p_days`, &2 = idempotency-window floor constant (30) | dyngw v2 `ZFS_R_DYN_PURGE` — below-the-idempotency-floor refusal, raised when the selection-screen `p_days` is less than the 30-day floor; the report deletes nothing when this fires |
+| 047 | E | Dynamic gateway error: &1 &2 &3 &4 | &1-&4 = the exception's `MSGV1`-`MSGV4` | dyngw v2 `ZCX_FS_DYN_ERROR` — the exception class's own **T100 default**, used when a raise site supplies no `textid`. Before it existed that fallback was `if_t100_message=>default_textid`, i.e. `SY`/`530`, which violates L-210; see L-400. Not raised deliberately by any handler — every handler passes an explicit `textid` — so a 047 in the log means a raise site forgot one |
+| 048 | W | &1: &2 of &3 row(s) written | &1 = target name, &2 = rows the database actually touched (`SY-DBCNT`), &3 = rows the caller sent | dyngw v2 `ZCL_FS_DYN_HDL_TABLE=>ZIF_FS_DYN_HANDLER~EXECUTE` — the **partial-write** path (`INSERT ... ACCEPTING DUPLICATE KEYS` where `SY-DBCNT < LINES( )`, L-312). Replaces the reuse of **026** at severity `W`, which reported a partial outcome with a success text — the mistake L-370 already cost this project once |
+| 049 | E | Internal gateway error in &1: &2 | &1 = target/step name, &2 = what was violated | dyngw v2 — the framework's own call sequence broken, not a caller error and nothing dynamic involved. Raised by `LCL_GUARDED_HANDLER` in `ZCL_FS_DYN_FACTORY` and by `ZCL_FS_DYN_HDL_REGI=>ZIF_FS_DYN_HANDLER~EXECUTE`, both for "execute called without a successful prepare". Both used **020** "Dynamic call of &1 failed" until 2026-09-13, which sent a debugger looking for a dynamic call that does not exist |
+| 050 | E | Generator field &1 does not exist on target &2 | &1 = generator field name, &2 = target name | dyngw v2 server-side field generators (Tasks 2–9, `docs/superpowers/plans/2026-09-15-1410-dyngw-v2-generators.md`) — not yet built; raised when a registered generator config names a field absent from the target's structure |
+| 051 | E | Number range object &1 is not permitted for target &2 | &1 = number range object, &2 = target name | dyngw v2 server-side field generators — not yet built; raised when a registration attempts to attach a number-range generator the target does not allow (e.g. self-protection or a disallowed object) |
+| 052 | E | Generation is not permitted for target &1 | &1 = target name | dyngw v2 server-side field generators — not yet built; raised when a caller requests generation but the registry row does not have generation enabled for the target |
+| 053 | E | Number range &1 could not supply a number for &2 | &1 = number range object, &2 = target/field name | dyngw v2 server-side field generators — not yet built; raised when `NUMBER_GET_NEXT` (or equivalent) fails to return a usable number, e.g. the interval is exhausted |
+| 054 | E | Number range generation is not allowed with commit mode NEVER | — | dyngw v2 server-side field generators — not yet built; a number-range draw is only meaningful inside a commit, so it is refused outright under `CommitMode = NEVER` |
+| 055 | E | Field &1 in line &2 contains HTML/script tag characters - not allowed | &1 = technical field name (from RTTI, never caller text), &2 = position in the request (0 = header, n = nth `NP_ACC` line) | Beacon accounting OData `CREATE_DEEP_ENTITY` input guard `CHECK_NO_MARKUP` in `ZCL_ZFS_BEACON_ACCO_01_DPC_EXT` (V1) and `ZCL_ZFS_BEACON_ACCOUNT_DPC_EXT` (_LOCL): a character field contains `<` or `>`. The whole request is rejected (HTTP 400). Created 2026-09-24 on `DS4K907194` (task of `DS4K907018`, where the class is locked), for the XSS audit finding. It deliberately echoes no caller value (`worklog/DS4_100_NIIF/2026-09/2026-09-24-1213-beacon-xss-input-guard.md`) |
+| 056 | E | Filter on CompanyCode and FinancialTransaction (eq) is required | — | `ZCL_FS_TRM_DEALITEM_QUERY` — a GET on any deal-item entity set (`ZFS_SB_TRMDEALITEM_O4_API`) without an `eq` filter on both deal key fields; raised as `CX_RAP_QUERY_COND` textid. Created 2026-09-25 on DS4K907018 (task DS4K907194, where `ZFS_TRM_MSG` is locked), verified in `T100` (56 rows) |
+| 057 | E | Flow created on deal &1 but its key could not be determined | &1 = financial transaction | `ZBP_FS_TRMDEALADDFLOWTP` / `ZBP_FS_TRMDEALMAINFLOWTP` create — the flow was committed, but the post-commit re-list did not yield exactly one new matching flow; the caller must re-list the deal. Created 2026-09-25 on DS4K907018 (task DS4K907194), verified in `T100` |
+| 058 | E | Deal &1 &2 may be saved despite the error - check before retrying | &1 = company code, &2 = financial transaction (ALPHA out) | `ZBP_FS_TRMIRATETP` / `ZBP_FS_TRMFXTP` create — DEALCREATE returned a deal number and the commit was attempted, but an error came back (commit RFC failure or E/A from `BAPI_TRANSACTION_COMMIT`); the deal may exist, so the caller must check before retrying (Phase 2 review finding F1). Created 2026-09-25 on DS4K907018 (task DS4K907194), verified in `T100` |
 
-**Next free number: 033.**
+All 49 pre-existing messages remain flagged **self-explanatory**; 050–054 follow the same
+convention.
+
+**Next free number: 059.**
+
+**Reconciled against the live system 2026-09-13 (Task 21, documentation).**
+`SELECT msgnr, text FROM t100 WHERE sprsl = 'E' AND arbgb = 'ZFS_TRM_MSG' AND msgnr BETWEEN '037'
+AND '049'` returned 13 rows whose text matches every row in this file, verbatim, number for
+number. `SELECT MAX( msgnr ), COUNT(*) FROM t100 WHERE sprsl = 'E' AND arbgb = 'ZFS_TRM_MSG'` ->
+**49 rows, max 049** — confirms "next free number: 050" above and that no message beyond 049 has
+been created since fix round 1. **No drift found**; this file already reflected the system
+(fix round 1's own entry below had already brought it current).
+
+Messages **037–045** were allocated on 2026-09-12, ahead of their consumers, for the dynamic
+gateway v2 rebuild (`ZFS_DYN_GW` package) — Task 1 of the 21-task plan
+(`docs/superpowers/plans/2026-09-12-1032-dyngw-v2.md`), so that Tasks 8–19 (which raise them) don't each
+make a separate, collision-prone allocation against this shared "next free number". None of the
+raising objects exist yet; the "raising object" column above names the class/report each message
+is *planned* for per `docs/superpowers/specs/2026-09-12-1033-dyngw-v2-design.md` §9 — re-verify against
+the actual class name once built, since design names can still drift during implementation. Landed
+on transport **`DS4K907194`**, the same task under `DS4K907018` that already carries messages
+017–036 for this class (confirmed live via `transportInfo` before creation, per L-355 — not
+assumed to be the gateway's own `DS4K907263`, which does not hold this object at all).
+(`worklog/DS4_100_NIIF/2026-09/2026-09-12-1034-dyngw-v2-framework-design.md`.)
+
+Message **047** was added on 2026-09-12 during the Task 6+8 fix round
+(`worklog/DS4_100_NIIF/2026-09/2026-09-12-1034-dyngw-v2-framework-design.md`, L-400), on transport
+**`DS4K907194`** — the same task 033-046 used, confirmed live by `transportInfo` on
+`/sap/bc/adt/messageclass/zfs_trm_msg` before the write, not assumed. Verified after the write with
+`SELECT COUNT(*) FROM t100 WHERE arbgb = 'ZFS_TRM_MSG' AND sprsl = 'E'` -> **47**, and
+`SELECT msgnr, text ... BETWEEN '044' AND '047'` -> 047 = `Dynamic gateway error: &1 &2 &3 &4`.
+Note that `MSAG/N` needs **no** activation step: the `setObjectSource` PUT writes `T100` directly,
+and `activateObjects` on a message class fails with *"Object type MSAD is not defined"* while the
+messages are already live and the class is absent from `inactiveObjects`.
+
+Message **036** was added on 2026-09-12 so a `REGI` step stops reporting itself with 026
+(`worklog/DS4_100_NIIF/2026-09/2026-09-12-1738-regi-message-036.md`, L-370). Like 033–035 it landed on
+**`DS4K907194`**, not on the gateway transport `DS4K907263` that carries the class raising it —
+the L-355 split is unchanged and still has to be resolved before release.
+
+The dynamic gateway v2 `TABL` handler (`ZCL_FS_DYN_HDL_TABLE`, Task 10, 2026-09-12) **created no
+message**. It reuses 018 (operation outside INSERT/MODIFY/DELETE, or an operation the registry row
+pins away from), 021 (source does not exist — raised by `ZCL_FS_DYN_RUNTIME=>COMPONENTS_OF`),
+022 (`ImportJson` is not a JSON array), 037 (row set over the registered write-row ceiling) and
+039 (self-protection: a `ZFS_T_DYN_*` / `ZFS_RFC_DYN_*` / `ZFS_T_SLC_GW*` target).
+
+Messages **050–054** were added on 2026-09-15 for Task 2 of the 9-task dyngw v2 server-side field
+generators plan (`docs/superpowers/plans/2026-09-15-1410-dyngw-v2-generators.md`,
+`worklog/DS4_100_NIIF/2026-09/2026-09-15-1410-dyngw-v2-generators.md`), on transport
+**`DS4K907300`** — created by Task 1 of the same plan, confirmed the transport every task 2–9
+reuses. Added via `lock`/`setObjectSource`/`unLock` on `/sap/bc/adt/messageclass/zfs_trm_msg`
+through `mcp-abap-abap-adt-api` — the confirmed `MSAG/N` route, since `adt-mcp` has no adapter for
+message classes. `SELECT COUNT(*) FROM t100 WHERE sprsl = 'E' AND arbgb = 'ZFS_TRM_MSG'` read
+**49** immediately before the write and **54** immediately after; a row read of 050–054 matched the
+brief's texts character-for-character, and a full re-read of 001–049 confirmed all pre-existing
+messages survived byte-for-byte. None of the raising objects exist yet — Tasks 5, 6 and 7 raise
+these once the generator handler, number-range wiring and dispatcher guard are built.
+
+**Superseded 2026-09-13 (fix round 1).** The partial-write path used to reuse **026** at severity
+`W`. That is a success text ("&1 executed successfully, &2 row(s) affected") carrying a partial
+outcome: a caller reading the message alone was told the write succeeded, and only the severity —
+plus a `ResultCount` they would have had to compare against their own row count — said otherwise.
+It now raises **048** "&1: &2 of &3 row(s) written", which states both numbers in the text.
+
+Messages **033–035** were added on 2026-09-11 for the dynamic gateway's `REGI` step kind
+(`worklog/DS4_100_NIIF/2026-09/2026-09-11-1243-gateway-completion.md`), on transport `DS4K907263`, and verified
+in `T100` after the write. `REGI` also **reuses** 017, 018, 020, 022 and 026 rather than adding
+near-duplicates.
 
 Messages **027–032** were added on 2026-09-10 for the dynamic gateway's `SUBM` step kind
-(`worklog/DS4_100_NIIF/2026-09-10-dyngateway-submit-kind.md`), on transport `DS4K907018`, and
+(`worklog/DS4_100_NIIF/2026-09/2026-09-10-1243-dyngateway-submit-kind.md`), on transport `DS4K907018`, and
 verified in `T100` after the write. `SUBM` also **reuses** 017, 018, 022, 023, 024, 025 and 026
 rather than adding near-duplicates.
 
@@ -84,3 +176,14 @@ rather than adding near-duplicates.
 
 `ZFS_TRM_MSG` is a **listed exception** to the `ZFS_MSG_<AREA>` pattern — named by the human, valid
 as-is. See the *Classic & Misc* section of `docs/naming-conventions.md`. Do not "correct" it.
+
+## Fix round 1 — 2026-09-13 (dyngw v2)
+
+Message **039** reworded, and messages **048** (W) and **049** (E) created, in one
+`lock`/`setObjectSource`/`unLock` on `/sap/bc/adt/messageclass/zfs_trm_msg` via
+`mcp-abap-abap-adt-api` — the confirmed `MSAG` route, `adt-mcp` has no adapter. Transport
+**`DS4K907194`**, confirmed live by `transportInfo` before the write (the object is locked in that
+task; it is *not* on the gateway's own `DS4K907263`). Verified after the write with
+`SELECT COUNT(*) FROM t100 WHERE sprsl = 'E' AND arbgb = 'ZFS_TRM_MSG'` -> **49** (was 47) and a
+row read of 039-049; all 47 pre-existing messages survived unchanged.
+(`worklog/DS4_100_NIIF/2026-09/2026-09-12-1034-dyngw-v2-framework-design.md`, section "Fix round 1".)

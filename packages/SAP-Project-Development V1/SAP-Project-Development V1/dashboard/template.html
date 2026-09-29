@@ -276,6 +276,10 @@
     font-size: 11px; color: var(--ink-2); border: 1px solid var(--border);
     border-radius: 5px; padding: 1px 6px; white-space: nowrap;
   }
+  /* Start time, under the date. Absent on entries migrated from the flat layout. */
+  .run-time {
+    display: block; font-size: 11px; color: var(--ink-2); white-space: nowrap;
+  }
   a.view {
     color: var(--series-1); text-decoration: none; font-weight: 500; white-space: nowrap;
   }
@@ -749,7 +753,11 @@
       return;
     }
     tb.innerHTML = runs.slice().sort(function (a, b) {
-      return String(b.date || "").localeCompare(String(a.date || ""));
+      var d = String(b.date || "").localeCompare(String(a.date || ""));
+      if (d !== 0) return d;
+      // Same day: newest first by time. Entries migrated from the flat layout
+      // have no time and sort after the timed ones rather than jumping to the top.
+      return String(b.time || "").localeCompare(String(a.time || ""));
     }).map(function (r) {
       var out;
       if (r.detail) {
@@ -760,7 +768,8 @@
         out = '<span class="no-link">' + esc(r.worklogPath || "no worklog file") + "</span>";
       }
       return "<tr>" +
-        '<td class="num">' + esc(r.date ? fmtDate(r.date) : "—") + "</td>" +
+        '<td class="num">' + esc(r.date ? fmtDate(r.date) : "—") +
+          (r.time ? '<span class="run-time">' + esc(r.time) + "</span>" : "") + "</td>" +
         '<td class="cell-wrap w-title">' + esc(r.title || r.id) + "</td>" +
         "<td>" + (r.system ? '<span class="lane">' + esc(r.system) + "</span>" : "") + "</td>" +
         '<td class="num">' + countText(r.todo) + "</td>" +
@@ -858,7 +867,8 @@
 
   function openDrawer(run) {
     document.getElementById("drawer-title").textContent =
-      (run.title || run.id || "Worklog entry") + (run.date ? " · " + fmtDate(run.date) : "");
+      (run.title || run.id || "Worklog entry") +
+      (run.date ? " · " + fmtDate(run.date) + (run.time ? " " + run.time : "") : "");
     document.getElementById("drawer-body").innerHTML = md(run.detail || "");
     document.getElementById("drawer-body").scrollTop = 0;
     drawer.classList.add("open");

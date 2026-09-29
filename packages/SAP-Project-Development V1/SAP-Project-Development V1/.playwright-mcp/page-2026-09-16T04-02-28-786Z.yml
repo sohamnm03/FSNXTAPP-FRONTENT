@@ -1,0 +1,71 @@
+- generic [active] [ref=f138e1]:
+  - banner [ref=f138e2]:
+    - generic [ref=f138e3]:
+      - img "Fourth Signal" [ref=f138e4]
+      - generic [ref=f138e5]:
+        - heading "Dynamic Gateway" [level=1] [ref=f138e6]
+        - paragraph [ref=f138e7]: FS • DS4 / 100
+    - generic [ref=f138e8]:
+      - link "Other path SLC →" [ref=f138e9] [cursor=pointer]:
+        - /url: http://localhost:8771/
+        - generic [ref=f138e10]: Other path
+        - text: SLC →
+      - generic "ZFS_SB_DYNGW_O4_API" [ref=f138e11]
+  - main [ref=f138e12]:
+    - generic [ref=f138e13]: Dynamic Gateway v2
+    - generic [ref=f138e14]: One allow-listed endpoint on DS4 client 100 — ZFS_SB_DYNGW_O4_API. Each tile opens a console served by its own proxy.
+    - generic [ref=f138e15]: Applications
+    - generic [ref=f138e17] [cursor=pointer]:
+      - generic [ref=f138e21]: OTTK via Dynamic Gateway
+      - generic [ref=f138e22]: Origination tickets read and written entirely through the gateway — no dedicated OData service — with a live trace of the gateway's own call log.
+      - generic [ref=f138e23]:
+        - generic [ref=f138e24]: Console
+        - generic [ref=f138e25]: →
+    - generic [ref=f138e26]: Applications
+    - generic [ref=f138e27]:
+      - generic [ref=f138e28] [cursor=pointer]:
+        - generic [ref=f138e32]: Distribution Ticket (DTTK)
+        - generic [ref=f138e33]: Distribution tickets through the gateway — the individual DTTK screen, reading and writing via RunQuery and ExecuteTableCrud instead of a dedicated service.
+        - generic [ref=f138e34]:
+          - generic [ref=f138e35]: Console
+          - generic [ref=f138e36]: →
+      - generic [ref=f138e37] [cursor=pointer]:
+        - generic [ref=f138e41]: Deal ID Creation
+        - generic [ref=f138e42]: Deal IDs through the gateway — pick an OTTK and DTTK leg, see their balances, and create the deal ID.
+        - generic [ref=f138e43]:
+          - generic [ref=f138e44]: Console
+          - generic [ref=f138e45]: →
+    - generic [ref=f138e46]: Administration
+    - generic [ref=f138e47]:
+      - generic [ref=f138e48] [cursor=pointer]:
+        - generic [ref=f138e52]: Registry
+        - generic [ref=f138e53]: "The allow-list: every registered target with its kind, permissions and usage. Register, edit, deactivate or delete a target; every write is audited."
+        - generic [ref=f138e54]:
+          - generic [ref=f138e55]: Admin
+          - generic [ref=f138e56]: →
+      - generic [ref=f138e57] [cursor=pointer]:
+        - generic [ref=f138e61]: Linkage Report
+        - generic [ref=f138e62]: How the four tables join. Pick a registry row and trace its change history, every step it authorised, and the calls those steps belonged to.
+        - generic [ref=f138e63]:
+          - generic [ref=f138e64]: Report
+          - generic [ref=f138e65]: →
+    - generic [ref=f138e66]: Reference
+    - generic [ref=f138e67]:
+      - generic [ref=f138e68] [cursor=pointer]:
+        - generic [ref=f138e72]: How to Call It
+        - generic [ref=f138e73]: "The endpoint, step by step: the URL shape, a first call you can copy, a card per action with its exact POST URL and parameters, and the traps."
+        - generic [ref=f138e74]:
+          - generic [ref=f138e75]: Docs
+          - generic [ref=f138e76]: →
+      - generic [ref=f138e77] [cursor=pointer]:
+        - generic [ref=f138e81]: Service $metadata
+        - generic [ref=f138e82]: The service's own contract as SAP publishes it — entity types, action signatures and result shape. Opens as raw XML.
+        - generic [ref=f138e83]:
+          - generic [ref=f138e84]: Raw
+          - generic [ref=f138e85]: →
+      - generic [ref=f138e86] [cursor=pointer]:
+        - generic [ref=f138e90]: Registry (raw JSON)
+        - generic [ref=f138e91]: The allow-list straight from the entity set, unrendered — useful when you want to see exactly what the service returns.
+        - generic [ref=f138e92]:
+          - generic [ref=f138e93]: Raw
+          - generic [ref=f138e94]: →

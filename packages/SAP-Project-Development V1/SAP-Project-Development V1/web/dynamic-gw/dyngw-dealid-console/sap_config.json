@@ -1,0 +1,41 @@
+{
+  "_comment": [
+    "Non-secret config for the DYNGW v2 Deal ID console -- web/individual/deal-id-console with its",
+    "transport rerouted through the dynamic gateway (ZFS_SB_DEALID_O4_API's DealId entity is read",
+    "as ZFS_C_DealIdTP; the OTTK/DTTK pickers and bank filters use the views already registered).",
+    "Creating a deal ID needs ZSGSLCTR_DEALID registered as a TABL write target -- until then the",
+    "screen reads live and the banner says what is missing.",
+    "No password here: it comes from the environment variable named below, falling back to the",
+    "gitignored .claude/settings.local.json 'env' block at the repo root.",
+    "Port 8777 keeps this server clear of web/individual/ (8765-8772) and of the other dynamic-gw",
+    "consoles (8773 OTTK, 8774 admin, 8775 hub, 8776 DTTK)."
+  ],
+  "systemId": "DS4_100_NIIF",
+  "user": "FS_DEV3",
+  "passwordEnvVar": "SAP_DS4_100_NIIF_PASSWORD",
+  "tlsVerify": false,
+  "port": 8777,
+  "indexFile": "index.html",
+  "services": {
+    "ottk": {
+      "base": "https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_slcottkdetail_o4_api/srvd_a2x/sap/zfs_sd_slcottkdetail/0001",
+      "client": "100"
+    },
+    "dttk": {
+      "base": "https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_slcdttkdetail_o4_api/srvd_a2x/sap/zfs_sd_slcdttkdetail/0001",
+      "client": "100"
+    },
+    "dealid": {
+      "base": "https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dealid_o4_api/srvd_a2x/sap/zfs_sd_dealid/0001",
+      "client": "100"
+    },
+    "tf": {
+      "base": "https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trdflow_o4_api/srvd_a2x/sap/zfs_sd_trdflow/0001",
+      "client": "100"
+    },
+    "dyngw": {
+      "base": "https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001",
+      "client": "100"
+    }
+  }
+}

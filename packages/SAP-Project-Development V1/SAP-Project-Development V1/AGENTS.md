@@ -34,13 +34,19 @@ correction the human had to issue once already.
    build — it outranks the generic examples in `docs/` when the two disagree.
 
 2. **Todo list per activity.** Every activity opens a work plan under
-   `worklog/<system-id>/`, copied from `worklog/_TEMPLATE.md` (the template stays at the
-   `worklog/` root, shared across systems) and named `YYYY-MM-DD-<slug>.md`, carrying scope,
-   open questions, the `NAMING:` gate lines, the numbered todo list, the object list and the
-   delivery checks. `<system-id>` matches `config/sap-systems.json` `systems[].id` — worklogs
-   are per-system because everything they record (objects, transports, open questions) is only
-   meaningful against one system (L-234). Keep it current — it is the handover artifact
-   between sessions.
+   `worklog/<system-id>/<YYYY-MM>/`, copied from `worklog/_TEMPLATE.md` (the template stays at
+   the `worklog/` root, shared across systems) and named `YYYY-MM-DD-<HHmm>-<slug>.md` —
+   `HHmm` is the 24h local start time, and it is what orders the several activities that land
+   on the same day (L-502). It carries scope, open questions, the `NAMING:` gate lines, the
+   numbered todo list, the object list and the delivery checks. `<system-id>` matches
+   `config/sap-systems.json` `systems[].id` — worklogs are per-system because everything they
+   record (objects, transports, open questions) is only meaningful against one system (L-234).
+   Keep it current — it is the handover artifact between sessions.
+
+   **Evidence** — screenshots, transcripts, payload dumps, exported reports — goes in
+   `worklog/<system-id>/<YYYY-MM>/evidence/<worklog stem>/`, one folder per activity named
+   exactly like its worklog file minus `.md`, and is committed. Never leave an artifact loose
+   in the system folder (L-502).
 
 3. **Messages come from `ZFS_TRM_MSG` only.** Every user-facing message in every
    development uses message class `ZFS_TRM_MSG` — never a text symbol, never an inline
@@ -163,6 +169,22 @@ Also apply the project-specific naming convention in `docs/naming-conventions.md
 Task-specific runbooks in `docs/` outrank both when they cover the object at hand:
 `alv-report-standards.md`, `ddic-table-template.md`,
 `rap-managed-additional-save-pattern.md`, `rap-unmanaged-web-api-pattern.md`.
+
+Calling the dynamic gateway: read `docs/dyngw-v2-integration-guide.md` first (current build,
+`ZFS_SB_DYNGW_O4_API`, package `ZFS_DYN_GW`), then `docs/dyngw-v2-api.md` for the wire contract and
+`docs/dyngw-v2-how-it-works.md` for the architecture and its proved-vs-unproven ledger. The
+rebuild's authorization filtering is still **built but not yet proved live**; the L-350 rollback
+guarantee **is proved live** — L-496 (2026-09-13) demonstrated phase-2 abort/rollback with a
+positive control, and this correction (2026-09-15) supersedes an earlier stale statement here and
+in `CLAUDE.md` that had never been updated to match. **Watch-list addition (2026-09-15): server-side
+field generators** — `GenerateJson` on `ExecuteTableCrud`/`TABL` steps, `IsCommitted`/
+`IsRolledBack` now exposed, messages 050–054, proved live except two open findings: a generated
+number range value is not reliably outside rollback on this system (L-519, corrects the design's
+original claim), and `ExecuteTableCrud MODIFY` is a full-row replace that silently blanks any
+column a caller's payload omits, create-audit fields included (L-520, undecided, not fixed). See
+the docs above for the full account. `docs/dyngateway-integration-guide.md` /
+`dynamic-gateway-api.md` (v1, `ZFS_SB_DYNGATEWAY_O4_API`) are **superseded by the above — still
+running, not decommissioned** — do not point a new consumer at v1, and do not delete it either.
 
 ---
 

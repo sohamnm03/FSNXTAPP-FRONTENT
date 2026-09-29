@@ -6,11 +6,15 @@ contextBridge.exposeInMainWorld('desktopAPI', Object.freeze({
     chrome: process.versions.chrome,
     electron: process.versions.electron,
   }),
+  app: Object.freeze({
+    focusWindow: () => ipcRenderer.invoke('app:focus-window'),
+  }),
   googleAuth: Object.freeze({
     login: () => ipcRenderer.invoke('google-auth:login'),
   }),
   sapDevelopment: Object.freeze({
-    getStatus: () => ipcRenderer.invoke('sap-development:get-status'),
+    getStatus: (username) => ipcRenderer.invoke('sap-development:get-status', username),
+    chooseReportDirectory: () => ipcRenderer.invoke('sap-development:choose-report-directory'),
     getAuthStatus: () => ipcRenderer.invoke('sap-development:get-auth-status'),
     configureToken: (token) => ipcRenderer.invoke('sap-development:configure-token', token),
     clearToken: () => ipcRenderer.invoke('sap-development:clear-token'),

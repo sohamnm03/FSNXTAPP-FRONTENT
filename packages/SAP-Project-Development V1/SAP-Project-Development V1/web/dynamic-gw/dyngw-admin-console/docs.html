@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Dynamic Gateway v2 — How to call it</title>
+<style>
+/* House theme -- lifted verbatim from web/dynamic-gw/dyngw-v2-console/index.html. */
+:root{--bg:#f5f7f9;--surface:#fff;--surface-2:#f2f4f5;--border:#d5dadd;--border-strong:#8996a1;--text:#1d2d3e;--sub:#475e75;--muted:#687b8d;--blue:#0a6ed1;--blue-hover:#085caf;--blue-soft:#eaf3fc;--blue-soft-2:#d1e8ff;--green:#107e3e;--shadow:0 1px 3px rgba(34,53,72,.13);--radius:8px;--sidebar:355px;--header:52px}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:"72","Segoe UI",Arial,sans-serif;color:var(--text);background:var(--bg);font-size:13px}button,input,select{font:inherit;color:inherit}button{cursor:pointer}.app{height:100vh;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);grid-template-rows:var(--header) minmax(0,1fr);overflow:hidden}.topbar{grid-column:1/-1;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 18px;z-index:10}.title-wrap{display:flex;align-items:center;gap:11px;min-width:0}.mark{width:30px;height:30px;border-radius:6px;background:linear-gradient(145deg,#0a6ed1,#35a5dc);display:grid;place-items:center;color:#fff;box-shadow:0 2px 7px rgba(10,110,209,.22)}.title{font-size:17px;font-weight:700;white-space:nowrap}.title small{font-size:12px;color:var(--muted);font-weight:400;margin-left:8px}.actions{display:flex;align-items:center;gap:6px}.btn{height:32px;padding:0 11px;border:1px solid var(--border-strong);background:var(--surface);border-radius:4px;font-weight:600;display:inline-flex;align-items:center;gap:7px;color:var(--sub)}.btn:hover{background:var(--surface-2);color:var(--text)}.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn.primary:hover{background:var(--blue-hover)}.btn.icon-only{padding:0;width:32px;justify-content:center}.btn svg,.tool svg{width:15px;height:15px;fill:currentColor}.connection{width:8px;height:8px;background:#20a454;border-radius:50%;box-shadow:0 0 0 3px #d9f3e2;margin:0 6px}.sidebar{background:var(--surface);border-right:1px solid var(--border);overflow:auto;padding:12px;scrollbar-width:thin}.side-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.side-head strong{font-size:14px}.section{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;background:var(--surface)}.section-title{background:var(--surface-2);border-bottom:1px solid var(--border);padding:7px 10px;font-size:12px;font-weight:700;color:var(--sub)}.fields{padding:9px 10px 7px}.field{display:grid;grid-template-columns:128px minmax(0,1fr);gap:8px;align-items:center;margin-bottom:7px}.field label{font-size:12px;color:var(--sub);line-height:1.15}.field input,.field select{width:100%;height:28px;border:1px solid var(--border-strong);border-radius:3px;background:#fff;padding:3px 8px;outline:none;min-width:0}.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}.field .compound{display:flex;gap:5px;min-width:0}.field .short{width:74px;flex:none}.field .code{width:54px;flex:none}.field .amount{text-align:right;font-variant-numeric:tabular-nums}.field .suffix{height:28px;min-width:43px;padding:5px 6px;border:1px solid var(--border);border-radius:3px;background:var(--surface-2);font-size:11px;color:var(--sub)}.field.wide{grid-template-columns:1fr}.field.wide label{margin-bottom:-4px}.main{overflow:auto;padding:12px;display:grid;grid-template-rows:auto minmax(335px,1.08fr) minmax(245px,.92fr) minmax(380px,1.15fr);gap:10px}.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}.panel-head{height:39px;display:flex;align-items:center;justify-content:space-between;padding:0 11px;border-bottom:1px solid var(--border);flex:none}.panel-title{font-weight:700;font-size:13px}.panel-meta{font-size:11px;color:var(--muted);font-weight:500}.panel-tools{display:flex;gap:5px;align-items:center}.tool{width:29px;height:27px;border:1px solid var(--border);border-radius:3px;background:#fff;color:var(--sub);display:grid;place-items:center}.tool:hover,.tool.active{background:var(--blue-soft);border-color:#a7cff5;color:var(--blue)}.search{height:27px;width:190px;border:1px solid var(--border-strong);border-radius:3px;padding:3px 8px;outline:none}.search:focus{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}.table-wrap{overflow:auto;flex:1;scrollbar-width:thin}table{border-collapse:collapse;width:100%;min-width:1060px;table-layout:fixed}th{position:sticky;top:0;z-index:2;background:var(--surface-2);color:var(--sub);font-size:11px;text-align:left;padding:7px 8px;border-bottom:1px solid var(--border);border-right:1px solid #e6e9eb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}td{padding:6px 8px;border-bottom:1px solid #edf0f2;border-right:1px solid #edf0f2;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#fff}tbody tr:hover td{background:#f7fbff}tbody tr.selected td{background:var(--blue-soft)}td.num{text-align:right;font-variant-numeric:tabular-nums}td.link{color:var(--blue);font-weight:600;text-decoration:underline;cursor:pointer}.empty-space{min-height:70px;background:linear-gradient(#fff,#fbfcfd)}.panel-foot{height:33px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:var(--muted);font-size:11px;flex:none}.pager{display:flex;gap:3px}.pager button{width:24px;height:23px;border:1px solid var(--border);background:#fff;border-radius:3px;color:var(--sub)}.pager button:disabled{opacity:.4;cursor:default}.collapse{display:none;position:fixed;left:344px;top:50%;z-index:20;width:22px;height:54px;border:0;border-radius:0 5px 5px 0;background:var(--blue);color:#fff}.toast{position:fixed;right:18px;bottom:18px;background:#243b53;color:#fff;padding:10px 14px;border-radius:6px;box-shadow:0 6px 24px rgba(0,0,0,.25);opacity:0;transform:translateY(8px);pointer-events:none;transition:.2s;z-index:50}.toast.show{opacity:1;transform:none}@media(max-width:980px){:root{--sidebar:320px}.title small{display:none}.actions .label{display:none}.actions .btn{width:34px;padding:0;justify-content:center}.main{padding:9px;gap:9px}.field{grid-template-columns:112px minmax(0,1fr)}}@media(max-width:720px){.app{grid-template-columns:1fr}.sidebar{position:fixed;left:0;top:var(--header);bottom:0;width:min(88vw,355px);z-index:15;box-shadow:8px 0 28px rgba(29,45,62,.18);transform:translateX(-100%);transition:.2s}.app.side-open .sidebar{transform:none}.collapse{display:block;left:0}.app.side-open .collapse{left:min(calc(88vw - 11px),344px)}.main{grid-column:1}.topbar{padding:0 10px}.title{font-size:15px}.connection{display:none}.main{grid-template-rows:minmax(360px,1fr) minmax(280px,.8fr)}}@media print{.actions,.panel-tools,.collapse{display:none}.app{height:auto;display:block}.sidebar{overflow:visible;border:0}.main{overflow:visible;display:block}.panel{margin:10px 0;box-shadow:none;min-height:300px}.table-wrap{overflow:visible}}
+</style>
+<style>
+img.mark, img.ds-mark { width:32px; height:32px; flex:none; background:none; box-shadow:none; border-radius:0; object-fit:contain; }
+
+.app{grid-template-columns:minmax(0,1fr)}
+.sidebar,.collapse{display:none!important}
+.main{grid-column:1;grid-template-rows:minmax(0,1fr);padding:12px 14px}
+
+.pagenav{display:flex;gap:4px;margin-left:16px}
+.pagenav a{height:28px;padding:0 12px;display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--sub);font-size:12px;font-weight:600;text-decoration:none}
+.pagenav a:hover{background:var(--surface-2);color:var(--text)}
+.pagenav a.active{background:var(--blue-soft);border-color:#a7cff5;color:var(--blue)}
+
+/* Two columns: a sticky contents rail and the document itself. */
+.doc{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:0;flex:1}
+.toc{border-right:1px solid var(--border);overflow:auto;padding:10px 0;scrollbar-width:thin;background:var(--surface-2)}
+.toc a{display:block;padding:5px 14px;font-size:12px;color:var(--sub);text-decoration:none;border-left:3px solid transparent}
+.toc a:hover{background:#eaf0f5;color:var(--text)}
+.toc a.active{border-left-color:var(--blue);background:var(--blue-soft);color:var(--blue);font-weight:600}
+.toc .toc-group{padding:11px 14px 4px;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+
+.doc-body{overflow:auto;padding:0 26px 60px;scrollbar-width:thin}
+/* Prose stays at a readable measure via its own max-width on p/ul; the section is allowed to
+   run wider so code blocks and reference tables use the screen instead of scrolling. */
+.doc-body section{padding-top:22px;max-width:104rem}
+.doc-body h2{font-size:19px;margin:0 0 4px;color:var(--text)}
+.doc-body h3{font-size:14px;margin:18px 0 6px;color:var(--text)}
+.doc-body p{font-size:13px;line-height:1.65;color:var(--sub);margin:0 0 10px;max-width:74ch}
+.doc-body ul{font-size:13px;line-height:1.65;color:var(--sub);margin:0 0 10px;padding-left:20px;max-width:74ch}
+.doc-body li{margin-bottom:5px}
+.doc-body b,.doc-body strong{color:var(--text)}
+.doc-body code{font-family:"IBM Plex Mono",Consolas,monospace;font-size:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:3px;padding:1px 4px;color:#20364b}
+.lead{font-size:14px;color:var(--text);max-width:74ch}
+
+/* Numbered steps: the numbering is real here -- these are performed in order. */
+.steps{counter-reset:step;display:flex;flex-direction:column;gap:14px;margin:14px 0}
+.step{position:relative;padding-left:40px}
+.step::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:0;width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;font-size:13px;font-weight:700;display:grid;place-items:center}
+.step h3{margin:3px 0 6px}
+
+/* Code blocks with a copy button. */
+.code{position:relative;border:1px solid var(--border);border-radius:6px;background:#f8fafb;margin:0 0 12px;overflow:hidden}
+.code-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 10px;background:var(--surface-2);border-bottom:1px solid var(--border)}
+.code-label{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.code pre{margin:0;padding:12px 14px;overflow-x:auto;font-family:"IBM Plex Mono",Consolas,monospace;font-size:12px;line-height:1.6;color:#1d2d3e;white-space:pre}
+.code .m{color:#0a6ed1;font-weight:700}
+.code .u{color:#107e3e}
+.code .c{color:var(--muted)}
+.copy{height:23px;padding:0 9px;border:1px solid var(--border-strong);border-radius:3px;background:#fff;color:var(--sub);font-size:11px;font-weight:600}
+.copy:hover{background:var(--blue-soft);border-color:#a7cff5;color:var(--blue)}
+
+table.ref{border-collapse:collapse;width:100%;margin:0 0 12px;font-size:12px}
+table.ref th{background:var(--surface-2);color:var(--sub);text-align:left;padding:7px 9px;border:1px solid var(--border);font-size:11px;white-space:nowrap}
+/* The house td is nowrap + ellipsis, right for a data grid and wrong for prose in a reference
+   table -- it silently cut every explanation short (the L-530 family of bug). */
+table.ref td{padding:7px 9px;border:1px solid var(--border);vertical-align:top;line-height:1.5;white-space:normal;overflow:visible;text-overflow:clip}
+table.ref th{white-space:normal}
+table.ref td code{white-space:nowrap}
+.scroll-x{overflow-x:auto}
+
+.callout{border-left:3px solid var(--blue);background:var(--blue-soft);border-radius:0 6px 6px 0;padding:10px 13px;margin:0 0 12px;font-size:12.5px;line-height:1.6;color:#1a3a57;max-width:74ch}
+.callout.warn{border-left-color:#d9a03a;background:#fff8e8;color:#6d4c12}
+.callout.stop{border-left-color:#bb0000;background:#fdecea;color:#8a1c12}
+.callout b{color:inherit}
+
+.action-card{border:1px solid var(--border);border-radius:8px;margin:0 0 16px;overflow:hidden;background:var(--surface)}
+.action-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;background:linear-gradient(180deg,#fff,#f7f9fb);border-bottom:1px solid var(--border)}
+.action-head h3{margin:0;font-size:15px}
+.action-head .tag{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:3px;background:var(--blue-soft);color:var(--blue)}
+.action-head .tag.write{background:#fdeee4;color:#b1560f}
+.action-head .blurb{font-size:12px;color:var(--muted);flex:1;min-width:200px}
+.action-body{padding:12px 14px}
+
+.base-switch{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 12px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;margin:0 0 14px;font-size:12px;color:var(--sub)}
+.base-switch select{height:27px;border:1px solid var(--border-strong);border-radius:3px;background:#fff;padding:2px 6px;font-size:12px}
+.base-switch code{background:#fff}
+
+.toast{position:fixed;right:18px;bottom:18px;background:#243b53;color:#fff;padding:10px 14px;border-radius:6px;box-shadow:0 6px 24px rgba(0,0,0,.25);opacity:0;transform:translateY(8px);pointer-events:none;transition:.2s;z-index:200}
+.toast.show{opacity:1;transform:none}
+
+@media(max-width:860px){.doc{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}.toc{border-right:0;border-bottom:1px solid var(--border);max-height:150px}.doc-body{padding:0 14px 40px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="title-wrap">
+      <img class="mark" alt="Fourth Signal" src="https://raw.githubusercontent.com/ryannayak/fs-assets/e82f35a83e28689167b22b4300d4994a249acee0/fs-short-logo.png"/>
+      <div class="title">Dynamic Gateway v2 <small>HOW TO CALL IT</small></div>
+      <nav class="pagenav"><a href="index.html">Registry</a><a href="report.html">Linkage report</a><a href="docs.html" class="active">Documentation</a></nav>
+    </div>
+    <div class="actions">
+      <span class="panel-meta">Service <code>ZFS_SB_DYNGW_O4_API</code> · DS4 client 100</span>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="panel">
+      <div class="doc">
+        <nav class="toc" id="toc">
+          <div class="toc-group">Getting started</div>
+          <a href="#url">1 · The URL</a>
+          <a href="#first">2 · Your first call, step by step</a>
+          <a href="#result">3 · Reading the answer</a>
+          <div class="toc-group">The six actions</div>
+          <a href="#RunQuery">RunQuery</a>
+          <a href="#ExecuteTableCrud">ExecuteTableCrud</a>
+          <a href="#CallFunctionModule">CallFunctionModule</a>
+          <a href="#SubmitReport">SubmitReport</a>
+          <a href="#RegisterTarget">RegisterTarget</a>
+          <a href="#ExecuteBatch">ExecuteBatch</a>
+          <div class="toc-group">Reference</div>
+          <a href="#stepkinds">Step kinds</a>
+          <a href="#entities">Reading the log tables</a>
+          <a href="#idempotency">Idempotency</a>
+          <a href="#gotchas">Things that will bite you</a>
+        </nav>
+
+        <div class="doc-body" id="docBody">
+
+          <section id="url">
+            <h2>1 · The URL</h2>
+            <p class="lead">Everything in this service is one endpoint. You never call a table or a function module directly — you call an <b>action</b> on the <code>CallLog</code> entity set, and the gateway decides whether you are allowed to do what you asked.</p>
+
+            <div class="base-switch">
+              <label for="basePick"><b>Show URLs for:</b></label>
+              <select id="basePick">
+                <option value="proxy">This console's proxy (localhost:8774)</option>
+                <option value="direct">SAP directly (vhnlqds4ap01)</option>
+              </select>
+              <span id="baseHint">The proxy adds Basic Auth, the CSRF token and the cookie jar for you.</span>
+            </div>
+
+            <h3>Base</h3>
+            <div class="code">
+              <div class="code-head"><span class="code-label">Base URL</span><button class="copy" type="button">Copy</button></div>
+              <pre><span class="u base">http://localhost:8774/api/dyngw</span></pre>
+            </div>
+
+            <div class="callout warn">
+              <b>Three ways to get the URL wrong, all of which look like something else:</b>
+              <ul style="margin:6px 0 0;color:inherit">
+                <li>The repository segment is <code>srvd_a2x</code>, not <code>srvd</code>.</li>
+                <li><code>?sap-client=100</code> goes on <b>every</b> call, ADT REST included. Without it you get a 401 that reads like a bad password (L-253/L-325).</li>
+                <li>If your query string already carries <code>sap-client</code>, do not append another — SAP answers 400 URI syntax, not a no-op.</li>
+              </ul>
+            </div>
+
+            <h3>Shape of every action call</h3>
+            <div class="code">
+              <div class="code-head"><span class="code-label">Pattern</span><button class="copy" type="button">Copy</button></div>
+              <pre><span class="m">POST</span> <span class="u base">http://localhost:8774/api/dyngw</span>/CallLog/<span class="ns">com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001</span>.<b>&lt;ActionName&gt;</b>?sap-client=100</pre>
+            </div>
+            <p>That namespace is fixed for this service. The six action names go where <code>&lt;ActionName&gt;</code> is.</p>
+          </section>
+
+          <section id="first">
+            <h2>2 · Your first call, step by step</h2>
+            <p class="lead">This sequence is proved live against <code>DS4_100_NIIF</code>. <code>T000</code> is registered on this system today, which makes it the cheapest liveness check you have.</p>
+
+            <div class="steps">
+              <div class="step">
+                <h3>Get a CSRF token and the session cookie</h3>
+                <p>Only writes need the token — a plain <code>GET</code> of <code>/Registry</code> or <code>/CallLog</code> does not. Every action is a <code>POST</code>, so you need it. <b>Skip this step entirely when calling through this console's proxy:</b> it holds the token and cookie jar for you.</p>
+                <div class="code">
+                  <div class="code-head"><span class="code-label">Request</span><button class="copy" type="button">Copy</button></div>
+                  <pre><span class="m">GET</span> <span class="u base">http://localhost:8774/api/dyngw</span>/$metadata?sap-client=100
+X-CSRF-Token: Fetch</pre>
+                </div>
+                <p>Keep the <code>x-csrf-token</code> response header and the session cookie. Both go on every subsequent write.</p>
+              </div>
+
+              <div class="step">
+                <h3>Read three rows from a registered table</h3>
+                <div class="code">
+                  <div class="code-head"><span class="code-label">Request</span><button class="copy" type="button">Copy</button></div>
+                  <pre><span class="m">POST</span> <span class="u base">http://localhost:8774/api/dyngw</span>/CallLog/<span class="ns">com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001</span>.RunQuery?sap-client=100
+Content-Type: application/json
+X-CSRF-Token: &lt;token&gt;
+
+{
+  "TargetName": "T000",
+  "FieldsJson": "[\"MANDT\",\"MTEXT\"]",
+  "FilterJson": "",
+  "OrderByJson": "",
+  "MaxRows": 3,
+  "SkipRows": 0,
+  "RequestId": ""
+}</pre>
+                </div>
+                <div class="callout"><b>Note the escaping.</b> <code>FieldsJson</code> is a <i>string</i> that happens to contain JSON — one level of escaping in a single-shot call, and three inside a batch step. Build the innermost value first and let your serialiser escape it; message 022 cannot tell you which level broke.</div>
+              </div>
+
+              <div class="step">
+                <h3>Check the answer — and do not stop at HTTP 200</h3>
+                <p>A refusal is <b>HTTP 200 with <code>ExecStatus:"E"</code></b>, not an HTTP error. Read the field, not the status code.</p>
+                <div class="code">
+                  <div class="code-head"><span class="code-label">Response (abridged)</span><button class="copy" type="button">Copy</button></div>
+                  <pre>{
+  "ExecStatus": "S",
+  "ErrorCategory": "",
+  "ResultCount": 3,
+  "RowsJson": "[{\"MANDT\":\"000\",\"MTEXT\":\"SAP SE\"}, ...]",
+  "GwUuid": "5254001f-e7a2-...",
+  "IsCommitted": "X",
+  "IsRolledBack": ""
+}</pre>
+                </div>
+              </div>
+
+              <div class="step">
+                <h3>Look at what it wrote to the log</h3>
+                <p>Every call writes one <code>CallLog</code> row and one <code>CallStep</code> row per step. Use <code>GwUuid</code> from the response as the key.</p>
+                <div class="code">
+                  <div class="code-head"><span class="code-label">Request</span><button class="copy" type="button">Copy</button></div>
+                  <pre><span class="m">GET</span> <span class="u base">http://localhost:8774/api/dyngw</span>/CallLog(&lt;GwUuid&gt;)?$expand=_Steps&amp;sap-client=100</pre>
+                </div>
+                <p>Or open it on the <a href="report.html">linkage report</a>, which does exactly this read and lets you walk from the call to its steps to the registry rows that authorised them.</p>
+              </div>
+            </div>
+
+            <h3>The same first call in PowerShell</h3>
+            <div class="code">
+              <div class="code-head"><span class="code-label">PowerShell 5.1</span><button class="copy" type="button">Copy</button></div>
+              <pre><span class="c"># Through the proxy: no token, no credentials, no TLS fuss.</span>
+$base = "<span class="base">http://localhost:8774/api/dyngw</span>"
+$ns   = "com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001"
+
+<span class="c"># Build the inner JSON by hand: ConvertTo-Json collapses a 1-element array to an</span>
+<span class="c"># object, and the gateway then answers "Invalid JSON" (L-315).</span>
+$body = @{
+  TargetName  = "T000"
+  FieldsJson  = '["MANDT","MTEXT"]'
+  FilterJson  = ""
+  OrderByJson = ""
+  MaxRows     = 3
+  SkipRows    = 0
+  RequestId   = ""
+} | ConvertTo-Json
+
+$r = Invoke-RestMethod -Method Post -ContentType "application/json" `
+      -Uri "$base/CallLog/$ns.RunQuery?sap-client=100" -Body $body
+
+$r.ExecStatus            <span class="c"># S</span>
+$r.RowsJson | ConvertFrom-Json</pre>
+            </div>
+          </section>
+
+          <section id="result">
+            <h2>3 · Reading the answer</h2>
+            <p class="lead">Every one of the six actions returns the same result shape. Two fields answer two different questions, and confusing them is the commonest mistake.</p>
+            <div class="scroll-x"><table class="ref">
+              <thead><tr><th>Field</th><th>What it tells you</th></tr></thead>
+              <tbody>
+                <tr><td><code>ExecStatus</code></td><td><code>S</code> = the dispatch worked. <code>E</code> = it did not. <b>Not</b> "the business operation succeeded".</td></tr>
+                <tr><td><code>ErrorCategory</code></td><td><code>CLIENT</code> your request was wrong · <code>AUTH</code> not permitted · <code>TARGET</code> the target failed technically · <code>BUSINESS</code> dispatched fine, but the target's own <code>RETURN</code> reported an error. <b><code>ExecStatus S</code> + <code>BUSINESS</code> means it ran and failed.</b></td></tr>
+                <tr><td><code>RowsJson</code></td><td>Query results, as a JSON string.</td></tr>
+                <tr><td><code>ExportJson</code> / <code>TablesJson</code></td><td>A function module's EXPORT and TABLES parameters, as JSON strings.</td></tr>
+                <tr><td><code>StepsJson</code></td><td>Per-step detail — <b>populated for <code>ExecuteBatch</code> only</b>. A single-shot action leaves it empty; read the step from <code>/CallLog(&lt;GwUuid&gt;)?$expand=_Steps</code> instead.</td></tr>
+                <tr><td><code>MessageNo</code> / <code>MessageText</code></td><td>On a single-shot refusal this is the generic <b>045 "batch aborted at step 1"</b>, truncated. The real reason (017, 018, 022, 035, 039…) is on the <b>step</b> row, not here (L-478).</td></tr>
+                <tr><td><code>IsCommitted</code> / <code>IsRolledBack</code></td><td><code>X</code> or blank. <b>Only on this response</b> — they were never added to the persisted <code>CallLog</code> entity, so no later <code>GET</code> can recover them (L-525).</td></tr>
+                <tr><td><code>Replayed</code></td><td><code>X</code> = answered from the idempotency log; nothing re-executed.</td></tr>
+                <tr><td><code>GwUuid</code></td><td>The key of the <code>CallLog</code> row this call wrote. Keep it.</td></tr>
+              </tbody>
+            </table></div>
+            <div class="callout stop"><b>A refusal is HTTP 200.</b> <code>ExecStatus:"E"</code> with a message is the normal refusal shape. An aborted <i>batch</i> is the exception — that returns 400, with the reason in the body.</div>
+          </section>
+
+          <section id="RunQuery">
+            <h2>The six actions</h2>
+            <div class="action-card">
+              <div class="action-head"><h3>RunQuery</h3><span class="tag">read</span><span class="blurb">A dynamic <code>SELECT</code> against a registered table or CDS view. Step kind <code>QURY</code>.</span></div>
+              <div class="action-body">
+                <div class="code">
+                  <div class="code-head"><span class="code-label">POST · RunQuery</span><button class="copy" type="button">Copy</button></div>
+                  <pre><span class="m">POST</span> <span class="u base">http://localhost:8774/api/dyngw</span>/CallLog/<span class="ns">com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001</span>.RunQuery?sap-client=100
+
+{
+  "TargetName":  "ZFS_CDS_SLC_001",
+  "FieldsJson":  "[\"ZOTTK_NO\",\"ZSTR\",\"ZOTTK_VALUE\"]",
+  "FilterJson":  "[{\"field\":\"ZOTTK_ST\",\"op\":\"EQ\",\"value\":\"01\"}]",
+  "OrderByJson": "[{\"field\":\"ZOTTK_NO\",\"desc\":false}]",
+  "MaxRows":     100,
+  "SkipRows":    0,
+  "RequestId":   ""
+}</pre>
+                </div>
+                <ul>
+                  <li><b>Always send <code>FieldsJson</code>.</b> The all-columns default breaks on any table with a DDIC <code>.INCLUDE</code>, and such fields are refused outright.</li>
+                  <li>The target must be registered with <code>TargetKind</code> <b><code>QURY</code></b>. A row registered <code>TABL</code> is refused with <b>017</b> even though it is active and readable — "registered" and "usable by this action" are different questions (L-526).</li>
+                  <li><code>MaxRows: 0</code> on the registry row means "this target sets no override", never "unlimited".</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section id="ExecuteTableCrud">
+            <div class="action-card">
+              <div class="action-head"><h3>ExecuteTableCrud</h3><span class="tag write">writes</span><span class="blurb">Dynamic <code>INSERT</code> / <code>MODIFY</code> / <code>DELETE</code> on a registered table. Step kind <code>TABL</code>.</span></div>
+              <div class="action-body">
+                <div class="code">
+                  <div class="code-head"><span class="code-label">POST · ExecuteTableCrud</span><button class="copy" type="button">Copy</button></div>
+                  <pre><span class="m">POST</span> <span class="u base">http://localhost:8774/api/dyngw</span>/CallLog/<span class="ns">com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001</span>.ExecuteTableCrud?sap-client=100
+
+{
+  "TargetName":   "ZFS_SLC_OTTK_BTP",
+  "Operation":    "INSERT",
+  "ImportJson":   "[{\"ZOTTK_NO\":\"\",\"ZSTR\":\"DSX\",\"ZOTTK_VALUE\":1000000}]",
+  "GenerateJson": "{\"Uuid\":[\"UUID\"],\"NumberRange\":[\"ZOTTK_NO\"],\"SysFields\":\"AUDIT\"}",
+  "RequestId":    ""
+}</pre>
+                </div>
+                <div class="callout stop"><b><code>MODIFY</code> is a full-row replace, not a merge (L-520).</b> Every column your payload omits is written back <i>initial</i> — create-audit fields included. Read the row, change what you mean to change, and send the whole thing back. This is the single most destructive mistake available in this API.</div>
+                <ul>
+                  <li><code>GenerateJson</code> lets the server fill fields you cannot: <code>Uuid</code> (a fresh <code>sysuuid_x16</code>), <code>NumberRange</code> (from the registry row's one <code>GenNrObject</code>), <code>SysFields:"AUDIT"</code> (the five RAP audit fields).</li>
+                  <li>Generation needs <b>both</b> permissions: the registry row must carry <code>AllowGen</code>, <i>and</i> the call must name the fields. There is no "generate everything allowed" shortcut. Refused with <b>052</b> otherwise.</li>
+                  <li>Under <code>CommitMode "NEVER"</code> a <code>NumberRange</code> draw is refused (<b>054</b>) — a dry run will not gamble on whether a drawn number survives.</li>
+                  <li>A primary-key collision on <code>INSERT</code> is absorbed as a partial-write success (message <b>048</b>, severity <code>W</code>), <b>not</b> a failure. Check the step.</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section id="CallFunctionModule">
+            <div class="action-card">
+              <div class="action-head"><h3>CallFunctionModule</h3><span class="tag write">writes</span><span class="blurb">A dynamic <code>CALL FUNCTION</code> against a registered function module. Step kind <code>FUNC</code>.</span></div>
+              <div class="action-body">
+                <div class="code">
+                  <div class="code-head"><span class="code-label">POST · CallFunctionModule</span><button class="copy" type="button">Copy</button></div>
+                  <pre><span class="m">POST</span> <span class="u base">http://localhost:8774/api/dyngw</span>/CallLog/<span class="ns">com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001</span>.CallFunctionModule?sap-client=100
+
+{
+  "TargetName": "BAPI_SOMETHING_GETDETAIL",
+  "ImportJson": "{\"DOCUMENTNUMBER\":\"0000012345\"}",
+  "TablesJson": "{\"RETURN\":[]}",
+  "RequestId":  ""
+}</pre>
+                </div>
+                <div class="callout warn"><b>An output-only <code>TABLES</code> parameter must be sent as <code>[]</code> or its content never comes back</b> (L-314). <code>RETURN</code> is the one people forget, and forgetting it means you cannot see the BAPI's own error.</div>
+                <ul>
+                  <li><b>Every <code>FUNC</code> target must be registered <code>AllowWrite: true</code>, even a read-only function module</b> — the handler cannot tell reading from writing, so it demands the stronger right and fails closed (L-491). Do not read <code>AllowWrite</code> on a <code>FUNC</code> row as evidence that it writes.</li>
+                  <li><b>Call mode decides whether a rollback reaches it.</b> <code>L</code> = local, inside the LUW, undone by a rollback. <code>R</code> = RFC, which commits the caller's LUW and is outside any rollback. <b>Blank falls back to <code>TFDIR-FMODE</code>, so any remote-enabled BAPI resolves to <code>R</code></b> (L-492).</li>
+                  <li><code>CallFunctionModule</code> never commits. A creating BAPI needs <code>ExecuteBatch</code> with a <code>CommitMode</code>, and <code>ExecStatus:"S"</code> only means the dispatch worked — parse <code>RETURN</code>.</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section id="SubmitReport">
+            <div class="action-card">
+              <div class="action-head"><h3>SubmitReport</h3><span class="tag write">writes</span><span class="blurb">Runs an executable report in its own session and captures the list. Step kind <code>SUBM</code>.</span></div>
+              <div class="action-body">
+                <div class="code">
+                  <div class="code-head"><span class="code-label">POST · SubmitReport</span><button class="copy" type="button">Copy</button></div>
+                  <pre><span class="m">POST</span> <span class="u base">http://localhost:8774/api/dyngw</span>/CallLog/<span class="ns">com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001</span>.SubmitReport?sap-client=100
+
+{
+  "TargetName": "Z_SOME_REPORT",
+  "Operation":  "",
+  "ImportJson": "{\"CaptureMode\":\"SALV\"}",
+  "FilterJson": "[{\"name\":\"S_BUKRS\",\"sign\":\"I\",\"option\":\"EQ\",\"low\":\"1000\"}]",
+  "MaxRows":    500,
+  "RequestId":  ""
+}</pre>
+                </div>
+                <div class="callout warn"><b><code>SUBM</code> runs outside the rollback, always</b> — its own RFC session commits independently. It also cannot share a batch with any in-LUW write step; that mix is refused in phase 1 with message <b>020</b>.</div>
+                <ul>
+                  <li>Qualify a report <i>before</i> registering it: a <code>CL_GUI_*</code> reference in <code>WBCROSSGT</code> is a hard disqualifier, and an <code>OBLIGATORY</code> select-option must be supplied.</li>
+                  <li><b>No report is registered or smoke-tested against v2 as of today.</b> If you are the first, treat it as establishing the behaviour rather than confirming it.</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section id="RegisterTarget">
+            <div class="action-card">
+              <div class="action-head"><h3>RegisterTarget</h3><span class="tag write">admin</span><span class="blurb">Adds or widens an allow-list row. Step kind <code>REGI</code>. Needs <code>ZFS_DYNGW</code> <code>ACTVT 01/02</code>.</span></div>
+              <div class="action-body">
+                <div class="code">
+                  <div class="code-head"><span class="code-label">POST · RegisterTarget</span><button class="copy" type="button">Copy</button></div>
+                  <pre><span class="m">POST</span> <span class="u base">http://localhost:8774/api/dyngw</span>/CallLog/<span class="ns">com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001</span>.RegisterTarget?sap-client=100
+
+{
+  "TargetName": "T001",
+  "Operation":  "INSERT",
+  "ImportJson": "{\"TargetKind\":\"QURY\",\"Operation\":\"SELECT\",\"IsActive\":true,\"AllowRead\":true,\"MaxRows\":20}",
+  "RequestId":  ""
+}</pre>
+                </div>
+                <ul>
+                  <li><code>Operation</code> here is the <i>registry</i> operation: <code>INSERT</code> (the default) fails with <b>035</b> if the target already exists. Widening an existing row must be typed out as <code>UPDATE</code> — that asymmetry is deliberate, so a registration is never widened by accident.</li>
+                  <li>Booleans are <code>Edm.Boolean</code>: send <code>true</code>/<code>false</code> unquoted, never <code>"X"</code> — <code>"X"</code> is a 400 XML parse error, not a clean refusal (L-475).</li>
+                  <li><b>Self-protection:</b> anything matching <code>ZFS_T_DYN_*</code>, <code>ZFS_RFC_DYN_*</code> or the authorization object is refused with <b>039</b>, writing nothing. This is the fix for v1's privilege-escalation hole, proved live.</li>
+                  <li>Or just use the <a href="index.html">registry screen</a> in this console, which does the same thing through <code>POST /Registry</code> and shows you the audit row it produced.</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section id="ExecuteBatch">
+            <div class="action-card">
+              <div class="action-head"><h3>ExecuteBatch</h3><span class="tag write">writes</span><span class="blurb">Many steps, one transaction. Every other action is internally a one-step batch.</span></div>
+              <div class="action-body">
+                <div class="code">
+                  <div class="code-head"><span class="code-label">POST · ExecuteBatch</span><button class="copy" type="button">Copy</button></div>
+                  <pre><span class="m">POST</span> <span class="u base">http://localhost:8774/api/dyngw</span>/CallLog/<span class="ns">com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001</span>.ExecuteBatch?sap-client=100
+
+{
+  "CommitMode": "AUTO",
+  "RequestId":  "my-stable-key-0001",
+  "StepsJson":  "[{\"index\":1,\"kind\":\"REGI\",\"targetname\":\"T001\",\"importjson\":\"{\\\"TargetKind\\\":\\\"QURY\\\",\\\"AllowRead\\\":true}\"},{\"index\":2,\"kind\":\"QURY\",\"targetname\":\"T001\",\"fieldsjson\":\"[\\\"MANDT\\\"]\",\"maxrows\":5}]"
+}</pre>
+                </div>
+                <div class="callout"><b>Count the escaping levels.</b> The body is JSON; <code>StepsJson</code> is a string containing JSON; a step's own <code>ImportJson</code>/<code>FieldsJson</code> is a string containing JSON inside <i>that</i>. Three levels. Build innermost-first and let the serialiser escape — deep action parameters do not work on this release, which is why this is a string and not an array (L-472).</div>
+                <ul>
+                  <li><b>Phase 1 validates every step before phase 2 executes any.</b> A validation failure means nothing ran: every other step reports <code>Severity "P"</code> (planned).</li>
+                  <li>A later step may use a target an earlier <code>REGI</code> step declared — that is how one call provisions a whole system.</li>
+                  <li><b>You may not mix an out-of-LUW step with an in-LUW write.</b> Out-of-LUW means every <code>SUBM</code> step <i>and</i> any <code>FUNC</code> step in call mode <code>R</code> — which is the default. Refused in phase 1, message <b>020</b>. Fix by splitting the call, or registering the FUNC target with <code>CALL_MODE "L"</code>.</li>
+                  <li><code>CommitMode</code>: <code>AUTO</code> commits if every step succeeded · <code>NEVER</code> is a dry run · <code>ALWAYS</code> is <b>currently identical to <code>AUTO</code></b>; do not assume it does more.</li>
+                  <li>An aborted batch returns <b>HTTP 400</b> with the reason in the body, and rolls back — proved live, both phases (L-496). Even so: verify by re-reading what you wrote rather than trusting <code>ExecStatus</code> alone.</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section id="stepkinds">
+            <h2>Step kinds</h2>
+            <p>Inside a batch you name a <code>kind</code> rather than an action. This is also what a registry row's <code>TargetKind</code> must match.</p>
+            <div class="scroll-x"><table class="ref">
+              <thead><tr><th>Kind</th><th>Does</th><th>Needs AllowWrite</th><th>Rolled back on abort</th></tr></thead>
+              <tbody>
+                <tr><td><code>QURY</code></td><td>dynamic <code>SELECT</code></td><td>no</td><td>n/a — nothing written</td></tr>
+                <tr><td><code>TABL</code></td><td><code>INSERT</code> / <code>MODIFY</code> / <code>DELETE</code></td><td>yes</td><td>yes</td></tr>
+                <tr><td><code>FUNC</code></td><td><code>CALL FUNCTION</code></td><td><b>always</b>, even read-only (L-491)</td><td><b>only in call mode <code>L</code></b>; blank defaults to <code>R</code> (L-492)</td></tr>
+                <tr><td><code>SUBM</code></td><td><code>SUBMIT</code> a report</td><td>always</td><td><b>no</b> — its own session</td></tr>
+                <tr><td><code>REGI</code></td><td>register / update an allow-list row</td><td>gated by the authorization object, not the allow-list</td><td>yes</td></tr>
+              </tbody>
+            </table></div>
+          </section>
+
+          <section id="entities">
+            <h2>Reading the log tables</h2>
+            <p>Four entity sets, plain <code>GET</code>, no CSRF token needed. This is what the <a href="report.html">linkage report</a> reads.</p>
+            <div class="code">
+              <div class="code-head"><span class="code-label">Useful reads</span><button class="copy" type="button">Copy</button></div>
+              <pre><span class="c"># the allow-list</span>
+<span class="m">GET</span> <span class="u base">http://localhost:8774/api/dyngw</span>/Registry?$orderby=TargetName&amp;sap-client=100
+
+<span class="c"># one call with its steps</span>
+<span class="m">GET</span> <span class="u base">http://localhost:8774/api/dyngw</span>/CallLog(&lt;CallUuid&gt;)?$expand=_Steps&amp;sap-client=100
+
+<span class="c"># every step that ran against one registry row</span>
+<span class="m">GET</span> <span class="u base">http://localhost:8774/api/dyngw</span>/CallStep?$filter=RegUuid eq &lt;RegUuid&gt;&amp;sap-client=100
+
+<span class="c"># who changed the allow-list, and what it looked like before</span>
+<span class="m">GET</span> <span class="u base">http://localhost:8774/api/dyngw</span>/RegistryHistory?$orderby=ChangedAt desc&amp;$top=50&amp;sap-client=100
+
+<span class="c"># how many rows, without fetching any</span>
+<span class="m">GET</span> <span class="u base">http://localhost:8774/api/dyngw</span>/CallStep?$top=0&amp;$count=true&amp;sap-client=100</pre>
+            </div>
+            <div class="scroll-x"><table class="ref">
+              <thead><tr><th>Join</th><th>Meaning</th></tr></thead>
+              <tbody>
+                <tr><td><code>Registry.RegUuid</code> → <code>CallStep.RegUuid</code></td><td>the allow-list row that authorised this step</td></tr>
+                <tr><td><code>CallLog.CallUuid</code> → <code>CallStep.CallUuid</code></td><td>the steps of this call</td></tr>
+                <tr><td><code>Registry.RegUuid</code> → <code>RegistryHistory.RegUuid</code></td><td>every change made to this allow-list row</td></tr>
+                <tr><td><code>RegistryHistory.CallUuid</code> → <code>CallLog.CallUuid</code></td><td>the gateway call that made the change</td></tr>
+              </tbody>
+            </table></div>
+            <div class="callout warn"><b>A target-scoped auditor sees steps but an empty call log.</b> <code>CallStep</code> carries a target name so its DCL restricts genuinely; <code>CallLog</code> does not, so its grant needs full <code>ZDYNTGT</code> scope. An empty <code>/CallLog</code> next to a populated <code>/CallStep</code> is this, not data loss.</div>
+          </section>
+
+          <section id="idempotency">
+            <h2>Idempotency</h2>
+            <p>Send a stable, unique <code>RequestId</code> on anything you might retry. A repeat with the same id is answered from the stored row — <code>Replayed:"X"</code>, the same <code>GwUuid</code>, nothing re-executed.</p>
+            <div class="callout warn"><b>Omitting <code>RequestId</code> is opting out, not a shortcut.</b> A blank id is stored as the row's own <code>CallUuid</code>, so it is unique by construction and <i>never matches</i> a previous blank-id call.</div>
+          </section>
+
+          <section id="gotchas">
+            <h2>Things that will bite you</h2>
+            <div class="scroll-x"><table class="ref">
+              <thead><tr><th>Symptom</th><th>What is actually happening</th></tr></thead>
+              <tbody>
+                <tr><td>401 that looks like a bad password</td><td><code>sap-client=100</code> missing from the URL.</td></tr>
+                <tr><td>HTTP 200 but nothing happened</td><td>A refusal. Read <code>ExecStatus</code>, then the <b>step's</b> message — the header's 045 is generic.</td></tr>
+                <tr><td>Message 017 on a target you can see in the registry</td><td>The row's <code>TargetKind</code> does not match the step kind your action dispatches. <code>RunQuery</code> needs <code>QURY</code>, not <code>TABL</code> (L-526).</td></tr>
+                <tr><td>Message 018 on a read-only function module</td><td>Every <code>FUNC</code> target needs <code>AllowWrite</code> (L-491).</td></tr>
+                <tr><td>Message 022 and no idea which field</td><td>A <code>*Json</code> escaping level is wrong. It cannot tell you which one; build innermost-first.</td></tr>
+                <tr><td>Message 039</td><td>You tried to register a framework object. By design, and it writes nothing.</td></tr>
+                <tr><td>400 XML parse error on a boolean</td><td>You sent <code>"X"</code>. These are <code>Edm.Boolean</code>: <code>true</code>/<code>false</code>, unquoted (L-475).</td></tr>
+                <tr><td>Columns silently blanked after an update</td><td><code>ExecuteTableCrud MODIFY</code> is a full-row replace (L-520). Resend the whole row.</td></tr>
+                <tr><td>A batch "rolled back" but the FM's work survived</td><td>That step ran in call mode <code>R</code> — outside the LUW. Blank is <code>R</code> for any remote-enabled FM (L-492).</td></tr>
+                <tr><td>Fresh system answers 017 to everything</td><td>Allow-list rows are <code>deliveryClass #A</code> application data and do not travel with a transport. Register targets on the new system.</td></tr>
+                <tr><td>A role "covering everything" grants more than intended</td><td><code>ZDYNTGT</code> maintained as a range brackets the literal <code>*</code>. Single values only (L-441).</td></tr>
+              </tbody>
+            </table></div>
+            <div class="callout"><b>Fuller reference:</b> <code>docs/dyngw-v2-integration-guide.md</code> for the client walkthrough, <code>docs/dyngw-v2-api.md</code> for the field-by-field contract, <code>docs/dyngw-v2-how-it-works.md</code> for the architecture and what is proved versus assumed.</div>
+          </section>
+
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* The two URL styles this service is reached by. Every code block writes the base into a
+   <span class="base">, so switching rewrites the whole page in place rather than making the
+   reader mentally substitute a host into thirty snippets. */
+const BASES = {
+  proxy:  'http://localhost:8774/api/dyngw',
+  direct: 'https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001'
+};
+const HINTS = {
+  proxy:  "The proxy adds Basic Auth, the CSRF token and the cookie jar for you.",
+  direct: "Calling SAP directly: you supply Basic Auth, fetch the CSRF token yourself, and the host's certificate must be trusted."
+};
+function setBase(kind){
+  document.querySelectorAll('span.base').forEach(el => { el.textContent = BASES[kind]; });
+  document.getElementById('baseHint').textContent = HINTS[kind];
+  try{ localStorage.setItem('dyngwDocsBase', kind); }catch(e){ /* private window: the default is fine */ }
+}
+document.getElementById('basePick').addEventListener('change', ev => setBase(ev.target.value));
+let saved = null;
+try{ saved = localStorage.getItem('dyngwDocsBase'); }catch(e){ /* ignore */ }
+if(saved && BASES[saved]) document.getElementById('basePick').value = saved;
+setBase(document.getElementById('basePick').value);
+
+let toastTimer = null;
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// Copy takes the rendered text of the block, so it carries whichever base URL is currently shown.
+document.querySelectorAll('.copy').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const pre = btn.closest('.code').querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText).then(() => toast('Copied.'), () => toast('Could not copy.'));
+  });
+});
+
+// The contents rail follows the reader.
+const body = document.getElementById('docBody');
+const links = [...document.querySelectorAll('#toc a')];
+const targets = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+function markActive(){
+  const top = body.scrollTop + 90;
+  let current = targets[0];
+  targets.forEach(t => { if(t.offsetTop <= top) current = t; });
+  links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + current.id));
+}
+body.addEventListener('scroll', markActive);
+links.forEach(a => a.addEventListener('click', ev => {
+  const t = document.querySelector(a.getAttribute('href'));
+  if(!t) return;
+  ev.preventDefault();
+  body.scrollTo({top: t.offsetTop - 12, behavior: 'smooth'});
+}));
+markActive();
+</script>
+</body></html>

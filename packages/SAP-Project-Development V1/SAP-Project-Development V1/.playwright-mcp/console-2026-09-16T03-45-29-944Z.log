@@ -1,0 +1,6 @@
+[  192186ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8773/api/dyngw/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.RunQuery?sap-client=100:0
+[  201173ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8773/api/dyngw/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.RunQuery?sap-client=100:0
+[  210166ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8773/api/dyngw/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.RunQuery?sap-client=100:0
+[  240123ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8773/api/dyngw/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.RunQuery?sap-client=100:0
+[  270124ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8773/api/dyngw/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.RunQuery?sap-client=100:0
+[  300132ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:8773/api/dyngw/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.RunQuery?sap-client=100:0

@@ -1,0 +1,784 @@
+- generic [ref=f45e2]:
+  - banner [ref=f45e3]:
+    - generic [ref=f45e4]:
+      - img "Fourth Signal" [ref=f45e5]
+      - generic [ref=f45e6]: Dynamic Gateway v2 HOW TO CALL IT
+      - navigation [ref=f45e7]:
+        - link "Registry" [ref=f45e8] [cursor=pointer]:
+          - /url: index.html
+        - link "Linkage report" [ref=f45e9] [cursor=pointer]:
+          - /url: report.html
+        - link "Documentation" [ref=f45e10] [cursor=pointer]:
+          - /url: docs.html
+    - generic [ref=f45e12]:
+      - text: Service
+      - code [ref=f45e13]: ZFS_SB_DYNGW_O4_API
+      - text: · DS4 client 100
+  - main [ref=f45e14]:
+    - generic [ref=f45e16]:
+      - navigation [ref=f45e17]:
+        - generic [ref=f45e18]: Getting started
+        - link "1 · The URL" [ref=f45e19] [cursor=pointer]:
+          - /url: "#url"
+        - link "2 · Your first call, step by step" [ref=f45e20] [cursor=pointer]:
+          - /url: "#first"
+        - link "3 · Reading the answer" [ref=f45e21] [cursor=pointer]:
+          - /url: "#result"
+        - generic [ref=f45e22]: The six actions
+        - link "RunQuery" [ref=f45e23] [cursor=pointer]:
+          - /url: "#RunQuery"
+        - link "ExecuteTableCrud" [ref=f45e24] [cursor=pointer]:
+          - /url: "#ExecuteTableCrud"
+        - link "CallFunctionModule" [ref=f45e25] [cursor=pointer]:
+          - /url: "#CallFunctionModule"
+        - link "SubmitReport" [ref=f45e26] [cursor=pointer]:
+          - /url: "#SubmitReport"
+        - link "RegisterTarget" [ref=f45e27] [cursor=pointer]:
+          - /url: "#RegisterTarget"
+        - link "ExecuteBatch" [ref=f45e28] [cursor=pointer]:
+          - /url: "#ExecuteBatch"
+        - generic [ref=f45e29]: Reference
+        - link "Step kinds" [ref=f45e30] [cursor=pointer]:
+          - /url: "#stepkinds"
+        - link "Reading the log tables" [ref=f45e31] [cursor=pointer]:
+          - /url: "#entities"
+        - link "Idempotency" [ref=f45e32] [cursor=pointer]:
+          - /url: "#idempotency"
+        - link "Things that will bite you" [active] [ref=f45e33] [cursor=pointer]:
+          - /url: "#gotchas"
+      - generic [ref=f45e34]:
+        - generic [ref=f45e35]:
+          - heading "1 · The URL" [level=2] [ref=f45e36]
+          - paragraph [ref=f45e37]:
+            - text: Everything in this service is one endpoint. You never call a table or a function module directly — you call an action on the
+            - code [ref=f45e38]: CallLog
+            - text: entity set, and the gateway decides whether you are allowed to do what you asked.
+          - generic [ref=f45e39]:
+            - generic [ref=f45e40]: "Show URLs for:"
+            - combobox "Show URLs for:" [ref=f45e41]:
+              - option "This console's proxy (localhost:8774)"
+              - option "SAP directly (vhnlqds4ap01)" [selected]
+            - generic [ref=f45e42]: "Calling SAP directly: you supply Basic Auth, fetch the CSRF token yourself, and the host's certificate must be trusted."
+          - heading "Base" [level=3] [ref=f45e43]
+          - generic [ref=f45e44]:
+            - generic [ref=f45e45]:
+              - generic [ref=f45e46]: Base URL
+              - button "Copy" [ref=f45e47] [cursor=pointer]
+            - generic [ref=f45e48]: https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001
+          - generic [ref=f45e49]:
+            - text: "Three ways to get the URL wrong, all of which look like something else:"
+            - list [ref=f45e50]:
+              - listitem [ref=f45e51]:
+                - text: The repository segment is
+                - code [ref=f45e52]: srvd_a2x
+                - text: ", not"
+                - code [ref=f45e53]: srvd
+                - text: .
+              - listitem [ref=f45e54]:
+                - code [ref=f45e55]: "?sap-client=100"
+                - text: goes on every call, ADT REST included. Without it you get a 401 that reads like a bad password (L-253/L-325).
+              - listitem [ref=f45e56]:
+                - text: If your query string already carries
+                - code [ref=f45e57]: sap-client
+                - text: ", do not append another — SAP answers 400 URI syntax, not a no-op."
+          - heading "Shape of every action call" [level=3] [ref=f45e58]
+          - generic [ref=f45e59]:
+            - generic [ref=f45e60]:
+              - generic [ref=f45e61]: Pattern
+              - button "Copy" [ref=f45e62] [cursor=pointer]
+            - generic [ref=f45e63]: POST https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.<ActionName>?sap-client=100
+          - paragraph [ref=f45e64]:
+            - text: That namespace is fixed for this service. The six action names go where
+            - code [ref=f45e65]: <ActionName>
+            - text: is.
+        - generic [ref=f45e66]:
+          - heading "2 · Your first call, step by step" [level=2] [ref=f45e67]
+          - paragraph [ref=f45e68]:
+            - text: This sequence is proved live against
+            - code [ref=f45e69]: DS4_100_NIIF
+            - text: .
+            - code [ref=f45e70]: T000
+            - text: is registered on this system today, which makes it the cheapest liveness check you have.
+          - generic [ref=f45e71]:
+            - generic [ref=f45e72]:
+              - heading "Get a CSRF token and the session cookie" [level=3] [ref=f45e73]
+              - paragraph [ref=f45e74]:
+                - text: Only writes need the token — a plain
+                - code [ref=f45e75]: GET
+                - text: of
+                - code [ref=f45e76]: /Registry
+                - text: or
+                - code [ref=f45e77]: /CallLog
+                - text: does not. Every action is a
+                - code [ref=f45e78]: POST
+                - text: ", so you need it. Skip this step entirely when calling through this console's proxy: it holds the token and cookie jar for you."
+              - generic [ref=f45e79]:
+                - generic [ref=f45e80]:
+                  - generic [ref=f45e81]: Request
+                  - button "Copy" [ref=f45e82] [cursor=pointer]
+                - generic [ref=f45e83]: "GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001/$metadata?sap-client=100 X-CSRF-Token: Fetch"
+              - paragraph [ref=f45e84]:
+                - text: Keep the
+                - code [ref=f45e85]: x-csrf-token
+                - text: response header and the session cookie. Both go on every subsequent write.
+            - generic [ref=f45e86]:
+              - heading "Read three rows from a registered table" [level=3] [ref=f45e87]
+              - generic [ref=f45e88]:
+                - generic [ref=f45e89]:
+                  - generic [ref=f45e90]: Request
+                  - button "Copy" [ref=f45e91] [cursor=pointer]
+                - generic [ref=f45e92]: "POST https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.RunQuery?sap-client=100 Content-Type: application/json X-CSRF-Token: <token> { \"TargetName\": \"T000\", \"FieldsJson\": \"[\\\"MANDT\\\",\\\"MTEXT\\\"]\", \"FilterJson\": \"\", \"OrderByJson\": \"\", \"MaxRows\": 3, \"SkipRows\": 0, \"RequestId\": \"\" }"
+              - generic [ref=f45e93]:
+                - text: Note the escaping.
+                - code [ref=f45e94]: FieldsJson
+                - text: is a string that happens to contain JSON — one level of escaping in a single-shot call, and three inside a batch step. Build the innermost value first and let your serialiser escape it; message 022 cannot tell you which level broke.
+            - generic [ref=f45e95]:
+              - heading "Check the answer — and do not stop at HTTP 200" [level=3] [ref=f45e96]
+              - paragraph [ref=f45e97]:
+                - text: A refusal is
+                - generic [ref=f45e98]:
+                  - text: HTTP 200 with
+                  - code [ref=f45e99]: ExecStatus:"E"
+                - text: ", not an HTTP error. Read the field, not the status code."
+              - generic [ref=f45e100]:
+                - generic [ref=f45e101]:
+                  - generic [ref=f45e102]: Response (abridged)
+                  - button "Copy" [ref=f45e103] [cursor=pointer]
+                - generic [ref=f45e104]: "{ \"ExecStatus\": \"S\", \"ErrorCategory\": \"\", \"ResultCount\": 3, \"RowsJson\": \"[{\\\"MANDT\\\":\\\"000\\\",\\\"MTEXT\\\":\\\"SAP SE\\\"}, ...]\", \"GwUuid\": \"5254001f-e7a2-...\", \"IsCommitted\": \"X\", \"IsRolledBack\": \"\" }"
+            - generic [ref=f45e105]:
+              - heading "Look at what it wrote to the log" [level=3] [ref=f45e106]
+              - paragraph [ref=f45e107]:
+                - text: Every call writes one
+                - code [ref=f45e108]: CallLog
+                - text: row and one
+                - code [ref=f45e109]: CallStep
+                - text: row per step. Use
+                - code [ref=f45e110]: GwUuid
+                - text: from the response as the key.
+              - generic [ref=f45e111]:
+                - generic [ref=f45e112]:
+                  - generic [ref=f45e113]: Request
+                  - button "Copy" [ref=f45e114] [cursor=pointer]
+                - generic [ref=f45e115]: GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001/CallLog(<GwUuid>)?$expand=_Steps&sap-client=100
+              - paragraph [ref=f45e116]:
+                - text: Or open it on the
+                - link "linkage report" [ref=f45e117] [cursor=pointer]:
+                  - /url: report.html
+                - text: ", which does exactly this read and lets you walk from the call to its steps to the registry rows that authorised them."
+          - heading "The same first call in PowerShell" [level=3] [ref=f45e118]
+          - generic [ref=f45e119]:
+            - generic [ref=f45e120]:
+              - generic [ref=f45e121]: PowerShell 5.1
+              - button "Copy" [ref=f45e122] [cursor=pointer]
+            - generic [ref=f45e123]: "# Through the proxy: no token, no credentials, no TLS fuss. $base = \"https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001\" $ns = \"com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001\" # Build the inner JSON by hand: ConvertTo-Json collapses a 1-element array to an # object, and the gateway then answers \"Invalid JSON\" (L-315). $body = @{ TargetName = \"T000\" FieldsJson = '[\"MANDT\",\"MTEXT\"]' FilterJson = \"\" OrderByJson = \"\" MaxRows = 3 SkipRows = 0 RequestId = \"\" } | ConvertTo-Json $r = Invoke-RestMethod -Method Post -ContentType \"application/json\" ` -Uri \"$base/CallLog/$ns.RunQuery?sap-client=100\" -Body $body $r.ExecStatus # S $r.RowsJson | ConvertFrom-Json"
+        - generic [ref=f45e124]:
+          - heading "3 · Reading the answer" [level=2] [ref=f45e125]
+          - paragraph [ref=f45e126]: Every one of the six actions returns the same result shape. Two fields answer two different questions, and confusing them is the commonest mistake.
+          - table [ref=f45e128]:
+            - rowgroup [ref=f45e129]:
+              - row [ref=f45e130]:
+                - columnheader "Field" [ref=f45e131]
+                - columnheader "What it tells you" [ref=f45e132]
+            - rowgroup [ref=f45e133]:
+              - row [ref=f45e134]:
+                - cell [ref=f45e135]:
+                  - code [ref=f45e136]: ExecStatus
+                - cell [ref=f45e137]:
+                  - code [ref=f45e138]: S
+                  - text: = the dispatch worked.
+                  - code [ref=f45e139]: E
+                  - text: = it did not. Not "the business operation succeeded".
+              - row [ref=f45e140]:
+                - cell [ref=f45e141]:
+                  - code [ref=f45e142]: ErrorCategory
+                - cell [ref=f45e143]:
+                  - code [ref=f45e144]: CLIENT
+                  - text: your request was wrong ·
+                  - code [ref=f45e145]: AUTH
+                  - text: not permitted ·
+                  - code [ref=f45e146]: TARGET
+                  - text: the target failed technically ·
+                  - code [ref=f45e147]: BUSINESS
+                  - text: dispatched fine, but the target's own
+                  - code [ref=f45e148]: RETURN
+                  - text: reported an error.
+                  - generic [ref=f45e149]:
+                    - code [ref=f45e150]: ExecStatus S
+                    - text: +
+                    - code [ref=f45e151]: BUSINESS
+                    - text: means it ran and failed.
+              - row [ref=f45e152]:
+                - cell [ref=f45e153]:
+                  - code [ref=f45e154]: RowsJson
+                - cell "Query results, as a JSON string." [ref=f45e155]
+              - row [ref=f45e156]:
+                - cell [ref=f45e157]:
+                  - code [ref=f45e158]: ExportJson
+                  - text: /
+                  - code [ref=f45e159]: TablesJson
+                - cell "A function module's EXPORT and TABLES parameters, as JSON strings." [ref=f45e160]
+              - row [ref=f45e161]:
+                - cell [ref=f45e162]:
+                  - code [ref=f45e163]: StepsJson
+                - cell [ref=f45e164]:
+                  - text: Per-step detail —
+                  - generic [ref=f45e165]:
+                    - text: populated for
+                    - code [ref=f45e166]: ExecuteBatch
+                    - text: only
+                  - text: . A single-shot action leaves it empty; read the step from
+                  - code [ref=f45e167]: /CallLog(<GwUuid>)?$expand=_Steps
+                  - text: instead.
+              - row [ref=f45e168]:
+                - cell [ref=f45e169]:
+                  - code [ref=f45e170]: MessageNo
+                  - text: /
+                  - code [ref=f45e171]: MessageText
+                - cell "On a single-shot refusal this is the generic 045 \"batch aborted at step 1\", truncated. The real reason (017, 018, 022, 035, 039…) is on the step row, not here (L-478)." [ref=f45e172]
+              - row [ref=f45e173]:
+                - cell [ref=f45e174]:
+                  - code [ref=f45e175]: IsCommitted
+                  - text: /
+                  - code [ref=f45e176]: IsRolledBack
+                - cell [ref=f45e177]:
+                  - code [ref=f45e178]: X
+                  - text: or blank. Only on this response — they were never added to the persisted
+                  - code [ref=f45e179]: CallLog
+                  - text: entity, so no later
+                  - code [ref=f45e180]: GET
+                  - text: can recover them (L-525).
+              - row [ref=f45e181]:
+                - cell [ref=f45e182]:
+                  - code [ref=f45e183]: Replayed
+                - cell [ref=f45e184]:
+                  - code [ref=f45e185]: X
+                  - text: = answered from the idempotency log; nothing re-executed.
+              - row [ref=f45e186]:
+                - cell [ref=f45e187]:
+                  - code [ref=f45e188]: GwUuid
+                - cell [ref=f45e189]:
+                  - text: The key of the
+                  - code [ref=f45e190]: CallLog
+                  - text: row this call wrote. Keep it.
+          - generic [ref=f45e191]:
+            - text: A refusal is HTTP 200.
+            - code [ref=f45e192]: ExecStatus:"E"
+            - text: with a message is the normal refusal shape. An aborted batch is the exception — that returns 400, with the reason in the body.
+        - generic [ref=f45e193]:
+          - heading "The six actions" [level=2] [ref=f45e194]
+          - generic [ref=f45e195]:
+            - generic [ref=f45e196]:
+              - heading "RunQuery" [level=3] [ref=f45e197]
+              - generic [ref=f45e198]: read
+              - generic [ref=f45e199]:
+                - text: A dynamic
+                - code [ref=f45e200]: SELECT
+                - text: against a registered table or CDS view. Step kind
+                - code [ref=f45e201]: QURY
+                - text: .
+            - generic [ref=f45e202]:
+              - generic [ref=f45e203]:
+                - generic [ref=f45e204]:
+                  - generic [ref=f45e205]: POST · RunQuery
+                  - button "Copy" [ref=f45e206] [cursor=pointer]
+                - generic [ref=f45e207]: "POST https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.RunQuery?sap-client=100 { \"TargetName\": \"ZFS_CDS_SLC_001\", \"FieldsJson\": \"[\\\"ZOTTK_NO\\\",\\\"ZSTR\\\",\\\"ZOTTK_VALUE\\\"]\", \"FilterJson\": \"[{\\\"field\\\":\\\"ZOTTK_ST\\\",\\\"op\\\":\\\"EQ\\\",\\\"value\\\":\\\"01\\\"}]\", \"OrderByJson\": \"[{\\\"field\\\":\\\"ZOTTK_NO\\\",\\\"desc\\\":false}]\", \"MaxRows\": 100, \"SkipRows\": 0, \"RequestId\": \"\" }"
+              - list [ref=f45e208]:
+                - listitem [ref=f45e209]:
+                  - generic [ref=f45e210]:
+                    - text: Always send
+                    - code [ref=f45e211]: FieldsJson
+                    - text: .
+                  - text: The all-columns default breaks on any table with a DDIC
+                  - code [ref=f45e212]: .INCLUDE
+                  - text: ", and such fields are refused outright."
+                - listitem [ref=f45e213]:
+                  - text: The target must be registered with
+                  - code [ref=f45e214]: TargetKind
+                  - code [ref=f45e216]: QURY
+                  - text: . A row registered
+                  - code [ref=f45e217]: TABL
+                  - text: is refused with 017 even though it is active and readable — "registered" and "usable by this action" are different questions (L-526).
+                - listitem [ref=f45e218]:
+                  - code [ref=f45e219]: "MaxRows: 0"
+                  - text: on the registry row means "this target sets no override", never "unlimited".
+        - generic [ref=f45e221]:
+          - generic [ref=f45e222]:
+            - heading "ExecuteTableCrud" [level=3] [ref=f45e223]
+            - generic [ref=f45e224]: writes
+            - generic [ref=f45e225]:
+              - text: Dynamic
+              - code [ref=f45e226]: INSERT
+              - text: /
+              - code [ref=f45e227]: MODIFY
+              - text: /
+              - code [ref=f45e228]: DELETE
+              - text: on a registered table. Step kind
+              - code [ref=f45e229]: TABL
+              - text: .
+          - generic [ref=f45e230]:
+            - generic [ref=f45e231]:
+              - generic [ref=f45e232]:
+                - generic [ref=f45e233]: POST · ExecuteTableCrud
+                - button "Copy" [ref=f45e234] [cursor=pointer]
+              - generic [ref=f45e235]: "POST https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.ExecuteTableCrud?sap-client=100 { \"TargetName\": \"ZFS_SLC_OTTK_BTP\", \"Operation\": \"INSERT\", \"ImportJson\": \"[{\\\"ZOTTK_NO\\\":\\\"\\\",\\\"ZSTR\\\":\\\"DSX\\\",\\\"ZOTTK_VALUE\\\":1000000}]\", \"GenerateJson\": \"{\\\"Uuid\\\":[\\\"UUID\\\"],\\\"NumberRange\\\":[\\\"ZOTTK_NO\\\"],\\\"SysFields\\\":\\\"AUDIT\\\"}\", \"RequestId\": \"\" }"
+            - generic [ref=f45e236]:
+              - generic [ref=f45e237]:
+                - code [ref=f45e238]: MODIFY
+                - text: is a full-row replace, not a merge (L-520).
+              - text: Every column your payload omits is written back initial — create-audit fields included. Read the row, change what you mean to change, and send the whole thing back. This is the single most destructive mistake available in this API.
+            - list [ref=f45e239]:
+              - listitem [ref=f45e240]:
+                - code [ref=f45e241]: GenerateJson
+                - text: "lets the server fill fields you cannot:"
+                - code [ref=f45e242]: Uuid
+                - text: (a fresh
+                - code [ref=f45e243]: sysuuid_x16
+                - text: ),
+                - code [ref=f45e244]: NumberRange
+                - text: (from the registry row's one
+                - code [ref=f45e245]: GenNrObject
+                - text: ),
+                - code [ref=f45e246]: SysFields:"AUDIT"
+                - text: (the five RAP audit fields).
+              - listitem [ref=f45e247]:
+                - text: "Generation needs both permissions: the registry row must carry"
+                - code [ref=f45e248]: AllowGen
+                - text: ", and the call must name the fields. There is no \"generate everything allowed\" shortcut. Refused with 052 otherwise."
+              - listitem [ref=f45e249]:
+                - text: Under
+                - code [ref=f45e250]: CommitMode "NEVER"
+                - text: a
+                - code [ref=f45e251]: NumberRange
+                - text: draw is refused (054) — a dry run will not gamble on whether a drawn number survives.
+              - listitem [ref=f45e252]:
+                - text: A primary-key collision on
+                - code [ref=f45e253]: INSERT
+                - text: is absorbed as a partial-write success (message 048, severity
+                - code [ref=f45e254]: W
+                - text: ), not a failure. Check the step.
+        - generic [ref=f45e256]:
+          - generic [ref=f45e257]:
+            - heading "CallFunctionModule" [level=3] [ref=f45e258]
+            - generic [ref=f45e259]: writes
+            - generic [ref=f45e260]:
+              - text: A dynamic
+              - code [ref=f45e261]: CALL FUNCTION
+              - text: against a registered function module. Step kind
+              - code [ref=f45e262]: FUNC
+              - text: .
+          - generic [ref=f45e263]:
+            - generic [ref=f45e264]:
+              - generic [ref=f45e265]:
+                - generic [ref=f45e266]: POST · CallFunctionModule
+                - button "Copy" [ref=f45e267] [cursor=pointer]
+              - generic [ref=f45e268]: "POST https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.CallFunctionModule?sap-client=100 { \"TargetName\": \"BAPI_SOMETHING_GETDETAIL\", \"ImportJson\": \"{\\\"DOCUMENTNUMBER\\\":\\\"0000012345\\\"}\", \"TablesJson\": \"{\\\"RETURN\\\":[]}\", \"RequestId\": \"\" }"
+            - generic [ref=f45e269]:
+              - generic [ref=f45e270]:
+                - text: An output-only
+                - code [ref=f45e271]: TABLES
+                - text: parameter must be sent as
+                - code [ref=f45e272]: "[]"
+                - text: or its content never comes back
+              - text: (L-314).
+              - code [ref=f45e273]: RETURN
+              - text: is the one people forget, and forgetting it means you cannot see the BAPI's own error.
+            - list [ref=f45e274]:
+              - listitem [ref=f45e275]:
+                - generic [ref=f45e276]:
+                  - text: Every
+                  - code [ref=f45e277]: FUNC
+                  - text: target must be registered
+                  - code [ref=f45e278]: "AllowWrite: true"
+                  - text: ", even a read-only function module"
+                - text: — the handler cannot tell reading from writing, so it demands the stronger right and fails closed (L-491). Do not read
+                - code [ref=f45e279]: AllowWrite
+                - text: on a
+                - code [ref=f45e280]: FUNC
+                - text: row as evidence that it writes.
+              - listitem [ref=f45e281]:
+                - text: Call mode decides whether a rollback reaches it.
+                - code [ref=f45e282]: L
+                - text: = local, inside the LUW, undone by a rollback.
+                - code [ref=f45e283]: R
+                - text: = RFC, which commits the caller's LUW and is outside any rollback.
+                - generic [ref=f45e284]:
+                  - text: Blank falls back to
+                  - code [ref=f45e285]: TFDIR-FMODE
+                  - text: ", so any remote-enabled BAPI resolves to"
+                  - code [ref=f45e286]: R
+                - text: (L-492).
+              - listitem [ref=f45e287]:
+                - code [ref=f45e288]: CallFunctionModule
+                - text: never commits. A creating BAPI needs
+                - code [ref=f45e289]: ExecuteBatch
+                - text: with a
+                - code [ref=f45e290]: CommitMode
+                - text: ", and"
+                - code [ref=f45e291]: ExecStatus:"S"
+                - text: only means the dispatch worked — parse
+                - code [ref=f45e292]: RETURN
+                - text: .
+        - generic [ref=f45e294]:
+          - generic [ref=f45e295]:
+            - heading "SubmitReport" [level=3] [ref=f45e296]
+            - generic [ref=f45e297]: writes
+            - generic [ref=f45e298]:
+              - text: Runs an executable report in its own session and captures the list. Step kind
+              - code [ref=f45e299]: SUBM
+              - text: .
+          - generic [ref=f45e300]:
+            - generic [ref=f45e301]:
+              - generic [ref=f45e302]:
+                - generic [ref=f45e303]: POST · SubmitReport
+                - button "Copy" [ref=f45e304] [cursor=pointer]
+              - generic [ref=f45e305]: "POST https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.SubmitReport?sap-client=100 { \"TargetName\": \"Z_SOME_REPORT\", \"Operation\": \"\", \"ImportJson\": \"{\\\"CaptureMode\\\":\\\"SALV\\\"}\", \"FilterJson\": \"[{\\\"name\\\":\\\"S_BUKRS\\\",\\\"sign\\\":\\\"I\\\",\\\"option\\\":\\\"EQ\\\",\\\"low\\\":\\\"1000\\\"}]\", \"MaxRows\": 500, \"RequestId\": \"\" }"
+            - generic [ref=f45e306]:
+              - generic [ref=f45e307]:
+                - code [ref=f45e308]: SUBM
+                - text: runs outside the rollback, always
+              - text: — its own RFC session commits independently. It also cannot share a batch with any in-LUW write step; that mix is refused in phase 1 with message 020.
+            - list [ref=f45e309]:
+              - listitem [ref=f45e310]:
+                - text: "Qualify a report before registering it: a"
+                - code [ref=f45e311]: CL_GUI_*
+                - text: reference in
+                - code [ref=f45e312]: WBCROSSGT
+                - text: is a hard disqualifier, and an
+                - code [ref=f45e313]: OBLIGATORY
+                - text: select-option must be supplied.
+              - listitem [ref=f45e314]: No report is registered or smoke-tested against v2 as of today. If you are the first, treat it as establishing the behaviour rather than confirming it.
+        - generic [ref=f45e316]:
+          - generic [ref=f45e317]:
+            - heading "RegisterTarget" [level=3] [ref=f45e318]
+            - generic [ref=f45e319]: admin
+            - generic [ref=f45e320]:
+              - text: Adds or widens an allow-list row. Step kind
+              - code [ref=f45e321]: REGI
+              - text: . Needs
+              - code [ref=f45e322]: ZFS_DYNGW
+              - code [ref=f45e323]: ACTVT 01/02
+              - text: .
+          - generic [ref=f45e324]:
+            - generic [ref=f45e325]:
+              - generic [ref=f45e326]:
+                - generic [ref=f45e327]: POST · RegisterTarget
+                - button "Copy" [ref=f45e328] [cursor=pointer]
+              - generic [ref=f45e329]: "POST https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.RegisterTarget?sap-client=100 { \"TargetName\": \"T001\", \"Operation\": \"INSERT\", \"ImportJson\": \"{\\\"TargetKind\\\":\\\"QURY\\\",\\\"Operation\\\":\\\"SELECT\\\",\\\"IsActive\\\":true,\\\"AllowRead\\\":true,\\\"MaxRows\\\":20}\", \"RequestId\": \"\" }"
+            - list [ref=f45e330]:
+              - listitem [ref=f45e331]:
+                - code [ref=f45e332]: Operation
+                - text: "here is the registry operation:"
+                - code [ref=f45e333]: INSERT
+                - text: (the default) fails with 035 if the target already exists. Widening an existing row must be typed out as
+                - code [ref=f45e334]: UPDATE
+                - text: — that asymmetry is deliberate, so a registration is never widened by accident.
+              - listitem [ref=f45e335]:
+                - text: Booleans are
+                - code [ref=f45e336]: Edm.Boolean
+                - text: ": send"
+                - code [ref=f45e337]: "true"
+                - text: /
+                - code [ref=f45e338]: "false"
+                - text: unquoted, never
+                - code [ref=f45e339]: "\"X\""
+                - text: —
+                - code [ref=f45e340]: "\"X\""
+                - text: is a 400 XML parse error, not a clean refusal (L-475).
+              - listitem [ref=f45e341]:
+                - text: "Self-protection: anything matching"
+                - code [ref=f45e342]: ZFS_T_DYN_*
+                - text: ","
+                - code [ref=f45e343]: ZFS_RFC_DYN_*
+                - text: or the authorization object is refused with 039, writing nothing. This is the fix for v1's privilege-escalation hole, proved live.
+              - listitem [ref=f45e344]:
+                - text: Or just use the
+                - link "registry screen" [ref=f45e345] [cursor=pointer]:
+                  - /url: index.html
+                - text: in this console, which does the same thing through
+                - code [ref=f45e346]: POST /Registry
+                - text: and shows you the audit row it produced.
+        - generic [ref=f45e348]:
+          - generic [ref=f45e349]:
+            - heading "ExecuteBatch" [level=3] [ref=f45e350]
+            - generic [ref=f45e351]: writes
+            - generic [ref=f45e352]: Many steps, one transaction. Every other action is internally a one-step batch.
+          - generic [ref=f45e353]:
+            - generic [ref=f45e354]:
+              - generic [ref=f45e355]:
+                - generic [ref=f45e356]: POST · ExecuteBatch
+                - button "Copy" [ref=f45e357] [cursor=pointer]
+              - generic [ref=f45e358]: "POST https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.ExecuteBatch?sap-client=100 { \"CommitMode\": \"AUTO\", \"RequestId\": \"my-stable-key-0001\", \"StepsJson\": \"[{\\\"index\\\":1,\\\"kind\\\":\\\"REGI\\\",\\\"targetname\\\":\\\"T001\\\",\\\"importjson\\\":\\\"{\\\\\\\"TargetKind\\\\\\\":\\\\\\\"QURY\\\\\\\",\\\\\\\"AllowRead\\\\\\\":true}\\\"},{\\\"index\\\":2,\\\"kind\\\":\\\"QURY\\\",\\\"targetname\\\":\\\"T001\\\",\\\"fieldsjson\\\":\\\"[\\\\\\\"MANDT\\\\\\\"]\\\",\\\"maxrows\\\":5}]\" }"
+            - generic [ref=f45e359]:
+              - text: Count the escaping levels. The body is JSON;
+              - code [ref=f45e360]: StepsJson
+              - text: is a string containing JSON; a step's own
+              - code [ref=f45e361]: ImportJson
+              - text: /
+              - code [ref=f45e362]: FieldsJson
+              - text: is a string containing JSON inside that. Three levels. Build innermost-first and let the serialiser escape — deep action parameters do not work on this release, which is why this is a string and not an array (L-472).
+            - list [ref=f45e363]:
+              - listitem [ref=f45e364]:
+                - text: "Phase 1 validates every step before phase 2 executes any. A validation failure means nothing ran: every other step reports"
+                - code [ref=f45e365]: Severity "P"
+                - text: (planned).
+              - listitem [ref=f45e366]:
+                - text: A later step may use a target an earlier
+                - code [ref=f45e367]: REGI
+                - text: step declared — that is how one call provisions a whole system.
+              - listitem [ref=f45e368]:
+                - text: You may not mix an out-of-LUW step with an in-LUW write. Out-of-LUW means every
+                - code [ref=f45e369]: SUBM
+                - text: step and any
+                - code [ref=f45e370]: FUNC
+                - text: step in call mode
+                - code [ref=f45e371]: R
+                - text: — which is the default. Refused in phase 1, message 020. Fix by splitting the call, or registering the FUNC target with
+                - code [ref=f45e372]: CALL_MODE "L"
+                - text: .
+              - listitem [ref=f45e373]:
+                - code [ref=f45e374]: CommitMode
+                - text: ":"
+                - code [ref=f45e375]: AUTO
+                - text: commits if every step succeeded ·
+                - code [ref=f45e376]: NEVER
+                - text: is a dry run ·
+                - code [ref=f45e377]: ALWAYS
+                - text: is
+                - generic [ref=f45e378]:
+                  - text: currently identical to
+                  - code [ref=f45e379]: AUTO
+                - text: ; do not assume it does more.
+              - listitem [ref=f45e380]:
+                - text: "An aborted batch returns HTTP 400 with the reason in the body, and rolls back — proved live, both phases (L-496). Even so: verify by re-reading what you wrote rather than trusting"
+                - code [ref=f45e381]: ExecStatus
+                - text: alone.
+        - generic [ref=f45e382]:
+          - heading "Step kinds" [level=2] [ref=f45e383]
+          - paragraph [ref=f45e384]:
+            - text: Inside a batch you name a
+            - code [ref=f45e385]: kind
+            - text: rather than an action. This is also what a registry row's
+            - code [ref=f45e386]: TargetKind
+            - text: must match.
+          - table [ref=f45e388]:
+            - rowgroup [ref=f45e389]:
+              - row [ref=f45e390]:
+                - columnheader "Kind" [ref=f45e391]
+                - columnheader "Does" [ref=f45e392]
+                - columnheader "Needs AllowWrite" [ref=f45e393]
+                - columnheader "Rolled back on abort" [ref=f45e394]
+            - rowgroup [ref=f45e395]:
+              - row [ref=f45e396]:
+                - cell [ref=f45e397]:
+                  - code [ref=f45e398]: QURY
+                - cell [ref=f45e399]:
+                  - text: dynamic
+                  - code [ref=f45e400]: SELECT
+                - cell "no" [ref=f45e401]
+                - cell "n/a — nothing written" [ref=f45e402]
+              - row [ref=f45e403]:
+                - cell [ref=f45e404]:
+                  - code [ref=f45e405]: TABL
+                - cell [ref=f45e406]:
+                  - code [ref=f45e407]: INSERT
+                  - text: /
+                  - code [ref=f45e408]: MODIFY
+                  - text: /
+                  - code [ref=f45e409]: DELETE
+                - cell "yes" [ref=f45e410]
+                - cell "yes" [ref=f45e411]
+              - row [ref=f45e412]:
+                - cell [ref=f45e413]:
+                  - code [ref=f45e414]: FUNC
+                - cell [ref=f45e415]:
+                  - code [ref=f45e416]: CALL FUNCTION
+                - cell "always, even read-only (L-491)" [ref=f45e417]
+                - cell [ref=f45e418]:
+                  - generic [ref=f45e419]:
+                    - text: only in call mode
+                    - code [ref=f45e420]: L
+                  - text: ; blank defaults to
+                  - code [ref=f45e421]: R
+                  - text: (L-492)
+              - row [ref=f45e422]:
+                - cell [ref=f45e423]:
+                  - code [ref=f45e424]: SUBM
+                - cell [ref=f45e425]:
+                  - code [ref=f45e426]: SUBMIT
+                  - text: a report
+                - cell "always" [ref=f45e427]
+                - cell "no — its own session" [ref=f45e428]
+              - row [ref=f45e429]:
+                - cell [ref=f45e430]:
+                  - code [ref=f45e431]: REGI
+                - cell "register / update an allow-list row" [ref=f45e432]
+                - cell "gated by the authorization object, not the allow-list" [ref=f45e433]
+                - cell "yes" [ref=f45e434]
+        - generic [ref=f45e435]:
+          - heading "Reading the log tables" [level=2] [ref=f45e436]
+          - paragraph [ref=f45e437]:
+            - text: Four entity sets, plain
+            - code [ref=f45e438]: GET
+            - text: ", no CSRF token needed. This is what the"
+            - link "linkage report" [ref=f45e439] [cursor=pointer]:
+              - /url: report.html
+            - text: reads.
+          - generic [ref=f45e440]:
+            - generic [ref=f45e441]:
+              - generic [ref=f45e442]: Useful reads
+              - button "Copy" [ref=f45e443] [cursor=pointer]
+            - generic [ref=f45e444]: "# the allow-list GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001/Registry?$orderby=TargetName&sap-client=100 # one call with its steps GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001/CallLog(<CallUuid>)?$expand=_Steps&sap-client=100 # every step that ran against one registry row GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001/CallStep?$filter=RegUuid eq <RegUuid>&sap-client=100 # who changed the allow-list, and what it looked like before GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001/RegistryHistory?$orderby=ChangedAt desc&$top=50&sap-client=100 # how many rows, without fetching any GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001/CallStep?$top=0&$count=true&sap-client=100"
+          - table [ref=f45e446]:
+            - rowgroup [ref=f45e447]:
+              - row [ref=f45e448]:
+                - columnheader "Join" [ref=f45e449]
+                - columnheader "Meaning" [ref=f45e450]
+            - rowgroup [ref=f45e451]:
+              - row [ref=f45e452]:
+                - cell [ref=f45e453]:
+                  - code [ref=f45e454]: Registry.RegUuid
+                  - text: →
+                  - code [ref=f45e455]: CallStep.RegUuid
+                - cell "the allow-list row that authorised this step" [ref=f45e456]
+              - row [ref=f45e457]:
+                - cell [ref=f45e458]:
+                  - code [ref=f45e459]: CallLog.CallUuid
+                  - text: →
+                  - code [ref=f45e460]: CallStep.CallUuid
+                - cell "the steps of this call" [ref=f45e461]
+              - row [ref=f45e462]:
+                - cell [ref=f45e463]:
+                  - code [ref=f45e464]: Registry.RegUuid
+                  - text: →
+                  - code [ref=f45e465]: RegistryHistory.RegUuid
+                - cell "every change made to this allow-list row" [ref=f45e466]
+              - row [ref=f45e467]:
+                - cell [ref=f45e468]:
+                  - code [ref=f45e469]: RegistryHistory.CallUuid
+                  - text: →
+                  - code [ref=f45e470]: CallLog.CallUuid
+                - cell "the gateway call that made the change" [ref=f45e471]
+          - generic [ref=f45e472]:
+            - text: A target-scoped auditor sees steps but an empty call log.
+            - code [ref=f45e473]: CallStep
+            - text: carries a target name so its DCL restricts genuinely;
+            - code [ref=f45e474]: CallLog
+            - text: does not, so its grant needs full
+            - code [ref=f45e475]: ZDYNTGT
+            - text: scope. An empty
+            - code [ref=f45e476]: /CallLog
+            - text: next to a populated
+            - code [ref=f45e477]: /CallStep
+            - text: is this, not data loss.
+        - generic [ref=f45e478]:
+          - heading "Idempotency" [level=2] [ref=f45e479]
+          - paragraph [ref=f45e480]:
+            - text: Send a stable, unique
+            - code [ref=f45e481]: RequestId
+            - text: on anything you might retry. A repeat with the same id is answered from the stored row —
+            - code [ref=f45e482]: Replayed:"X"
+            - text: ", the same"
+            - code [ref=f45e483]: GwUuid
+            - text: ", nothing re-executed."
+          - generic [ref=f45e484]:
+            - generic [ref=f45e485]:
+              - text: Omitting
+              - code [ref=f45e486]: RequestId
+              - text: is opting out, not a shortcut.
+            - text: A blank id is stored as the row's own
+            - code [ref=f45e487]: CallUuid
+            - text: ", so it is unique by construction and never matches a previous blank-id call."
+        - generic [ref=f45e488]:
+          - heading "Things that will bite you" [level=2] [ref=f45e489]
+          - table [ref=f45e491]:
+            - rowgroup [ref=f45e492]:
+              - row [ref=f45e493]:
+                - columnheader "Symptom" [ref=f45e494]
+                - columnheader "What is actually happening" [ref=f45e495]
+            - rowgroup [ref=f45e496]:
+              - row [ref=f45e497]:
+                - cell "401 that looks like a bad password" [ref=f45e498]
+                - cell [ref=f45e499]:
+                  - code [ref=f45e500]: sap-client=100
+                  - text: missing from the URL.
+              - row [ref=f45e501]:
+                - cell "HTTP 200 but nothing happened" [ref=f45e502]
+                - cell [ref=f45e503]:
+                  - text: A refusal. Read
+                  - code [ref=f45e504]: ExecStatus
+                  - text: ", then the step's message — the header's 045 is generic."
+              - row [ref=f45e505]:
+                - cell "Message 017 on a target you can see in the registry" [ref=f45e506]
+                - cell [ref=f45e507]:
+                  - text: The row's
+                  - code [ref=f45e508]: TargetKind
+                  - text: does not match the step kind your action dispatches.
+                  - code [ref=f45e509]: RunQuery
+                  - text: needs
+                  - code [ref=f45e510]: QURY
+                  - text: ", not"
+                  - code [ref=f45e511]: TABL
+                  - text: (L-526).
+              - row [ref=f45e512]:
+                - cell "Message 018 on a read-only function module" [ref=f45e513]
+                - cell [ref=f45e514]:
+                  - text: Every
+                  - code [ref=f45e515]: FUNC
+                  - text: target needs
+                  - code [ref=f45e516]: AllowWrite
+                  - text: (L-491).
+              - row [ref=f45e517]:
+                - cell "Message 022 and no idea which field" [ref=f45e518]
+                - cell [ref=f45e519]:
+                  - text: A
+                  - code [ref=f45e520]: "*Json"
+                  - text: escaping level is wrong. It cannot tell you which one; build innermost-first.
+              - row [ref=f45e521]:
+                - cell "Message 039" [ref=f45e522]
+                - cell "You tried to register a framework object. By design, and it writes nothing." [ref=f45e523]
+              - row [ref=f45e524]:
+                - cell "400 XML parse error on a boolean" [ref=f45e525]
+                - cell [ref=f45e526]:
+                  - text: You sent
+                  - code [ref=f45e527]: "\"X\""
+                  - text: . These are
+                  - code [ref=f45e528]: Edm.Boolean
+                  - text: ":"
+                  - code [ref=f45e529]: "true"
+                  - text: /
+                  - code [ref=f45e530]: "false"
+                  - text: ", unquoted (L-475)."
+              - row [ref=f45e531]:
+                - cell "Columns silently blanked after an update" [ref=f45e532]
+                - cell [ref=f45e533]:
+                  - code [ref=f45e534]: ExecuteTableCrud MODIFY
+                  - text: is a full-row replace (L-520). Resend the whole row.
+              - row [ref=f45e535]:
+                - cell "A batch \"rolled back\" but the FM's work survived" [ref=f45e536]
+                - cell [ref=f45e537]:
+                  - text: That step ran in call mode
+                  - code [ref=f45e538]: R
+                  - text: — outside the LUW. Blank is
+                  - code [ref=f45e539]: R
+                  - text: for any remote-enabled FM (L-492).
+              - row [ref=f45e540]:
+                - cell "Fresh system answers 017 to everything" [ref=f45e541]
+                - cell [ref=f45e542]:
+                  - text: Allow-list rows are
+                  - code [ref=f45e543]: "deliveryClass #A"
+                  - text: application data and do not travel with a transport. Register targets on the new system.
+              - row [ref=f45e544]:
+                - cell "A role \"covering everything\" grants more than intended" [ref=f45e545]
+                - cell [ref=f45e546]:
+                  - code [ref=f45e547]: ZDYNTGT
+                  - text: maintained as a range brackets the literal
+                  - code [ref=f45e548]: "*"
+                  - text: . Single values only (L-441).
+          - generic [ref=f45e549]:
+            - text: "Fuller reference:"
+            - code [ref=f45e550]: docs/dyngw-v2-integration-guide.md
+            - text: for the client walkthrough,
+            - code [ref=f45e551]: docs/dyngw-v2-api.md
+            - text: for the field-by-field contract,
+            - code [ref=f45e552]: docs/dyngw-v2-how-it-works.md
+            - text: for the architecture and what is proved versus assumed.

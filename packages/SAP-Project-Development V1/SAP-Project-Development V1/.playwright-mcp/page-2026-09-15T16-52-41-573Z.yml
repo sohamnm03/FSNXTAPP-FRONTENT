@@ -1,0 +1,62 @@
+- generic [ref=f27e2]:
+  - banner [ref=f27e3]:
+    - generic [ref=f27e4]:
+      - img "Fourth Signal" [ref=f27e5]
+      - generic [ref=f27e6]: Dynamic Gateway v2 LINKAGE REPORT
+      - navigation [ref=f27e7]:
+        - link "Registry" [ref=f27e8] [cursor=pointer]:
+          - /url: index.html
+        - link "Linkage report" [ref=f27e9] [cursor=pointer]:
+          - /url: report.html
+    - generic [ref=f27e10]:
+      - button "Refresh" [ref=f27e11] [cursor=pointer]
+      - generic "System connected" [ref=f27e15]
+  - main [ref=f27e16]:
+    - generic [ref=f27e17]:
+      - generic [ref=f27e18]:
+        - generic [ref=f27e19]: How the four tables link Reading row counts…
+        - generic [ref=f27e20]:
+          - text: Counts are live
+          - code [ref=f27e21]: $count
+          - text: reads
+      - img "Entity relationship map of the four dynamic gateway tables" [ref=f27e23]:
+        - generic [ref=f27e24]: THE ALLOW-LIST
+        - generic [ref=f27e25]: WHAT RAN
+        - generic [ref=f27e26]: THE CALL IT BELONGED TO
+        - generic [ref=f27e27]:
+          - generic [ref=f27e31]: Registry
+          - generic [ref=f27e32]: ZFS_T_DYN_REG · who may be called
+          - generic [ref=f27e33]: ROWS
+          - generic [ref=f27e34]: —
+        - generic [ref=f27e35]:
+          - generic [ref=f27e39]: CallStep
+          - generic [ref=f27e40]: ZFS_T_DYN_STEP · one row per step
+          - generic [ref=f27e41]: ROWS
+          - generic [ref=f27e42]: —
+        - generic [ref=f27e43]:
+          - generic [ref=f27e47]: CallLog
+          - generic [ref=f27e48]: ZFS_T_DYN_CALL · one row per call
+          - generic [ref=f27e49]: ROWS
+          - generic [ref=f27e50]: —
+        - generic [ref=f27e51]:
+          - generic [ref=f27e55]: RegistryHistory
+          - generic [ref=f27e56]: ZFS_T_DYN_REGH · every allow-list change
+          - generic [ref=f27e57]: ROWS
+          - generic [ref=f27e58]: —
+        - generic [ref=f27e60]: RegUuid
+        - generic [ref=f27e61]: authorised
+        - generic [ref=f27e63]: CallUuid
+        - generic [ref=f27e64]: belongs to
+        - generic [ref=f27e67]: RegUuid
+        - generic [ref=f27e68]: changes to this row
+        - generic [ref=f27e71]: CallUuid
+        - generic [ref=f27e72]: the call that made the change
+    - generic [ref=f27e73]:
+      - generic [ref=f27e74]:
+        - generic [ref=f27e75]: Registry activity Pick a target on the left
+        - generic [ref=f27e76]: Reads go straight to the entity sets — never through RunQuery, which would log itself here
+      - generic [ref=f27e77]:
+        - textbox "Filter targets" [ref=f27e80]:
+          - /placeholder: Filter targets…
+        - generic [ref=f27e82]: Select a registry target to trace its changes, its steps, and the calls those steps belonged to.
+    - generic [ref=f27e85]: Coverage and loose ends

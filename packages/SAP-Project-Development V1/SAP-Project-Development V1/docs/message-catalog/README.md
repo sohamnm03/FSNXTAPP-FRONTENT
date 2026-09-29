@@ -8,7 +8,7 @@ if both happen to use the same class name.
 | System | File |
 |---|---|
 | `DS4_100_NIIF` (default, enabled) | [`DS4_100_NIIF.md`](DS4_100_NIIF.md) |
-| `DS4_100_TFSIN` (disabled, unverified) | not yet created — add `DS4_100_TFSIN.md` here the first time a message is created on that system |
+| `DS4_100_TFSIN` | [`DS4_100_TFSIN.md`](DS4_100_TFSIN.md) |
 
 When a task targets a system with no file here yet, create `<system-id>.md` following the
 existing file's structure before adding the first message row.

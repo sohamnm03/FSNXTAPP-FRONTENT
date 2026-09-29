@@ -1,0 +1,6 @@
+[ 5909384ms] TypeError: Cannot read properties of null (reading 'addEventListener')
+    at http://localhost:8774/report.html:666:37
+[ 5911778ms] TypeError: Cannot read properties of null (reading 'addEventListener')
+    at http://localhost:8774/report.html:666:37
+[ 5914687ms] TypeError: Cannot read properties of null (reading 'addEventListener')
+    at http://localhost:8774/report.html:666:37

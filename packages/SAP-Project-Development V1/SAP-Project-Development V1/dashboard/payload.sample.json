@@ -28,8 +28,8 @@
         ]
       },
       "lessons": ["L-227", "L-228"],
-      "worklogPath": "worklog/DS4_100_NIIF/2026-08-22-rap-user-provisioning-api.md",
-      "worklogUrl": "../../worklog/DS4_100_NIIF/2026-08-22-rap-user-provisioning-api.md",
+      "worklogPath": "worklog/DS4_100_NIIF/2026-08/2026-08-22-1719-rap-user-provisioning-api.md",
+      "worklogUrl": "../../worklog/DS4_100_NIIF/2026-08/2026-08-22-1719-rap-user-provisioning-api.md",
       "detail": "# RAP OData V4 Web API — Third-Party SAP User Creation/Provisioning\n\n- **Date:** 2026-08-22\n- **System:** DS4_100_NIIF\n\n## Scope\n\nBuild a hand-coded unmanaged RAP Business Object exposed as an OData V4 Web API...\n\nThe `detail` field holds the whole worklog file. It is what the drawer renders, and what makes a published copy of this dashboard readable without access to this machine."
     },
     {
@@ -52,8 +52,8 @@
         ]
       },
       "lessons": [],
-      "worklogPath": "worklog/DS4_100_NIIF/2026-08-16-rap-managed-trmloan.md",
-      "worklogUrl": "../../worklog/DS4_100_NIIF/2026-08-16-rap-managed-trmloan.md"
+      "worklogPath": "worklog/DS4_100_NIIF/2026-08/2026-08-16-1203-rap-managed-trmloan.md",
+      "worklogUrl": "../../worklog/DS4_100_NIIF/2026-08/2026-08-16-1203-rap-managed-trmloan.md"
     },
     {
       "id": "2026-08-22-per-system-worklog-message-catalog-reorg",
@@ -68,8 +68,8 @@
       "status": "complete",
       "objects": { "recorded": true, "attempted": 0, "items": [] },
       "lessons": ["L-234"],
-      "worklogPath": "worklog/DS4_100_NIIF/2026-08-22-per-system-worklog-message-catalog-reorg.md",
-      "worklogUrl": "../../worklog/DS4_100_NIIF/2026-08-22-per-system-worklog-message-catalog-reorg.md",
+      "worklogPath": "worklog/DS4_100_NIIF/2026-08/2026-08-22-1718-per-system-worklog-message-catalog-reorg.md",
+      "worklogUrl": "../../worklog/DS4_100_NIIF/2026-08/2026-08-22-1718-per-system-worklog-message-catalog-reorg.md",
       "detail": "# Reorganize worklog and message catalog per SAP system\n\nRepository-organization task only, no ABAP objects created or changed."
     }
   ]
