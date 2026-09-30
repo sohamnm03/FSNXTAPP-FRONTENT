@@ -215,7 +215,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       FSNXT_CASE_CREATION_AUTO_SAVE: caseCreation && lane === 'gui' ? '1' : '0',
       FSNXT_EXTERNAL_RUN_AUTO_SAVE: externalRun && lane === 'gui' ? '1' : '0',
       FSNXT_EXTERNAL_RUN_RECORD: externalRun ? path.join(externalRun.workRoot, 'observations.json') : '',
-      FSNXT_CASE_DRAFT_DIR: caseCreation ? caseDraftDirectory(lane, caseCreation.systemId) : '',
+      FSNXT_CASE_DIRECTORY: caseCreation ? caseCreationDirectory(lane, caseCreation.systemId) : '',
       FSNXT_CASE_EXISTING_FILES: JSON.stringify(caseCreation?.existingFiles || []),
     };
     if (pythonPath) env.FSNXT_PYTHON = pythonPath;
@@ -340,6 +340,34 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     return system;
   }
 
+  function sapGuiMcpToolPattern(system) {
+    if (!system) return '';
+    const registry = systemRegistry();
+    const explicitName = String(system.sapGui?.mcpServerName || '').trim();
+    const serverName = explicitName || (system.id === registry.defaultSystem
+      ? 'sap-gui'
+      : `sap-gui-${String(system.systemId || '').toLowerCase()}-${String(system.client || '')}`);
+    if (!/^[A-Za-z0-9_-]+$/.test(serverName)) {
+      throw new Error(`The SAP GUI MCP server name for ${system.id} is invalid.`);
+    }
+    return `mcp__${serverName}__*`;
+  }
+
+  // Claude Code normalizes Windows paths to /c/... and requires two leading
+  // slashes for an absolute Edit rule. Edit path rules cover both Edit and
+  // Write, so authoring stays limited to the selected testcase directory.
+  function claudeAbsoluteEditRule(directory) {
+    const resolved = path.resolve(directory);
+    if (resolved.startsWith('\\\\')) {
+      throw new Error('Choose a local folder or a mapped drive for SAP test archives; network paths are not supported.');
+    }
+    const normalized = resolved
+      .replace(/\\/g, '/')
+      .replace(/^([A-Za-z]):/, (_match, drive) => `/${drive.toLowerCase()}`);
+    const escaped = normalized.replace(/([*?[\]\\])/g, '\\$1');
+    return `Edit(//${escaped.replace(/^\/+/, '')}/**)`;
+  }
+
   function normalizeCaseId(caseId) {
     const match = String(caseId || '').toUpperCase().match(/^TC[- ]?0*(\d{1,3})$/);
     if (!match) throw new Error('Enter a valid test case such as TC-015.');
@@ -432,10 +460,15 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     return null;
   }
 
-  function listCases(lane) {
+  function listCases(lane, systemId = '') {
     if (!validateProject(projectRoot)) throw new Error('The bundled SAP automation package is missing or incomplete. Reinstall the application.');
+    const selectedSystem = systemId ? configuredConnectionCheckSystem(systemId) : configuredDefaultSystem();
+    const registry = systemRegistry();
     const manifest = caseManifest(lane);
-    const builtInCases = Object.entries(manifest.cases || {})
+    // Frozen built-in scripts currently belong to the registry's default
+    // system. Other systems list only cases authored for that exact system.
+    const builtInCases = selectedSystem.id === registry.defaultSystem
+      ? Object.entries(manifest.cases || {})
       .map(([caseId, entry]) => ({
         caseId,
         summary: String(entry.summary || ''),
@@ -444,8 +477,10 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         defaultStage: entry.defaultStage ? String(entry.defaultStage) : '',
         hasFile: Boolean(findCaseMarkdownFile(lane, caseId, entry)),
         source: 'built-in',
-      }));
+      }))
+      : [];
     const externalCases = externalCaseEntries(lane)
+      .filter(({ entry }) => entry?.system === selectedSystem.id)
       .map(({ entry }) => ({
         caseId: String(entry.caseId || ''),
         summary: String(entry.summary || ''),
@@ -460,16 +495,19 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       .filter((entry) => /^TC-\d{3}$/.test(entry.caseId));
     const cases = [...builtInCases, ...externalCases]
       .sort((a, b) => caseNumber(a.caseId) - caseNumber(b.caseId) || a.caseId.localeCompare(b.caseId));
-    return { lane, cases };
+    return { lane, systemId: selectedSystem.id, cases };
   }
 
-  function getCaseFile(lane, requestedCaseId) {
+  function getCaseFile(lane, requestedCaseId, systemId = '') {
     if (!validateProject(projectRoot)) throw new Error('The bundled SAP automation package is missing or incomplete. Reinstall the application.');
     const caseId = normalizeCaseId(requestedCaseId);
+    const selectedSystem = systemId ? configuredConnectionCheckSystem(systemId) : configuredDefaultSystem();
+    const registry = systemRegistry();
     const manifest = caseManifest(lane);
-    const entry = manifest.cases?.[caseId];
+    const entry = selectedSystem.id === registry.defaultSystem ? manifest.cases?.[caseId] : null;
     if (!entry) {
-      const externalEntry = externalCaseEntries(lane).find((item) => item.entry.caseId === caseId)?.entry;
+      const externalEntry = externalCaseEntries(lane)
+        .find((item) => item.entry.caseId === caseId && item.entry.system === selectedSystem.id)?.entry;
       if (!externalEntry?.caseFile) {
         throw new Error(`${caseId} is not registered in the selected ${lane === 'gui' ? 'SAP GUI' : 'Fiori / WebGUI'} lane.`);
       }
@@ -495,19 +533,11 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     };
   }
 
-  // Where the AI Assistant is told to write a case it is authoring, before
-  // this app relocates it. Deliberately INSIDE projectRoot (the same cwd the
-  // spawned claude.exe process already gets — see start() below), never the
-  // user's persistent testcase folder under the selected archive location:
-  // that folder is often outside the sandboxed/packaged process's working
-  // tree, and --permission-mode auto is not something we've verified lets a
-  // headless `claude -p` write to an arbitrary absolute path outside its cwd.
-  // Writing inside cwd is unambiguous — every other file this app already
-  // has Claude Code touch (results/*.md, evidence/*, the case it reads to run
-  // interactively) is cwd-relative too. finalizeCaseCreation() below copies
-  // whatever lands here into the real, persistent folder afterward.
-  function caseDraftDirectory(lane, system) {
-    return path.join(projectRoot, '.case-drafts', lane, system);
+  // Authored cases are written directly into the user's selected archive.
+  // The temporary packaged automation workspace must never hold a testcase
+  // copy because it can disappear whenever the desktop process exits.
+  function caseCreationDirectory(lane, system) {
+    return externalLaneCasesDir(lane, system);
   }
 
   // Picks the folder a newly authored case belongs in and everything the
@@ -515,19 +545,17 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
   // this app no longer fabricates a case file from typed answers (that
   // produced documentation for a test that was never actually run). The
   // assistant explores and drives SAP live, then writes the case file(s)
-  // into the draft folder above using test-cases/_TEMPLATE.md's shape;
-  // finalizeCaseCreation relocates them once the run finishes.
+  // directly into the selected archive using test-cases/_TEMPLATE.md's shape;
+  // finalizeCaseCreation validates and registers them once the run finishes.
   function prepareCaseCreation(lane, systemId) {
     if (!['gui', 'web'].includes(lane)) throw new Error('Select SAP GUI or Fiori / WebGUI testing.');
     if (!validateProject(projectRoot)) throw new Error('The bundled SAP automation package is missing or incomplete. Reinstall the application.');
     const system = String(systemId || '').trim() || 'DS4_100_NIIF';
-    const draftDirectory = caseDraftDirectory(lane, system);
-    fs.mkdirSync(draftDirectory, { recursive: true });
-    // Should normally be empty (each run's leftovers are deleted once copied
-    // out — see finalizeCaseCreation), but if an earlier run in this same app
-    // session was interrupted before it could clean up, its files must not
-    // look "new" to the next run's diff.
-    const existingFiles = fs.readdirSync(draftDirectory).filter((name) => name.toLowerCase().endsWith('.md'));
+    const caseDirectory = caseCreationDirectory(lane, system);
+    fs.mkdirSync(caseDirectory, { recursive: true });
+    // Snapshot the permanent folder so finalization registers only files made
+    // by this authoring run and never mistakes an existing case for a new one.
+    const existingFiles = fs.readdirSync(caseDirectory).filter((name) => name.toLowerCase().endsWith('.md'));
 
     const builtInDirectory = path.join(laneCasesDir(lane), system);
     const exampleCaseFile = fs.existsSync(builtInDirectory)
@@ -537,7 +565,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     return {
       lane,
       system,
-      caseDirectory: draftDirectory,
+      caseDirectory,
       existingFiles,
       nextCaseId: nextExternalCaseId(),
       exampleCaseFile: exampleCaseFile ? path.join(builtInDirectory, exampleCaseFile) : '',
@@ -557,56 +585,40 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     return headers;
   }
 
-  // Runs once a case-creation AI Assistant run finishes: diffs the draft
+  // Runs once a case-creation AI Assistant run finishes: diffs the permanent
   // folder against the file list prepareCaseCreation captured before the run
   // started, and for whatever new *.md files showed up (there may be several
-  // — one run can produce a case per combination it explored) copies each
-  // into the user's persistent external case folder, registers it, and
-  // deletes the draft. A file the run never got around to writing simply
-  // means nothing new is found; it does not error, since a partial or
+  // — one run can produce a case per combination it explored) validates and
+  // registers each in place. A file the run never got around to writing
+  // simply means nothing new is found; it does not error, since a partial or
   // interrupted run is a normal outcome, not a bug.
   function finalizeCaseCreation(lane, systemId, existingFilesBeforeRun = [], author = '') {
     if (!['gui', 'web'].includes(lane)) throw new Error('Select SAP GUI or Fiori / WebGUI testing.');
     const system = String(systemId || '').trim() || 'DS4_100_NIIF';
-    const draftDirectory = caseDraftDirectory(lane, system);
-    if (!fs.existsSync(draftDirectory)) return { created: [] };
+    const caseDirectory = caseCreationDirectory(lane, system);
+    if (!fs.existsSync(caseDirectory)) return { created: [] };
 
     const before = new Set(Array.isArray(existingFilesBeforeRun) ? existingFilesBeforeRun : []);
-    const newFiles = fs.readdirSync(draftDirectory)
+    const newFiles = fs.readdirSync(caseDirectory)
       .filter((name) => name.toLowerCase().endsWith('.md') && !before.has(name));
     if (!newFiles.length) return { created: [] };
-
-    const destinationDirectory = externalLaneCasesDir(lane, system);
-    fs.mkdirSync(destinationDirectory, { recursive: true });
 
     const manifest = externalManifest();
     const created = [];
     for (const fileName of newFiles) {
-      const draftPath = path.join(draftDirectory, fileName);
-      const content = fs.readFileSync(draftPath, 'utf8');
+      const casePath = path.join(caseDirectory, fileName);
+      const content = fs.readFileSync(casePath, 'utf8');
       const headers = parseCaseHeaders(content);
       let caseId;
       try { caseId = normalizeCaseId(headers['Case id']); } catch {
-        throw new Error(`${fileName} has no valid Case id header. The draft was retained at ${draftPath}.`);
+        throw new Error(`${fileName} has no valid Case id header. The file was retained at ${casePath}.`);
       }
       const titleLine = content.split('\n').find((line) => line.trim().startsWith('# ')) || '';
       const summary = titleLine.replace(/^#\s*/, '').replace(/^TC-\d{3}\s*[—-]\s*/, '').trim()
         || headers['Transaction / app'] || fileName;
 
-      // The next free id was only a snapshot at prepareCaseCreation time — if
-      // something else claimed this exact filename in the meantime, keep the
-      // existing file rather than silently overwriting it.
-      const destinationPath = path.join(destinationDirectory, fileName);
-      if (fs.existsSync(destinationPath)) {
-        if (fs.readFileSync(destinationPath, 'utf8') !== content) {
-          throw new Error(`${destinationPath} already exists with different contents. The new draft was retained.`);
-        }
-      } else {
-        fs.copyFileSync(draftPath, destinationPath, fs.constants.COPYFILE_EXCL);
-      }
-
       const storageRoot = externalCasesRoot();
-      const relativeCaseFile = path.relative(storageRoot, destinationPath).split(path.sep).join('/');
+      const relativeCaseFile = path.relative(storageRoot, casePath).split(path.sep).join('/');
       const key = externalCaseKey(lane, caseId);
       const writes = headers['Writes to the database'] || 'Not classified yet.';
       manifest.cases[key] = {
@@ -622,15 +634,10 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         source: 'external',
       };
       created.push({
-        caseId, lane, summary, writes, source: 'external', externalLabel: 'External created TC', fileName, filePath: destinationPath, storageRoot,
+        caseId, lane, summary, writes, source: 'external', externalLabel: 'External created TC', fileName, filePath: casePath, storageRoot,
       });
     }
-    if (created.length) {
-      writeJsonFile(externalCasesManifestPath(), manifest);
-      for (const entry of created) {
-        try { fs.unlinkSync(path.join(draftDirectory, entry.fileName)); } catch { /* Retain a recoverable draft if cleanup fails. */ }
-      }
-    }
+    if (created.length) writeJsonFile(externalCasesManifestPath(), manifest);
     return { created };
   }
 
@@ -699,9 +706,10 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     };
   }
 
-  function prepareCase(lane, requestedCaseId, requestedStage = '', requestedCredentials = null, externalCase = null) {
+  function prepareCase(lane, requestedCaseId, requestedStage = '', requestedCredentials = null, externalCase = null, requestedSystemId = '') {
     if (!validateProject(projectRoot)) throw new Error('The bundled SAP automation package is missing or incomplete. Reinstall the application.');
     const caseId = normalizeCaseId(requestedCaseId);
+    const requestedSystem = requestedSystemId ? configuredConnectionCheckSystem(requestedSystemId) : null;
     const manifest = caseManifest(lane);
     let testCase = manifest.cases?.[caseId];
     let external = null;
@@ -712,6 +720,9 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         throw new Error('The selected testcase id or lane does not match the file. Reopen the testcase.');
       }
       const system = configuredConnectionCheckSystem(externalCase.systemId);
+      if (requestedSystem && requestedSystem.id !== system.id) {
+        throw new Error('The testcase system does not match the currently connected SAP system.');
+      }
       if (!String(headers.System || '').split(/[\s`()[\],;]+/).includes(system.id)) {
         throw new Error('The testcase System header must match the selected SAP system before running.');
       }
@@ -726,7 +737,10 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       throw new Error(`${caseId} does not have stage '${requestedStage}'. Available stages: ${stages.join(', ') || 'none'}.`);
     }
 
-    const system = external ? configuredConnectionCheckSystem(external.systemId) : configuredDefaultSystem();
+    const system = external ? configuredConnectionCheckSystem(external.systemId) : (requestedSystem || configuredDefaultSystem());
+    if (!external && system.id !== systemRegistry().defaultSystem) {
+      throw new Error(`${caseId} is a built-in NIIF testcase. Select an external testcase created for ${system.id}.`);
+    }
 
     // Web lane only: a username/password typed into the sidebar overrides the
     // registry's account for this run. The GUI lane logs on through the
@@ -1091,13 +1105,22 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       if (previousSessionId && !/^[0-9a-f-]{36}$/i.test(previousSessionId)) throw new Error('The AI Assistant session is invalid. Start a new chat.');
       if (!['gui', 'web'].includes(lane)) throw new Error('Select SAP GUI or Fiori / WebGUI testing.');
       const caseCreation = options?.caseCreation || null;
-      if (caseCreation) configuredConnectionCheckSystem(caseCreation.systemId);
+      const caseCreationSystem = caseCreation ? configuredConnectionCheckSystem(caseCreation.systemId) : null;
       if ([...runs.values()].some((run) => !FINAL_STATUSES.has(run.status))) {
         throw new Error('Another SAP request is already running. Wait for it to finish or stop it first.');
       }
       const id = crypto.randomUUID();
       const externalRun = options?.[externalAuthorization]
         ? createExternalRun(projectRoot, archiveDir(), id, options[externalAuthorization]) : null;
+      const externalRunSystem = externalRun ? configuredConnectionCheckSystem(externalRun.systemId) : null;
+      const approvedGuiTool = lane === 'gui'
+        ? sapGuiMcpToolPattern(caseCreationSystem || externalRunSystem)
+        : '';
+      const creationDirectory = caseCreation ? caseCreationDirectory(lane, caseCreation.systemId) : '';
+      // Approved testcase operations must use only their explicit allowlist.
+      // Auto mode can still classifier-block a pre-approved SAP policy tool;
+      // dontAsk runs allowed tools and rejects everything else without a prompt.
+      const permissionMode = caseCreation || externalRun ? 'dontAsk' : 'auto';
       if (externalRun) prompt = externalRunPrompt(externalRun);
 
       const laneGuidance = lane === 'gui'
@@ -1107,15 +1130,16 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       const args = [
         '-p', prompt.trim(),
         '--output-format', 'json',
-        '--permission-mode', 'auto',
-        '--append-system-prompt', `${DISPLAY_GUIDANCE} ${laneGuidance}${caseCreation ? ` This is an FSNXT testcase creation run on ${caseCreation.systemId}. The user authorizes saving the requested deal as part of creating the testcase. Announce the Save and perform it without asking for another chat confirmation or popup. This authorization satisfies rule 3 for this requested scenario only. Verify the target SAP system before writing. Do not add settlement, posting, or other writes beyond the request. Verify the saved document number from SAP, then write the Markdown testcase to ${caseDraftDirectory(lane, caseCreation.systemId)} before finishing. If blocked, write the observed partial steps and exact failure as a draft; never claim an unverified save or repeat a Save whose outcome is uncertain.` : ''}`,
+        '--permission-mode', permissionMode,
+        '--append-system-prompt', `${DISPLAY_GUIDANCE} ${laneGuidance}${caseCreation ? ` This is an FSNXT testcase creation run on ${caseCreation.systemId}. The user authorizes saving the requested deal as part of creating the testcase. Announce the Save and perform it without asking for another chat confirmation or popup. This authorization satisfies rule 3 for this requested scenario only. Verify the target SAP system before writing. Do not add settlement, posting, or other writes beyond the request. Verify the saved document number from SAP, then write the Markdown testcase directly to ${creationDirectory} before finishing. Do not create a testcase copy anywhere else. If blocked, write the observed partial steps and exact failure there; never claim an unverified save or repeat a Save whose outcome is uncertain.` : ''}`,
       ];
       if (caseCreation) {
-        args.push('--allowedTools', 'mcp__sap-gui__*', 'mcp__sap-gui-lfd-100-ltfs__*', 'Write(/.case-drafts/**)', 'Edit(/.case-drafts/**)');
+        args.push('--add-dir', creationDirectory);
+        args.push('--allowedTools', ...(approvedGuiTool ? [approvedGuiTool] : []), claudeAbsoluteEditRule(creationDirectory));
       }
       if (externalRun) {
-                args.push('--allowedTools', ...(lane === 'gui' ? ['mcp__sap-gui__*', 'mcp__sap-gui-lfd-100-ltfs__*'] : []),
-          `Write(/${externalRun.relativeRoot}/**)`, `Edit(/${externalRun.relativeRoot}/**)`);
+        args.push('--allowedTools', ...(approvedGuiTool ? [approvedGuiTool] : []),
+          `Edit(/${externalRun.relativeRoot}/**)`);
       }
       if (previousSessionId) args.push('--resume', previousSessionId);
 
@@ -1170,7 +1194,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
           run.error = run.error || parsed.error || (code === 0 ? '' : 'AI Assistant could not complete the request. Check that you are signed in.');
           run.status = code === 0 && !run.error ? 'completed' : 'failed';
         }
-        // Persist drafts in the main process, even if the user left this screen.
+        // Register files from the selected archive even if the user left this screen.
         if (caseCreation) {
           try {
             run.createdCases = finalizeCaseCreation(lane, caseCreation.systemId, caseCreation.existingFiles, caseCreation.author).created;
@@ -1179,7 +1203,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
               run.error = 'Testcase creation is unfinished: no Markdown file was produced. Continue this testcase in chat; verify the existing SAP deal before retrying any Save.';
             }
           } catch (error) {
-            run.error = `Could not store the testcase locally: ${error.message}`;
+            run.error = `The testcase remains in the selected folder but could not be registered: ${error.message}`;
             run.status = 'failed';
           }
         }

@@ -103,7 +103,7 @@
         "mcpServerName": "sap-gui-ds4-100-tfsin",
         "logonDescription": "TFSIN HANA Dev",
         "readOnly": false,
-        "profile": "exploration"
+        "profile": "full"
       },
 
       "rfc": {

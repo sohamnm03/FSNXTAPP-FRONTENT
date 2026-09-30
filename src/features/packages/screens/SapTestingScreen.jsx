@@ -73,14 +73,14 @@ function buildCaseCreationPrompt(lane, connectionServerName, connectedSystemId, 
     "Explore the transaction/app live before writing anything: discover its screens and fields with sap_get_screen_elements (GUI lane) or this project's web-lane screen models — never guess or reuse an element id from another case (rule 4). Work out every meaningful combination of inputs the request implies (e.g. fixed vs variable interest, different periods, different product types) rather than settling for one happy path.",
     'Create ONE separate test case file per meaningful combination you actually run through SAP — do not combine several scenarios into a single file. '
       + `The next free case id is ${prep.nextCaseId}; use it for the first file, then increment by one for each additional case you create in this run (never reuse a number, and never reuse a filename already in the folder: ${existingList}). Name each file ${filenamePattern}.`,
-    `Write every case file into this folder inside the project — it already exists, and is a scratch area for this run only: ${prep.caseDirectory}\n`
-      + "Do not write case files anywhere else (not test-cases/GUI-TC or test-cases/Web-TC, which are this project's own reference copies). Do not edit config/runs.json, config/gui-runs.json, or config/suites.json, and do not run scripts/check-suite.ps1 — none of that applies to a case authored this way. Once this run finishes, the app moves whatever you wrote in the scratch folder into the user's permanent test case library and registers it there automatically, the same way it already lists any other \"External created TC\".",
+    `Write every case file directly into the user's permanent test case folder: ${prep.caseDirectory}\n`
+      + "Do not create a testcase copy anywhere else (including this project's test-cases folders or any temporary runtime folder). Do not edit config/runs.json, config/gui-runs.json, or config/suites.json, and do not run scripts/check-suite.ps1 — none of that applies to a case authored this way. When this run finishes, the app validates and registers the file in place as an \"External created TC\".",
     `Each case file's header must include: Case id, Lane (${laneHeader}), Transaction / app, Spec file: "— external documentation-only case (created live via the AI Assistant; no frozen script yet)", `
       + `System: ${connectedSystemId}, Type, Author: "Claude (requested by ${author || 'the user'})", Created: ${createdDate}, `
       + 'Status: draft (never active or frozen — this case has not yet had the two clean regression runs freezing requires), Source: "External created TC", and Writes to the database.',
     'My request to create this testcase includes authorization to Save the requested deal. Announce the Save, then perform it without asking me again or waiting for a popup. Verify the SAP system and entered values first. Handle SAP validation messages and verify the saved document number and success status before recording a successful Save. Do not settle or post unless my request includes those steps. If a Save outcome is uncertain, inspect SAP before any retry to avoid duplicate deals.',
     'Record what actually happens at every step, including any deviation from what you expected. Never write down an expected value as observed if you could not read it (rules 5-6). Every assertion in the case file must name a field and the expected value you actually observed — "works correctly" is not an assertion.',
-    'Before ending your response, use Write to create the Markdown file in the specified scratch folder and read it back. If SAP blocks completion, still write a draft containing only the observed steps, the blocking message and the unverified assertions; clearly mark the save as failed or unverified. Never stop with only a chat summary. Then report the filenames and the verified SAP document number, or the exact blocker.',
+    'Before ending your response, use Write to create the Markdown file in the specified permanent folder and read it back. If SAP blocks completion, still write a draft there containing only the observed steps, the blocking message and the unverified assertions; clearly mark the save as failed or unverified. Never stop with only a chat summary. Then report the filenames and the verified SAP document number, or the exact blocker.',
   ].join('\n\n');
 }
 
@@ -170,9 +170,9 @@ export default function SapTestingScreen({ onBack }) {
           setError(run.error || 'AI Assistant could not complete the request.');
           if (run.response) setMessages((current) => [...current, { id: `${run.id}-assistant`, role: 'assistant', text: run.response }]);
         }
-        // A case-creation run (see startCaseCreation) writes its case file(s)
-        // itself during the run. The main process stores those files before
-        // publishing a final status, including partially completed runs.
+        // A case-creation run writes directly to the selected archive. The
+        // main process validates and registers those files before publishing
+        // a final status, including partially completed runs.
         if (FINAL_STATUSES.has(run.status) && caseCreationRef.current) {
           const pending = caseCreationRef.current;
           try {
@@ -205,11 +205,8 @@ export default function SapTestingScreen({ onBack }) {
 
   useEffect(() => {
     let cancelled = false;
-    // The current GUI-TC and Web-TC folders contain NIIF cases only.
-    if (connectedSystemId !== 'DS4_100_NIIF') {
-      return undefined;
-    }
-    sapTerminalService.listCases(lane)
+    if (!connectedSystemId) return undefined;
+    sapTerminalService.listCases(lane, connectedSystemId)
       .then((result) => { if (!cancelled) setCases(result.cases || []); })
       .catch((listError) => { if (!cancelled) setError(listError.message); })
       .finally(() => { if (!cancelled) setIsLoadingCases(false); });
@@ -230,10 +227,10 @@ export default function SapTestingScreen({ onBack }) {
   }, [connectionStatus]);
 
   async function loadCasesForLane(nextLane = lane) {
-    if (connectedSystemId !== 'DS4_100_NIIF') return;
+    if (!connectedSystemId) return;
     setIsLoadingCases(true);
     try {
-      const result = await sapTerminalService.listCases(nextLane);
+      const result = await sapTerminalService.listCases(nextLane, connectedSystemId);
       setCases(result.cases || []);
     } catch (listError) {
       setError(listError.message);
@@ -267,7 +264,13 @@ export default function SapTestingScreen({ onBack }) {
     setPrompt('');
     try {
       if (directRequest) {
-        const proposal = await sapTerminalService.prepareCase(lane, directRequest.caseId, directRequest.stage, webCredentials());
+        const listedCase = cases.find((testCase) => testCase.caseId === directRequest.caseId);
+        const externalCase = listedCase?.source === 'external'
+          ? { filePath: listedCase.filePath, systemId: connectedSystemId }
+          : null;
+        const proposal = await sapTerminalService.prepareCase(
+          lane, directRequest.caseId, directRequest.stage, webCredentials(), externalCase, connectedSystemId,
+        );
         setPendingConfirmation(proposal);
         return;
       }
@@ -346,7 +349,7 @@ export default function SapTestingScreen({ onBack }) {
       await new Promise((resolve) => window.setTimeout(resolve, 300));
       setConnectionStatus(result.connected ? 'connected' : 'disconnected');
       setConnectedSystemId(result.connected ? selectedSystemId : '');
-      setIsLoadingCases(result.connected && selectedSystemId === 'DS4_100_NIIF');
+      setIsLoadingCases(result.connected);
       setConnectionServerName(result.connected ? result.serverName || sapSystems.find((system) => system.id === selectedSystemId)?.name || '' : '');
       if (!result.connected) setError(result.reason || 'Connection failed. Check the SAP username and password.');
     } catch {
@@ -375,7 +378,7 @@ export default function SapTestingScreen({ onBack }) {
     setCaseFileError('');
     setIsLoadingCaseFile(true);
     try {
-      const file = await sapTerminalService.getCaseFile(lane, testCase.caseId);
+      const file = await sapTerminalService.getCaseFile(lane, testCase.caseId, connectedSystemId);
       setViewingCase((current) => (current && current.caseId === testCase.caseId ? { ...current, ...file } : current));
     } catch (fileError) {
       setCaseFileError(fileError.message);
@@ -484,7 +487,7 @@ export default function SapTestingScreen({ onBack }) {
     setIsStarting(true);
     setError('');
     try {
-      const proposal = await sapTerminalService.prepareCase(lane, caseId, '', webCredentials());
+      const proposal = await sapTerminalService.prepareCase(lane, caseId, '', webCredentials(), null, connectedSystemId);
       setPendingConfirmation(proposal);
     } catch (runError) {
       setError(runError.message);
@@ -507,7 +510,7 @@ export default function SapTestingScreen({ onBack }) {
     try {
       const proposal = await sapTerminalService.prepareCase(lane, testCase.caseId, '', webCredentials(), {
         filePath: testCase.filePath, systemId: connectedSystemId,
-      });
+      }, connectedSystemId);
       setPendingConfirmation(proposal);
     } catch (runError) {
       setError(runError.message);
@@ -523,6 +526,7 @@ export default function SapTestingScreen({ onBack }) {
     try {
       const result = await sapTerminalService.chooseArchiveDirectory();
       setArchiveDirectory(result.archiveDirectory || '');
+      if (connectedSystemId) await loadCasesForLane(lane);
     } catch (chooseError) {
       setError(chooseError.message);
     } finally {
@@ -602,7 +606,7 @@ export default function SapTestingScreen({ onBack }) {
   function selectLane(nextLane) {
     if (nextLane === lane) return;
     setCases([]);
-    setIsLoadingCases(connectedSystemId === 'DS4_100_NIIF');
+    setIsLoadingCases(Boolean(connectedSystemId));
     setLane(nextLane);
     newChat();
     setSelectedCase(null);
@@ -613,7 +617,7 @@ export default function SapTestingScreen({ onBack }) {
   const isTestingConnection = connectionStatus === 'checking';
   const isBusy = isActive || isTestingConnection || isCreatingCase;
   const visibleSelectedCase = connectionServerName ? selectedCase : null;
-  const sidebarCases = cases.filter((testCase) => testCase.source !== 'external');
+  const sidebarCases = cases;
 
   return (
     <ScreenContainer className="module-screen sap-testing-screen">

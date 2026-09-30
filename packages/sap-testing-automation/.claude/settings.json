@@ -7,8 +7,8 @@
   "permissions": {
     "allow": [
       "mcp__sap-gui__*",
-      "mcp__sap-gui-lfd-100-ltfs__*",
-      "Edit(/.case-drafts/**)"
+      "mcp__sap-gui-ds4-100-tfsin__*",
+      "mcp__sap-gui-lfd-100-ltfs__*"
     ]
   },
   "hooks": {

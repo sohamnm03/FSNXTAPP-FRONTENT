@@ -26,11 +26,11 @@ export const sapTerminalService = {
   clearToken() {
     return localTerminal().clearToken();
   },
-  listCases(lane) {
-    return localTerminal().listCases(lane);
+  listCases(lane, systemId) {
+    return localTerminal().listCases(lane, systemId);
   },
-  getCaseFile(lane, caseId) {
-    return localTerminal().getCaseFile(lane, caseId);
+  getCaseFile(lane, caseId, systemId) {
+    return localTerminal().getCaseFile(lane, caseId, systemId);
   },
   prepareCaseCreation(lane, systemId) {
     return localTerminal().prepareCaseCreation(lane, systemId);
@@ -41,8 +41,8 @@ export const sapTerminalService = {
   browseCase() {
     return localTerminal().browseCase();
   },
-  prepareCase(lane, caseId, stage, credentials, externalCase) {
-    return localTerminal().prepareCase(lane, caseId, stage, credentials, externalCase);
+  prepareCase(lane, caseId, stage, credentials, externalCase, systemId) {
+    return localTerminal().prepareCase(lane, caseId, stage, credentials, externalCase, systemId);
   },
   startConfirmedCase(confirmationId) {
     return localTerminal().startConfirmedCase(confirmationId);

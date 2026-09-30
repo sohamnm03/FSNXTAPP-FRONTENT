@@ -14,6 +14,14 @@ function temporaryDirectory(context) {
   return root;
 }
 
+function absoluteEditRule(directory) {
+  const normalized = path.resolve(directory)
+    .replace(/\\/g, '/')
+    .replace(/^([A-Za-z]):/, (_match, drive) => `/${drive.toLowerCase()}`);
+  const escaped = normalized.replace(/([*?[\]\\])/g, '\\$1');
+  return `Edit(//${escaped.replace(/^\/+/, '')}/**)`;
+}
+
 const saveEvent = {
   hook_event_name: 'Elicitation',
   mcp_server_name: 'sap-gui',
@@ -63,7 +71,7 @@ test('authoring cannot stop without a new Markdown case, and the reminder cannot
   const dir = path.join(root, 'drafts');
   fs.mkdirSync(dir);
   fs.writeFileSync(path.join(dir, 'old.md'), '- **Case id:** TC-001');
-  const env = { FSNXT_CASE_DRAFT_DIR: dir, FSNXT_CASE_EXISTING_FILES: '["old.md"]' };
+  const env = { FSNXT_CASE_DIRECTORY: dir, FSNXT_CASE_EXISTING_FILES: '["old.md"]' };
   const invoke = (active) => invokeHook(root, { hook_event_name: 'Stop', stop_hook_active: active }, '1', 'test-run', 'require-case-file.ps1', env);
   assert.equal(invoke(false).decision, 'block');
   assert.equal(invoke(true), null);
@@ -76,7 +84,14 @@ async function managerFixture(context, isPackaged = false) {
   const projectRoot = path.join(root, 'project');
   const files = {
     'gui_tests/run.py': '', 'scripts/run-gui-case.ps1': '', 'CLAUDE.md': '',
-    'config/sap-systems.json': JSON.stringify({ systems: [{ id: 'DS4_100_NIIF', enabled: true, sapGui: { enabled: true } }, { id: 'DS4_100_TFSIN', enabled: true, sapGui: { enabled: true } }] }),
+    'config/sap-systems.json': JSON.stringify({
+      defaultSystem: 'DS4_100_NIIF',
+      systems: [
+        { id: 'DS4_100_NIIF', systemId: 'DS4', client: '100', enabled: true, sapGui: { enabled: true } },
+        { id: 'DS4_100_TFSIN', systemId: 'DS4', client: '100', enabled: true, sapGui: { enabled: true, mcpServerName: 'sap-gui-ds4-100-tfsin' } },
+        { id: 'LFD_100_LTFS', systemId: 'LFD', client: '100', enabled: true, sapGui: { enabled: true, mcpServerName: 'sap-gui-lfd-100-ltfs' } },
+      ],
+    }),
     'config/gui-runs.json': '{"cases":{}}', 'config/runs.json': '{"cases":{}}',
   };
   for (const [name, content] of Object.entries(files)) {
@@ -124,21 +139,18 @@ async function managerFixture(context, isPackaged = false) {
 const markdown = '# TC-001 - Saved loan\n\n- **Case id:** TC-001\n- **Lane:** sap-gui\n- **System:** DS4_100_NIIF\n- **Transaction / app:** FTR_CREATE\n- **Writes to the database:** Creates one loan\n\n## Steps\n1. Save the entered loan.\n\n## Assertions\n- SAP displayed transaction 12345 saved.\n';
 
 test('creation carries scoped Save authorization and persists Markdown without renderer polling', async (context) => {
-  const { manager, calls, prep, options, root } = await managerFixture(context);
+  const { manager, calls, prep, options, root, projectRoot } = await managerFixture(context);
   const run = manager.start('Create a testcase', '', 'gui', options);
   const call = calls.at(-1);
   assert.equal(call.options.env.FSNXT_CASE_CREATION_AUTO_SAVE, '1');
-  assert.ok(call.args.includes('Write(/.case-drafts/**)'));
+  assert.equal(call.args[call.args.indexOf('--permission-mode') + 1], 'dontAsk');
+  assert.equal(call.options.env.FSNXT_CASE_DIRECTORY, prep.caseDirectory);
+  assert.equal(call.args[call.args.indexOf('--add-dir') + 1], prep.caseDirectory);
+  assert.ok(call.args.includes(absoluteEditRule(prep.caseDirectory)));
+  assert.equal(absoluteEditRule(prep.caseDirectory).startsWith('Edit(//'), true);
+  assert.equal(call.args.some((arg) => String(arg).includes('.case-drafts')), false);
   assert.match(call.args[call.args.indexOf('--append-system-prompt') + 1], /without asking for another chat confirmation/);
-  const draft = path.join(prep.caseDirectory, 'TC-001-loan-gui.md');
-  fs.writeFileSync(draft, markdown);
-  call.child.stdout.emit('data', Buffer.from(JSON.stringify({ result: 'Saved 12345', session_id: 'session' })));
-  call.child.emit('close', 0);
-  const finished = manager.getRun(run.id);
-  assert.equal(finished.status, 'completed');
-  assert.equal(finished.createdCases.length, 1);
-  assert.equal(fs.readFileSync(finished.createdCases[0].filePath, 'utf8'), markdown);
-  assert.equal(path.dirname(finished.createdCases[0].filePath), path.join(
+  assert.equal(prep.caseDirectory, path.join(
     root,
     'downloads',
     'FSNXT SAP Test Archives',
@@ -147,10 +159,21 @@ test('creation carries scoped Save authorization and persists Markdown without r
     'GUI-TC',
     'DS4_100_NIIF',
   ));
-  assert.equal(fs.existsSync(draft), false);
+  assert.equal(fs.existsSync(path.join(projectRoot, '.case-drafts')), false);
+  const caseFile = path.join(prep.caseDirectory, 'TC-001-loan-gui.md');
+  fs.writeFileSync(caseFile, markdown);
+  call.child.stdout.emit('data', Buffer.from(JSON.stringify({ result: 'Saved 12345', session_id: 'session' })));
+  call.child.emit('close', 0);
+  const finished = manager.getRun(run.id);
+  assert.equal(finished.status, 'completed');
+  assert.equal(finished.createdCases.length, 1);
+  assert.equal(finished.createdCases[0].filePath, caseFile);
+  assert.equal(fs.readFileSync(caseFile, 'utf8'), markdown);
+  assert.equal(fs.existsSync(caseFile), true);
   assert.equal(manager.listCases('gui').cases[0].caseId, 'TC-001');
   manager.start('Explain this case');
   assert.equal(calls.at(-1).options.env.FSNXT_CASE_CREATION_AUTO_SAVE, '0');
+  assert.equal(calls.at(-1).args[calls.at(-1).args.indexOf('--permission-mode') + 1], 'auto');
   assert.equal(calls.at(-1).args.includes('--allowedTools'), false);
 });
 
@@ -176,6 +199,7 @@ for (const isPackaged of [false, true]) {
       const runner = calls.at(-1);
       assert.equal(runner.options.env.FSNXT_CASE_CREATION_AUTO_SAVE, '0');
       assert.equal(runner.options.env.FSNXT_EXTERNAL_RUN_AUTO_SAVE, lane === 'gui' ? '1' : '0');
+      assert.equal(runner.args[runner.args.indexOf('--permission-mode') + 1], 'dontAsk');
       assert.equal(runner.args.includes('--resume'), false);
       assert.match(runner.args[1], /without another chat confirmation or popup/);
       assert.equal(fs.readFileSync(path.join(projectRoot, '.external-runs', run.id, 'case.md'), 'utf8'), original);
@@ -204,6 +228,7 @@ for (const isPackaged of [false, true]) {
       manager.start('Explain the result');
       assert.equal(calls.at(-1).options.env.FSNXT_EXTERNAL_RUN_AUTO_SAVE, '0');
       assert.equal(calls.at(-1).options.env.FSNXT_EXTERNAL_RUN_RECORD, '');
+      assert.equal(calls.at(-1).args[calls.at(-1).args.indexOf('--permission-mode') + 1], 'auto');
     });
   }
 }
@@ -274,18 +299,17 @@ test('a follow-up can finish a testcase whose first turn wrote no file', async (
   assert.equal(manager.getRun(second.id).createdCases.length, 1);
 });
 
-test('local storage failure is visible and retains the draft', async (context) => {
+test('registration failure is visible and retains the case only in the selected archive', async (context) => {
   const { manager, calls, prep, options, root } = await managerFixture(context);
   const run = manager.start('Create a testcase', '', 'gui', options);
-  const draft = path.join(prep.caseDirectory, 'TC-001-loan-gui.md');
-  fs.writeFileSync(draft, markdown);
+  const caseFile = path.join(prep.caseDirectory, 'TC-001-loan-gui.md');
+  fs.writeFileSync(caseFile, markdown);
   const archiveRoot = path.join(root, 'downloads', 'FSNXT SAP Test Archives');
-  fs.mkdirSync(archiveRoot, { recursive: true });
-  fs.writeFileSync(path.join(archiveRoot, 'FSNXT SAP Test Cases'), 'blocks destination');
+  fs.writeFileSync(path.join(archiveRoot, 'FSNXT SAP Test Cases', 'config'), 'blocks manifest directory');
   calls.at(-1).child.emit('close', 0);
   assert.equal(manager.getRun(run.id).status, 'failed');
-  assert.match(manager.getRun(run.id).error, /Could not store the testcase locally/);
-  assert.equal(fs.existsSync(draft), true);
+  assert.match(manager.getRun(run.id).error, /remains in the selected folder but could not be registered/);
+  assert.equal(fs.existsSync(caseFile), true);
 });
 
 test('selected archive location stores TFSIN cases in the TFSIN HANA Dev folder', async (context) => {
@@ -295,8 +319,9 @@ test('selected archive location stores TFSIN cases in the TFSIN HANA Dev folder'
   assert.equal(selected.archiveDirectory, path.join(root, 'chosen-archive'));
 
   const prep = manager.prepareCaseCreation('gui', 'DS4_100_TFSIN');
+  const caseFile = path.join(prep.caseDirectory, 'TC-001-tfsin-gui.md');
   fs.writeFileSync(
-    path.join(prep.caseDirectory, 'TC-001-tfsin-gui.md'),
+    caseFile,
     markdown.replace('DS4_100_NIIF', 'DS4_100_TFSIN'),
   );
   const result = manager.finalizeCaseCreation('gui', 'DS4_100_TFSIN', prep.existingFiles, 'test-user');
@@ -309,4 +334,57 @@ test('selected archive location stores TFSIN cases in the TFSIN HANA Dev folder'
     'GUI-TC',
     'TFSIN HANA Dev',
   ));
+  assert.equal(result.created[0].filePath, caseFile);
+  assert.equal(fs.existsSync(caseFile), true);
 });
+
+test('case lists and files are scoped to NIIF, TFSIN, or LTFS instead of being NIIF-only', async (context) => {
+  const { manager, projectRoot } = await managerFixture(context);
+  fs.writeFileSync(path.join(projectRoot, 'config', 'gui-runs.json'), JSON.stringify({
+    cases: { 'TC-010': { summary: 'Built-in NIIF case', writes: 'No database writes' } },
+  }));
+
+  const tfsin = manager.prepareCaseCreation('gui', 'DS4_100_TFSIN');
+  fs.writeFileSync(path.join(tfsin.caseDirectory, 'TC-001-tfsin.md'), markdown.replace('DS4_100_NIIF', 'DS4_100_TFSIN'));
+  manager.finalizeCaseCreation('gui', 'DS4_100_TFSIN', tfsin.existingFiles, 'test-author');
+
+  const ltfs = manager.prepareCaseCreation('gui', 'LFD_100_LTFS');
+  fs.writeFileSync(
+    path.join(ltfs.caseDirectory, 'TC-002-ltfs.md'),
+    markdown.replaceAll('TC-001', 'TC-002').replace('DS4_100_NIIF', 'LFD_100_LTFS'),
+  );
+  manager.finalizeCaseCreation('gui', 'LFD_100_LTFS', ltfs.existingFiles, 'test-author');
+
+  assert.deepEqual(Array.from(manager.listCases('gui', 'DS4_100_NIIF').cases, (entry) => entry.caseId), ['TC-010']);
+  assert.deepEqual(Array.from(manager.listCases('gui', 'DS4_100_TFSIN').cases, (entry) => entry.caseId), ['TC-001']);
+  assert.deepEqual(Array.from(manager.listCases('gui', 'LFD_100_LTFS').cases, (entry) => entry.caseId), ['TC-002']);
+  assert.equal(manager.getCaseFile('gui', 'TC-001', 'DS4_100_TFSIN').source, 'external');
+  assert.throws(() => manager.getCaseFile('gui', 'TC-001', 'LFD_100_LTFS'), /not registered/);
+  assert.throws(() => manager.prepareCase('gui', 'TC-010', '', null, null, 'DS4_100_TFSIN'), /built-in NIIF testcase/);
+});
+
+for (const [systemId, mcpTool] of [
+  ['DS4_100_NIIF', 'mcp__sap-gui__*'],
+  ['DS4_100_TFSIN', 'mcp__sap-gui-ds4-100-tfsin__*'],
+  ['LFD_100_LTFS', 'mcp__sap-gui-lfd-100-ltfs__*'],
+]) {
+  test(`${systemId} testcase authoring and execution use the selected MCP server without auto-classifier blocking`, async (context) => {
+    const { manager, calls, root } = await managerFixture(context);
+    const prep = manager.prepareCaseCreation('gui', systemId);
+    const options = { caseCreation: { systemId, existingFiles: prep.existingFiles, author: 'test-author' } };
+    manager.start(`Create a ${systemId} testcase`, '', 'gui', options);
+    const authoringCall = calls.at(-1);
+    assert.equal(authoringCall.args[authoringCall.args.indexOf('--permission-mode') + 1], 'dontAsk');
+    assert.ok(authoringCall.args.includes(mcpTool));
+    assert.equal(authoringCall.args[authoringCall.args.indexOf('--add-dir') + 1], prep.caseDirectory);
+    authoringCall.child.emit('close', 0);
+
+    const filePath = path.join(root, `${systemId}.md`);
+    fs.writeFileSync(filePath, markdown.replace('DS4_100_NIIF', systemId));
+    const proposal = manager.prepareCase('gui', 'TC-001', '', null, { filePath, systemId }, systemId);
+    manager.startConfirmedCase(proposal.confirmationId);
+    const executionCall = calls.at(-1);
+    assert.equal(executionCall.args[executionCall.args.indexOf('--permission-mode') + 1], 'dontAsk');
+    assert.ok(executionCall.args.includes(mcpTool));
+  });
+}
