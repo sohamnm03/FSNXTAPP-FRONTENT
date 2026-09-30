@@ -139,7 +139,7 @@
           "mcpServerName": "sap-gui-lfd-100-ltfs",
           "logonDescription": "LTFH -Dev",
           "readOnly": false,
-          "profile": "exploration"
+          "profile": "full"
         },
 
         "rfc": {

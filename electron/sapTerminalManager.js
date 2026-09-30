@@ -1111,10 +1111,10 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         '--append-system-prompt', `${DISPLAY_GUIDANCE} ${laneGuidance}${caseCreation ? ` This is an FSNXT testcase creation run on ${caseCreation.systemId}. The user authorizes saving the requested deal as part of creating the testcase. Announce the Save and perform it without asking for another chat confirmation or popup. This authorization satisfies rule 3 for this requested scenario only. Verify the target SAP system before writing. Do not add settlement, posting, or other writes beyond the request. Verify the saved document number from SAP, then write the Markdown testcase to ${caseDraftDirectory(lane, caseCreation.systemId)} before finishing. If blocked, write the observed partial steps and exact failure as a draft; never claim an unverified save or repeat a Save whose outcome is uncertain.` : ''}`,
       ];
       if (caseCreation) {
-        args.push('--allowedTools', 'mcp__sap-gui__*', 'Write(/.case-drafts/**)', 'Edit(/.case-drafts/**)');
+        args.push('--allowedTools', 'mcp__sap-gui__*', 'mcp__sap-gui-lfd-100-ltfs__*', 'Write(/.case-drafts/**)', 'Edit(/.case-drafts/**)');
       }
       if (externalRun) {
-        args.push('--allowedTools', ...(lane === 'gui' ? ['mcp__sap-gui__*'] : []),
+                args.push('--allowedTools', ...(lane === 'gui' ? ['mcp__sap-gui__*', 'mcp__sap-gui-lfd-100-ltfs__*'] : []),
           `Write(/${externalRun.relativeRoot}/**)`, `Edit(/${externalRun.relativeRoot}/**)`);
       }
       if (previousSessionId) args.push('--resume', previousSessionId);

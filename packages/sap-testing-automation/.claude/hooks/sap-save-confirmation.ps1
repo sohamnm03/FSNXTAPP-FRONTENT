@@ -38,7 +38,7 @@ $schema = $requestEvent.requested_schema
 if ($schema.type -ne 'object' -or $schema.properties.value.type -ne 'boolean') { exit 0 }
 if (@($schema.properties.PSObject.Properties).Count -ne 1) { exit 0 }
 
-if (($env:FSNXT_CASE_CREATION_AUTO_SAVE -eq '1' -or $env:FSNXT_EXTERNAL_RUN_AUTO_SAVE -eq '1') -and $requestEvent.mcp_server_name -eq 'sap-gui') {
+if (($env:FSNXT_CASE_CREATION_AUTO_SAVE -eq '1' -or $env:FSNXT_EXTERNAL_RUN_AUTO_SAVE -eq '1') -and $requestEvent.mcp_server_name -match '^sap-gui(?:$|-)') {
     Respond 'accept'
 }
 
