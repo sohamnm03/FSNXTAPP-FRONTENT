@@ -53,7 +53,7 @@ function markCompletedWorklogs(html, payloadPath, completedWorklogPaths) {
   );
 }
 
-async function generateDevelopmentReport({ completedWorklogPaths, projectRoot, reportsRoot, runId, openPath }) {
+async function generateDevelopmentReport({ completedWorklogPaths, projectRoot, reportsRoot, runId, openPath, uploadReport }) {
   await runDashboardBuilder(projectRoot);
 
   const generatedRoot = path.join(projectRoot, 'dashboard', 'output');
@@ -80,7 +80,16 @@ async function generateDevelopmentReport({ completedWorklogPaths, projectRoot, r
     }
   }
 
-  return { reportDirectory, reportPath, openError };
+  let reportUrl = '';
+  let uploadError = '';
+  if (typeof uploadReport === 'function') {
+    try {
+      reportUrl = await uploadReport(reportPath);
+    } catch (error) {
+      uploadError = error.message;
+    }
+  }
+  return { reportDirectory, reportPath, openError, reportUrl, uploadError };
 }
 
 module.exports = { generateDevelopmentReport, markCompletedWorklogs, safeReportFolderName };

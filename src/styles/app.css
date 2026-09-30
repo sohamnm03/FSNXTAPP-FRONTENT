@@ -3546,6 +3546,17 @@
   padding-top: 14px;
 }
 
+.home-catalog-dashboard-link {
+  flex-shrink: 0;
+  margin-top: 14px;
+  text-decoration: none;
+}
+
+.home-catalog-dashboard-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
 .home-dashboard {
   background: #f9fbfe;
   min-height: 0;
@@ -3916,7 +3927,8 @@
     .home-package-card__copy,
     .home-package-card__main > .icon,
     .package-progress,
-    .home-catalog-sidebar__footer
+    .home-catalog-sidebar__footer,
+    .home-catalog-dashboard-link > span
   ) {
     display: none;
   }

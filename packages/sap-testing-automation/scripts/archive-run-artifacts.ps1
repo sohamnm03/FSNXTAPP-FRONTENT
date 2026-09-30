@@ -32,7 +32,8 @@ param(
     [string] $SystemId = '',
     [string] $OutputRoot = '',
     [string] $ResultsDirectory = '',
-    [string] $EvidenceDirectory = ''
+    [string] $EvidenceDirectory = '',
+    [string] $DevelopmentReportPath = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -185,21 +186,21 @@ function Assert-AzureBlobContainer {
 }
 
 function Send-AzureBlobFile {
-    param($Context, [string] $Container, [string] $BlobPath, [string] $FilePath)
+    param($Context, [string] $Container, [string] $BlobPath, [string] $FilePath, [string] $ContentType = 'application/zip')
     Assert-AzureBlobContainer -Context $Context -Container $Container
     $bytes = [IO.File]::ReadAllBytes($FilePath)
     $date = [DateTime]::UtcNow.ToString('R')
     $msHeaders = @{ 'x-ms-date' = $date; 'x-ms-version' = '2021-08-06'; 'x-ms-blob-type' = 'BlockBlob' }
     $resource = "/$($Context.AccountName)/$Container/$BlobPath"
     $auth = New-AzureBlobAuthHeader -Context $Context -CanonicalizedResource $resource -MsHeaders $msHeaders `
-        -ContentLength $bytes.Length -ContentType 'application/zip'
+        -ContentLength $bytes.Length -ContentType $ContentType
     Invoke-WebRequest -Uri "$($Context.BlobEndpoint)/$Container/$BlobPath" -Method Put -Headers @{
         'x-ms-date'      = $date
         'x-ms-version'   = '2021-08-06'
         'x-ms-blob-type' = 'BlockBlob'
         'Authorization'  = $auth
-        'Content-Type'   = 'application/zip'
-    } -Body $bytes -UseBasicParsing | Out-Null
+        'Content-Type'   = $ContentType
+    } -Body $bytes -UseBasicParsing -TimeoutSec 60 | Out-Null
 }
 
 function Send-ArchiveLog {
@@ -234,6 +235,18 @@ function Get-ArchiveUsername {
     $archiveUsername = (($rawArchiveUsername -split '@')[0] -replace '[^A-Za-z0-9_.-]', '-').Trim('-')
     if ($archiveUsername) { return $archiveUsername }
     return 'unknown-user'
+}
+
+if ($DevelopmentReportPath) {
+    # Upload the final saved HTML, without creating a testing archive or log entry.
+    $connectionString = Get-AzureStorageConnectionString
+    if (-not $connectionString) { throw 'AZURE_STORAGE_CONNECTION_STRING is not set.' }
+    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    $context = Get-AzureBlobContext -ConnectionString $connectionString
+    $blobPath = "$(Get-ArchiveUsername)/$([Uri]::EscapeDataString([IO.Path]::GetFileName($DevelopmentReportPath)))"
+    Send-AzureBlobFile -Context $context -Container 'sap-development-reports' -BlobPath $blobPath -FilePath $DevelopmentReportPath -ContentType 'text/html; charset=utf-8'
+    Write-Output "$($context.BlobEndpoint)/sap-development-reports/$blobPath"
+    exit 0
 }
 
 if (Test-Path -LiteralPath $stageRoot) {
