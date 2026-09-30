@@ -1,0 +1,47 @@
+﻿Report Formats root: https://vhtfqds4ap01.sap.tfsin.co.in:44300/sap/opu/odata4/sap/zfs_sb_almrptfmt_o4_api/srvd_a2x/sap/zfs_sd_almrptfmt/0001
+[PASS] RF $metadata -> HTTP 200 (expected 200) sets: Alm1Grouping, Alm2Grouping, Alm3Grouping | flags: Edm.Boolean
+[PASS] GET Alm1Grouping (count) -> HTTP 200 (expected 200) count=147
+[PASS] GET Alm2Grouping (count) -> HTTP 200 (expected 200) count=183
+[PASS] GET Alm3Grouping (count) -> HTTP 200 (expected 200) count=178
+[PASS] Alm1 create (GroupId derived ZT:Z1, source texts) -> HTTP 201 (expected 201) id=ZT:Z1 srcDesc=Disbursements srcGrp=D3
+[PASS] Alm1 create duplicate refused -> HTTP 400 (expected 400/409)  => Alm1Grouping ZT:Z1 already exists
+[PASS] Alm1 create wrong GroupId refused -> HTTP 400 (expected 400)  => GroupId must be ZT:Z2
+[PASS] Alm1 create colon in part refused -> HTTP 400 (expected 400)  => Grp1..Grp5 must not contain :
+[PASS] Alm1 create unknown source refused -> HTTP 400 (expected 400)  => Source Q9 does not exist
+[PASS] Alm1 read + ETag -> HTTP 200 (expected 200) etag=W/"SADL-3230323630393236313634353534~20260926164554"
+[PASS] Alm1 update (current ETag) -> HTTP 200 (expected 200/204) 
+[PASS] Alm1 update stale ETag refused -> HTTP 412 (expected 412)  => State of entity CDS~ZFS_C_ALMGRP1TP with key ZT:Z1 was already changed (stale If-Match)
+[PASS] Alm1 read after update -> HTTP 200 (expected 200) name=Smoke ALM1 v2 neg=True
+[PASS] Alm2 create (GroupId ZT:Z1:::) -> HTTP 201 (expected 201) id=ZT:Z1:::
+[PASS] Alm2 create without name refused -> HTTP 400 (expected 400)  => At create the mandatory element 'GROUPNAME' of entity 'Alm2Grouping' was not provided
+[PASS] Alm2 update -> HTTP 200 (expected 200/204) 
+[PASS] Alm3 create (GroupId ZT:Z1::::) -> HTTP 201 (expected 201) id=ZT:Z1:::: intType=01
+[PASS] Alm3 create bad interest type refused -> HTTP 400 (expected 400)  => InterestType 09 does not exist
+[PASS] Alm3 update -> HTTP 200 (expected 200/204) 
+[PASS] DELETE Alm3Grouping('ZT:Z1::::') -> HTTP 204 (expected 204) 
+[PASS] GET Alm3Grouping('ZT:Z1::::') after delete -> HTTP 404 (expected 404)  => Unspecified provider error occurred. See Error Context and Call Stack.
+[PASS] DELETE Alm2Grouping('ZT:Z1:::') -> HTTP 204 (expected 204) 
+[PASS] GET Alm2Grouping('ZT:Z1:::') after delete -> HTTP 404 (expected 404)  => Unspecified provider error occurred. See Error Context and Call Stack.
+[PASS] DELETE Alm1Grouping('ZT:Z1') -> HTTP 204 (expected 204) 
+[PASS] GET Alm1Grouping('ZT:Z1') after delete -> HTTP 404 (expected 404)  => Unspecified provider error occurred. See Error Context and Call Stack.
+Time Buckets root: https://vhtfqds4ap01.sap.tfsin.co.in:44300/sap/opu/odata4/sap/zfs_sb_almtimebkt_o4_api/srvd_a2x/sap/zfs_sd_almtimebkt/0001
+[PASS] TB $metadata -> HTTP 200 (expected 200) sets: Alm1Bucket, Alm2Bucket, FrequencyDomain
+[PASS] GET Alm1Bucket (count) -> HTTP 200 (expected 200) count=7
+[PASS] GET Alm2Bucket (count) -> HTTP 200 (expected 200) count=10
+[PASS] GET FrequencyDomain -> HTTP 200 (expected 200) ZFR_TP/01=Day(s) ZFR_TP/02=Month(s) ZFR_TP/03=Year(s) ZTO_TP/01=Day(s) ZTO_TP/02=Month(s) ZTO_TP/03=Year(s)
+Test bucket: 99
+[PASS] Alm1Bucket create -> HTTP 201 (expected 201) bucket=99 from=1/02 to=3/02
+[PASS] Alm1Bucket duplicate refused -> HTTP 400 (expected 400/409)  => Alm1Bucket 99 already exists
+[PASS] Alm1Bucket bad frequency refused -> HTTP 400 (expected 400)  => FromFreq 09 does not exist
+[PASS] Alm1Bucket non-numeric days refused -> HTTP 400 (expected 400)  => FromDays must be a whole number
+[PASS] Alm1Bucket update -> HTTP 200 (expected 200/204) 
+[PASS] Alm1Bucket read after update -> HTTP 200 (expected 200) toNo=6
+[PASS] Alm2Bucket create -> HTTP 201 (expected 201) 
+[PASS] Alm2Bucket create without frequency refused -> HTTP 400 (expected 400)  => At create the mandatory element 'TOFREQ' of entity 'Alm2Bucket' was not provided
+[PASS] Alm2Bucket update -> HTTP 200 (expected 200/204) 
+[PASS] DELETE Alm2Bucket('99') -> HTTP 204 (expected 204) 
+[PASS] GET Alm2Bucket('99') after delete -> HTTP 404 (expected 404)  => Unspecified provider error occurred. See Error Context and Call Stack.
+[PASS] DELETE Alm1Bucket('99') -> HTTP 204 (expected 204) 
+[PASS] GET Alm1Bucket('99') after delete -> HTTP 404 (expected 404)  => Unspecified provider error occurred. See Error Context and Call Stack.
+
+RESULT: 42 passed, 0 failed

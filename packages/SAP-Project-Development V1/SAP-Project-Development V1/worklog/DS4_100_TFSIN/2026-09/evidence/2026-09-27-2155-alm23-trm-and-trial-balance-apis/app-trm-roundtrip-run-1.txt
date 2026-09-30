@@ -1,0 +1,25 @@
+﻿[PASS] temporary app instance up port 8099
+[PASS] sign in user=demo
+[PASS] accrual setup: odata mode, company 1000 offered mode=odata service=ZFS_SB_ALMTRMDATA_O4_API
+[PASS] accrual: rows, key date rows=20 expected=20 keyDate=2026-10-01
+[PASS] accrual: ten bucket columns labelled from Time Buckets ALM 2/3 labels=01 Day(s) to 07 Day(s) | 07 Day(s) to 15 Day(s) | 15 Day(s) to 01 Month(s) | 01 Month(s) to 02 Month(s) | 02 Month(s) to 03 Month(s) | 03 Month(s) to 06 Month(s) | 06 Month(s) to 12 Month(s) | 01 Year(s) to 03 Year(s) | 03 Year(s) to 05 Year(s) | Over 05 Year(s)
+[PASS] accrual: total (decimal) total=677564699.07 expected=677564699.07 (Decimal)
+[PASS] accrual: bucket b1 sum sum=10776712.33 expected=10776712.33
+[PASS] accrual: bucket b3 sum sum=47765906.60 expected=47765906.60
+[PASS] accrual: bucket b4 sum sum=-250181824.27 expected=-250181824.27
+[PASS] accrual: bucket b5 sum sum=165786132.90 expected=165786132.90
+[PASS] accrual: bucket b6 sum sum=584836037.57 expected=584836037.57
+[PASS] accrual: bucket b7 sum sum=118581733.94 expected=118581733.94
+[PASS] accrual: buckets add up to the total buckets=677564699.07 total=677564699.07
+[PASS] accrual: each row is a deal or a security money market=10 securities=10
+[PASS] accrual: product type 10F filter rows=7 total=-202408377.93 expected=7/-202408377.93
+[PASS] accrual: transaction number filter deal=1300106 rows=1
+[PASS] accrual: security (class) filter class=150042 rows=1
+[PASS] accrual: month 13 refused => Select a month from 01 to 12.
+[PASS] accrual: invalid transaction number refused => '1'' is not a valid value for deals.
+[PASS] accrual: two-digit year refused => Enter a four-digit year.
+[PASS] principal: rows rows=610 expected=610
+[PASS] principal: ten bucket columns labelled from Time Buckets ALM 2/3 
+temporary instance (pid 10276) stopped
+
+RESULT: 22 passed, 0 failed

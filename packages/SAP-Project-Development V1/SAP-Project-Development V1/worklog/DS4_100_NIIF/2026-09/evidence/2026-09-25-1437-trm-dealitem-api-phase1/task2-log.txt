@@ -1,0 +1,63 @@
+﻿### cond-read-red
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/Condition?$filter=CompanyCode eq '1000' and FinancialTransaction eq '160537'&sap-client=100
+Status: 404
+sap-messages: 
+{"error":{"code":"/IWBEP/CM_V4_COS/014","message":"Service group 'ZFS_SB_TRMDEALITEM_O4_API' not published","@SAP__common.ExceptionCategory":"Configuration_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMDEALITEM","ServiceVersion":"0001"},"@SAP__common.TransactionId":"","@SAP__common.Timestamp":"20260925091200.238522","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### cond-read
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/Condition?$filter=CompanyCode eq 1000 and FinancialTransaction eq 160537&$count=true&sap-client=100
+Status: 500
+sap-messages: 
+{"error":{"code":"/IWBEP/CM_V4_MED/082","message":"Property 'ConditionType' has the same EDM name as entity type 'ConditionType'","@SAP__common.ExceptionCategory":"Metadata_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMDEALITEM","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690200E006AB5D678530AC","@SAP__common.Timestamp":"20260925091531.625122","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### cond-no-filter
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/Condition?sap-client=100
+Status: 500
+sap-messages: 
+{"error":{"code":"/IWBEP/CM_V4_MED/082","message":"Property 'ConditionType' has the same EDM name as entity type 'ConditionType'","@SAP__common.ExceptionCategory":"Metadata_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMDEALITEM","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690200E006AB5D678530AE","@SAP__common.Timestamp":"20260925091531.990269","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### cond-read
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/Condition?$filter=CompanyCode eq 1000 and FinancialTransaction eq 160537&$count=true&sap-client=100
+Status: 400
+sap-messages: 
+{"error":{"code":"/IWCOR/CX_OD_EXPR_PARSER_ERROR/005056A509B11EE3AD9F7DF20F150FC0","message":"Invalid parameter type used with function 'eq'","@SAP__common.ExceptionCategory":"Client_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMDEALITEM","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690200E006AB5D678530C6","@SAP__common.Timestamp":"20260925091653.483771","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### cond-no-filter
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/Condition?sap-client=100
+Status: 500
+sap-messages: 
+{"error":{"code":"ZFS_TRM_MSG/056","message":"Filter on CompanyCode and FinancialTransaction (eq) is required","@SAP__common.ExceptionCategory":"Provider_Application_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMDEALITEM","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690200E006AB5D678530C8","@SAP__common.Timestamp":"20260925091654.267731","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### cond-read
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/Condition?$filter=CompanyCode eq '1000' and FinancialTransaction eq '160537'&$count=true&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#Condition","@odata.metadataEtag":"W/\"20260925091651\"","@odata.count":2,"value":[{"CompanyCode":"1000","FinancialTransaction":"160537","Side":"0","ConditionKey":"0100020261001","ConditionNumber":"1000","ConditionTypeCode":"1200","EffectiveFrom":"2026-10-01","AmountCalcRule":"1","PercentageRate":10.0000000,"Amount":0.0000,"Currency":"INR","CalcBaseAmount":0.0000,"RefInterestRate":"","RateMarkupOrDown":0.0000000,"CalcMethod":"3","CalcCalendar":"","Frequency":"0","FrequencyUnit":"0","CalcDate":"2027-09-30","CalcDateInclusive":false,"CalcDateMonthEnd":false,"DueDate":"2027-09-30","DueDateMonthEnd":"","ShiftDays":0,"ReferenceConditionKey":""},{"CompanyCode":"1000","FinancialTransaction":"160537","Side":"0","ConditionKey":"0200020261001","ConditionNumber":"2000","ConditionTypeCode":"1120","EffectiveFrom":"2026-10-01","AmountCalcRule":"1","PercentageRate":100.0000000,"Amount":0.0000,"Currency":"INR","CalcBaseAmount":0.0000,"RefInterestRate":"","RateMarkupOrDown":0.0000000,"CalcMethod":"3","CalcCalendar":"","Frequency":"0","FrequencyUnit":"0","CalcDate":"2027-09-30","CalcDateInclusive":false,"CalcDateMonthEnd":false,"DueDate":"2027-09-30","DueDateMonthEnd":"","ShiftDays":0,"ReferenceConditionKey":""}]}
+
+
+### cond-no-filter
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/Condition?sap-client=100
+Status: 500
+sap-messages: 
+{"error":{"code":"ZFS_TRM_MSG/056","message":"Filter on CompanyCode and FinancialTransaction (eq) is required","@SAP__common.ExceptionCategory":"Provider_Application_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMDEALITEM","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690200E006AB5D678530CF","@SAP__common.Timestamp":"20260925091715.587113","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### cond-read
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/Condition?$filter=CompanyCode eq '1000' and FinancialTransaction eq '160537'&$count=true&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#Condition","@odata.metadataEtag":"W/\"20260925091651\"","@odata.count":2,"value":[{"CompanyCode":"1000","FinancialTransaction":"160537","Side":"0","ConditionKey":"0100020261001","ConditionNumber":"1000","ConditionTypeCode":"1200","EffectiveFrom":"2026-10-01","AmountCalcRule":"1","PercentageRate":10.0000000,"Amount":0.0000,"Currency":"INR","CalcBaseAmount":0.0000,"RefInterestRate":"","RateMarkupOrDown":0.0000000,"CalcMethod":"3","CalcCalendar":"","Frequency":"0","FrequencyUnit":"0","CalcDate":"2027-09-30","CalcDateInclusive":false,"CalcDateMonthEnd":false,"DueDate":"2027-09-30","DueDateMonthEnd":"","ShiftDays":0,"ReferenceConditionKey":""},{"CompanyCode":"1000","FinancialTransaction":"160537","Side":"0","ConditionKey":"0200020261001","ConditionNumber":"2000","ConditionTypeCode":"1120","EffectiveFrom":"2026-10-01","AmountCalcRule":"1","PercentageRate":100.0000000,"Amount":0.0000,"Currency":"INR","CalcBaseAmount":0.0000,"RefInterestRate":"","RateMarkupOrDown":0.0000000,"CalcMethod":"3","CalcCalendar":"","Frequency":"0","FrequencyUnit":"0","CalcDate":"2027-09-30","CalcDateInclusive":false,"CalcDateMonthEnd":false,"DueDate":"2027-09-30","DueDateMonthEnd":"","ShiftDays":0,"ReferenceConditionKey":""}]}
+
+
+### cond-no-filter
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/Condition?sap-client=100
+Status: 500
+sap-messages: 
+{"error":{"code":"ZFS_TRM_MSG/056","message":"Filter on CompanyCode and FinancialTransaction (eq) is required","@SAP__common.ExceptionCategory":"Provider_Application_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMDEALITEM","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690200E006AB5D678530D7","@SAP__common.Timestamp":"20260925091734.621232","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+

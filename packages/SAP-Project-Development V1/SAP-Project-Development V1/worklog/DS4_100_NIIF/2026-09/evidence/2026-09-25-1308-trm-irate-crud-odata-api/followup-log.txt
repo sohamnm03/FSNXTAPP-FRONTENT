@@ -1,0 +1,24 @@
+﻿### 8-fresh-read-160532
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmirate_o4_api/srvd_a2x/sap/zfs_sd_trmirate/0001/InterestRateInstrument(CompanyCode='1000',FinancialTransaction='160532')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#InterestRateInstrument/$entity","@odata.metadataEtag":"W/\"20260925080407\"","CompanyCode":"1000","FinancialTransaction":"160532","ProductType":"22A","TransactionType":"100","Partner":"700000453","ContractDate":"2026-09-25","ValuationClass":"1","Portfolio":"","Currency":"INR","StartTerm":"2026-10-01","EndTerm":"2027-12-31","NominalAmount":100000.0000,"InterestRate":11.5000000,"InterestCalcMethod":"3","Frequency":"0","ActiveStatus":"3","SAP__Messages":[]}
+
+### 9-read-orphan-160531
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmirate_o4_api/srvd_a2x/sap/zfs_sd_trmirate/0001/InterestRateInstrument(CompanyCode='1000',FinancialTransaction='160531')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#InterestRateInstrument/$entity","@odata.metadataEtag":"W/\"20260925080407\"","CompanyCode":"1000","FinancialTransaction":"160531","ProductType":"22A","TransactionType":"100","Partner":"700000453","ContractDate":"2026-09-25","ValuationClass":"1","Portfolio":"","Currency":"INR","StartTerm":"2026-10-01","EndTerm":"2027-09-30","NominalAmount":100000.0000,"InterestRate":10.0000000,"InterestCalcMethod":"3","Frequency":"0","ActiveStatus":"0","SAP__Messages":[]}
+
+### 10-reverse-orphan-160531
+DELETE https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmirate_o4_api/srvd_a2x/sap/zfs_sd_trmirate/0001/InterestRateInstrument(CompanyCode='1000',FinancialTransaction='160531')?sap-client=100
+Status: 204
+sap-messages: [{"code":"FTR0/162","message":"BAPI was executed successfully","numericSeverity":2}]
+
+
+### 11-read-160531-after-reverse
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmirate_o4_api/srvd_a2x/sap/zfs_sd_trmirate/0001/InterestRateInstrument(CompanyCode='1000',FinancialTransaction='160531')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#InterestRateInstrument/$entity","@odata.metadataEtag":"W/\"20260925080407\"","CompanyCode":"1000","FinancialTransaction":"160531","ProductType":"22A","TransactionType":"100","Partner":"700000453","ContractDate":"2026-09-25","ValuationClass":"1","Portfolio":"","Currency":"INR","StartTerm":"2026-10-01","EndTerm":"2027-09-30","NominalAmount":100000.0000,"InterestRate":10.0000000,"InterestCalcMethod":"3","Frequency":"0","ActiveStatus":"3","SAP__Messages":[]}
+

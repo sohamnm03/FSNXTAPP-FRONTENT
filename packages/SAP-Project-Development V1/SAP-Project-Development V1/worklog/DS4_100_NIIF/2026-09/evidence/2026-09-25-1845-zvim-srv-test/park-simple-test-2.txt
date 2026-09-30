@@ -1,0 +1,12 @@
+=== T8 PARK_SIMPLE #2 | POST | HTTP 201
+REQ: {"FileId":"","Getdata":"bukrs=1000&vendor=9837&gl_account=101000&amount=100&currency=INR&reference=ZVIM-TEST-2&header_txt=ZVIM_SRV%20test%202&item_text=ZVIM_SRV%20test%202","FileName":"","Bukrs":"","Message":"PARK_SIMPLE"}
+RES: {"d":{"__metadata":{"id":"https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata/sap/ZVIM_SRV/ExtractSet('1900001651')","uri":"https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata/sap/ZVIM_SRV/ExtractSet('1900001651')","type":"ZVIM_SRV.Extract"},"Getdata":"bukrs=1000&vendor=9837&gl_account=101000&amount=100&currency=INR&reference=ZVIM-TEST-2&header_txt=ZVIM_SRV%20test%202&item_text=ZVIM_SRV%20test%202","FileId":"1900001651","FileName":"","Bukrs":"1000","Message":"PARKED 1900001651 1000 2027"}}
+--- BKPF
+COLS: BUKRS | BELNR | GJAHR | BLART | BUDAT | BSTAT | WAERS | XBLNR | BKTXT | USNAM
+1000 | 1900001651 | 2027 | KR | 20260925 | V | INR | ZVIM-TEST-2 | ZVIM_SRV test 2 | FS_DEV3
+--- VBSEGK
+COLS: BUZEI | LIFNR | WRBTR | SHKZG
+001 | 0000009837 | 100.00  | H
+--- VBSEGS
+COLS: BUZEI | SAKNR | WRBTR | SHKZG
+002 | 0000101000 | 100.00  | S

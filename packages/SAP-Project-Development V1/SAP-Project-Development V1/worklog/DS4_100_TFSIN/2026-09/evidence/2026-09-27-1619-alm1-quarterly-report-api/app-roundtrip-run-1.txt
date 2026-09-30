@@ -1,0 +1,15 @@
+﻿[PASS] temporary app instance up port 8098
+[PASS] sign in user=demo
+[PASS] setup: odata mode, company codes mode=odata service=ZFS_SB_ALMQTRRPT_O4_API companies=74
+[PASS] report: key date, snapshot date, 7 buckets with XBRL codes xbrl=X010,X020,X030,X040,X050,X060,X070
+[PASS] report: same rows as SAP app=147 sap=147
+[PASS] report: AA:99:99:99:99 total = SAP app=179338081372.98 sap=179338081372.98
+[PASS] report: percent row flagged row=AE
+[PASS] period: not saved, not locked saved=False locked=False
+[PASS] save through the app savedRows=46 by=FS_DEV3 
+[PASS] second save refused (SAP message 011) => {"error":{"message":"SaveSnapshot: ALM 1 data of 09/2026 for company code 1000 is already saved"}}
+[PASS] delete through the app saved=False 
+[PASS] unknown action refused by the app => {"error":{"message":"Choose save, lock or delete."}}
+temporary instance (pid 30296) stopped
+
+RESULT: 12 passed, 0 failed

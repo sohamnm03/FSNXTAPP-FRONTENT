@@ -1,0 +1,33 @@
+﻿[PASS] $metadata HTTP 200
+[PASS] period: not saved, not locked, key date = month end + 1 HTTP 200 saved=False locked=False key=2026-10-01
+[PASS] temporary ALM 2 manual amount keyed in (free key) HTTP 201 
+[PASS] report: 183 groups + 5 computed rows rows=188 in 3s
+[PASS] report: Total = Bucket1..10 (except cumulative / percent rows) mismatches=0 
+info: rows with a negative bucket outside computed rows = 0 (only possible through ZNEG children)
+[PASS] manual: SB:11:01:00:00 bucket 3 = 4321.25 (ZFS_T_ALM2_MAN) b3=4321.25
+[PASS] source 11: SA:06:01:01:00 (10C/) = TRM API total=55563692968.56 diffBuckets=
+[PASS] source 11: SA:06:01:02:00 (10B/) = TRM API total=307630000.00 diffBuckets=
+[PASS] source 11: SA:06:01:05:00 (10E/200,201,202) = TRM API total=7801319764217.58 diffBuckets=
+[PASS] source 11: SA:06:03:00:00 (10E/210) = TRM API total=17030717175.00 diffBuckets=
+[PASS] source 64: SA:07:04:00:00 (/) = TRM API total=1177928347.61 diffBuckets=
+[PASS] subtotal: SA:99:99:99:99 = sum of its level-1 rows total=7875399732708.75 level1=7875399732708.75
+[PASS] subtotal: SB:99:99:99:99 = sum of its level-1 rows total=9846753826.10 level1=9846753826.10
+[PASS] SC = SB99 - SA99 per bucket SC total=-7865552978882.65
+[PASS] SD bucket 10 = sum of SC = SD total (fix Q6) SD b10=-7865552978882.65 total=-7865552978882.65 sumSC=-7865552978882.65
+[PASS] A1 cumulative outflows: bucket 10 = total = SA99 total A1 b10=7875399732708.75
+[PASS] SE = SC / SA99 x 100 per bucket (0 where SA99 <= 0) diffBuckets= total=-99.87
+info: SourceIncomplete rows = 0 
+info: source 09 SB:04:02:01:00 total = 9846749504.85; 59/60 totals = 0.00/0.00; TB groups with source 99 = 0
+[PASS] invalid month 13 -> no rows rows=0
+[PASS] Lock refused while not saved (018) HTTP 400 ALM 2 data of 09/2026 for company code 1000 is not saved
+[PASS] Save refused without rows (003 RowsJson) HTTP 400 RowsJson is required
+[PASS] Save refused with an unknown group (002) HTTP 400 GroupId XX:99 does not exist
+[PASS] Save refused with a duplicate group (001) HTTP 400 GroupId SA already exists
+[PASS] Save: snapshot rows = rows with a total HTTP 200 rows=19 expected=19 
+[PASS] /FS00/ALMTR015: rows, bucket 1 and bucket 10 sums = the report rows sent db=19 /43089589329.77 /10446753726.10  expected=19/43089589329.77/10446753726.10
+[PASS] second Save refused (017) HTTP 400 ALM 2 data of 09/2026 for company code 1000 is already saved
+[PASS] Delete: period no longer saved HTTP 200 
+[PASS] second Delete refused (018) HTTP 400 ALM 2 data of 09/2026 for company code 1000 is not saved
+[PASS] temporary manual amount removed HTTP 204 
+[PASS] period afterwards: not saved, not locked saved=False locked=False
+RESULT: 29 passed, 0 failed

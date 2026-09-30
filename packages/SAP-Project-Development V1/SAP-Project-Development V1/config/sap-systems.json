@@ -108,7 +108,7 @@
       "sapGui": {
         "enabled": false,
         "logonDescription": "TFSIN HANA Dev",
-        "readOnly": true,
+        "readOnly": false,
         "profile": "exploration"
       },
 

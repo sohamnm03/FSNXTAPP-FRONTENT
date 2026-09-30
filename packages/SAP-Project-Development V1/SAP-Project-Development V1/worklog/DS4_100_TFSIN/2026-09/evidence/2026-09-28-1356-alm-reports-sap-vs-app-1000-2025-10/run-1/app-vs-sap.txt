@@ -1,0 +1,108 @@
+﻿[PASS] temporary app instance up port 8099 pid 25160
+[PASS] sign in user=demo
+Selection: company code 1000, 10/2025 (balance key date 2025-10-31)
+== trmrepay
+    read app 0.6s, sap 0.8s
+[PASS] trmrepay row count app=442 sap=442
+[PASS] trmrepay every field equal cells compared=11492 differences=0
+    sum b1: app=9,27,40,486.78 sap=9,27,40,486.78
+    sum b2: app=40,59,639.17 sap=40,59,639.17
+    sum b3: app=10,13,63,64,145.51 sap=10,13,63,64,145.51
+    sum b4: app=64,55,45,49,926.52 sap=64,55,45,49,926.52
+    sum b5: app=40,87,92,70,870.47 sap=40,87,92,70,870.47
+    sum b6: app=2,97,14,70,39,720.93 sap=2,97,14,70,39,720.93
+    sum b7: app=0.00 sap=0.00
+    sum total: app=4,12,81,40,24,789.38 sap=4,12,81,40,24,789.38
+== trm-accrual
+    read app 0.3s, sap 0.3s
+[PASS] trm-accrual row count app=40 sap=40
+[PASS] trm-accrual every field equal cells compared=960 differences=0
+    sum b1: app=-24,26,11,002.44 sap=-24,26,11,002.44
+    sum b2: app=15,02,128.45 sap=15,02,128.45
+    sum b3: app=16,60,56,784.76 sap=16,60,56,784.76
+    sum b4: app=-2,04,43,589.21 sap=-2,04,43,589.21
+    sum b5: app=-22,94,65,212.68 sap=-22,94,65,212.68
+    sum b6: app=35,77,68,098.96 sap=35,77,68,098.96
+    sum b7: app=42,50,73,983.67 sap=42,50,73,983.67
+    sum b8: app=0.00 sap=0.00
+    sum b9: app=0.00 sap=0.00
+    sum b10: app=0.00 sap=0.00
+    sum total: app=45,78,81,191.51 sap=45,78,81,191.51
+== trm-principal
+    read app 1.3s, sap 1.3s
+[PASS] trm-principal row count app=528 sap=528
+[PASS] trm-principal every field equal cells compared=14784 differences=0
+    sum b1: app=2,78,50,000.00 sap=2,78,50,000.00
+    sum b2: app=0.00 sap=0.00
+    sum b3: app=4,39,99,75,000.00 sap=4,39,99,75,000.00
+    sum b4: app=35,95,34,45,662.52 sap=35,95,34,45,662.52
+    sum b5: app=28,15,18,24,650.02 sap=28,15,18,24,650.02
+    sum b6: app=1,09,69,07,82,503.44 sap=1,09,69,07,82,503.44
+    sum b7: app=1,82,45,66,99,535.75 sap=1,82,45,66,99,535.75
+    sum b8: app=8,08,71,44,89,829.62 sap=8,08,71,44,89,829.62
+    sum b9: app=1,76,77,94,99,543.91 sap=1,76,77,94,99,543.91
+    sum b10: app=2,00,000.00 sap=2,00,000.00
+    sum total: app=13,46,17,47,66,725.26 sap=13,46,17,47,66,725.26
+== gl-accounts
+[PASS] gl-accounts row count app=1121 sap=1121
+[PASS] gl-accounts every field equal cells compared=15694 differences=0
+== gl-balances
+[PASS] gl-balances key date app keyDate=2025-10-31
+[PASS] gl-balances row count app=1121 sap=1121
+[PASS] gl-balances every field equal cells compared=25783 differences=0
+    sum balance: app=0.00 sap=0.00
+[PASS] gl-balances non-zero view app=263 sap non-zero=263
+== qtr-alm1
+    read app 0.4s, sap 0.4s
+[PASS] qtr-alm1 row count app=147 sap=147
+[PASS] qtr-alm1 every field equal cells compared=2352 differences=0
+    sum b1: app=8,75,78,535.64 sap=8,75,78,535.64
+    sum b2: app=-8,59,34,489.08 sap=-8,59,34,489.08
+    sum b3: app=82,58,25,84,766.17 sap=82,58,25,84,766.17
+    sum b4: app=31,42,96,96,721.09 sap=31,42,96,96,721.09
+    sum b5: app=1,06,45,34,00,798.21 sap=1,06,45,34,00,798.21
+    sum b6: app=1,04,83,69,59,494.73 sap=1,04,83,69,59,494.73
+    sum b7: app=-1,58,36,30,83,034.47 sap=-1,58,36,30,83,034.47
+    sum total: app=3,61,95,69,43,127.94 sap=3,61,95,69,43,127.94
+[PASS] qtr-alm1 period status equal saved=False savedRows=0 locked=False
+== qtr-alm2
+    read app 3.7s, sap 1.8s
+[PASS] qtr-alm2 row count app=188 sap=188
+[PASS] qtr-alm2 every field equal cells compared=4136 differences=0
+    sum b1: app=13,77,17,73,428.14 sap=13,77,17,73,428.14
+    sum b2: app=3,61,29,50,589.87 sap=3,61,29,50,589.87
+    sum b3: app=15,96,74,43,419.20 sap=15,96,74,43,419.20
+    sum b4: app=9,44,66,77,094.83 sap=9,44,66,77,094.83
+    sum b5: app=30,59,11,65,195.69 sap=30,59,11,65,195.69
+    sum b6: app=1,36,84,68,60,702.13 sap=1,36,84,68,60,702.13
+    sum b7: app=1,65,80,84,51,314.20 sap=1,65,80,84,51,314.20
+    sum b8: app=15,87,47,62,49,317.88 sap=15,87,47,62,49,317.88
+    sum b9: app=4,10,36,42,24,049.10 sap=4,10,36,42,24,049.10
+    sum b10: app=6,83,45,46,441.22 sap=6,83,45,46,441.22
+    sum total: app=23,51,11,88,63,443.94 sap=23,51,11,88,63,443.94
+[PASS] qtr-alm2 period status equal saved=False savedRows=0 locked=False
+== qtr-alm3
+    read app 1.7s, sap 1.7s
+[PASS] qtr-alm3 row count app=183 sap=183
+[PASS] qtr-alm3 every field equal cells compared=4392 differences=0
+    sum b1: app=13,79,96,23,428.14 sap=13,79,96,23,428.14
+    sum b2: app=3,61,29,50,589.87 sap=3,61,29,50,589.87
+    sum b3: app=20,36,74,18,419.20 sap=20,36,74,18,419.20
+    sum b4: app=10,36,27,06,757.35 sap=10,36,27,06,757.35
+    sum b5: app=39,54,88,69,845.72 sap=39,54,88,69,845.72
+    sum b6: app=2,00,13,56,12,962.13 sap=2,00,13,56,12,962.13
+    sum b7: app=2,42,43,46,94,329.20 sap=2,42,43,46,94,329.20
+    sum b8: app=21,15,60,88,65,253.90 sap=21,15,60,88,65,253.90
+    sum b9: app=5,16,54,84,90,799.74 sap=5,16,54,84,90,799.74
+    sum b10: app=3,14,01,15,899.74 sap=3,14,01,15,899.74
+    sum b11: app=3,14,01,15,899.74 sap=3,14,01,15,899.74
+    sum total: app=31,39,65,23,00,721.02 sap=31,39,65,23,00,721.02
+[PASS] qtr-alm3 period status equal saved=False savedRows=0 locked=False
+== manual-alm1
+    sap rows=0
+== manual-alm2
+    sap rows=0
+== manual-alm3
+    sap rows=0
+temporary app instance on 8099 stopped
+RESULT: 23 passed, 0 failed

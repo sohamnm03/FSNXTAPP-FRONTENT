@@ -1,0 +1,38 @@
+R014 accrual API - independent SQL oracle, company 1000, 2026/09 (month end 2026-09-30, buckets from 2026-10-01)
+Source: ADT data preview (scripts/adt-sql.ps1) and runQuery over /FS00/CDS0001 + /FS00/CDS0002, 2026-09-27.
+The API itself was not called (no service may be created); these are the values it must return.
+
+Rules applied: booking_state <> 4; product 10E excluded; MM deals ranl blank and dblfz <= month end; payout = MIN(trldate)
+of FL11 with fi_post_date > month end and trldate > month end (va 001 deal / va 002 security); days = payout - 2026-09-30.
+
+10F (not 202), FL52 - FL51, va 001, posted <= month end:
+  1700116  -250,954,182.84  payout 2026-11-06  37 d  B04
+  1700119        34,091.82  payout 2026-11-12  43 d  B04
+  1700134    47,594,453.48  payout 2026-10-19  19 d  B03
+  1700142       142,705.32  payout 2026-10-18  18 d  B03
+  1700181       738,266.75  payout 2026-11-08  39 d  B04
+  1700192         7,539.74  payout 2026-12-22  83 d  B05
+  1901274        28,747.80  payout 2026-10-18  18 d  B03
+  (sum FL52 74,516,719.74 over 7 deals, FL51 276,925,097.67 over 4 deals)
+10F/202 FL41 posted on 2026-09-30: none in company 1000 -> no rows
+Other deals, FL42 of first posting date after month end (va 001):
+  1300106     2,206,849.32  payout 2026-10-01   1 d  B01
+  1300108     8,569,863.01  payout 2026-10-01   1 d  B01  (the 8,267,397.26 row is booking state 4)
+  1300125    49,738,356.16  payout 2026-12-31  92 d  B05  (day 92 shared by B05/B06 -> lower bucket)
+Securities, FL52 - FL51, va 002, posted <= month end, with a payout:
+  150042 4,880,707.74 B06 | 150276 38,934,770.65 B06 | 150277 2,594,911.57 B06 | 150283 43,801,892.42 B05
+  150326 23,407,551.80 B06 | 150343 72,238,344.58 B05 | 150351 1,099,896.82 B06 | 150353 513,918,198.99 B06
+  150356 89,352,295.73 B07 | 150359 29,229,438.21 B07
+  Dropped for lack of an FL11 posted after month end (D9, kept): 150278 (224,220,511.20), 150286 (11,512,908.98),
+  1100227 (128,723,540.12), 1100232 (85,220,104.09), 150354 (46,376,797.03), 150357 (-78,218,475.54)
+
+Expected result: 20 rows (7 + 3 + 10), Total 677,564,699.07
+  B01 2 rows 10,776,712.33 | B03 3 rows 47,765,906.60 | B04 3 rows -250,181,824.27 | B05 4 rows 165,786,132.90
+  B06 6 rows 584,836,037.57 | B07 2 rows 118,581,733.94 | B02, B08, B09, B10 empty
+
+Checks:
+- FL42 rule (earliest posting date after month end) vs program (first row in value-date order, stop at a new posting
+  date): every FL42 row posted after 2026-09-30 has trldate = fi_post_date -> no difference (0 rows, 0.00).
+- D6: no /FS00/CDS0001 row with RANL filled has a deal-numbered flow in company 1000 -> the double count does not occur
+  in this period (security flows carry a blank deal number).
+- /FS00/CDS0001 repeats 25 deals (5520xxx) twice; none has an accrual this period.

@@ -1,0 +1,47 @@
+﻿Service root: https://vhtfqds4ap01.sap.tfsin.co.in:44300/sap/opu/odata4/sap/zfs_sb_almdatasrc_o4_api/srvd_a2x/sap/zfs_sd_almdatasrc/0001  (CSRF token fetched: True)
+[PASS] GET $metadata -> HTTP 200 (expected 200) sets: BpGroup, CompanyCode, DataSource, FlowType, InvestorSegmentMapping, ProductMaster, ProductType, SourceGroup, TransactionType, TrmFlowMapping
+[PASS] GET SourceGroup (top 2, count) -> HTTP 200 (expected 200) count=25
+[PASS] GET DataSource (top 2, count) -> HTTP 200 (expected 200) count=55
+[PASS] GET ProductMaster (top 2, count) -> HTTP 200 (expected 200) count=26
+[PASS] GET TrmFlowMapping (top 2, count) -> HTTP 200 (expected 200) count=37
+[PASS] GET InvestorSegmentMapping (top 2, count) -> HTTP 200 (expected 200) count=10
+[PASS] GET ProductType (top 2, count) -> HTTP 200 (expected 200) count=181
+[PASS] GET CompanyCode (top 2, count) -> HTTP 200 (expected 200) count=74
+[PASS] GET FlowType (top 2, count) -> HTTP 200 (expected 200) count=1598
+[PASS] GET TransactionType (top 2, count) -> HTTP 200 (expected 200) count=291
+[PASS] GET BpGroup (top 2, count) -> HTTP 200 (expected 200) count=11
+Reference values: CompanyCode=0001 ProductType=01A FlowType=AAREFDE1 BpGroup=1
+[PASS] SourceGroup create (lower-case key zt) -> HTTP 201 (expected 201) key=ZT createdBy=FS_DEV stamp=20260926154148
+[PASS] SourceGroup create duplicate refused -> HTTP 400 (expected 400/409)  | body: {"error":{"code":"ZFS_TRM_MSG/001","message":"SourceGroup ZT already exists","@SAP__common.ExceptionCategory":"Provider_Application_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_ALMDATASRC","ServiceVe
+[PASS] SourceGroup create without description refused -> HTTP 400 (expected 400)  | body: {"error":{"code":"ZFS_TRM_MSG/003","message":"SourceGroupDesc is required","@SAP__common.ExceptionCategory":"Provider_Application_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_ALMDATASRC","ServiceVers
+[PASS] SourceGroup read + ETag -> HTTP 200 (expected 200) etag=W/"SADL-3230323630393236313534313438~20260926154148"
+[PASS] SourceGroup update with current ETag -> HTTP 200 (expected 200/204) 
+[PASS] SourceGroup update with stale ETag refused -> HTTP 412 (expected 412)  | body: {"error":{"code":"SADL_ENTITY_RUNTIME/005","message":"State of entity CDS~ZFS_C_ALMSRCGRPTP with key ZT was already changed (stale If-Match)","@SAP__common.ExceptionCategory":"Provider_Application_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","Service
+[PASS] SourceGroup read after update -> HTTP 200 (expected 200) desc=Smoke test group v2 changed=2026-09-26 15:41:50
+[PASS] DataSource create (group text derived) -> HTTP 201 (expected 201) groupDesc=Smoke test group v2
+[PASS] DataSource create with unknown group QX refused -> HTTP 400 (expected 400)  | body: {"error":{"code":"ZFS_TRM_MSG/002","message":"SourceGroup QX does not exist","@SAP__common.ExceptionCategory":"Provider_Application_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_ALMDATASRC","ServiceVe
+[PASS] DataSource update -> HTTP 200 (expected 200/204) 
+[PASS] DataSource read after update -> HTTP 200 (expected 200) excel=smoke-v2.xlsx
+[PASS] ProductMaster create (boolean flags, text derived) -> HTTP 201 (expected 201) desc=Stocks principal=True
+[PASS] ProductMaster create with unknown company code refused -> HTTP 400 (expected 400)  | body: {"error":{"code":"ZFS_TRM_MSG/002","message":"CompanyCode ZZZZ does not exist","@SAP__common.ExceptionCategory":"Provider_Application_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_ALMDATASRC","Service
+[PASS] ProductMaster update -> HTTP 200 (expected 200/204) 
+[PASS] ProductMaster read after update -> HTTP 200 (expected 200) tpm12=True
+[PASS] TrmFlowMapping create (texts derived) -> HTTP 201 (expected 201) srcDesc=Smoke test source flowDesc=Clear Asset Position from Old Account Assignment Ref. prdDesc=Stocks
+[PASS] TrmFlowMapping create without source type refused -> HTTP 400 (expected 400)  | body: {"error":{"code":"ZFS_TRM_MSG/003","message":"SourceType is required","@SAP__common.ExceptionCategory":"Provider_Application_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_ALMDATASRC","ServiceVersion":
+[PASS] TrmFlowMapping empty PATCH (gateway: not supported, all fields are key) -> HTTP 501 (expected 501)  | body: {"error":{"code":"/IWBEP/CM_V4S_RUN/039","message":"PATCH request with empty payload is not supported","@SAP__common.ExceptionCategory":"Gateway_Framework_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD
+[PASS] InvestorSegmentMapping create (text derived) -> HTTP 201 (expected 201) bpGroupDesc=Corporate
+[PASS] InvestorSegmentMapping create with unknown BP group refused -> HTTP 400 (expected 400)  | body: {"error":{"code":"ZFS_TRM_MSG/002","message":"BpGroup 999 does not exist","@SAP__common.ExceptionCategory":"Provider_Application_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_ALMDATASRC","ServiceVersi
+[PASS] InvestorSegmentMapping empty PATCH (gateway: not supported, all fields are key) -> HTTP 501 (expected 501)  | body: {"error":{"code":"/IWBEP/CM_V4S_RUN/039","message":"PATCH request with empty payload is not supported","@SAP__common.ExceptionCategory":"Gateway_Framework_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD
+[PASS] DELETE InvestorSegmentMapping(BpGroup='1',Segment='ZTS') -> HTTP 204 (expected 204) 
+[PASS] GET InvestorSegmentMapping(BpGroup='1',Segment='ZTS') after delete -> HTTP 404 (expected 404)  | body: {"error":{"code":"/IWBEP/CM_V4S_RUN/000","message":"Unspecified provider error occurred. See Error Context and Call Stack.","@SAP__common.ExceptionCategory":"Provider_Application_Error","details":[{"code":"CX_SADL_CONTRACT_VIOLATION","message":"Resource not found for entity 'ZFS_C_ALMINVSEGTP'","@SA
+[PASS] DELETE TrmFlowMapping(SourceType='ZT',FlowType='AAREFDE1',ProductType='01A',TransactionType='') -> HTTP 204 (expected 204) 
+[PASS] GET TrmFlowMapping(SourceType='ZT',FlowType='AAREFDE1',ProductType='01A',TransactionType='') after delete -> HTTP 404 (expected 404)  | body: {"error":{"code":"/IWBEP/CM_V4S_RUN/000","message":"Unspecified provider error occurred. See Error Context and Call Stack.","@SAP__common.ExceptionCategory":"Provider_Application_Error","details":[{"code":"CX_SADL_CONTRACT_VIOLATION","message":"Resource not found for entity 'ZFS_C_ALMTRMFLOWTP'","@S
+[PASS] DELETE ProductMaster(CompanyCode='0001',ProductType='01A') -> HTTP 204 (expected 204) 
+[PASS] GET ProductMaster(CompanyCode='0001',ProductType='01A') after delete -> HTTP 404 (expected 404)  | body: {"error":{"code":"/IWBEP/CM_V4S_RUN/000","message":"Unspecified provider error occurred. See Error Context and Call Stack.","@SAP__common.ExceptionCategory":"Provider_Application_Error","details":[{"code":"CX_SADL_CONTRACT_VIOLATION","message":"Resource not found for entity 'ZFS_C_ALMPRDMASTTP'","@S
+[PASS] DELETE DataSource('ZT') -> HTTP 204 (expected 204) 
+[PASS] GET DataSource('ZT') after delete -> HTTP 404 (expected 404)  | body: {"error":{"code":"/IWBEP/CM_V4S_RUN/000","message":"Unspecified provider error occurred. See Error Context and Call Stack.","@SAP__common.ExceptionCategory":"Provider_Application_Error","details":[{"code":"CX_SADL_CONTRACT_VIOLATION","message":"Resource not found for entity 'ZFS_C_ALMDATASRCTP'","@S
+[PASS] DELETE SourceGroup('ZT') -> HTTP 204 (expected 204) 
+[PASS] GET SourceGroup('ZT') after delete -> HTTP 404 (expected 404)  | body: {"error":{"code":"/IWBEP/CM_V4S_RUN/000","message":"Unspecified provider error occurred. See Error Context and Call Stack.","@SAP__common.ExceptionCategory":"Provider_Application_Error","details":[{"code":"CX_SADL_CONTRACT_VIOLATION","message":"Resource not found for entity 'ZFS_C_ALMSRCGRPTP'","@SA
+[PASS] DELETE non-existent SourceGroup refused -> HTTP 404 (expected 404)  | body: {"error":{"code":"ZFS_TRM_MSG/002","message":"SourceGroup ZT does not exist","@SAP__common.ExceptionCategory":"Provider_Application_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_ALMDATASRC","ServiceVe
+
+RESULT: 43 passed, 0 failed

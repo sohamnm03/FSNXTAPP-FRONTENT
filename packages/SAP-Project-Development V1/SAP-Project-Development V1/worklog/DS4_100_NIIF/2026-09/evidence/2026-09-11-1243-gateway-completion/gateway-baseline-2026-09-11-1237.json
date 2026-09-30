@@ -1,0 +1,32 @@
+[
+    {
+        "Name":  "unknown-target",
+        "HttpStatus":  200,
+        "RawResponse":  "{\"@odata.context\":\"../$metadata#com.sap.gateway.srvd_a2x.zfs_sd_dyngateway.v0001.ZFS_AE_DynGwResponse\",\"@odata.metadataEtag\":\"W/\\\"20260910185933\\\"\",\"DurationMs\":99,\"ExecStatus\":\"E\",\"ExportJson\":\"\",\"GwUuid\":\"5254001f-e7a2-1fd1-aba7-27b147c10000\",\"MessageText\":\"Target ZFS_GW_UNKNOWN is not registered for the dynamic gateway\",\"ResultCount\":0,\"RowsJson\":\"\",\"TablesJson\":\"\"}"
+    },
+    {
+        "Name":  "query",
+        "HttpStatus":  200,
+        "RawResponse":  "{\"@odata.context\":\"../$metadata#com.sap.gateway.srvd_a2x.zfs_sd_dyngateway.v0001.ZFS_AE_DynGwResponse\",\"@odata.metadataEtag\":\"W/\\\"20260910185933\\\"\",\"DurationMs\":402,\"ExecStatus\":\"S\",\"ExportJson\":\"\",\"GwUuid\":\"5254001f-e7a2-1fd1-aba7-27d59a408000\",\"MessageText\":\"ZFS_CDS_SLC_001 executed successfully, 2 row(s) affected\",\"ResultCount\":2,\"RowsJson\":\"[{\\\"ZOTTK_NO\\\":\\\"100049\\\"},{\\\"ZOTTK_NO\\\":\\\"100050\\\"}]\",\"TablesJson\":\"\"}"
+    },
+    {
+        "Name":  "unknown-field",
+        "HttpStatus":  200,
+        "RawResponse":  "{\"@odata.context\":\"../$metadata#com.sap.gateway.srvd_a2x.zfs_sd_dyngateway.v0001.ZFS_AE_DynGwResponse\",\"@odata.metadataEtag\":\"W/\\\"20260910185933\\\"\",\"DurationMs\":4,\"ExecStatus\":\"E\",\"ExportJson\":\"\",\"GwUuid\":\"5254001f-e7a2-1fd1-aba7-27d59a414000\",\"MessageText\":\"Field ZZZNOPE is not a component of ZFS_CDS_SLC_001\",\"ResultCount\":0,\"RowsJson\":\"\",\"TablesJson\":\"\"}"
+    },
+    {
+        "Name":  "row-limit",
+        "HttpStatus":  200,
+        "RawResponse":  "{\"@odata.context\":\"../$metadata#com.sap.gateway.srvd_a2x.zfs_sd_dyngateway.v0001.ZFS_AE_DynGwResponse\",\"@odata.metadataEtag\":\"W/\\\"20260910185933\\\"\",\"DurationMs\":2,\"ExecStatus\":\"E\",\"ExportJson\":\"\",\"GwUuid\":\"5254001f-e7a2-1fd1-aba7-27d59a420000\",\"MessageText\":\"Requested row count 999999 exceeds the registered limit 20\",\"ResultCount\":0,\"RowsJson\":\"\",\"TablesJson\":\"\"}"
+    },
+    {
+        "Name":  "empty-batch",
+        "HttpStatus":  200,
+        "RawResponse":  "{\"@odata.context\":\"../$metadata#com.sap.gateway.srvd_a2x.zfs_sd_dyngateway.v0001.ZFS_AE_DynGwResponse\",\"@odata.metadataEtag\":\"W/\\\"20260910185933\\\"\",\"DurationMs\":1,\"ExecStatus\":\"E\",\"ExportJson\":\"\",\"GwUuid\":\"5254001f-e7a2-1fd1-aba7-27d59a42c000\",\"MessageText\":\"Invalid JSON in parameter StepsJson\",\"ResultCount\":0,\"RowsJson\":\"[]\",\"TablesJson\":\"\"}"
+    },
+    {
+        "Name":  "phase-one-reject",
+        "HttpStatus":  200,
+        "RawResponse":  "{\"@odata.context\":\"../$metadata#com.sap.gateway.srvd_a2x.zfs_sd_dyngateway.v0001.ZFS_AE_DynGwResponse\",\"@odata.metadataEtag\":\"W/\\\"20260910185933\\\"\",\"DurationMs\":5,\"ExecStatus\":\"E\",\"ExportJson\":\"\",\"GwUuid\":\"5254001f-e7a2-1fd1-aba7-27d59a438000\",\"MessageText\":\"Dynamic call of batch step 2 failed: Target ZFS_GW_UNKNOWN is not registered for the dy\",\"ResultCount\":2,\"RowsJson\":\"[{\\\"STEP\\\":1,\\\"KIND\\\":\\\"QURY\\\",\\\"TARGETNAME\\\":\\\"ZFS_CDS_SLC_001\\\",\\\"OPERATION\\\":\\\"\\\",\\\"EXECSTATUS\\\":\\\"P\\\",\\\"MESSAGENO\\\":0,\\\"MESSAGETEXT\\\":\\\"\\\",\\\"EXPORTJSON\\\":\\\"\\\",\\\"TABLESJSON\\\":\\\"\\\",\\\"ROWSJSON\\\":\\\"\\\",\\\"RESULTCOUNT\\\":0,\\\"DURATIONMS\\\":0},{\\\"STEP\\\":2,\\\"KIND\\\":\\\"SUBM\\\",\\\"TARGETNAME\\\":\\\"ZFS_GW_UNKNOWN\\\",\\\"OPERATION\\\":\\\"\\\",\\\"EXECSTATUS\\\":\\\"E\\\",\\\"MESSAGENO\\\":17,\\\"MESSAGETEXT\\\":\\\"Target ZFS_GW_UNKNOWN is not registered for the dynamic gateway\\\",\\\"EXPORTJSON\\\":\\\"\\\",\\\"TABLESJSON\\\":\\\"\\\",\\\"ROWSJSON\\\":\\\"\\\",\\\"RESULTCOUNT\\\":0,\\\"DURATIONMS\\\":0}]\",\"TablesJson\":\"\"}"
+    }
+]

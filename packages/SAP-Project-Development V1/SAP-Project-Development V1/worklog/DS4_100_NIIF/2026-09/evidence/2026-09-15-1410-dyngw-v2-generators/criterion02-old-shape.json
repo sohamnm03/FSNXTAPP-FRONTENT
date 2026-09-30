@@ -1,0 +1,5 @@
+﻿{
+    "request":  "{\"TargetName\":\"ZFS_SLC_OTTK_BTP\",\"Operation\":\"INSERT\",\"ImportJson\":\"[{\\\"ZSTR\\\":\\\"DSX\\\"}]\",\"RequestId\":\"\"}",
+    "httpStatus":  400,
+    "response":  ""
+}

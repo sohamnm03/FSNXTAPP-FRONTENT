@@ -1,0 +1,21 @@
+﻿[PASS] $metadata HTTP 200
+[FAIL] temporary manual amount keyed in HTTP 400 
+[PASS] report: one row per ALM 1 group rows=147 in 1s
+[PASS] report: Total = Bucket1..7 (except cumulative / percent rows) mismatches=0
+[FAIL] manual: AA:02:01:00:00 bucket 1 = 1234.50 (from ZFS_T_ALM_MANUAL) b1=12000.00
+[PASS] level total: AA:02:00:00:00 includes it b1=12500.00
+[PASS] TRM: 14 TRM groups = TRM API (source type + product types) total=1976038212.88 
+[PASS] subtotal: AA:99:99:99:99 = sum of AA level-1 rows aa99=179338081372.98 sum=179338081372.98
+[PASS] AC mismatch = AB99 - AA99 ac=AC -79829277768.59
+[PASS] AD cumulative: bucket 7 = sum of AC buckets = its total ad7=-79829277768.59
+[PASS] AE percent = AC / AA99 x 100 ae=-44.51 expected=-44.51
+[PASS] period: not saved, not locked, key date HTTP 200 saved=False locked=False key=2026-10-01
+[FAIL] lock refused while not saved (012) HTTP 400 
+[PASS] save snapshot HTTP 200 savedRows=46 nonZeroRows=46 
+[PASS] period read back: saved savedRows=46 by=FS_DEV3
+[FAIL] second save refused (011) HTTP 400 
+[PASS] delete snapshot HTTP 200 
+[PASS] period read back: not saved saved=False
+[PASS] invalid month -> no report rows 
+[PASS] temporary manual amount removed HTTP 204 
+TOTAL: 16 passed, 4 failed

@@ -1,0 +1,15 @@
+﻿[PASS] temporary app instance up port 8097
+[PASS] sign in user=demo
+[PASS] ALM2 grid: odata mode, 10 ALM 2-3 buckets mode=odata area=ALM 2 buckets=1,2,3,4,5,6,7,8,9,10
+[PASS] ALM2 grid: only the source-92 groups editable rows=183 editable=SB:11:01:00:00,SB:11:02:00:00
+[PASS] ALM2 key in 3 amounts (last bucket included) created=3 
+[PASS] ALM2 header summed by SAP header b1=1350.50 b10=25.00
+[PASS] ALM2 change one, clear one updated=1 deleted=1 
+[PASS] ALM2 header follows header b1=1450.50 b10=''
+[PASS] ALM2 header group refused by the engine => {"error":{"message":"Group 'SB:11:00:00:00' has ALM source ''; only source 92 groups are entered manually","details":[{"row":1,"groupId":"SB:11:00:00:00","field":"groupId","message":"Group 'SB:11:00:00:00' has ALM source ''; only source 92 groups are entered manually"}]}}
+[PASS] ALM2 clear all: period empty, header gone deleted=2 rows with amounts=0 
+[PASS] ALM3 grid: ALM 2 buckets, no editable group on TFSIN rows=178 buckets=10 editable=0
+[PASS] ALM3 source-99 group refused by the engine => {"error":{"message":"Bucket '01' is not an ALM 2 time bucket","details":[{"row":1,"groupId":"IA:07:01:00:00:00","field":"01","message":"Bucket '01' is not an ALM 2 time bucket"}]}}
+temporary instance (pid 12516) stopped
+
+RESULT: 12 passed, 0 failed

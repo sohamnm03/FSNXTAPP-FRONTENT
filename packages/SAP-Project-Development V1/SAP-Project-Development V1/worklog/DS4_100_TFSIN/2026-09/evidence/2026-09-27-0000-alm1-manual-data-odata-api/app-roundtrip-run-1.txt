@@ -1,0 +1,14 @@
+﻿[PASS] temporary app instance up port 8096
+[PASS] sign in user=demo
+[FAIL] setup: odata mode, company codes mode= service= companies=0
+[FAIL] grid: all 7 ALM 1 buckets buckets=
+[FAIL] grid: child editable, header read-only rows=0
+[FAIL] key in 3 amounts (bucket 7 included) created= Cannot bind parameter 'Headers'. Cannot convert the "AA:02:00:00:00" value of type "System.String" to type "System.Collections.IDictionary".
+[FAIL] header summed by SAP header b1= b7=
+[FAIL] change one, clear one updated= deleted= Cannot bind parameter 'Headers'. Cannot convert the "AA:02:00:00:00" value of type "System.String" to type "System.Collections.IDictionary".
+[FAIL] header follows (b1 1450.50, b7 gone) header b1= b7=''
+[FAIL] header group refused by the engine => Cannot bind parameter 'Headers'. Cannot convert the "AA:02:00:00:00" value of type "System.String" to type "System.Collections.IDictionary".
+[FAIL] clear all: period empty, header gone deleted= rows with amounts=0 Cannot bind parameter 'Headers'. Cannot convert the "AA:02:00:00:00" value of type "System.String" to type "System.Collections.IDictionary".
+temporary instance (pid 9052) stopped
+
+RESULT: 2 passed, 9 failed

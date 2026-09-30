@@ -1,0 +1,14 @@
+﻿[PASS] temporary app instance up port 8096
+[PASS] sign in user=demo
+[PASS] setup: odata mode, company codes mode=odata service=ZFS_SB_ALMMANUAL_O4_API companies=74
+[PASS] grid: all 7 ALM 1 buckets buckets=1,2,3,4,5,6,7
+[PASS] grid: child editable, header read-only rows=96
+[PASS] key in 3 amounts (bucket 7 included) created=3 
+[FAIL] header summed by SAP header b1= b7=
+[PASS] change one, clear one updated=1 deleted=1 
+[FAIL] header follows (b1 1450.50, b7 gone) header b1= b7=''
+[PASS] header group refused by the engine => {"error":{"message":"Group 'AA:02:00:00:00' has ALM source ''; only source 92 groups are entered manually","details":[{"row":1,"groupId":"AA:02:00:00:00","field":"groupId","message":"Group 'AA:02:00:00:00' has ALM source ''; only source 92 groups are entered manually"}]}}
+[PASS] clear all: period empty, header gone deleted=2 rows with amounts=0 
+temporary instance (pid 26108) stopped
+
+RESULT: 9 passed, 2 failed

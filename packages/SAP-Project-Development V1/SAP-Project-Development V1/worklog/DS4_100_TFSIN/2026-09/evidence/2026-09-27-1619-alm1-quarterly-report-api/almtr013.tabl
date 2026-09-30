@@ -1,0 +1,28 @@
+@EndUserText.label : 'ALM 1: Month 1 Split'
+@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #ALLOWED
+define table /fs00/almtr013 {
+
+  key mandt     : mandt not null;
+  key zbukrs    : bukrs not null;
+  key zeff_date : /fs00/almdt0040 not null;
+  key zsrc      : /fs00/almdt0004 not null;
+  zsrc_desc     : /fs00/almdt0005;
+  @Semantics.amount.currencyCode : 'vtbfhapo.wzbetr'
+  zbuc1         : /fs00/almdt0037;
+  @Semantics.amount.currencyCode : 'vtbfhapo.wzbetr'
+  zbuc2         : /fs00/almdt0037;
+  @Semantics.amount.currencyCode : 'vtbfhapo.wzbetr'
+  zbuc3         : /fs00/almdt0037;
+  @Semantics.amount.currencyCode : 'vtbfhapo.wzbetr'
+  ztot          : /fs00/almdt0037;
+  zcreated_by   : tb_cruser;
+  zcreated_date : tb_dcrdat;
+  zcreated_time : tb_tcrtim;
+  zchanged_by   : tb_upuser;
+  zchanged_date : tb_dupdat;
+  zchanged_time : tb_tuptim;
+
+}

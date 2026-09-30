@@ -1,0 +1,30 @@
+﻿### bad-create
+POST https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmirate_o4_api/srvd_a2x/sap/zfs_sd_trmirate/0001/InterestRateInstrument?sap-client=100
+Body: {"CompanyCode":"1000","ProductType":"22A","TransactionType":"999","Partner":"0700000453","Currency":"INR","StartTerm":"2026-10-01","EndTerm":"2027-09-30","NominalAmount":100000,"InterestRate":10}
+Status: 400
+sap-messages: 
+{"error":{"code":"TI/005","message":"Transaction type 999 is not defined for product type 22A","@SAP__common.ExceptionCategory":"Provider_Application_Error","details":[{"code":"FTR0/161","message":"BAPI processing was terminated","@SAP__common.Severity":"error","@SAP__common.numericSeverity":4}],"innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMIRATE","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690260E006AB5F3273B1B2","@SAP__common.Timestamp":"20260925105700.841091","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### good-create
+POST https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmirate_o4_api/srvd_a2x/sap/zfs_sd_trmirate/0001/InterestRateInstrument?sap-client=100
+Body: {"CompanyCode":"1000","ProductType":"22A","TransactionType":"100","Partner":"0700000453","ContractDate":"2026-09-25","ValuationClass":"0001","Currency":"INR","StartTerm":"2026-10-01","EndTerm":"2027-09-30","NominalAmount":100000,"InterestRate":10}
+Status: 201
+sap-messages: [{"code":"FTR0/162","message":"BAPI was executed successfully","numericSeverity":2,"target":""}]
+{"@odata.context":"$metadata#InterestRateInstrument/$entity","@odata.metadataEtag":"W/\"20260925091058\"","CompanyCode":"1000","FinancialTransaction":"160543","ProductType":"22A","TransactionType":"100","Partner":"700000453","ContractDate":"2026-09-25","ValuationClass":"1","Portfolio":"","Currency":"INR","StartTerm":"2026-10-01","EndTerm":"2027-09-30","NominalAmount":100000.0000,"InterestRate":10.0000000,"InterestCalcMethod":"3","Frequency":"0","ActiveStatus":"0","ActivityCategory":"10","SAP__Messages":[]}
+
+
+### reverse-1
+DELETE https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmirate_o4_api/srvd_a2x/sap/zfs_sd_trmirate/0001/InterestRateInstrument(CompanyCode='1000',FinancialTransaction='160543')?sap-client=100
+Status: 204
+sap-messages: [{"code":"FTR0/162","message":"BAPI was executed successfully","numericSeverity":2}]
+
+
+
+### read-1
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmirate_o4_api/srvd_a2x/sap/zfs_sd_trmirate/0001/InterestRateInstrument(CompanyCode='1000',FinancialTransaction='160543')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#InterestRateInstrument/$entity","@odata.metadataEtag":"W/\"20260925091058\"","CompanyCode":"1000","FinancialTransaction":"160543","ProductType":"22A","TransactionType":"100","Partner":"700000453","ContractDate":"2026-09-25","ValuationClass":"1","Portfolio":"","Currency":"INR","StartTerm":"2026-10-01","EndTerm":"2027-09-30","NominalAmount":100000.0000,"InterestRate":10.0000000,"InterestCalcMethod":"3","Frequency":"0","ActiveStatus":"3","ActivityCategory":"10","SAP__Messages":[]}
+
+

@@ -1,0 +1,84 @@
+﻿### check-40000887
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='9990',FinancialTransaction='40000887')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#FxTransaction/$entity","@odata.metadataEtag":"W/\"20260925103923\"","CompanyCode":"9990","FinancialTransaction":"40000887","ProductType":"40A","TransactionType":"400","Partner":"400000002","ContractDate":"2026-09-25","ValuationClass":"5","Portfolio":"","BuyCurrency":"INR","SellCurrency":"USD","LeadCurrency":"USD","FollowCurrency":"INR","TradedCurrency":"USD","BuyAmount":144000.0000,"SellAmount":1500.0000,"ValueDate":"2026-12-25","SpotRate":96.000000000,"SwapRate":0.000000000,"ForwardRate":96.000000000,"ActiveStatus":"3","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### check-40000888
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='9990',FinancialTransaction='40000888')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#FxTransaction/$entity","@odata.metadataEtag":"W/\"20260925103923\"","CompanyCode":"9990","FinancialTransaction":"40000888","ProductType":"40A","TransactionType":"400","Partner":"400000002","ContractDate":"2026-09-25","ValuationClass":"5","Portfolio":"","BuyCurrency":"INR","SellCurrency":"USD","LeadCurrency":"USD","FollowCurrency":"INR","TradedCurrency":"USD","BuyAmount":144000.0000,"SellAmount":1500.0000,"ValueDate":"2026-12-25","SpotRate":96.000000000,"SwapRate":0.000000000,"ForwardRate":96.000000000,"ActiveStatus":"3","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### check-40000889
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='9990',FinancialTransaction='40000889')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#FxTransaction/$entity","@odata.metadataEtag":"W/\"20260925103923\"","CompanyCode":"9990","FinancialTransaction":"40000889","ProductType":"40A","TransactionType":"400","Partner":"400000002","ContractDate":"2026-09-25","ValuationClass":"5","Portfolio":"","BuyCurrency":"INR","SellCurrency":"USD","LeadCurrency":"USD","FollowCurrency":"INR","TradedCurrency":"USD","BuyAmount":144000.0000,"SellAmount":1500.0000,"ValueDate":"2026-12-25","SpotRate":96.000000000,"SwapRate":0.000000000,"ForwardRate":96.000000000,"ActiveStatus":"3","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### check-40000890
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='9990',FinancialTransaction='40000890')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#FxTransaction/$entity","@odata.metadataEtag":"W/\"20260925103923\"","CompanyCode":"9990","FinancialTransaction":"40000890","ProductType":"40A","TransactionType":"400","Partner":"400000002","ContractDate":"2026-09-25","ValuationClass":"5","Portfolio":"","BuyCurrency":"INR","SellCurrency":"USD","LeadCurrency":"USD","FollowCurrency":"INR","TradedCurrency":"USD","BuyAmount":144000.0000,"SellAmount":1500.0000,"ValueDate":"2026-12-25","SpotRate":96.000000000,"SwapRate":0.000000000,"ForwardRate":96.000000000,"ActiveStatus":"3","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### check-40000887
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='9990',FinancialTransaction='40000887')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#FxTransaction/$entity","@odata.metadataEtag":"W/\"20260925103923\"","CompanyCode":"9990","FinancialTransaction":"40000887","ProductType":"40A","TransactionType":"400","Partner":"400000002","ContractDate":"2026-09-25","ValuationClass":"5","Portfolio":"","BuyCurrency":"INR","SellCurrency":"USD","LeadCurrency":"USD","FollowCurrency":"INR","TradedCurrency":"USD","BuyAmount":144000.0000,"SellAmount":1500.0000,"ValueDate":"2026-12-25","SpotRate":96.000000000,"SwapRate":0.000000000,"ForwardRate":96.000000000,"ActiveStatus":"3","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### check-40000888
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='9990',FinancialTransaction='40000888')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#FxTransaction/$entity","@odata.metadataEtag":"W/\"20260925103923\"","CompanyCode":"9990","FinancialTransaction":"40000888","ProductType":"40A","TransactionType":"400","Partner":"400000002","ContractDate":"2026-09-25","ValuationClass":"5","Portfolio":"","BuyCurrency":"INR","SellCurrency":"USD","LeadCurrency":"USD","FollowCurrency":"INR","TradedCurrency":"USD","BuyAmount":144000.0000,"SellAmount":1500.0000,"ValueDate":"2026-12-25","SpotRate":96.000000000,"SwapRate":0.000000000,"ForwardRate":96.000000000,"ActiveStatus":"3","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### check-40000889
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='9990',FinancialTransaction='40000889')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#FxTransaction/$entity","@odata.metadataEtag":"W/\"20260925103923\"","CompanyCode":"9990","FinancialTransaction":"40000889","ProductType":"40A","TransactionType":"400","Partner":"400000002","ContractDate":"2026-09-25","ValuationClass":"5","Portfolio":"","BuyCurrency":"INR","SellCurrency":"USD","LeadCurrency":"USD","FollowCurrency":"INR","TradedCurrency":"USD","BuyAmount":144000.0000,"SellAmount":1500.0000,"ValueDate":"2026-12-25","SpotRate":96.000000000,"SwapRate":0.000000000,"ForwardRate":96.000000000,"ActiveStatus":"3","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### check-40000890
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='9990',FinancialTransaction='40000890')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#FxTransaction/$entity","@odata.metadataEtag":"W/\"20260925103923\"","CompanyCode":"9990","FinancialTransaction":"40000890","ProductType":"40A","TransactionType":"400","Partner":"400000002","ContractDate":"2026-09-25","ValuationClass":"5","Portfolio":"","BuyCurrency":"INR","SellCurrency":"USD","LeadCurrency":"USD","FollowCurrency":"INR","TradedCurrency":"USD","BuyAmount":144000.0000,"SellAmount":1500.0000,"ValueDate":"2026-12-25","SpotRate":96.000000000,"SwapRate":0.000000000,"ForwardRate":96.000000000,"ActiveStatus":"3","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### check-40000887
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='9990',FinancialTransaction='40000887')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#FxTransaction/$entity","@odata.metadataEtag":"W/\"20260925103923\"","CompanyCode":"9990","FinancialTransaction":"40000887","ProductType":"40A","TransactionType":"400","Partner":"400000002","ContractDate":"2026-09-25","ValuationClass":"5","Portfolio":"","BuyCurrency":"INR","SellCurrency":"USD","LeadCurrency":"USD","FollowCurrency":"INR","TradedCurrency":"USD","BuyAmount":144000.0000,"SellAmount":1500.0000,"ValueDate":"2026-12-25","SpotRate":96.000000000,"SwapRate":0.000000000,"ForwardRate":96.000000000,"ActiveStatus":"3","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### check-40000888
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='9990',FinancialTransaction='40000888')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#FxTransaction/$entity","@odata.metadataEtag":"W/\"20260925103923\"","CompanyCode":"9990","FinancialTransaction":"40000888","ProductType":"40A","TransactionType":"400","Partner":"400000002","ContractDate":"2026-09-25","ValuationClass":"5","Portfolio":"","BuyCurrency":"INR","SellCurrency":"USD","LeadCurrency":"USD","FollowCurrency":"INR","TradedCurrency":"USD","BuyAmount":144000.0000,"SellAmount":1500.0000,"ValueDate":"2026-12-25","SpotRate":96.000000000,"SwapRate":0.000000000,"ForwardRate":96.000000000,"ActiveStatus":"3","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### check-40000889
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='9990',FinancialTransaction='40000889')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#FxTransaction/$entity","@odata.metadataEtag":"W/\"20260925103923\"","CompanyCode":"9990","FinancialTransaction":"40000889","ProductType":"40A","TransactionType":"400","Partner":"400000002","ContractDate":"2026-09-25","ValuationClass":"5","Portfolio":"","BuyCurrency":"INR","SellCurrency":"USD","LeadCurrency":"USD","FollowCurrency":"INR","TradedCurrency":"USD","BuyAmount":144000.0000,"SellAmount":1500.0000,"ValueDate":"2026-12-25","SpotRate":96.000000000,"SwapRate":0.000000000,"ForwardRate":96.000000000,"ActiveStatus":"3","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### check-40000890
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='9990',FinancialTransaction='40000890')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#FxTransaction/$entity","@odata.metadataEtag":"W/\"20260925103923\"","CompanyCode":"9990","FinancialTransaction":"40000890","ProductType":"40A","TransactionType":"400","Partner":"400000002","ContractDate":"2026-09-25","ValuationClass":"5","Portfolio":"","BuyCurrency":"INR","SellCurrency":"USD","LeadCurrency":"USD","FollowCurrency":"INR","TradedCurrency":"USD","BuyAmount":144000.0000,"SellAmount":1500.0000,"ValueDate":"2026-12-25","SpotRate":96.000000000,"SwapRate":0.000000000,"ForwardRate":96.000000000,"ActiveStatus":"3","ActivityCategory":"20","SAP__Messages":[]}
+
+

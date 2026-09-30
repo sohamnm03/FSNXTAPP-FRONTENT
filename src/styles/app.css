@@ -3442,6 +3442,21 @@
   box-shadow: inset 3px 0 0 var(--color-primary), 0 7px 16px rgba(19, 77, 128, 0.07);
 }
 
+.home-package-card.is-disabled {
+  background: #f3f6f9;
+  border-color: #e2e8ee;
+  opacity: 0.58;
+}
+
+.home-package-card.is-disabled:hover {
+  background: #f3f6f9;
+  border-color: #e2e8ee;
+}
+
+.home-package-card.is-disabled .home-package-card__main {
+  cursor: not-allowed;
+}
+
 .home-package-card__main {
   align-items: center;
   background: transparent;

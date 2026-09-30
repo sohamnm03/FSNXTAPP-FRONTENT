@@ -1,0 +1,29 @@
+ZFS_CE_AlmTrmPrincipal - SQL oracles, company 1000, period 2026/09 (month end 2026-09-30), read 2026-09-27
+(runQuery on abap-adt-ds4-100-tfsin; last two via scripts/adt-sql.ps1 after runQuery answered "Internal server error")
+
+/FS00/ALMTR026 zbukrs 1000: ZPRINC (10A excluded) = 04I 10B 10C 10D 10E 10F 11A 15A 15D 22B (10)
+                            ZPRINC_TPM12        = 04H 04J 10B 10C 10D 11B 11D 15A 15D 23B (10)
+
+Money-market deals live at month end (/FS00/CDS0001 ranl blank, dblfz <= / delfz >= 20260930):
+  10B 16, 10C 64, 10D 23, 10E 288, 10F 67 = 458 deals, 458 CDS rows (no repeated deal this period)
+  10E by currency: USD 215, JPY 51, INR 17, CHF 5 (no TRMR rate for CHF -> repayment flows, as INR)
+
+Securities (ranl not blank, dblfz <= month end AND (delfz >= OR s_edate >= month end)):
+  15D 132, 15A 30, 22B 1 = 163 securities from 230 CDS rows
+  deal rows with a security live by delfz: 0 -> the D6 double count does not occur in this period
+  TPM12 candidates (TPM12-flagged, not 15D): 15A = 30 securities -> one SUBMIT; 22B is not TPM12-flagged -> no row
+
+FL03/FL04, valuation area 001, trldate > month end, live money-market deals (expected Total per product):
+  10B 16 deals  17 flows     307,630,000.00
+  10C 62 deals 140 flows  55,563,692,968.56
+  10D 20 deals  25 flows  19,802,336,664.00
+  10F 67 deals  67 flows 103,422,506,736.40
+  10E (INR+CHF) 21 deals     285,841,998.00
+  Day-0 flows (trldate = month end, fall in no bucket, D18 kept): 1 (10C FL03 100,000,000.00)
+
+10E USD/JPY: first FL01 (area 001) exists for USD 213 / JPY 50 deals (one FL01 each)
+  sum nominal (internal format): USD 91,324,435,294.00  JPY 931,010,804.00
+  TRMR rate in force 2026-09-30: USD 85.00000 (from 2025-12-31), JPY 59.64500 (from 2026-05-31)
+  TCURF TRMR factors: USD 1:1, JPY 100:1 (TCURR FFACT/TFACT are 0)
+  expected: USD ~ 7,762,577,000,000 INR; JPY ~ 55,530,139,000 INR if CONVERT_TO_LOCAL_CURRENCY applies
+  the JPY decimal shift (0 decimals) and the 100:1 factor - to be confirmed on the live service

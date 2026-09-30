@@ -94,8 +94,6 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
   const claudeConfigDir = path.join(electronApp.getPath('userData'), 'claude-runtime');
   const settingsPath = path.join(electronApp.getPath('userData'), 'sap-terminal-settings.json');
   const projectRoot = workspace.projectRoot;
-  const externalCasesRoot = path.join(electronApp.getPath('documents'), 'FSNXT SAP Test Cases');
-  const externalCasesManifestPath = path.join(externalCasesRoot, 'config', 'external-cases.json');
   fs.mkdirSync(claudeConfigDir, { recursive: true });
 
   // .mcp.json bakes in an absolute python.exe path and audit-log path at the
@@ -174,6 +172,17 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       return settings.archiveDirectory;
     }
     return defaultArchiveDir();
+  }
+
+  // User-created testcases travel with the selected test archive location
+  // instead of being fixed under Documents. Changing the archive folder in
+  // the app therefore changes both result storage and testcase storage.
+  function externalCasesRoot() {
+    return path.join(archiveDir(), 'FSNXT SAP Test Cases');
+  }
+
+  function externalCasesManifestPath() {
+    return path.join(externalCasesRoot(), 'config', 'external-cases.json');
   }
 
   // The AI-chat lane spawns claude.exe with cwd=projectRoot, so Claude Code
@@ -348,7 +357,8 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
   function externalLaneCasesDir(lane, systemId) {
     const system = String(systemId || '').trim() || 'DS4_100_NIIF';
     if (!/^[A-Za-z0-9_-]+$/.test(system)) throw new Error('The selected SAP system id is invalid.');
-    return path.join(externalCasesRoot, 'test-cases', laneCaseFolder(lane), system);
+    const systemFolder = system === 'DS4_100_TFSIN' ? 'TFSIN HANA Dev' : system;
+    return path.join(externalCasesRoot(), 'test-cases', laneCaseFolder(lane), systemFolder);
   }
 
   function readJsonFile(filePath, fallback) {
@@ -365,7 +375,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
   }
 
   function externalManifest() {
-    const parsed = readJsonFile(externalCasesManifestPath, null);
+    const parsed = readJsonFile(externalCasesManifestPath(), null);
     if (parsed && typeof parsed === 'object' && parsed.cases && typeof parsed.cases === 'object') return parsed;
     return {
       description: 'User-created SAP test cases stored outside the packaged FSNXT automation workspace.',
@@ -442,10 +452,10 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         writes: String(entry.writes || ''),
         stages: [],
         defaultStage: '',
-        hasFile: typeof entry.caseFile === 'string' && fs.existsSync(path.join(externalCasesRoot, entry.caseFile)),
+        hasFile: typeof entry.caseFile === 'string' && fs.existsSync(path.join(externalCasesRoot(), entry.caseFile)),
         source: 'external',
         externalLabel: 'External created TC',
-        filePath: typeof entry.caseFile === 'string' ? path.join(externalCasesRoot, entry.caseFile) : '',
+        filePath: typeof entry.caseFile === 'string' ? path.join(externalCasesRoot(), entry.caseFile) : '',
       }))
       .filter((entry) => /^TC-\d{3}$/.test(entry.caseId));
     const cases = [...builtInCases, ...externalCases]
@@ -463,7 +473,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       if (!externalEntry?.caseFile) {
         throw new Error(`${caseId} is not registered in the selected ${lane === 'gui' ? 'SAP GUI' : 'Fiori / WebGUI'} lane.`);
       }
-      const externalPath = path.join(externalCasesRoot, externalEntry.caseFile);
+      const externalPath = path.join(externalCasesRoot(), externalEntry.caseFile);
       if (!fs.existsSync(externalPath)) throw new Error(`No documentation file was found for ${caseId}.`);
       return {
         caseId,
@@ -488,7 +498,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
   // Where the AI Assistant is told to write a case it is authoring, before
   // this app relocates it. Deliberately INSIDE projectRoot (the same cwd the
   // spawned claude.exe process already gets — see start() below), never the
-  // user's persistent externalCasesRoot (Documents\FSNXT SAP Test Cases):
+  // user's persistent testcase folder under the selected archive location:
   // that folder is often outside the sandboxed/packaged process's working
   // tree, and --permission-mode auto is not something we've verified lets a
   // headless `claude -p` write to an arbitrary absolute path outside its cwd.
@@ -595,7 +605,8 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         fs.copyFileSync(draftPath, destinationPath, fs.constants.COPYFILE_EXCL);
       }
 
-      const relativeCaseFile = path.relative(externalCasesRoot, destinationPath).split(path.sep).join('/');
+      const storageRoot = externalCasesRoot();
+      const relativeCaseFile = path.relative(storageRoot, destinationPath).split(path.sep).join('/');
       const key = externalCaseKey(lane, caseId);
       const writes = headers['Writes to the database'] || 'Not classified yet.';
       manifest.cases[key] = {
@@ -611,11 +622,11 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         source: 'external',
       };
       created.push({
-        caseId, lane, summary, writes, source: 'external', externalLabel: 'External created TC', fileName, filePath: destinationPath, storageRoot: externalCasesRoot,
+        caseId, lane, summary, writes, source: 'external', externalLabel: 'External created TC', fileName, filePath: destinationPath, storageRoot,
       });
     }
     if (created.length) {
-      writeJsonFile(externalCasesManifestPath, manifest);
+      writeJsonFile(externalCasesManifestPath(), manifest);
       for (const entry of created) {
         try { fs.unlinkSync(path.join(draftDirectory, entry.fileName)); } catch { /* Retain a recoverable draft if cleanup fails. */ }
       }

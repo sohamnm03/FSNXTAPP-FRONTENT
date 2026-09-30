@@ -1,0 +1,42 @@
+﻿### side-check-Condition
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/Condition?$filter=CompanyCode eq '1000' and FinancialTransaction eq '35000020'&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#Condition","@odata.metadataEtag":"W/\"20260925094215\"","value":[{"CompanyCode":"1000","FinancialTransaction":"35000020","Side":"0","ConditionKey":"0100020260717","ConditionNumber":"1000","ConditionTypeCode":"1220","EffectiveFrom":"2026-07-17","AmountCalcRule":"1","PercentageRate":0.0000000,"Amount":0.0000,"Currency":"INR","CalcBaseAmount":0.0000,"RefInterestRate":"","RateMarkupOrDown":0.0000000,"CalcMethod":"3","CalcCalendar":"","Frequency":"0","FrequencyUnit":"0","CalcDate":"2026-10-16","CalcDateInclusive":false,"CalcDateMonthEnd":false,"DueDate":"2026-10-16","DueDateMonthEnd":"","ShiftDays":0,"ReferenceConditionKey":"","SAP__Messages":[]},{"CompanyCode":"1000","FinancialTransaction":"35000020","Side":"0","ConditionKey":"0200020260717","ConditionNumber":"2000","ConditionTypeCode":"1125","EffectiveFrom":"2026-07-17","AmountCalcRule":"1","PercentageRate":100.0000000,"Amount":0.0000,"Currency":"INR","CalcBaseAmount":0.0000,"RefInterestRate":"","RateMarkupOrDown":0.0000000,"CalcMethod":"3","CalcCalendar":"","Frequency":"0","FrequencyUnit":"0","CalcDate":"2026-10-16","CalcDateInclusive":false,"CalcDateMonthEnd":false,"DueDate":"2026-10-16","DueDateMonthEnd":"","ShiftDays":0,"ReferenceConditionKey":"","SAP__Messages":[]}]}
+
+
+### side-check-MainFlow
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/MainFlow?$filter=CompanyCode eq '1000' and FinancialTransaction eq '35000020'&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#MainFlow","@odata.metadataEtag":"W/\"20260925094215\"","value":[{"CompanyCode":"1000","FinancialTransaction":"35000020","Side":"0","FlowKey":"20260721141228000100001","FlowType":"1100","FlowSign":"-","PaymentDate":"2026-07-17","PaymentAmount":10000.0000,"PaymentCur":"INR","PaymentCurIso":"INR","LocalCurRate":0.00000,"LocalCurAmount":0.0000,"CurrentRate":true,"FixedRate":false,"FixedAmount":false,"Assignment":"","PostingStatus":"0","CalcDate":"2026-07-17","NominalAmount":0.0000,"SAP__Messages":[]}]}
+
+
+### reverse-test-deal-1
+DELETE https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmirate_o4_api/srvd_a2x/sap/zfs_sd_trmirate/0001/InterestRateInstrument(CompanyCode='1000',FinancialTransaction='160537')?sap-client=100
+Status: 204
+sap-messages: [{"code":"FTR0/162","message":"BAPI was executed successfully","numericSeverity":2}]
+
+
+
+### check-test-deal-1
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmirate_o4_api/srvd_a2x/sap/zfs_sd_trmirate/0001/InterestRateInstrument(CompanyCode='1000',FinancialTransaction='160537')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#InterestRateInstrument/$entity","@odata.metadataEtag":"W/\"20260925091058\"","CompanyCode":"1000","FinancialTransaction":"160537","ProductType":"22A","TransactionType":"100","Partner":"700000453","ContractDate":"2026-09-25","ValuationClass":"1","Portfolio":"","Currency":"INR","StartTerm":"2026-10-01","EndTerm":"2027-09-30","NominalAmount":100000.0000,"InterestRate":10.0000000,"InterestCalcMethod":"3","Frequency":"0","ActiveStatus":"3","ActivityCategory":"10","SAP__Messages":[]}
+
+
+### reverse-test-deal-1
+DELETE https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmirate_o4_api/srvd_a2x/sap/zfs_sd_trmirate/0001/InterestRateInstrument(CompanyCode='1000',FinancialTransaction='160539')?sap-client=100
+Status: 204
+sap-messages: [{"code":"FTR0/162","message":"BAPI was executed successfully","numericSeverity":2}]
+
+
+
+### check-test-deal-1
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmirate_o4_api/srvd_a2x/sap/zfs_sd_trmirate/0001/InterestRateInstrument(CompanyCode='1000',FinancialTransaction='160539')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#InterestRateInstrument/$entity","@odata.metadataEtag":"W/\"20260925091058\"","CompanyCode":"1000","FinancialTransaction":"160539","ProductType":"22A","TransactionType":"100","Partner":"700000453","ContractDate":"2026-09-25","ValuationClass":"1","Portfolio":"","Currency":"INR","StartTerm":"2026-10-01","EndTerm":"2027-09-30","NominalAmount":100000.0000,"InterestRate":10.0000000,"InterestCalcMethod":"3","Frequency":"0","ActiveStatus":"3","ActivityCategory":"10","SAP__Messages":[]}
+
+

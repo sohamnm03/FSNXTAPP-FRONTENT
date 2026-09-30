@@ -1,0 +1,24 @@
+﻿Report Formats root: https://vhtfqds4ap01.sap.tfsin.co.in:44300/sap/opu/odata4/sap/zfs_sb_almrptfmt_o4_api/srvd_a2x/sap/zfs_sd_almrptfmt/0001
+[PASS] RF $metadata has BudgetGrouping -> HTTP 200 (expected 200) sets: Alm1Grouping, Alm2Grouping, Alm3Grouping, BudgetGrouping
+[PASS] GET BudgetGrouping (count) -> HTTP 200 (expected 200) count=41
+Sources used: 73 / 74
+[PASS] Create Grp1 only (GroupId ZT) -> HTTP 201 (expected 201) id=ZT
+[PASS] Create ZT:Z1:Z1 with both sources -> HTTP 201 (expected 201) id=ZT:Z1:Z1 srcDesc=Disbursements lcrDesc=CLG-  NCD/ PTC (Investments)/Channel Finance
+[PASS] Create duplicate refused -> HTTP 400 (expected 400/409)  => BudgetGrouping ZT:Z1:Z1 already exists
+[PASS] Create wrong GroupId refused -> HTTP 400 (expected 400)  => GroupId must be ZT:Z2:
+[PASS] Create colon in part refused -> HTTP 400 (expected 400)  => Grp1..Grp3 must not contain :
+[PASS] Create unknown Source refused -> HTTP 400 (expected 400)  => Source Q9 does not exist
+[PASS] Create unknown LcrSource refused -> HTTP 400 (expected 400)  => LcrSource Q9 does not exist
+[PASS] Create empty GroupName refused -> HTTP 400 (expected 400)  => GroupName is required
+[PASS] Read + ETag -> HTTP 200 (expected 200) etag=W/"SADL-3230323630393236323032363231~20260926202621"
+[PASS] Update (current ETag), clear LcrSource -> HTTP 200 (expected 200/204) 
+[PASS] Update stale ETag refused -> HTTP 412 (expected 412)  => State of entity CDS~ZFS_C_ALMBUDGRPTP with key ZT:Z1:Z1 was already changed (stale If-Match)
+[PASS] Update unknown LcrSource refused -> HTTP 400 (expected 400)  => LcrSource Q9 does not exist
+[PASS] Read after update -> HTTP 200 (expected 200) name=Smoke budget v2 src=73/Disbursements lcr cleared
+[PASS] DELETE BudgetGrouping('ZT:Z1:Z1') -> HTTP 204 (expected 204) 
+[PASS] GET BudgetGrouping('ZT:Z1:Z1') after delete -> HTTP 404 (expected 404)  => Unspecified provider error occurred. See Error Context and Call Stack.
+[PASS] DELETE BudgetGrouping('ZT') -> HTTP 204 (expected 204) 
+[PASS] GET BudgetGrouping('ZT') after delete -> HTTP 404 (expected 404)  => Unspecified provider error occurred. See Error Context and Call Stack.
+[PASS] DELETE missing key refused -> HTTP 404 (expected 404/400)  => BudgetGrouping ZT:Z9:Z9 does not exist
+
+RESULT: 20 passed, 0 failed

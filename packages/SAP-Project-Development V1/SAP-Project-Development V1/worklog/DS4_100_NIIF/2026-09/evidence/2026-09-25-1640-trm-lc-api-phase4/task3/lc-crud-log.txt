@@ -1,0 +1,145 @@
+﻿### R1-list
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit?$filter=CompanyCode eq '9999'&$count=true&$top=5&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#LetterOfCredit","@odata.metadataEtag":"W/\"20260925111536\"","@odata.count":8,"value":[{"CompanyCode":"9999","FinancialTransaction":"100000","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-01-06","ValuationClass":"1","Portfolio":"","StartTerm":"2026-01-06","EndTerm":"2027-01-06","FlowType":"1860","Amount":100000.0000,"Currency":"INR","LcNumber":"","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]},{"CompanyCode":"9999","FinancialTransaction":"100004","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-01-06","ValuationClass":"1","Portfolio":"","StartTerm":"2026-01-06","EndTerm":"2026-01-31","FlowType":"1860","Amount":100.0000,"Currency":"USD","LcNumber":"","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]},{"CompanyCode":"9999","FinancialTransaction":"100005","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-01-06","ValuationClass":"1","Portfolio":"","StartTerm":"2026-01-06","EndTerm":"2026-01-31","FlowType":"1860","Amount":100.0000,"Currency":"USD","LcNumber":"ABCD","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":"2026-01-07","LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"90","SAP__Messages":[]},{"CompanyCode":"9999","FinancialTransaction":"100006","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-01-06","ValuationClass":"1","Portfolio":"","StartTerm":"2026-01-06","EndTerm":"2026-01-31","FlowType":"1860","Amount":100.0000,"Currency":"USD","LcNumber":"","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]},{"CompanyCode":"9999","FinancialTransaction":"100007","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-01-06","ValuationClass":"1","Portfolio":"","StartTerm":"2026-01-06","EndTerm":"2026-01-31","FlowType":"1860","Amount":100.0000,"Currency":"USD","LcNumber":"","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]}]}
+
+
+### R2-source
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit(CompanyCode='9999',FinancialTransaction='100000')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#LetterOfCredit/$entity","@odata.metadataEtag":"W/\"20260925111536\"","CompanyCode":"9999","FinancialTransaction":"100000","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-01-06","ValuationClass":"1","Portfolio":"","StartTerm":"2026-01-06","EndTerm":"2027-01-06","FlowType":"1860","Amount":100000.0000,"Currency":"INR","LcNumber":"","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### R3-non-lc-deal
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit(CompanyCode='1000',FinancialTransaction='160539')?sap-client=100
+Status: 404
+sap-messages: 
+{"error":{"code":"/IWBEP/CM_V4S_RUN/000","message":"Unspecified provider error occurred. See Error Context and Call Stack.","@SAP__common.ExceptionCategory":"Provider_Application_Error","details":[{"code":"CX_SADL_CONTRACT_VIOLATION","message":"Resource not found for entity 'ZFS_CE_TRMLCTP'","@SAP__common.Severity":"error","@SAP__common.numericSeverity":4}],"innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMLC","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690120E006AB5F2EBFAC38","@SAP__common.Timestamp":"20260925111547.116235","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### R4-bapi-only-filter
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit?$filter=Amount gt 0&sap-client=100
+Status: 500
+sap-messages: 
+{"error":{"code":"SY/530","message":"An exception was raised","@SAP__common.ExceptionCategory":"Provider_Application_Error","details":[{"code":"CX_SY_DYNAMIC_OSQL_SEMANTICS","message":"The database column 'AMOUNT' is unknown","@SAP__common.Severity":"error","@SAP__common.numericSeverity":4}],"innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMLC","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690120E006AB5F2EBFAC3A","@SAP__common.Timestamp":"20260925111547.23185","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### R5-type-filter
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit?$filter=CompanyCode eq '9999' and ProductType eq '38A'&$count=true&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#LetterOfCredit","@odata.metadataEtag":"W/\"20260925111536\"","@odata.count":8,"value":[{"CompanyCode":"9999","FinancialTransaction":"100000","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-01-06","ValuationClass":"1","Portfolio":"","StartTerm":"2026-01-06","EndTerm":"2027-01-06","FlowType":"1860","Amount":100000.0000,"Currency":"INR","LcNumber":"","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]},{"CompanyCode":"9999","FinancialTransaction":"100004","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-01-06","ValuationClass":"1","Portfolio":"","StartTerm":"2026-01-06","EndTerm":"2026-01-31","FlowType":"1860","Amount":100.0000,"Currency":"USD","LcNumber":"","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]},{"CompanyCode":"9999","FinancialTransaction":"100005","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-01-06","ValuationClass":"1","Portfolio":"","StartTerm":"2026-01-06","EndTerm":"2026-01-31","FlowType":"1860","Amount":100.0000,"Currency":"USD","LcNumber":"ABCD","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":"2026-01-07","LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"90","SAP__Messages":[]},{"CompanyCode":"9999","FinancialTransaction":"100006","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-01-06","ValuationClass":"1","Portfolio":"","StartTerm":"2026-01-06","EndTerm":"2026-01-31","FlowType":"1860","Amount":100.0000,"Currency":"USD","LcNumber":"","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]},{"CompanyCode":"9999","FinancialTransaction":"100007","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-01-06","ValuationClass":"1","Portfolio":"","StartTerm":"2026-01-06","EndTerm":"2026-01-31","FlowType":"1860","Amount":100.0000,"Currency":"USD","LcNumber":"","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]},{"CompanyCode":"9999","FinancialTransaction":"100009","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-01-09","ValuationClass":"1","Portfolio":"","StartTerm":"2026-01-09","EndTerm":"2026-01-31","FlowType":"1860","Amount":10000.0000,"Currency":"INR","LcNumber":"","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]},{"CompanyCode":"9999","FinancialTransaction":"100011","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-01-06","ValuationClass":"1","Portfolio":"","StartTerm":"2026-01-06","EndTerm":"2026-01-31","FlowType":"1860","Amount":100.0000,"Currency":"USD","LcNumber":"100011-LC","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"30","SAP__Messages":[]},{"CompanyCode":"9999","FinancialTransaction":"100024","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-01-01","ValuationClass":"1","Portfolio":"","StartTerm":"2026-01-01","EndTerm":"2026-07-01","FlowType":"1860","Amount":100000.0000,"Currency":"INR","LcNumber":"","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]}]}
+
+
+### W0-count-before
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit?$filter=CompanyCode eq '9999'&$count=true&$top=0&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#LetterOfCredit","@odata.metadataEtag":"W/\"20260925111536\"","@odata.count":8,"value":[]}
+
+
+### W1-create-A
+POST https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit?sap-client=100
+Body: {"CompanyCode":"9999","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-09-25","StartTerm":"2026-09-25","EndTerm":"2027-03-24","Amount":50000,"Currency":"INR","LcNumber":"ZFS0925164549A","ValuationClass":"1","FlowType":"1860","Beneficiary":"400000001","PaymentTerm":"0"}
+Status: 201
+sap-messages: [{"code":"FTR0/162","message":"BAPI was executed successfully","numericSeverity":2,"target":""},{"code":"T4/169","message":"Messages relating to transaction","numericSeverity":1,"target":""},{"code":"FTR0/030","message":"No payment details entered for transaction","numericSeverity":3,"target":""}]
+{"@odata.context":"$metadata#LetterOfCredit/$entity","@odata.metadataEtag":"W/\"20260925111536\"","CompanyCode":"9999","FinancialTransaction":"100025","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-09-25","ValuationClass":"1","Portfolio":"","StartTerm":"2026-09-25","EndTerm":"2027-03-24","FlowType":"1860","Amount":50000.0000,"Currency":"INR","LcNumber":"ZFS0925164549A","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### W2-read-A
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit(CompanyCode='9999',FinancialTransaction='100025')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#LetterOfCredit/$entity","@odata.metadataEtag":"W/\"20260925111536\"","CompanyCode":"9999","FinancialTransaction":"100025","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-09-25","ValuationClass":"1","Portfolio":"","StartTerm":"2026-09-25","EndTerm":"2027-03-24","FlowType":"1860","Amount":50000.0000,"Currency":"INR","LcNumber":"ZFS0925164549A","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### W3-patch-A
+PATCH https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit(CompanyCode='9999',FinancialTransaction='100025')?sap-client=100
+Body: {"Amount":60000}
+Status: 200
+sap-messages: [{"code":"FTR0/162","message":"BAPI was executed successfully","numericSeverity":2,"target":""},{"code":"T4/169","message":"Messages relating to transaction","numericSeverity":1,"target":""},{"code":"FTR0/035","message":"No payment details entered for transaction 100025","numericSeverity":3,"target":""}]
+{"@odata.context":"$metadata#LetterOfCredit/$entity","@odata.metadataEtag":"W/\"20260925111536\"","CompanyCode":"9999","FinancialTransaction":"100025","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-09-25","ValuationClass":"1","Portfolio":"","StartTerm":"2026-09-25","EndTerm":"2027-03-24","FlowType":"1860","Amount":60000.0000,"Currency":"INR","LcNumber":"ZFS0925164549A","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### W3-read-after-patch
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit(CompanyCode='9999',FinancialTransaction='100025')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#LetterOfCredit/$entity","@odata.metadataEtag":"W/\"20260925111536\"","CompanyCode":"9999","FinancialTransaction":"100025","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-09-25","ValuationClass":"1","Portfolio":"","StartTerm":"2026-09-25","EndTerm":"2027-03-24","FlowType":"1860","Amount":60000.0000,"Currency":"INR","LcNumber":"ZFS0925164549A","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### W4-patch-immutable
+PATCH https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit(CompanyCode='9999',FinancialTransaction='100025')?sap-client=100
+Body: {"Currency":"EUR"}
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#LetterOfCredit/$entity","@odata.metadataEtag":"W/\"20260925111536\"","CompanyCode":"9999","FinancialTransaction":"100025","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-09-25","ValuationClass":"1","Portfolio":"","StartTerm":"2026-09-25","EndTerm":"2027-03-24","FlowType":"1860","Amount":60000.0000,"Currency":"INR","LcNumber":"ZFS0925164549A","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### W4-read-after-patch
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit(CompanyCode='9999',FinancialTransaction='100025')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#LetterOfCredit/$entity","@odata.metadataEtag":"W/\"20260925111536\"","CompanyCode":"9999","FinancialTransaction":"100025","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-09-25","ValuationClass":"1","Portfolio":"","StartTerm":"2026-09-25","EndTerm":"2027-03-24","FlowType":"1860","Amount":60000.0000,"Currency":"INR","LcNumber":"ZFS0925164549A","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### W6-settle-A
+POST https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit(CompanyCode='9999',FinancialTransaction='100025')/com.sap.gateway.srvd_a2x.zfs_sd_trmlc.v0001.Settle?sap-client=100
+Body: {}
+Status: 200
+sap-messages: [{"code":"FTR0/162","message":"BAPI was executed successfully","numericSeverity":2,"target":""},{"code":"T4/169","message":"Messages relating to transaction","numericSeverity":1,"target":""},{"code":"FTR0/035","message":"No payment details entered for transaction 100025","numericSeverity":3,"target":""}]
+{"@odata.context":"../$metadata#LetterOfCredit/$entity","@odata.metadataEtag":"W/\"20260925111536\"","CompanyCode":"9999","FinancialTransaction":"100025","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-09-25","ValuationClass":"1","Portfolio":"","StartTerm":"2026-09-25","EndTerm":"2027-03-24","FlowType":"1860","Amount":60000.0000,"Currency":"INR","LcNumber":"ZFS0925164549A","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"30","SAP__Messages":[]}
+
+
+### W6-read-after-settle
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit(CompanyCode='9999',FinancialTransaction='100025')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#LetterOfCredit/$entity","@odata.metadataEtag":"W/\"20260925111536\"","CompanyCode":"9999","FinancialTransaction":"100025","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-09-25","ValuationClass":"1","Portfolio":"","StartTerm":"2026-09-25","EndTerm":"2027-03-24","FlowType":"1860","Amount":60000.0000,"Currency":"INR","LcNumber":"ZFS0925164549A","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"30","SAP__Messages":[]}
+
+
+### W7-settle-again
+POST https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit(CompanyCode='9999',FinancialTransaction='100025')/com.sap.gateway.srvd_a2x.zfs_sd_trmlc.v0001.Settle?sap-client=100
+Body: {}
+Status: 400
+sap-messages: 
+{"error":{"code":"T1/079","message":"Transaction belongs to activity category Contract Settlement","target":"$Parameter/_it","@SAP__common.longtextUrl":"../../../../../default/iwbep/common/0001/T100Longtexts(MessageClass='T1',MessageNumber='079',Variable1='Contract%20Settlement',Variable2='',Variable3='',Variable4='')/Documentation","@SAP__common.ExceptionCategory":"Provider_Application_Error","details":[{"code":"FTR0/161","message":"BAPI processing was terminated","target":"$Parameter/_it","@SAP__common.Severity":"error","@SAP__common.numericSeverity":4}],"innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMLC","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690270E006AB5FA2738487","@SAP__common.Timestamp":"20260925111556.442503","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### W10-reverse-100025-1
+DELETE https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit(CompanyCode='9999',FinancialTransaction='100025')?sap-client=100
+Status: 204
+sap-messages: [{"code":"FTR0/162","message":"BAPI was executed successfully","numericSeverity":2}]
+
+
+
+### W10-read-100025-1
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit(CompanyCode='9999',FinancialTransaction='100025')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#LetterOfCredit/$entity","@odata.metadataEtag":"W/\"20260925111536\"","CompanyCode":"9999","FinancialTransaction":"100025","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-09-25","ValuationClass":"1","Portfolio":"","StartTerm":"2026-09-25","EndTerm":"2027-03-24","FlowType":"1860","Amount":60000.0000,"Currency":"INR","LcNumber":"ZFS0925164549A","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### W10-reverse-100025-2
+DELETE https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit(CompanyCode='9999',FinancialTransaction='100025')?sap-client=100
+Status: 204
+sap-messages: [{"code":"FTR0/162","message":"BAPI was executed successfully","numericSeverity":2}]
+
+
+
+### W10-read-100025-2
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit(CompanyCode='9999',FinancialTransaction='100025')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#LetterOfCredit/$entity","@odata.metadataEtag":"W/\"20260925111536\"","CompanyCode":"9999","FinancialTransaction":"100025","ProductType":"38A","TransactionType":"100","Partner":"400000000","ContractDate":"2026-09-25","ValuationClass":"1","Portfolio":"","StartTerm":"2026-09-25","EndTerm":"2027-03-24","FlowType":"1860","Amount":60000.0000,"Currency":"INR","LcNumber":"ZFS0925164549A","Applicant":"","Beneficiary":"400000001","IssuingBank":"","AdvisingBank":"","PlaceOfExpiry":"","PaymentTerm":"0","TerminateDate":null,"LastPresentationItem":"","LastPresentationStatus":"","ActiveStatus":"3","ActivityCategory":"20","SAP__Messages":[]}
+
+
+### W11-count-after
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit?$filter=CompanyCode eq '9999'&$count=true&$top=0&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#LetterOfCredit","@odata.metadataEtag":"W/\"20260925111536\"","@odata.count":9,"value":[]}
+
+

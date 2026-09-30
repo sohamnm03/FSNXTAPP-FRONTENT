@@ -1,0 +1,296 @@
+Dynamic Gateway v2 (ZFS_SB_DYNGW_O4_API) - verified/authored payloads for Task 20's regression
+suite (scripts/dyngw-v2-regression.ps1).
+
+System: DS4_100_NIIF (DS4 / client 100). Package ZFS_DYN_GW. Service published (Task 18).
+
+Base URL (verbatim from task-18-report.md, the live report that paid for it):
+  https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_dyngw_o4_api/srvd_a2x/sap/zfs_sd_dyngw/0001
+Action namespace:
+  com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001
+Entity sets:
+  CallLog, CallStep, Registry, RegistryHistory
+Actions (all six are "static action" on ZFS_R_DynGwCallTP, bound to CallLog per task-18's own
+POST .../CallLog/<ns>.RunQuery convention):
+  RunQuery, CallFunctionModule, ExecuteTableCrud, SubmitReport, RegisterTarget, ExecuteBatch
+Every request URL carries sap-client=100 (L-253/L-325). A write needs the X-CSRF-Token obtained
+from a prior GET .../$metadata?sap-client=100 with header X-CSRF-Token: Fetch, and the session
+cookie that GET returns (L-... none specific, but standard SAP CSRF protocol).
+
+Parameter shapes, from the plan (docs/superpowers/plans/2026-09-12-1032-dyngw-v2.md lines 1744-1751)
+and confirmed live in task-18-report.md:
+
+  RunQuery           TargetName, FieldsJson, FilterJson, OrderByJson, MaxRows, SkipRows, RequestId
+  CallFunctionModule TargetName, ImportJson, TablesJson, RequestId
+  ExecuteTableCrud   TargetName, Operation, ImportJson, RequestId
+  SubmitReport       TargetName, Operation, ImportJson, FilterJson, MaxRows, RequestId
+  RegisterTarget     TargetName, Operation, ImportJson, RequestId
+  ExecuteBatch       CommitMode, RequestId, StepsJson (string; JSON array of step objects)
+
+Each StepsJson entry mirrors ZFS_AE_DynGwStep: Kind, TargetName, Operation, ImportJson,
+TablesJson, FieldsJson, FilterJson, OrderByJson, MaxRows, SkipRows - so a batch payload nests
+JSON two levels deep (StepsJson is a string containing an array of objects, each of whose *Json
+fields is itself a string containing JSON), matching L-472's cost/benefit note (v1 nested three
+levels; v2 nests two).
+
+Result shape (ZFS_AE_DynGwResult), returned as the top-level JSON object of the action response:
+  GwUuid, ExecStatus, ErrorCategory, Replayed, MessageId, MessageNo, MessageText, ResultCount,
+  DurationMs, RowsJson, ExportJson, TablesJson, StepsJson
+
+===============================================================================================
+1. RunQuery - happy path (verified live, task-18-report.md S4)
+===============================================================================================
+Request:
+{"TargetName":"T000","FieldsJson":"[\"MANDT\",\"MTEXT\"]","FilterJson":"","OrderByJson":"","MaxRows":3,"SkipRows":0,"RequestId":""}
+
+Verified response (2026-09-13, task 18):
+HTTP 200, ExecStatus S, ResultCount 3, RowsJson carrying MANDT/MTEXT for clients 000/050/100,
+GwUuid 5254001f-e7a2-1fd1-abe2-09245af40000.
+
+===============================================================================================
+2. RunQuery - refusal, unregistered target (verified live, task-18-report.md S4)
+===============================================================================================
+Request:
+{"TargetName":"ZZ_UNKNOWN","FieldsJson":"[\"MANDT\"]","FilterJson":"","OrderByJson":"","MaxRows":3,"SkipRows":0,"RequestId":""}
+
+Verified response: HTTP 200 (not 400), ExecStatus E, ErrorCategory CLIENT. Header MessageId/No
+is ZFS_TRM_MSG/045 ("Batch aborted at step 1: Target ZZ_UNKNOWN is not registered for the
+dynami" - &2 truncated at SYMSGV's 50-char cap, L-478); the step row itself carries 017.
+
+===============================================================================================
+3. RunQuery - paging without a stable sort -> refused 042 (authored, not yet run live)
+===============================================================================================
+Request:
+{"TargetName":"T000","FieldsJson":"[\"MANDT\",\"MTEXT\"]","FilterJson":"","OrderByJson":"","MaxRows":2,"SkipRows":1,"RequestId":""}
+
+Expected (source-verified 2026-09-13 by reading ZCL_FS_DYN_RUNTIME~SELECT_ROWS and the handler's
+042 guard, not run live): ExecStatus E, message 042 "Paging requires a stable sort order for T000".
+
+===============================================================================================
+4. RunQuery - paging WITH a stable sort -> must succeed (authored, not yet run live)
+===============================================================================================
+Request:
+{"TargetName":"T000","FieldsJson":"[\"MANDT\",\"MTEXT\"]","FilterJson":"","OrderByJson":"[\"MANDT\"]","MaxRows":2,"SkipRows":1,"RequestId":""}
+
+Expected: ExecStatus S. This is the spec 3.3 "Paging" row v1 never had at all.
+
+===============================================================================================
+5. RegisterTarget - single-shot INSERT, harmless FUNC fixture (authored, not yet run live)
+===============================================================================================
+Request:
+{"TargetName":"RFC_SYSTEM_INFO","Operation":"INSERT","ImportJson":"{\"TargetKind\":\"FUNC\",\"Operation\":\"\",\"IsActive\":true,\"AllowRead\":true,\"AllowWrite\":false,\"CallMode\":\"\",\"MaxRows\":10,\"LogLevel\":\"A\",\"Descr\":\"dyngw v2 regression: read-only FUNC fixture\"}","RequestId":""}
+
+RFC_SYSTEM_INFO is a standard, remote-enabled, read-only, side-effect-free function module
+(returns system info) - chosen specifically so this fixture never needs cleanup or risks data.
+Expected: ExecStatus S, message 036, one ZFS_T_DYN_REGH row change_type I source REGI.
+
+===============================================================================================
+6. RegisterTarget - duplicate of an already-registered target -> refused 035
+===============================================================================================
+Request:
+{"TargetName":"T000","Operation":"INSERT","ImportJson":"{\"TargetKind\":\"QURY\",\"Operation\":\"\",\"IsActive\":true,\"AllowRead\":true,\"AllowWrite\":false,\"CallMode\":\"\",\"MaxRows\":10,\"LogLevel\":\"A\",\"Descr\":\"duplicate probe - must be refused\"}","RequestId":""}
+
+Expected: ExecStatus E, message 035 "Target T000 is already registered". T000's existing row
+must be unaffected (compare ZFS_T_DYN_REG before/after by name and Descr).
+
+===============================================================================================
+7. RegisterTarget - self-protection -> refused 039 (verified live pattern, task-18-report.md S2)
+===============================================================================================
+Request:
+{"TargetName":"ZFS_T_DYN_REG","Operation":"INSERT","ImportJson":"{\"TargetKind\":\"TABL\",\"Operation\":\"\",\"IsActive\":true,\"AllowRead\":true,\"AllowWrite\":true,\"CallMode\":\"\",\"MaxRows\":10,\"LogLevel\":\"A\",\"Descr\":\"self-protect probe - must be refused\"}","RequestId":""}
+
+Verified live equivalent (task 18, "Assertion 2"): HTTP 400 (direct OData create route used
+there), body {"error":{"code":"ZFS_TRM_MSG/039","message":"Target ZFS_T_DYN_REG belongs to the
+gateway framework and is not a permitted target",...}}. Through the RegisterTarget ACTION
+(rather than a direct entity POST), expect HTTP 200, ExecStatus E, message 039 - the action
+wraps every refusal as 200/E per the framework's own convention (L-478), unlike the plain OData
+entity-create route Task 18 exercised directly.
+
+===============================================================================================
+8. CallFunctionModule - happy path (authored, not yet run live; needs #5 registered first)
+===============================================================================================
+Request:
+{"TargetName":"RFC_SYSTEM_INFO","ImportJson":"[]","TablesJson":"[]","RequestId":""}
+
+Expected: ExecStatus S, ExportJson carrying RFC_SYSTEM_INFO's EXPORTING structure (RFCSI_EXPORT).
+
+===============================================================================================
+9. CallFunctionModule - nonexistent target -> refused 017 (authored, not yet run live)
+===============================================================================================
+Request:
+{"TargetName":"ZZ_NOT_A_REAL_FM","ImportJson":"[]","TablesJson":"[]","RequestId":""}
+
+Expected: ExecStatus E, message 017 (registry-miss - the target was never registered, so the
+TFDIR/019 check is never reached; 019 only fires for a REGISTERED FUNC target whose TFDIR
+lookup then misses).
+
+===============================================================================================
+10. CallFunctionModule - CHANGING parameter in RFC mode -> BLOCKED, needs a human-named FM
+===============================================================================================
+No payload authored. Spec 3.1 requires proving "CHANGING parameters, local mode only; RFC mode
+refused with a clear message." This needs a registered FUNC target that actually has a CHANGING
+parameter. None is registered on this system and none was invented here (project rule 3). A
+human must name one before this case can be written for real.
+
+===============================================================================================
+11. ExecuteTableCrud - empty ImportJson array against a self-protected target
+===============================================================================================
+Request:
+{"TargetName":"ZFS_T_DYN_REG","Operation":"INSERT","ImportJson":"[]","RequestId":""}
+
+Expected: ExecStatus E, message 039 - NOT 022. ZCL_FS_DYN_HDL_TABLE~PREPARE runs
+reject_own_object() before parse_rows(), so self-protection wins the race against the
+empty-array check on this particular target. The genuine 022-empty-array case (task-13-
+report.md S2.2, msgv1 "ImportJson (no rows to write)") needs a non-self-protected target and is
+covered structurally by the same source review, not re-run live here.
+
+===============================================================================================
+12. ExecuteTableCrud - self-protection -> refused 039 (proof 3, case 2's non-authorization half)
+===============================================================================================
+Request:
+{"TargetName":"ZFS_T_DYN_REG","Operation":"INSERT","ImportJson":"[{\"TARGET_KIND\":\"TABL\",\"TARGET_NAME\":\"ZZ_PROBE\"}]","RequestId":""}
+
+Expected: ExecStatus E, message 039, ZFS_T_DYN_REG unchanged.
+
+===============================================================================================
+13. ExecuteTableCrud - happy path (BLOCKED pending -ProbeTable)
+===============================================================================================
+Shape (script builds this once -ProbeTable/-ProbeKeyField are supplied):
+{"TargetName":"<ProbeTable>","Operation":"INSERT","ImportJson":"[{\"<ProbeKeyField>\":\"<value>\"}]","RequestId":""}
+
+No table is named here. Needs a real, human-approved, non-framework writable table with a
+genuine primary key (project rule 3: never invent or assume one).
+
+===============================================================================================
+14. SubmitReport - refusal, unregistered RSUSR003 == Proof 2 (authored, not yet run live)
+===============================================================================================
+Request:
+{"TargetName":"RSUSR003","Operation":"SALV","ImportJson":"","FilterJson":"","MaxRows":10,"RequestId":""}
+
+Expected: ExecStatus E, message 017, nothing runs (no ALV, no list, no job started).
+
+===============================================================================================
+15. SubmitReport - happy path (SKIPPED pending a registered report)
+===============================================================================================
+No report is registered as a SUBM target on this system yet. RSPARAM is named as a safe
+standard candidate (already run live once, in Task 13's LTC_FACTORY_LIVE, in capture mode SALV,
+and came back with rows) if a human wants to register one before running this suite live.
+
+===============================================================================================
+16. ExecuteBatch - malformed StepsJson -> refused 022 (verified live, task-18-report.md S4, L-477)
+===============================================================================================
+Request:
+{"CommitMode":"AUTO","RequestId":"","StepsJson":"[{not json"}
+
+Verified: fixed during Task 18 from "200/S/StepsJson []" (a defect: malformed request reported
+as a successful empty batch) to "200/E/CLIENT/022". This case is the regression guard for that
+exact fix; a regression back to the pre-fix behaviour must fail this case loudly.
+
+===============================================================================================
+17. ExecuteBatch - empty StepsJson "[]" -> legitimate no-op (verified live, task-18-report.md S4, L-477)
+===============================================================================================
+Request:
+{"CommitMode":"AUTO","RequestId":"","StepsJson":"[]"}
+
+Verified: ExecStatus S. The first fix for #16 broke this case; the second fix restored it. Both
+must hold simultaneously.
+
+===============================================================================================
+18. ExecuteBatch - two QURY steps, composite happy path (pattern verified live, task-18-report.md S4)
+===============================================================================================
+Request:
+{"CommitMode":"AUTO","RequestId":"T20-BATCH-TWOQUERY-0001","StepsJson":"[{\"Kind\":\"QURY\",\"TargetName\":\"T000\",\"Operation\":\"\",\"ImportJson\":\"\",\"TablesJson\":\"\",\"FieldsJson\":\"[\\\"MANDT\\\"]\",\"FilterJson\":\"\",\"OrderByJson\":\"\",\"MaxRows\":1,\"SkipRows\":0},{\"Kind\":\"QURY\",\"TargetName\":\"T005\",\"Operation\":\"\",\"ImportJson\":\"\",\"TablesJson\":\"\",\"FieldsJson\":\"[\\\"LAND1\\\"]\",\"FilterJson\":\"\",\"OrderByJson\":\"\",\"MaxRows\":1,\"SkipRows\":0}]"}
+
+Task 18 ran the equivalent two-QURY-step batch under RequestId T18-BATCH-0001 and got HTTP 200,
+ExecStatus S, ResultCount 4 (two rows per step in that run; this suite asks for one row per step
+to keep the assertion simple - MaxRows 1 each, so ResultCount 2 expected here).
+
+===============================================================================================
+19. ExecuteBatch - idempotency replay (verified live pattern, task-18-report.md S4)
+===============================================================================================
+Same request body as #18, sent a second time with the identical RequestId.
+Verified pattern: HTTP 200, Replayed "X", same GwUuid as the first call, nothing re-executed,
+nothing (re-)written.
+
+===============================================================================================
+20. ExecuteBatch - CommitMode NEVER, a wholly successful dry run (authored, not yet run live)
+===============================================================================================
+Request:
+{"CommitMode":"NEVER","RequestId":"T20-DRYRUN-0001","StepsJson":"[{\"Kind\":\"QURY\",\"TargetName\":\"T000\",\"Operation\":\"\",\"ImportJson\":\"\",\"TablesJson\":\"\",\"FieldsJson\":\"[\\\"MANDT\\\"]\",\"FilterJson\":\"\",\"OrderByJson\":\"\",\"MaxRows\":1,\"SkipRows\":0}]"}
+
+Expected: ExecStatus S (the run succeeded); ZCL_FS_DYN_DISPATCH~RUN rolls it back anyway because
+CommitMode is NEVER - source-verified, not run live. QURY has nothing to roll back in practice,
+so this case only proves the run reports success; it does not by itself prove the rollback
+happened (a QURY-only batch has no side effect to check either way).
+
+===============================================================================================
+21. PROOF 1 (L-350 closure) - literal brief form: two TABL INSERT, same primary key
+===============================================================================================
+Shape (needs -ProbeTable/-ProbeKeyField/-ProbeKeyValue):
+{"CommitMode":"AUTO","RequestId":"T20-PROOF1-TABL-0001","StepsJson":"[{\"Kind\":\"TABL\",\"TargetName\":\"<ProbeTable>\",\"Operation\":\"INSERT\",\"ImportJson\":\"[{\\\"<ProbeKeyField>\\\":\\\"<value>\\\"}]\",\"TablesJson\":\"\",\"FieldsJson\":\"\",\"FilterJson\":\"\",\"OrderByJson\":\"\",\"MaxRows\":0,\"SkipRows\":0},{... identical step again ...}]"}
+
+*** CRITICAL FINDING FROM READ-ONLY SOURCE REVIEW (2026-09-13, ZCL_FS_DYN_RUNTIME~MODIFY_TABLE
+and ZCL_FS_DYN_HDL_TABLE~ZIF_FS_DYN_HANDLER~EXECUTE, both read via getObjectSource) ***
+INSERT is issued as "INSERT (target_table) FROM TABLE <rows> ACCEPTING DUPLICATE KEYS." A
+duplicate on the table's PRIMARY KEY is therefore NOT an exception - it is sy-subrc=4,
+sy-dbcnt=0, and the handler reports it as a PARTIAL WRITE: ExecStatus S, severity W, message 048
+("<table>: 0 of 1 row(s) written"). The batch does NOT abort and DOES commit step 1's row.
+This means the brief's literal "two TABL INSERT steps, same key" scenario will most likely
+return ExecStatus S, not E, if <ProbeKeyField> is the table's primary key - the opposite of what
+the brief expects, and NOT a script defect. Reproducing a genuine phase-2 abort via TABL needs a
+target whose SECONDARY unique index (not primary key) is violated by the second insert, since
+ACCEPTING DUPLICATE KEYS only suppresses primary-key duplicates. No such non-framework table
+was identified or created for this authoring pass (rule 3). See task-20-report.md for the
+recommendation.
+
+===============================================================================================
+22. PROOF 1 (L-350 closure) - corroborating reproduction: two REGI steps, same target
+===============================================================================================
+Request (ZZPROOF1 is a synthetic name that resolves to nothing real; QURY is arbitrary):
+{"CommitMode":"AUTO","RequestId":"T20-PROOF1-REGI-0001","StepsJson":"[{\"Kind\":\"REGI\",\"TargetName\":\"ZZPROOF1\",\"Operation\":\"INSERT\",\"ImportJson\":\"{\\\"TargetKind\\\":\\\"QURY\\\",\\\"IsActive\\\":true,\\\"AllowRead\\\":true,\\\"AllowWrite\\\":false,\\\"MaxRows\\\":10,\\\"LogLevel\\\":\\\"A\\\",\\\"Descr\\\":\\\"proof1 step1\\\"}\",\"TablesJson\":\"\",\"FieldsJson\":\"\",\"FilterJson\":\"\",\"OrderByJson\":\"\",\"MaxRows\":0,\"SkipRows\":0},{\"Kind\":\"REGI\",\"TargetName\":\"ZZPROOF1\",\"Operation\":\"INSERT\",\"ImportJson\":\"{\\\"TargetKind\\\":\\\"QURY\\\",\\\"IsActive\\\":true,\\\"AllowRead\\\":true,\\\"AllowWrite\\\":false,\\\"MaxRows\\\":10,\\\"LogLevel\\\":\\\"A\\\",\\\"Descr\\\":\\\"proof1 step2 - duplicate, must abort the batch\\\"}\",\"TablesJson\":\"\",\"FieldsJson\":\"\",\"FilterJson\":\"\",\"OrderByJson\":\"\",\"MaxRows\":0,\"SkipRows\":0}]"}
+
+Source-verified mechanism (ZCL_FS_DYN_HDL_REGI~ZIF_FS_DYN_HANDLER~PREPARE, read via
+getObjectSource): step 2's INSERT duplicate check calls ZCL_FS_DYN_REGISTRY=>EXISTS, which
+"deliberately sees ... an earlier REGI step's declaration" - i.e. step 1's own PENDING buffer
+from declare_pending(). So step 2 fails in PHASE 1 (validation), before ANYTHING has executed,
+with message 035. The dispatcher's phase-1 failure path (ZCL_FS_DYN_DISPATCH~RUN) then calls
+rollback_luw() (a no-op, since nothing ran) and reports the call level as ExecStatus E, header
+MessageId/No ZFS_TRM_MSG/045 naming step 2, MessageText carrying 035's rendered text. Neither
+REGI step ever reaches EXECUTE, so ZFS_T_DYN_REG never receives a row for ZZPROOF1/QURY at all -
+verified after the call via GET Registry?$filter=TargetKind eq 'QURY' and TargetName eq
+'ZZPROOF1', expecting zero rows. This reproduces the L-350 guarantee (nothing survives an
+aborted batch) with no write to any external table and no cleanup required - the duplicate is
+refused before either row exists.
+
+===============================================================================================
+23. PROOF 2 - SUBM against unregistered RSUSR003
+===============================================================================================
+Identical to payload #14 above. Expected: ExecStatus E, message 017, nothing runs.
+
+===============================================================================================
+24. PROOF 3 - EXECUTE vs ADMIN split - BLOCKED, no payload sent
+===============================================================================================
+Needs a second SAP user/session holding ZFS_DYNGW ACTVT 16 (EXECUTE) only, not 01/02/03
+(ADMIN). FS_DEV3 (the only credential in config/sap-systems.json for DS4_100_NIIF) holds all
+four activities. No role, user or profile may be created to manufacture this (project rule 3),
+and running as FS_DEV3 anyway would pass whether or not the control works, proving nothing.
+Case shapes, ready the moment a restricted principal exists:
+  - RegisterTarget for any new TargetName, as the restricted caller -> expect ExecStatus E,
+    message 040.
+  - ExecuteTableCrud INSERT against ZFS_T_DYN_REG, as the restricted caller -> expect
+    ExecStatus E, message 039. (039 itself is exercised with FS_DEV3 in payloads #7/#12/#22
+    above; what is NOT exercised is whether a caller with EXECUTE-only even reaches that check
+    the same way, or is stopped earlier by the ADMIN gate - that is specifically what proof 3
+    is for.)
+
+===============================================================================================
+Notes on payloads NOT included here
+===============================================================================================
+- SUBM capture modes LIST/MEMO/NONE, variant validation, RSPARAMS bounds (spec 3.4): all need a
+  registered report target, which needs a human-approved program name (same reasoning as the
+  ExecuteTableCrud probe table). Not authored beyond the RSUSR003 refusal case.
+- The write-row-budget ceiling (spec 3.2 "Write-row budget", default 1000 per Task 13's
+  CHECK_WRITE_ROWS) needs a >1000-row ImportJson array against a writable, non-framework table -
+  same -ProbeTable prerequisite, and a large literal array besides. Not authored.
+- DDIC .INCLUDE flattening (spec 3.3) needs a real table with a component inside a .INCLUDE.
+  None was identified for this pass; the fix itself was source-reviewed in Task 18/L-316's
+  history but not independently re-verified against a live table here.

@@ -1,0 +1,5 @@
+{
+  "request": "{\"TargetName\":\"ZFS_SLC_OTTK_BTP\",\"Operation\":\"DELETE\",\"ImportJson\":\"[{\\\"UUID\\\":\\\"UlQAH+eiH9GsnDLusY0gAA==\\\",\\\"ZOTTK_NO\\\":\\\"100051\\\"},{\\\"UUID\\\":\\\"UlQAH+eiH9GsnD07FGFgAA==\\\",\\\"ZOTTK_NO\\\":\\\"100052\\\"},{\\\"UUID\\\":\\\"UlQAH+eiH9GsnEnb+tYgAA==\\\",\\\"ZOTTK_NO\\\":\\\"100053\\\"}]\",\"GenerateJson\":\"\",\"RequestId\":\"\"}",
+  "response_summary": "ExecStatus 'S', ErrorCategory '', IsCommitted 'X', ResultCount 3 - all three rows deleted. Independently re-read via mcp-abap-abap-adt-api runQuery: only ZOTTK_NO 100049/100050 remain.",
+  "note": "UUID values are the base64 encoding of the raw 16-byte UUID hex string read back from the table before deletion (5254001FE7A21FD1AC9C32EEB18D2000 -> UlQAH+eiH9GsnDLusY0gAA==, etc)."
+}

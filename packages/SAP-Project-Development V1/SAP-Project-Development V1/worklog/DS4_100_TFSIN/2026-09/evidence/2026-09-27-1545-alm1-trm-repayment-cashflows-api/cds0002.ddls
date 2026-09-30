@@ -1,0 +1,48 @@
+@AbapCatalog.sqlViewName: '/FS00/VW0002'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'CF Details Update Type'
+@Metadata.ignorePropagatedAnnotations: true   
+define view /FS00/CDS0002
+  as select from trlv_trans_pos   as a
+    join         trdc_dflowtype_t as b on  b.dis_flowtype = a.flowtype
+                                       and b.spras        = $session.system_language
+    join         ztrm_t0004       as c on  c.zsgsart      = a.product_type
+                                       and c.zupdate_type = a.flowtype
+{
+
+  a.os_guid,
+  a.bustranscat,
+  a.trldate,
+  a.bustransid,
+  a.booking_state,
+  a.flowtype,
+  b.dis_flowtypetext,
+  c.zfs_flow,
+  a.units,
+  a.nominal_amt,
+  a.nominal_curr,
+  a.position_amt,
+  a.position_curr,
+  a.valuation_amt,
+  a.valuation_curr,
+  a.valuation_area,
+  a.valuation_class,
+  a.company_code,
+  a.product_type,
+  a.security_id,
+  a.lot_id,
+  a.deal_number,
+  a.calculation_date,
+  a.calc_date_incl,
+  a.due_date,
+  a.fi_post_date,
+  a.calc_begin,
+  a.calc_end,
+  a.eff_int_rate_u,
+  a.eff_int_rate_n,
+  a.portfolio
+
+}
+

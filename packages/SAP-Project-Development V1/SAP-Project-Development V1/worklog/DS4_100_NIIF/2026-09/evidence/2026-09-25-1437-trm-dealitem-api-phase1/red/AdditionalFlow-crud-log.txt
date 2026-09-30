@@ -1,0 +1,22 @@
+﻿### 1-list-before
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/AdditionalFlow?$filter=CompanyCode eq '1000' and FinancialTransaction eq '160537'&$count=true&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#AdditionalFlow","@odata.metadataEtag":"W/\"20260925092505\"","@odata.count":0,"value":[]}
+
+
+### 2-list-without-deal-filter
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/AdditionalFlow?sap-client=100
+Status: 500
+sap-messages: 
+{"error":{"code":"ZFS_TRM_MSG/056","message":"Filter on CompanyCode and FinancialTransaction (eq) is required","@SAP__common.ExceptionCategory":"Provider_Application_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMDEALITEM","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690260E006AB5F3273AF0C","@SAP__common.Timestamp":"20260925092541.504654","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### 3-create
+POST https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/AdditionalFlow?sap-client=100
+Body: {"CompanyCode":"1000","FinancialTransaction":"160537","Side":"0","FlowType":"1440","FlowSign":"-","PaymentDate":"2026-12-15","PaymentAmount":500,"PaymentCur":"INR"}
+Status: 405
+sap-messages: 
+{"error":{"code":"SADL_ENTITY_RUNTIME/011","message":"Creating operations are disabled for entity '$SRVD_A2X#ZFS_SD_TRMDEALITEM~ZFS_CE_TRMDEALADDFLOW'","@SAP__common.ExceptionCategory":"Client_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMDEALITEM","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690260E006AB5F3273AF10","@SAP__common.Timestamp":"20260925092541.870049","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+

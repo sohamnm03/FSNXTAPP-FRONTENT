@@ -1,0 +1,5 @@
+﻿{
+    "request":  "{ \"TargetName\":\"ZFS_T_TRM_PROBE\", \"Operation\":\"UPDATE\", \"ImportJson\":\"{\\\"TargetKind\\\":\\\"TABL\\\",\\\"AllowGen\\\":true,\\\"GenNrObject\\\":\\\"ZFS_OTTK_D\\\"}\", \"RequestId\":\"\" }",
+    "httpStatus":  200,
+    "response":  "{\"@odata.context\":\"../$metadata#com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.ZFS_AE_DynGwResult\",\"@odata.metadataEtag\":\"W/\\\"20260915103208\\\"\",\"DurationMs\":1000,\"ErrorCategory\":\"\",\"ExecStatus\":\"S\",\"ExportJson\":\"\",\"GwUuid\":\"5254001f-e7a2-1fd1-ac9c-855986632000\",\"IsCommitted\":\"X\",\"IsRolledBack\":\"\",\"MessageId\":\"\",\"MessageNo\":\"0\",\"MessageText\":\"\",\"Replayed\":\"\",\"ResultCount\":1,\"RowsJson\":\"\",\"StepsJson\":\"\",\"TablesJson\":\"\"}"
+}

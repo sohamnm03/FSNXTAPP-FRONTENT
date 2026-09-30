@@ -1,0 +1,44 @@
+﻿[PASS] temporary app instance up port 8098
+[PASS] sign in user=demo
+[PASS] accounts setup: odata mode, company 1000 offered mode=odata service=ZFS_SB_ALMTBDATA_O4_API companies=74
+[PASS] accounts: all G/L accounts of 1000 rows=1121 expected=1121
+[PASS] accounts: keys padded, fields mapped 0010200001 chart=1000 'Non Convertible Debentures' created=2025-07-03 by=FS_DEV blockedCoCd=False
+[PASS] accounts: balance sheet only rows=630 expected=630
+[PASS] accounts: creation date range rows=1096 outside range=0
+[PASS] accounts: invalid date refused => Enter the created-from date as a date (YYYY-MM-DD).
+[PASS] balances setup: groups and sources for the selection alm2=183 alm3=178 sources=55
+[PASS] balances with zero: every account, key date month end rows=1121 keyDate=2026-09-30 currency=INR
+[PASS] balances: 0010200001 as a decimal balance=-23619472061.65 (Decimal) expected=-23619472061.65 fiscal=2026/6
+[PASS] balances: trial balance sums to zero (decimal) sum=0.00
+[PASS] balances: zero balances left out (Balance ne 0 with its currency) rows=208 expected=208 zero rows=0 
+[PASS] balances: non-zero rows sum to zero too sum=0.00
+[PASS] balances: mapped accounts only rows=656 expected=656
+[PASS] balances: ALM 2 group filter, mapping texts, padded bucket rows=1 0020306017 bucket=01 '01 Day(s) to 07 Day(s)' source=99 'Trial Balance Data'
+[PASS] balances: source filter (legacy rows carry SA as source) rows=436
+[PASS] balances: balance sheet only rows=630 expected=630
+[PASS] balances: month 13 refused => Select a month from 01 to 12.
+[PASS] mapping view: odata, all rows, keys padded rows=660 expected=660
+[PASS] mapping view: legacy rows shown as they are (group/source swapped) 0010000001 group=99 source=SA bucket=10; rows with source SA=440
+[PASS] mapping value helps from Report Formats / Time Buckets / Data Sources alm2=183 alm3=178 buckets=01,02,03,04,05,06,07,08,09,10 sources=55
+[PASS] guard: 0010000002 has no mapping row 
+[PASS] manual reject: unknown ALM 2 group => ALM 2 group 'ZZ:99' is not in the ALM 2 grouping
+[PASS] manual reject: bucket 11 and sensitivity 03, per field => Bucket '11' is not in the ALM 2/3 time buckets | Sensitivity '03' is not in 01 Sensitive / 02 Non Sensitive
+[PASS] nothing stored by the refused requests 
+[PASS] manual create (key without leading zeros, codes in lower case) created=1 rows=661 
+[PASS] manual create: SAP derived the texts, stamps name='Share Application Pending Allotment' group='a) Sundry creditors' bucket=01 '01 Day(s) to 07 Day(s)' alm3=10 'Over 05 Year(s)' by=FS_DEV3 etag=W/"SADL-3230323630393237323331333030~20260927231300"
+[PASS] manual reject: duplicate create => G/L account 0010000002 is already mapped
+[PASS] manual change bucket (If-Match ETag): text follows, rest kept updated=1 bucket=02 '07 Day(s) to 15 Day(s)' alm3=10 
+[PASS] manual change again: unchanged, nothing sent updated=0 skipped=1
+[PASS] manual delete: row gone, count back deleted=1 rows=660 
+[PASS] upload preview: one new row, nothing written action=create total=660 
+[PASS] upload commit: created, total +1, SAP texts result={"created":1,"updated":0,"unchanged":0,"invalid":0,"rejected":0} total=661 bucket=01 sens=02 
+[PASS] upload preview: existing row is an update of Type only action=update changes={"type3":["IA","IB"]}
+[PASS] upload commit: updated (merge), total unchanged result={"created":0,"updated":1,"unchanged":0,"invalid":0,"rejected":0} type3=IB
+[PASS] upload same file again: unchanged, nothing sent result={"created":0,"updated":0,"unchanged":1,"invalid":0,"rejected":0}
+[PASS] upload reject: unknown ALM 2 group, row skipped => ALM 2 group 'ZZ:99' is not in the ALM 2 grouping (stored type3=IB)
+[PASS] delete the uploaded row deleted=1 
+[PASS] GlMapping row count back to the start rows=660
+[PASS] legacy row untouched changed=FS_DEV 2026-08-26 20:51:38
+temporary instance (pid 9012) stopped
+
+RESULT: 41 passed, 0 failed

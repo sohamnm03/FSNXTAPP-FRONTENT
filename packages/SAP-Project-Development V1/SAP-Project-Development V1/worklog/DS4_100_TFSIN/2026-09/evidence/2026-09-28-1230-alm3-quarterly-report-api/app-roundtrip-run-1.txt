@@ -1,0 +1,24 @@
+﻿SAP period before: saved=False savedRows=0 locked=False
+SAP report: rows=183 rows with Total<>0=23
+[PASS] temporary app instance up port 8098 pid 19740
+[PASS] sign in user=demo
+[PASS] setup: odata mode on the ALM 3 service, company codes mode=odata service=ZFS_SB_ALMQTR3RPT_O4_API companies=74
+[FAIL] report: 11 buckets, XBRL X010..X100 + X110 xbrl=X010,X20,X030,X040,X050,X060,X070,X080,X090,X100,X110
+[PASS] report: bucket 11 is Non-sensitive, Total XBRL X120 b11=b11/Non-sensitive totalXbrl=X120
+[PASS] report: key date = month end + 1, snapshot date = month end key=2026-10-01 snapshot=2026-09-30
+[PASS] report: same rows as SAP app=183 sap=183
+[PASS] report: same group order as SAP, computed rows last last5=IA:99:99:99:99:99_A1,IC,ID,IE,IF
+[PASS] report: IA:99:99:99:99:99 total = SAP app=7874665432708.75 sap=7874665432708.75
+[PASS] report: PERCENT rows flagged (IE, IF) rows=IE,IF
+[PASS] report: Bucket11, Total, InterestType, NonSensitive, TransactionType = SAP on every row mismatches=0 
+info: interestType 01 (fixed)=5 02 (floating)=5; nonSensitive rows=2; portfolio element present=False
+info: rows with sourceIncomplete = 0
+[PASS] period: not saved, not locked (guard) saved=False locked=False
+[PASS] save through the app: saved rows = rows with Total <> 0 savedRows=23 expected=23 by=FS_DEV3 
+[PASS] second save refused (SAP message 023) => {"error":{"message":"SaveSnapshot: ALM 3 data of 09/2026 for company code 1000 is already saved"}}
+[PASS] delete through the app saved=False 
+[PASS] unknown action refused by the app => {"error":{"message":"Choose save, lock or delete."}}
+temporary instance (pid 19740) stopped
+[PASS] SAP period afterwards: not saved, not locked saved=False savedRows=0 locked=False
+
+RESULT: 16 passed, 1 failed

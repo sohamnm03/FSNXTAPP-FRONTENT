@@ -1,0 +1,5 @@
+﻿{
+    "request":  "{ \"TargetName\":\"ZFS_T_TRM_PROBE\", \"Operation\":\"INSERT\", \"ImportJson\":\"[{\\\"PROBE_ID\\\":\\\"T8PROBE01\\\",\\\"UNIQ_VAL\\\":\\\"T8-GEN-PROBE\\\",\\\"PAYLOAD\\\":\\\"task8 allow_gen false probe\\\"}]\", \"GenerateJson\":\"{\\\"SysFields\\\":\\\"AUDIT\\\"}\", \"RequestId\":\"\" }",
+    "httpStatus":  200,
+    "response":  "{\"@odata.context\":\"../$metadata#com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.ZFS_AE_DynGwResult\",\"@odata.metadataEtag\":\"W/\\\"20260915103208\\\"\",\"DurationMs\":0,\"ErrorCategory\":\"CLIENT\",\"ExecStatus\":\"E\",\"ExportJson\":\"\",\"GwUuid\":\"5254001f-e7a2-1fd1-ac9c-157655240000\",\"IsCommitted\":\"\",\"IsRolledBack\":\"X\",\"MessageId\":\"ZFS_TRM_MSG\",\"MessageNo\":\"45\",\"MessageText\":\"Batch aborted at step 1: Generation is not permitted for target ZFS_T_TRM_P\",\"Replayed\":\"\",\"ResultCount\":0,\"RowsJson\":\"\",\"StepsJson\":\"\",\"TablesJson\":\"\"}"
+}

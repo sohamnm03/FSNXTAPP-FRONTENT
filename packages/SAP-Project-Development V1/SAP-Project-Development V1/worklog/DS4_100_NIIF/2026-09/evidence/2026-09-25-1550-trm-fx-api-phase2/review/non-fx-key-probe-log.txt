@@ -1,0 +1,23 @@
+﻿### patch
+PATCH https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='1000',FinancialTransaction='160539')?sap-client=100
+Body: {"Portfolio":""}
+Status: 400
+sap-messages: 
+{"error":{"code":"T7/004","message":"Product type  is not product category FX Transaction","@SAP__common.longtextUrl":"../../../../default/iwbep/common/0001/T100Longtexts(MessageClass='T7',MessageNumber='004',Variable1='',Variable2='FX%20Transaction',Variable3='',Variable4='')/Documentation","@SAP__common.ExceptionCategory":"Provider_Application_Error","details":[{"code":"FTR0/161","message":"BAPI processing was terminated","@SAP__common.Severity":"error","@SAP__common.numericSeverity":4}],"innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMFX","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690030E006AB651B18664E","@SAP__common.Timestamp":"20260925105005.533913","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### settle
+POST https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='1000',FinancialTransaction='160539')/com.sap.gateway.srvd_a2x.zfs_sd_trmfx.v0001.Settle?sap-client=100
+Body: {}
+Status: 400
+sap-messages: 
+{"error":{"code":"T7/004","message":"Product type  is not product category FX Transaction","target":"$Parameter/_it","@SAP__common.longtextUrl":"../../../../../default/iwbep/common/0001/T100Longtexts(MessageClass='T7',MessageNumber='004',Variable1='',Variable2='FX%20Transaction',Variable3='',Variable4='')/Documentation","@SAP__common.ExceptionCategory":"Provider_Application_Error","details":[{"code":"FTR0/161","message":"BAPI processing was terminated","target":"$Parameter/_it","@SAP__common.Severity":"error","@SAP__common.numericSeverity":4}],"innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMFX","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690150E006AB5F3A238DA1","@SAP__common.Timestamp":"20260925105006.070606","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### delete
+DELETE https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='1000',FinancialTransaction='160539')?sap-client=100
+Status: 400
+sap-messages: 
+{"error":{"code":"T7/004","message":"Product type  is not product category FX Transaction","@SAP__common.longtextUrl":"../../../../default/iwbep/common/0001/T100Longtexts(MessageClass='T7',MessageNumber='004',Variable1='',Variable2='FX%20Transaction',Variable3='',Variable4='')/Documentation","@SAP__common.ExceptionCategory":"Provider_Application_Error","details":[{"code":"FTR0/161","message":"BAPI processing was terminated","@SAP__common.Severity":"error","@SAP__common.numericSeverity":4}],"innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMFX","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690030E006AB651B186654","@SAP__common.Timestamp":"20260925105006.377765","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+

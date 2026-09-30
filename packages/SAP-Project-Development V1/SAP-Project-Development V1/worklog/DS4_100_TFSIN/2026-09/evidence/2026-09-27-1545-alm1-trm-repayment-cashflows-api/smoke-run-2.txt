@@ -1,0 +1,19 @@
+﻿Period 1000 2026/09, flows 20261001..20270930; oracle by source type: 09=10000000.00, 10=252054.80, 11=177512778684.18, 12=23786716533.60
+[PASS] $metadata HTTP 200
+[PASS] $count count=324
+[PASS] paging returns every row once rows=324
+[PASS] total source type 09 = oracle api=10000000.00 sql=10000000.00
+[PASS] total source type 10 = oracle api=252054.80 sql=252054.80
+[PASS] total source type 11 = oracle api=177512778684.18 sql=177512778684.18
+[PASS] total source type 12 = oracle api=23786716533.60 sql=23786716533.60
+[PASS] Total = Bucket1..7 on every row mismatches=0
+[PASS] FlowKind matches source type mismatches=0
+[PASS] buckets 6 and 7 filled (report stops at 5) rows with bucket 6/7 amounts=97
+[PASS] deals with separate interest and principal rows deals=58
+[PASS] $filter DealNumber eq '100014' (report ignores S_RFHA) rows=1
+[PASS] $filter ProductType eq '15D' rows=159
+[PASS] $filter FlowKind + $orderby Total desc top=2821000000.00 last=1515535000.00
+[PASS] month 13 -> no rows HTTP 200
+[PASS] unknown company code -> no rows HTTP 200
+[PASS] no parameters -> refused HTTP 400
+TOTAL: 17 passed, 0 failed

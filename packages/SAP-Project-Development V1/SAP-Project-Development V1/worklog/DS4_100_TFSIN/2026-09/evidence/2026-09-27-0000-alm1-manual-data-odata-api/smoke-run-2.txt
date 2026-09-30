@@ -1,0 +1,31 @@
+﻿Manual Data root: https://vhtfqds4ap01.sap.tfsin.co.in:44300/sap/opu/odata4/sap/zfs_sb_almmanual_o4_api/srvd_a2x/sap/zfs_sd_almmanual/0001
+[PASS] $metadata -> HTTP 200 (expected 200) sets: Alm1ManualData | Amount: Property Name="Amount" Type="Edm.Decimal" Nullable="false" Precision="20" Scale="2"/
+[PASS] GET collection -> HTTP 200 (expected 200) count=0
+[PASS] create C1 b1 = 100 -> HTTP 201 (expected 201) amount=100.00 createdBy=FS_DEV3
+[PASS] header b1 = 100 -> HTTP 200 (expected 200) header=100.00
+[PASS] create C2 b1 = 50.5 -> HTTP 201 (expected 201) 
+[PASS] create C2 b7 = 10 (bucket 7) -> HTTP 201 (expected 201) 
+[PASS] header b1 = 150.50 -> HTTP 200 (expected 200) header=150.50
+[PASS] header b7 = 10 -> HTTP 200 (expected 200) header=10.00
+[PASS] duplicate create refused -> HTTP 400 (expected 400/409)  => The key value is already in use. Please enter a different one.
+[PASS] header group refused (009, source not 92) -> HTTP 400 (expected 400)  => Group AA:02:00:00:00 has source ; only source 92 is keyed in manually
+[PASS] month 13 refused (010) -> HTTP 400 (expected 400)  => Month 13 is not valid; enter 01 to 12
+[PASS] unknown bucket 99 refused (002) -> HTTP 400 (expected 400)  => Bucket 99 does not exist
+[PASS] unknown group refused (002) -> HTTP 400 (expected 400)  => GroupId ZZ:99:99:00:00 does not exist
+[PASS] unknown company code refused (002) -> HTTP 400 (expected 400)  => CompanyCode ZZZZ does not exist
+[PASS] string amount refused (L-244) -> HTTP 400 (expected 400)  => Error while parsing an XML stream
+[PASS] read C1 b1 + ETag -> HTTP 200 (expected 200) etag=W/"SADL-202609270936362482770C~20260927093636.2482770"
+[PASS] PATCH with stale ETag refused -> HTTP 412 (expected 412)  => State of entity CDS~ZFS_C_ALMMANUALTP with key 1000 2099 12 AA:02:01:00:00 01 was already changed (stale If-Match)
+[PASS] PATCH C1 b1 = 200 -> HTTP 200 (expected 200/204) 
+[PASS] header b1 = 250.50 -> HTTP 200 (expected 200) header=250.50
+[PASS] PATCH key field ignored -> HTTP 200 (expected 200/204/400) 
+[PASS] key unchanged: C1 b1 still there -> HTTP 200 (expected 200) 
+[PASS] key unchanged: no C1 b2 -> HTTP 404 (expected 404)  => Unspecified provider error occurred. See Error Context and Call Stack.
+[PASS] DELETE header refused (009) -> HTTP 400 (expected 400)  => Group AA:02:00:00:00 has source ; only source 92 is keyed in manually
+[PASS] DELETE C2 b7 -> HTTP 204 (expected 204) 
+[PASS] header b7 gone (sum 0) -> HTTP 404 (expected 404)  => Unspecified provider error occurred. See Error Context and Call Stack.
+[PASS] DELETE C2 b1 -> HTTP 204 (expected 204) 
+[PASS] header b1 = 200 -> HTTP 200 (expected 200) header=200.00
+[PASS] DELETE C1 b1 -> HTTP 204 (expected 204) 
+[PASS] period empty after clean-up -> HTTP 200 (expected 200) count=0
+TOTAL: 29 passed, 0 failed

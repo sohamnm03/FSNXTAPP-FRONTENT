@@ -1,0 +1,42 @@
+﻿### probe-AdditionalFlow-160537
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/AdditionalFlow?$filter=CompanyCode eq '1000' and FinancialTransaction eq '160537'&$count=true&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#AdditionalFlow","@odata.metadataEtag":"W/\"20260925092505\"","@odata.count":0,"value":[]}
+
+
+### probe-AdditionalFlow-160537
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/AdditionalFlow?$filter=CompanyCode eq '1000' and FinancialTransaction eq '160537'&$count=true&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#AdditionalFlow","@odata.metadataEtag":"W/\"20260925092736\"","@odata.count":1,"value":[{"CompanyCode":"1000","FinancialTransaction":"160537","Side":"0","FlowKey":"20260925145832000100001","FlowType":"1430","FlowSign":"-","PaymentDate":"2026-12-15","PaymentAmount":500.0000,"PaymentCur":"INR","PaymentCurIso":"INR","LocalCurRate":0.00000,"LocalCurAmount":0.0000,"CurrentRate":true,"FixedRate":false,"FixedAmount":false,"CalcFrom":"2026-10-01","CalcFromIncl":true,"CalcFromMonthEnd":"","CalcTo":"2027-09-30","CalcToIncl":false,"CalcToMonthEnd":"","InterestCalcMethod":"3","InterestCalcExpon":"","InterestCalendar":"","InterestCalcDays":"364","CalcBaseDays":"365","CalcBaseAmount":0.0000,"CalcBaseCur":"","CalcBaseCurIso":"","PercentageRate":0.0000000,"Assignment":"","PostingStatus":"0","SAP__Messages":[]}]}
+
+
+### probe-AdditionalFlow-160537
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/AdditionalFlow?$filter=CompanyCode eq '1000' and FinancialTransaction eq '160537'&$count=true&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#AdditionalFlow","@odata.metadataEtag":"W/\"20260925092736\"","@odata.count":0,"value":[]}
+
+
+### probe-MainFlow-160537
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/MainFlow?$filter=CompanyCode eq '1000' and FinancialTransaction eq '160537'&$count=true&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#MainFlow","@odata.metadataEtag":"W/\"20260925093328\"","@odata.count":1,"value":[{"CompanyCode":"1000","FinancialTransaction":"160537","Side":"0","FlowKey":"20260925144110000100001","FlowType":"1100","FlowSign":"-","PaymentDate":"2026-10-01","PaymentAmount":100000.0000,"PaymentCur":"INR","PaymentCurIso":"INR","LocalCurRate":0.00000,"LocalCurAmount":0.0000,"CurrentRate":true,"FixedRate":false,"FixedAmount":false,"Assignment":"","PostingStatus":"0","CalcDate":"2026-10-01","NominalAmount":0.0000}]}
+
+
+### probe-PaymentDetail-160537
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/PaymentDetail?$filter=CompanyCode eq '1000' and FinancialTransaction eq '160537'&$count=true&sap-client=100
+Status: 500
+sap-messages: 
+{"error":{"code":"/IWCOR/CX_OD_EDM_FACET_ERROR/005056A509B11ED1BDCCCC5E8168819D","message":"Value '00000000' violates facet information 'Nullable=false'","@SAP__common.ExceptionCategory":"Client_Error","details":[{"code":"/IWCOR/CX_OD_INTERNAL_ERROR/0050569259751EE4BA97133877F61116","message":"In the context of Data Services an unknown internal server error occurred","@SAP__common.Severity":"error","@SAP__common.numericSeverity":4},{"code":"/IWCOR/CX_OD_EP_ENTITY_ERROR/0050569259751EE4BA9739C53C899155","message":"Error occurred while processing property 'EffectiveDate' of entity with index 1","@SAP__common.Severity":"error","@SAP__common.numericSeverity":4},{"code":"/IWCOR/CX_OD_EP_PROPERTY_ERROR/005056A509B11ED1BF822D2D09173A04","message":"Property 'EffectiveDate' has invalid value '00000000'","@SAP__common.Severity":"error","@SAP__common.numericSeverity":4},{"code":"CX_PARAMETER_INVALID_RANGE","message":"Parameter has invalid value: Parameter IV_VALUE has invalid value 00000000.","@SAP__common.Severity":"error","@SAP__common.numericSeverity":4}],"innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMDEALITEM","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690260E006AB5F3273AF9E","@SAP__common.Timestamp":"20260925093754.703059","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### probe-PaymentDetail-160537
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/PaymentDetail?$filter=CompanyCode eq '1000' and FinancialTransaction eq '160537'&$count=true&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#PaymentDetail","@odata.metadataEtag":"W/\"20260925093908\"","@odata.count":2,"value":[{"CompanyCode":"1000","FinancialTransaction":"160537","Direction":"+","EffectiveDate":"00000000","FlowType":"","PaymentCurrency":"INR","PaymentCurrencyIso":"INR","HouseBank":"","AccountId":"","PaymentActivity":true,"PaymentRequest":false,"Payer":"700000453","PartnerBank":"","PaymentMethod":"","PaymentMethodSuppl":"","DetGroupDefinition":"","IndividualPayment":false,"EqualDirection":false,"ConsideredPaymntMeth":"","PayerTransaction":"700000453","AlternativePayerTrans":"","RepetitiveCode":"","RepetitiveCodeText":"","ScbankInd":"","Supcountry":"","BankAccount":"","BankControlKey":"","BankAccountCurrency":"","BankAccountCurrencyIso":"","BankAccountName":"","BankAccount2":"","BankAccountGlAccount":"","BankAccountBankref":"","BankAccountCountry":"","BankAccountCountryIso":"","BankAccountBankKey":"","SepaMandateId":""},{"CompanyCode":"1000","FinancialTransaction":"160537","Direction":"-","EffectiveDate":"00000000","FlowType":"","PaymentCurrency":"INR","PaymentCurrencyIso":"INR","HouseBank":"","AccountId":"","PaymentActivity":true,"PaymentRequest":false,"Payer":"700000453","PartnerBank":"","PaymentMethod":"","PaymentMethodSuppl":"","DetGroupDefinition":"","IndividualPayment":false,"EqualDirection":false,"ConsideredPaymntMeth":"","PayerTransaction":"700000453","AlternativePayerTrans":"","RepetitiveCode":"","RepetitiveCodeText":"","ScbankInd":"","Supcountry":"","BankAccount":"","BankControlKey":"","BankAccountCurrency":"","BankAccountCurrencyIso":"","BankAccountName":"","BankAccount2":"","BankAccountGlAccount":"","BankAccountBankref":"","BankAccountCountry":"","BankAccountCountryIso":"","BankAccountBankKey":"","SepaMandateId":""}]}
+
+

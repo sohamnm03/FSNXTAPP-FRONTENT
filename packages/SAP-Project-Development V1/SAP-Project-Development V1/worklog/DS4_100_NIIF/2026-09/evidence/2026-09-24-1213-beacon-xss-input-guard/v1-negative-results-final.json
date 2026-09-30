@@ -1,0 +1,74 @@
+﻿[
+    {
+        "Case":  "N1",
+        "What":  "script tag in LineDescription",
+        "RequestId":  "XV2N1",
+        "Status":  400,
+        "Msg055":  true,
+        "ContentType":  "application/json;charset=utf-8",
+        "NoSniff":  null,
+        "Pass":  true,
+        "Request":  "{\"RequestId\":\"XV2N1\",\"NP_ACC\":[{\"RequestId\":\"XV2N1\",\"LineNo\":\"1\",\"Company\":\"1000\",\"NaturalAc\":\"0000205000\",\"Currency\":\"INR\",\"DebitCreditFlag\":\"S\",\"RefNo\":\"XSS-XV2-N1\",\"LineDescription\":\"\u003cscript\u003ealert(1)\u003c/script\u003e\"}]}",
+        "Response":  "{\"error\":{\"code\":\"ZFS_TRM_MSG/055\",\"message\":{\"lang\":\"en\",\"value\":\"Field LINE_DESCRIPTION in line 1 contains HTML/script tag characters - not allowed\"},\"innererror\":{\"application\":{\"component_id\":\"\",\"service_namespace\":\"/SAP/\",\"service_id\":\"ZFS_BEACON_ACCOUNTING_V1_SRV\",\"service_version\":\"0001\"},\"transactionid\":\"77366C9091690230E006AB48AAAD52B2\",\"timestamp\":\"\",\"Error_Resolution\":{\"SAP_Transaction\":\"\",\"SAP_Note\":\"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)\"},\"errordetails\":[{\"ContentID\":\"\",\"code\":\"ZFS_TRM_MSG/055\",\"message\":\"Field LINE_DESCRIPTION in line 1 contains HTML/script tag characters - not allowed\",\"propertyref\":\"\",\"severity\":\"error\",\"transition\":false,\"target\":\"\"}]}}}"
+    },
+    {
+        "Case":  "N2",
+        "What":  "img onerror in Remark1",
+        "RequestId":  "XV2N2",
+        "Status":  400,
+        "Msg055":  true,
+        "ContentType":  "application/json;charset=utf-8",
+        "NoSniff":  null,
+        "Pass":  true,
+        "Request":  "{\"RequestId\":\"XV2N2\",\"NP_ACC\":[{\"RequestId\":\"XV2N2\",\"LineNo\":\"1\",\"Company\":\"1000\",\"NaturalAc\":\"0000205000\",\"Currency\":\"INR\",\"DebitCreditFlag\":\"S\",\"RefNo\":\"XSS-XV2-N2\",\"Remark1\":\"\u003cimg src=x onerror=alert(1)\u003e\"}]}",
+        "Response":  "{\"error\":{\"code\":\"ZFS_TRM_MSG/055\",\"message\":{\"lang\":\"en\",\"value\":\"Field REMARK1 in line 1 contains HTML/script tag characters - not allowed\"},\"innererror\":{\"application\":{\"component_id\":\"\",\"service_namespace\":\"/SAP/\",\"service_id\":\"ZFS_BEACON_ACCOUNTING_V1_SRV\",\"service_version\":\"0001\"},\"transactionid\":\"77366C90916901F0E006AB4AC35C54AB\",\"timestamp\":\"\",\"Error_Resolution\":{\"SAP_Transaction\":\"\",\"SAP_Note\":\"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)\"},\"errordetails\":[{\"ContentID\":\"\",\"code\":\"ZFS_TRM_MSG/055\",\"message\":\"Field REMARK1 in line 1 contains HTML/script tag characters - not allowed\",\"propertyref\":\"\",\"severity\":\"error\",\"transition\":false,\"target\":\"\"}]}}}"
+    },
+    {
+        "Case":  "N3",
+        "What":  "lone \u003e in RefNo",
+        "RequestId":  "XV2N3",
+        "Status":  400,
+        "Msg055":  true,
+        "ContentType":  "application/json;charset=utf-8",
+        "NoSniff":  null,
+        "Pass":  true,
+        "Request":  "{\"RequestId\":\"XV2N3\",\"NP_ACC\":[{\"RequestId\":\"XV2N3\",\"LineNo\":\"1\",\"Company\":\"1000\",\"NaturalAc\":\"0000205000\",\"Currency\":\"INR\",\"DebitCreditFlag\":\"S\",\"RefNo\":\"XSS-XV2-N3\u003e1\"}]}",
+        "Response":  "{\"error\":{\"code\":\"ZFS_TRM_MSG/055\",\"message\":{\"lang\":\"en\",\"value\":\"Field REF_NO in line 1 contains HTML/script tag characters - not allowed\"},\"innererror\":{\"application\":{\"component_id\":\"\",\"service_namespace\":\"/SAP/\",\"service_id\":\"ZFS_BEACON_ACCOUNTING_V1_SRV\",\"service_version\":\"0001\"},\"transactionid\":\"77366C90916901F0E006AB4AC35C54AD\",\"timestamp\":\"\",\"Error_Resolution\":{\"SAP_Transaction\":\"\",\"SAP_Note\":\"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)\"},\"errordetails\":[{\"ContentID\":\"\",\"code\":\"ZFS_TRM_MSG/055\",\"message\":\"Field REF_NO in line 1 contains HTML/script tag characters - not allowed\",\"propertyref\":\"\",\"severity\":\"error\",\"transition\":false,\"target\":\"\"}]}}}"
+    },
+    {
+        "Case":  "N4",
+        "What":  "tag in header RequestId",
+        "RequestId":  "\u003cb\u003eXV2\u003c/b\u003e",
+        "Status":  400,
+        "Msg055":  true,
+        "ContentType":  "application/json;charset=utf-8",
+        "NoSniff":  null,
+        "Pass":  true,
+        "Request":  "{\"RequestId\":\"\u003cb\u003eXV2\u003c/b\u003e\",\"NP_ACC\":[{\"RequestId\":\"\u003cb\u003eXV2\u003c/b\u003e\",\"LineNo\":\"1\",\"Company\":\"1000\",\"NaturalAc\":\"0000205000\",\"Currency\":\"INR\",\"DebitCreditFlag\":\"S\",\"RefNo\":\"XSS-XV2-N4\"}]}",
+        "Response":  "{\"error\":{\"code\":\"ZFS_TRM_MSG/055\",\"message\":{\"lang\":\"en\",\"value\":\"Field REQUEST_ID in line 1 contains HTML/script tag characters - not allowed\"},\"innererror\":{\"application\":{\"component_id\":\"\",\"service_namespace\":\"/SAP/\",\"service_id\":\"ZFS_BEACON_ACCOUNTING_V1_SRV\",\"service_version\":\"0001\"},\"transactionid\":\"77366C90916901F0E006AB4AC35C54AF\",\"timestamp\":\"\",\"Error_Resolution\":{\"SAP_Transaction\":\"\",\"SAP_Note\":\"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)\"},\"errordetails\":[{\"ContentID\":\"\",\"code\":\"ZFS_TRM_MSG/055\",\"message\":\"Field REQUEST_ID in line 0 contains HTML/script tag characters - not allowed\",\"propertyref\":\"\",\"severity\":\"error\",\"transition\":false,\"target\":\"\"},{\"ContentID\":\"\",\"code\":\"ZFS_TRM_MSG/055\",\"message\":\"Field REQUEST_ID in line 1 contains HTML/script tag characters - not allowed\",\"propertyref\":\"\",\"severity\":\"error\",\"transition\":false,\"target\":\"\"}]}}}"
+    },
+    {
+        "Case":  "N5",
+        "What":  "JSON unicode-escaped script tag",
+        "RequestId":  "XV2N5",
+        "Status":  400,
+        "Msg055":  true,
+        "ContentType":  "application/json;charset=utf-8",
+        "NoSniff":  null,
+        "Pass":  true,
+        "Request":  "{\"RequestId\":\"XV2N5\",\"NP_ACC\":[{\"RequestId\":\"XV2N5\",\"LineNo\":\"1\",\"Company\":\"1000\",\"NaturalAc\":\"0000205000\",\"Currency\":\"INR\",\"DebitCreditFlag\":\"S\",\"RefNo\":\"XSS-XV2-N5\",\"LineDescription\":\"\u003cscript\u003ex\u003c/script\u003e\"}]}",
+        "Response":  "{\"error\":{\"code\":\"ZFS_TRM_MSG/055\",\"message\":{\"lang\":\"en\",\"value\":\"Field LINE_DESCRIPTION in line 1 contains HTML/script tag characters - not allowed\"},\"innererror\":{\"application\":{\"component_id\":\"\",\"service_namespace\":\"/SAP/\",\"service_id\":\"ZFS_BEACON_ACCOUNTING_V1_SRV\",\"service_version\":\"0001\"},\"transactionid\":\"77366C9091690270E006AB4A894E4CF5\",\"timestamp\":\"\",\"Error_Resolution\":{\"SAP_Transaction\":\"\",\"SAP_Note\":\"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)\"},\"errordetails\":[{\"ContentID\":\"\",\"code\":\"ZFS_TRM_MSG/055\",\"message\":\"Field LINE_DESCRIPTION in line 1 contains HTML/script tag characters - not allowed\",\"propertyref\":\"\",\"severity\":\"error\",\"transition\":false,\"target\":\"\"}]}}}"
+    },
+    {
+        "Case":  "N6",
+        "What":  "two bad fields on two lines",
+        "RequestId":  "XV2N6",
+        "Status":  400,
+        "Msg055":  true,
+        "ContentType":  "application/json;charset=utf-8",
+        "NoSniff":  null,
+        "Pass":  true,
+        "Request":  "{\"RequestId\":\"XV2N6\",\"NP_ACC\":[{\"RequestId\":\"XV2N6\",\"LineNo\":\"1\",\"Company\":\"1000\",\"NaturalAc\":\"0000205000\",\"Currency\":\"INR\",\"DebitCreditFlag\":\"S\",\"RefNo\":\"XSS-XV2-N6A\",\"LineDescription\":\"\u003cb\u003eone\u003c/b\u003e\"},{\"RequestId\":\"XV2N6\",\"LineNo\":\"2\",\"Company\":\"1000\",\"NaturalAc\":\"0000205000\",\"Currency\":\"INR\",\"DebitCreditFlag\":\"S\",\"RefNo\":\"XSS-XV2-N6B\",\"BatchId\":\"\u003ci\u003etwo\u003c/i\u003e\"}]}",
+        "Response":  "{\"error\":{\"code\":\"ZFS_TRM_MSG/055\",\"message\":{\"lang\":\"en\",\"value\":\"Field BATCH_ID in line 2 contains HTML/script tag characters - not allowed\"},\"innererror\":{\"application\":{\"component_id\":\"\",\"service_namespace\":\"/SAP/\",\"service_id\":\"ZFS_BEACON_ACCOUNTING_V1_SRV\",\"service_version\":\"0001\"},\"transactionid\":\"77366C9091690270E006AB4A894E4CF7\",\"timestamp\":\"\",\"Error_Resolution\":{\"SAP_Transaction\":\"\",\"SAP_Note\":\"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)\"},\"errordetails\":[{\"ContentID\":\"\",\"code\":\"ZFS_TRM_MSG/055\",\"message\":\"Field LINE_DESCRIPTION in line 1 contains HTML/script tag characters - not allowed\",\"propertyref\":\"\",\"severity\":\"error\",\"transition\":false,\"target\":\"\"},{\"ContentID\":\"\",\"code\":\"ZFS_TRM_MSG/055\",\"message\":\"Field BATCH_ID in line 2 contains HTML/script tag characters - not allowed\",\"propertyref\":\"\",\"severity\":\"error\",\"transition\":false,\"target\":\"\"}]}}}"
+    }
+]

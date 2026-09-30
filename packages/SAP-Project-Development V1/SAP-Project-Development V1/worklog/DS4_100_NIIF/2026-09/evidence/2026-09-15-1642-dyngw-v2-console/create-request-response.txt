@@ -1,0 +1,24 @@
+#27 [POST] http://localhost:8773/api/dyngw/CallLog/com.sap.gateway.srvd_a2x.zfs_sd_dyngw.v0001.ExecuteTableCrud?sap-client=100
+
+  General
+    status:    [200] OK
+    duration:  179ms
+    type:      fetch
+    mimeType:  application/json
+
+  Request headers
+    sec-ch-ua-platform: "Windows"
+    referer: http://localhost:8773/
+    user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36
+    sec-ch-ua: "Google Chrome";v="153", "Not_A Brand";v="8", "Chromium";v="153"
+    content-type: application/json
+    sec-ch-ua-mobile: ?0
+
+  Response headers
+    content-length: 2009
+    date: Tue, 15 Sep 2026 12:35:54 GMT
+    content-type: application/json
+    server: BaseHTTP/0.6 Python/3.13.3
+
+Call browser_network_request with part="request-body" to read the request body.
+Call browser_network_request with part="response-body" to read the response body.

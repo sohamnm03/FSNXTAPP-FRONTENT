@@ -1,0 +1,15 @@
+﻿[PASS] temporary app instance up port 8097
+[PASS] sign in user=demo
+[PASS] setup: odata mode, company codes mode=odata service=ZFS_SB_ALMTRMREPAY_O4_API companies=74
+[PASS] report: key date, 7 labelled buckets keyDate=2026-10-01 buckets=01 Day(s) to 07 Day(s) | 08 Day(s) to 14 Day(s) | 15 Day(s) to 01 Month(s) | 01 Month(s) to 03 Month(s) | 03 Month(s) to 06 Month(s) | 06 Month(s) to 09 Month(s) | 09 Month(s) to 12 Month(s)
+[PASS] report: same row count as SAP app=324 sap=324
+[PASS] report: total source type 09 = SAP app=10000000 sap=10000000.00
+[PASS] report: total source type 10 = SAP app=252054.8 sap=252054.80
+[PASS] report: total source type 11 = SAP app=177512778684.18 sap=177512778684.18
+[PASS] report: total source type 12 = SAP app=23786716533.60 sap=23786716533.60
+[PASS] filter: transaction 100014 only rows=1
+[PASS] filter: product type 15D only rows=159
+[PASS] month 13 refused by the app => {"error":{"message":"Select a month from 01 to 12."}}
+instance left running on http://127.0.0.1:8097 (pid 10508) for a visual check
+
+RESULT: 12 passed, 0 failed

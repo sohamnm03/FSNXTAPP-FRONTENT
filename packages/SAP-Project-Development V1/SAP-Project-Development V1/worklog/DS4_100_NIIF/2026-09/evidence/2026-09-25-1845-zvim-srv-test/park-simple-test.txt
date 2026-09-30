@@ -1,0 +1,3 @@
+=== T7 PARK_SIMPLE | POST | HTTP 201
+REQ: {"FileId":"","Getdata":"bukrs=1000&vendor=9837&gl_account=101000&amount=100&currency=INR&reference=ZVIM-TEST&header_txt=ZVIM_SRV%20test&item_text=ZVIM_SRV%20test","FileName":"","Bukrs":"","Message":"PARK_SIMPLE"}
+RES: {"d":{"__metadata":{"id":"https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata/sap/ZVIM_SRV/ExtractSet('1900001649')","uri":"https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata/sap/ZVIM_SRV/ExtractSet('1900001649')","type":"ZVIM_SRV.Extract"},"Getdata":"bukrs=1000&vendor=9837&gl_account=101000&amount=100&currency=INR&reference=ZVIM-TEST&header_txt=ZVIM_SRV%20test&item_text=ZVIM_SRV%20test","FileId":"1900001649","FileName":"","Bukrs":"1000","Message":"PARKED 1900001649 1000 2027"}}

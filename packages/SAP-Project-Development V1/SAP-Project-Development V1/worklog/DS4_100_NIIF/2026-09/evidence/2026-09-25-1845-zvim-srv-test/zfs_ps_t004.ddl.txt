@@ -1,0 +1,51 @@
+@EndUserText.label : 'Uploaded Invoice'
+@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define table zfs_ps_t004 {
+
+  key client    : mandt not null;
+  key bukrs     : bukrs not null;
+  key snro      : char30 not null;
+  key doc_no    : char10 not null;
+  std_dms       : char25;
+  p_date        : dats;
+  belnr         : belnr_d;
+  i_belnr       : belnr_d;
+  r_belnr       : belnr_d;
+  vendor        : lifnr;
+  vendor_name   : text100;
+  gl            : saknr;
+  gst           : qsskz;
+  type          : zfs_dt_demo;
+  @Semantics.amount.currencyCode : 'bkpf.waers'
+  v_amt         : tb_limit_amount;
+  @Semantics.amount.currencyCode : 'bkpf.waers'
+  amt           : tb_limit_amount;
+  @Semantics.amount.currencyCode : 'bkpf.waers'
+  tds_amt       : tb_limit_amount;
+  @Semantics.amount.currencyCode : 'bkpf.waers'
+  gst_amt       : tb_limit_amount;
+  curr          : waers;
+  prctr         : prctr;
+  gsber         : gsber;
+  witht         : witht;
+  withtds       : wt_withcd;
+  bplace        : bupla;
+  sec_code      : secco;
+  tds_rate      : pkond;
+  kostl         : kostl;
+  narration     : text200;
+  spl_gl        : umskz;
+  zprp_txn      : tb_rfha;
+  reference     : text50;
+  status        : zdt_demo_01;
+  zcreated_by   : tb_cruser;
+  zcreated_date : tb_dcrdat;
+  zcreated_time : tb_tcrtim;
+  zchanged_by   : tb_upuser;
+  zchanged_date : tb_dupdat;
+  zchanged_time : tb_tuptim;
+
+}

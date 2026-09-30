@@ -1,0 +1,123 @@
+@AbapCatalog.sqlViewName: '/FS00/VW0001'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'MM Transaction List'
+@Metadata.ignorePropagatedAnnotations: true
+define view /FS00/CDS0001
+  as select distinct from vtbfha as A
+
+    join                  ificompanycode  on ificompanycode.companycode = A.bukrs
+
+    inner join            tzpat           on  tzpat.gsart = A.sgsart
+                                          and tzpat.spras = $session.system_language
+
+    inner join            at10t           on  at10t.sgsart  = A.sgsart
+                                          and at10t.sfhaart = A.sfhaart
+                                          and at10t.spras   = $session.system_language
+
+    inner join            but000          on but000.partner = A.kontrh
+
+    left outer join       vwpanle         on vwpanle.ranl = A.ranl
+
+    left outer join       twpob_t         on  twpob_t.bukrs  = A.bukrs
+                                          and twpob_t.rportb = A.rportb
+                                          and twpob_t.spras  = $session.system_language
+
+    left outer join       trbac_assign_t  on  trbac_assign_t.assignment = A.zuond
+                                          and trbac_assign_t.language   = $session.system_language
+
+    left outer join       trbac_int_ref_t on  trbac_int_ref_t.int_reference = A.refer
+                                          and trbac_int_ref_t.language      = $session.system_language
+
+    inner join            vtbfhazu        on  vtbfhazu.bukrs  = A.bukrs
+                                          and vtbfhazu.rfha   = A.rfha
+                                          and vtbfhazu.rfhazu = A.rfhazul
+
+    left outer join            vtbfinko        on  vtbfinko.bukrs    = A.bukrs
+                                          and vtbfinko.rfha     = A.rfha
+                                          and vtbfinko.rfhazu   = A.rfhazul
+                                          and vtbfinko.dguel_kp = A.dblfz
+                                          and rkond = '1000'
+
+    left outer join       at02t           on  at02t.spras    = $session.system_language
+                                          and at02t.sanlfor  = A.sanlf
+                                          and at02t.sfgtyp   = A.sfgtyp
+                                          and at02t.sfgzustt = vtbfhazu.sfgzustt
+
+
+
+{
+  A.bukrs,
+  A.rfha,
+  A.ranl,
+  A.rfhazul,
+
+  at02t.xtext                                                                                                    as activity,
+  at02t.sfgzustt,
+
+  A.sgsart                                                                                                       as sgsart,
+  A.rantyp,
+
+  @EndUserText.label: 'Company Code Description'
+  cast( concat_with_space(A.bukrs, concat_with_space('-', ificompanycode.companycodename , 1 ) , 1  ) as butxt ) as butxt,
+
+  @EndUserText.label: 'Product Decription'
+  cast( concat_with_space(A.sgsart, concat_with_space('-', tzpat.ltx  , 1 ) , 1  ) as bu_title_let )             as ltx,
+
+  @EndUserText.label: 'Transaction Type'
+  A.sfhaart                                                                                                      as sfhaart,
+
+  @EndUserText.label: 'Transaction Type Description'
+  cast( concat_with_space(A.sfhaart, concat_with_space('-', at10t.xtext , 1 ) , 1  ) as bu_title_let )           as xtext,
+
+  A.kontrh,
+  A.wgschft,
+
+  @EndUserText.label: 'Business Partner Name'
+  cast( concat_with_space(A.kontrh, concat_with_space('-',  but000.name_org1 , 1 ) , 1  ) as bu_title_let )      as bp_name,
+
+  A.dblfz,
+  A.delfz,
+
+  vwpanle.dendf                                                                                                  as s_edate,
+
+  vtbfhazu.nordext,
+
+  vtbfinko.szsref,
+
+  A.facilitybukrs,
+  A.facilitynr,
+  A.rportb,
+
+  @EndUserText.label: 'Account Category 2 Description'
+  twpob_t.xportb,
+
+  @EndUserText.label: 'Assignment Description'
+  trbac_assign_t.description                                                                                     as zassign_desc,
+
+  @EndUserText.label: 'Internal Refrence Descripton'
+  trbac_int_ref_t.description                                                                                    as zint_ref_desc,
+
+  A.saktiv,
+
+  @EndUserText.label: 'Creation Date'
+  A.dcrdat,
+
+  @EndUserText.label: 'Created by'
+  A.cruser,
+
+  @EndUserText.label: 'Created Time'
+  A.tcrtim,
+
+  @EndUserText.label: 'Changed Date'
+  A.dupdat,
+
+  @EndUserText.label: 'Changed by'
+  A.upuser,
+
+  @EndUserText.label: 'Changed Time'
+  A.tuptim
+}
+where
+  A.saktiv <> '3'

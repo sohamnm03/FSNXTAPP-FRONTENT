@@ -1,0 +1,58 @@
+﻿### 1-list-before
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/AdditionalFlow?$filter=CompanyCode eq '1000' and FinancialTransaction eq '160537'&$count=true&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#AdditionalFlow","@odata.metadataEtag":"W/\"20260925092736\"","@odata.count":0,"value":[]}
+
+
+### 2-list-without-deal-filter
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/AdditionalFlow?sap-client=100
+Status: 500
+sap-messages: 
+{"error":{"code":"ZFS_TRM_MSG/056","message":"Filter on CompanyCode and FinancialTransaction (eq) is required","@SAP__common.ExceptionCategory":"Provider_Application_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMDEALITEM","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C90916901D0E006AB5F4CF68273","@SAP__common.Timestamp":"20260925093115.278061","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### 3-create
+POST https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/AdditionalFlow?sap-client=100
+Body: {"CompanyCode":"1000","FinancialTransaction":"160537","Side":"0","FlowType":"1430","FlowSign":"-","PaymentDate":"2026-12-15","PaymentAmount":500,"PaymentCur":"INR"}
+Status: 201
+sap-messages: [{"code":"FTR0/162","message":"BAPI was executed successfully","numericSeverity":2,"target":""}]
+{"@odata.context":"$metadata#AdditionalFlow/$entity","@odata.metadataEtag":"W/\"20260925092736\"","CompanyCode":"1000","FinancialTransaction":"160537","Side":"0","FlowKey":"20260925150116000100001","FlowType":"1430","FlowSign":"-","PaymentDate":"2026-12-15","PaymentAmount":500.0000,"PaymentCur":"INR","PaymentCurIso":"INR","LocalCurRate":0.00000,"LocalCurAmount":0.0000,"CurrentRate":true,"FixedRate":false,"FixedAmount":false,"CalcFrom":"2026-10-01","CalcFromIncl":true,"CalcFromMonthEnd":"","CalcTo":"2027-09-30","CalcToIncl":false,"CalcToMonthEnd":"","InterestCalcMethod":"3","InterestCalcExpon":"","InterestCalendar":"","InterestCalcDays":"364","CalcBaseDays":"365","CalcBaseAmount":0.0000,"CalcBaseCur":"","CalcBaseCurIso":"","PercentageRate":0.0000000,"Assignment":"","PostingStatus":"0","SAP__Messages":[]}
+
+
+### 4-read
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/AdditionalFlow(CompanyCode='1000',FinancialTransaction='160537',Side='0',FlowKey='20260925150116000100001')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#AdditionalFlow/$entity","@odata.metadataEtag":"W/\"20260925092736\"","CompanyCode":"1000","FinancialTransaction":"160537","Side":"0","FlowKey":"20260925150116000100001","FlowType":"1430","FlowSign":"-","PaymentDate":"2026-12-15","PaymentAmount":500.0000,"PaymentCur":"INR","PaymentCurIso":"INR","LocalCurRate":0.00000,"LocalCurAmount":0.0000,"CurrentRate":true,"FixedRate":false,"FixedAmount":false,"CalcFrom":"2026-10-01","CalcFromIncl":true,"CalcFromMonthEnd":"","CalcTo":"2027-09-30","CalcToIncl":false,"CalcToMonthEnd":"","InterestCalcMethod":"3","InterestCalcExpon":"","InterestCalendar":"","InterestCalcDays":"364","CalcBaseDays":"365","CalcBaseAmount":0.0000,"CalcBaseCur":"","CalcBaseCurIso":"","PercentageRate":0.0000000,"Assignment":"","PostingStatus":"0","SAP__Messages":[]}
+
+
+### 5-patch
+PATCH https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/AdditionalFlow(CompanyCode='1000',FinancialTransaction='160537',Side='0',FlowKey='20260925150116000100001')?sap-client=100
+Body: {"PaymentAmount":750}
+Status: 200
+sap-messages: [{"code":"FTR0/162","message":"BAPI was executed successfully","numericSeverity":2,"target":""}]
+{"@odata.context":"$metadata#AdditionalFlow/$entity","@odata.metadataEtag":"W/\"20260925092736\"","CompanyCode":"1000","FinancialTransaction":"160537","Side":"0","FlowKey":"20260925150116000100001","FlowType":"1430","FlowSign":"-","PaymentDate":"2026-12-15","PaymentAmount":750.0000,"PaymentCur":"INR","PaymentCurIso":"INR","LocalCurRate":0.00000,"LocalCurAmount":0.0000,"CurrentRate":true,"FixedRate":false,"FixedAmount":false,"CalcFrom":"2026-10-01","CalcFromIncl":true,"CalcFromMonthEnd":"","CalcTo":"2027-09-30","CalcToIncl":false,"CalcToMonthEnd":"","InterestCalcMethod":"3","InterestCalcExpon":"","InterestCalendar":"","InterestCalcDays":"364","CalcBaseDays":"365","CalcBaseAmount":0.0000,"CalcBaseCur":"","CalcBaseCurIso":"","PercentageRate":0.0000000,"Assignment":"","PostingStatus":"0","SAP__Messages":[]}
+
+
+### 6-read-after-patch
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/AdditionalFlow(CompanyCode='1000',FinancialTransaction='160537',Side='0',FlowKey='20260925150116000100001')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#AdditionalFlow/$entity","@odata.metadataEtag":"W/\"20260925092736\"","CompanyCode":"1000","FinancialTransaction":"160537","Side":"0","FlowKey":"20260925150116000100001","FlowType":"1430","FlowSign":"-","PaymentDate":"2026-12-15","PaymentAmount":750.0000,"PaymentCur":"INR","PaymentCurIso":"INR","LocalCurRate":0.00000,"LocalCurAmount":0.0000,"CurrentRate":true,"FixedRate":false,"FixedAmount":false,"CalcFrom":"2026-10-01","CalcFromIncl":true,"CalcFromMonthEnd":"","CalcTo":"2027-09-30","CalcToIncl":false,"CalcToMonthEnd":"","InterestCalcMethod":"3","InterestCalcExpon":"","InterestCalendar":"","InterestCalcDays":"364","CalcBaseDays":"365","CalcBaseAmount":0.0000,"CalcBaseCur":"","CalcBaseCurIso":"","PercentageRate":0.0000000,"Assignment":"","PostingStatus":"0","SAP__Messages":[]}
+
+
+### 7-delete
+DELETE https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/AdditionalFlow(CompanyCode='1000',FinancialTransaction='160537',Side='0',FlowKey='20260925150116000100001')?sap-client=100
+Status: 204
+sap-messages: [{"code":"FTR0/162","message":"BAPI was executed successfully","numericSeverity":2}]
+
+
+
+### 8-list-after
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/AdditionalFlow?$filter=CompanyCode eq '1000' and FinancialTransaction eq '160537'&$count=true&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#AdditionalFlow","@odata.metadataEtag":"W/\"20260925092736\"","@odata.count":0,"value":[]}
+
+

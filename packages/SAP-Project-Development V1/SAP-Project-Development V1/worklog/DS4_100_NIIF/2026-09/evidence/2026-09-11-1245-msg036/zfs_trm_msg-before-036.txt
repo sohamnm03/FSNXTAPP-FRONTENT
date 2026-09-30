@@ -1,0 +1,39 @@
+ZFS_TRM_MSG as read 2026-09-11 BEFORE adding 036 (restore reference).
+All entries selfexplainatory=true, documented=false. Package ZFS_K2_CC_VS.
+Object already locked on DS4K907018 / task DS4K907194 (L-355).
+
+001 No data found for the selection
+002 ALV layout variant &1 does not exist
+003 You are not authorized to display any company code in the selection
+004 Maximum of &1 rows reached - the list is truncated
+005 User ID &1 already exists in the system
+006 Mandatory field &1 is missing for user type &2
+007 User type &1 is not supported
+008 BAPI user creation failed: &1
+009 User &1 created successfully
+010 BAPI user update failed: &1
+011 User &1 updated successfully
+012 BAPI user deletion failed: &1
+013 User &1 deleted successfully
+014 Outward SLC tracking record &1 does not exist
+015 Outward SLC tracking record &1 already exists
+016 DTTK tracking record &1 does not exist
+017 Target &1 is not registered for the dynamic gateway
+018 Operation &1 is not permitted for target &2
+019 Function module &1 does not exist
+020 Dynamic call of &1 failed: &2
+021 Table or view &1 does not exist
+022 Invalid JSON in parameter &1
+023 Field &1 is not a component of &2
+024 Filter operator &1 is not supported
+025 Requested row count &1 exceeds the registered limit &2
+026 &1 executed successfully, &2 row(s) affected
+027 Program &1 does not exist or is not executable
+028 Output mode &1 is not supported for a SUBMIT step
+029 Value &1 for selection field &2 is invalid or exceeds its length
+030 Variant &1 does not exist for program &2
+031 You are not authorized to submit program &1
+032 No output could be captured from program &1 in mode &2
+033 You are not authorized to register gateway target &1
+034 Invalid registration payload for target &1: &2
+035 Target &1 is already registered

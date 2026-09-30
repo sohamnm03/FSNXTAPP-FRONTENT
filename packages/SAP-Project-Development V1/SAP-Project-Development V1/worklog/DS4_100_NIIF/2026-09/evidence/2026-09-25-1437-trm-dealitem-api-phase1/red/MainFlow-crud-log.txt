@@ -1,0 +1,22 @@
+﻿### 1-list-before
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/MainFlow?$filter=CompanyCode eq '1000' and FinancialTransaction eq '160537'&$count=true&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#MainFlow","@odata.metadataEtag":"W/\"20260925093328\"","@odata.count":1,"value":[{"CompanyCode":"1000","FinancialTransaction":"160537","Side":"0","FlowKey":"20260925144110000100001","FlowType":"1100","FlowSign":"-","PaymentDate":"2026-10-01","PaymentAmount":100000.0000,"PaymentCur":"INR","PaymentCurIso":"INR","LocalCurRate":0.00000,"LocalCurAmount":0.0000,"CurrentRate":true,"FixedRate":false,"FixedAmount":false,"Assignment":"","PostingStatus":"0","CalcDate":"2026-10-01","NominalAmount":0.0000}]}
+
+
+### 2-list-without-deal-filter
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/MainFlow?sap-client=100
+Status: 500
+sap-messages: 
+{"error":{"code":"ZFS_TRM_MSG/056","message":"Filter on CompanyCode and FinancialTransaction (eq) is required","@SAP__common.ExceptionCategory":"Provider_Application_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMDEALITEM","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690250E006AB597E5E9494","@SAP__common.Timestamp":"20260925093343.831959","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### 3-create
+POST https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/MainFlow?sap-client=100
+Body: {"CompanyCode":"1000","FinancialTransaction":"160537","Side":"0","FlowType":"1100","PaymentDate":"2027-03-31","PaymentAmount":100}
+Status: 405
+sap-messages: 
+{"error":{"code":"SADL_ENTITY_RUNTIME/011","message":"Creating operations are disabled for entity '$SRVD_A2X#ZFS_SD_TRMDEALITEM~ZFS_CE_TRMDEALMAINFLO'","@SAP__common.ExceptionCategory":"Client_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMDEALITEM","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690250E006AB597E5E9498","@SAP__common.Timestamp":"20260925093344.202989","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+

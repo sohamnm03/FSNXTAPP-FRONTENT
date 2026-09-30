@@ -1,0 +1,70 @@
+﻿### R1-list
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction?$filter=CompanyCode eq '9990'&$count=true&$top=5&sap-client=100
+Status: 404
+sap-messages: 
+{"error":{"code":"/IWBEP/CM_V4_COS/014","message":"Service group 'ZFS_SB_TRMFX_O4_API' not published","@SAP__common.ExceptionCategory":"Configuration_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMFX","ServiceVersion":"0001"},"@SAP__common.TransactionId":"","@SAP__common.Timestamp":"20260925102102.355808","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### R2-source
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='9990',FinancialTransaction='40000258')?sap-client=100
+Status: 404
+sap-messages: 
+{"error":{"code":"/IWBEP/CM_V4_COS/014","message":"Service group 'ZFS_SB_TRMFX_O4_API' not published","@SAP__common.ExceptionCategory":"Configuration_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMFX","ServiceVersion":"0001"},"@SAP__common.TransactionId":"","@SAP__common.Timestamp":"20260925102102.553817","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### R3-non-fx-deal
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='1000',FinancialTransaction='160539')?sap-client=100
+Status: 404
+sap-messages: 
+{"error":{"code":"/IWBEP/CM_V4_COS/014","message":"Service group 'ZFS_SB_TRMFX_O4_API' not published","@SAP__common.ExceptionCategory":"Configuration_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMFX","ServiceVersion":"0001"},"@SAP__common.TransactionId":"","@SAP__common.Timestamp":"20260925102102.635523","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### R4-bapi-only-filter
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction?$filter=BuyAmount gt 0&sap-client=100
+Status: 404
+sap-messages: 
+{"error":{"code":"/IWBEP/CM_V4_COS/014","message":"Service group 'ZFS_SB_TRMFX_O4_API' not published","@SAP__common.ExceptionCategory":"Configuration_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMFX","ServiceVersion":"0001"},"@SAP__common.TransactionId":"","@SAP__common.Timestamp":"20260925102102.701844","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### R5-spot-filter
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction?$filter=CompanyCode eq '9990' and ProductType eq '40B'&$count=true&sap-client=100
+Status: 404
+sap-messages: 
+{"error":{"code":"/IWBEP/CM_V4_COS/014","message":"Service group 'ZFS_SB_TRMFX_O4_API' not published","@SAP__common.ExceptionCategory":"Configuration_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMFX","ServiceVersion":"0001"},"@SAP__common.TransactionId":"","@SAP__common.Timestamp":"20260925102102.769616","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### R1-list
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction?$filter=CompanyCode eq '9990'&$count=true&$top=5&sap-client=100
+Status: 404
+sap-messages: 
+{"error":{"code":"/IWBEP/CM_V4_COS/014","message":"Service group 'ZFS_SB_TRMFX_O4_API' not published","@SAP__common.ExceptionCategory":"Configuration_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMFX","ServiceVersion":"0001"},"@SAP__common.TransactionId":"","@SAP__common.Timestamp":"20260925102115.193201","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### R2-source
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='9990',FinancialTransaction='40000258')?sap-client=100
+Status: 404
+sap-messages: 
+{"error":{"code":"/IWBEP/CM_V4_COS/014","message":"Service group 'ZFS_SB_TRMFX_O4_API' not published","@SAP__common.ExceptionCategory":"Configuration_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMFX","ServiceVersion":"0001"},"@SAP__common.TransactionId":"","@SAP__common.Timestamp":"20260925102115.369029","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### R3-non-fx-deal
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='1000',FinancialTransaction='160539')?sap-client=100
+Status: 404
+sap-messages: 
+{"error":{"code":"/IWBEP/CM_V4_COS/014","message":"Service group 'ZFS_SB_TRMFX_O4_API' not published","@SAP__common.ExceptionCategory":"Configuration_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMFX","ServiceVersion":"0001"},"@SAP__common.TransactionId":"","@SAP__common.Timestamp":"20260925102115.456705","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### R4-bapi-only-filter
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction?$filter=BuyAmount gt 0&sap-client=100
+Status: 404
+sap-messages: 
+{"error":{"code":"/IWBEP/CM_V4_COS/014","message":"Service group 'ZFS_SB_TRMFX_O4_API' not published","@SAP__common.ExceptionCategory":"Configuration_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMFX","ServiceVersion":"0001"},"@SAP__common.TransactionId":"","@SAP__common.Timestamp":"20260925102115.529574","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### R5-spot-filter
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction?$filter=CompanyCode eq '9990' and ProductType eq '40B'&$count=true&sap-client=100
+Status: 404
+sap-messages: 
+{"error":{"code":"/IWBEP/CM_V4_COS/014","message":"Service group 'ZFS_SB_TRMFX_O4_API' not published","@SAP__common.ExceptionCategory":"Configuration_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMFX","ServiceVersion":"0001"},"@SAP__common.TransactionId":"","@SAP__common.Timestamp":"20260925102115.599189","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+

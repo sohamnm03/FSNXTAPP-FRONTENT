@@ -1,0 +1,4 @@
+{
+  "request": "{\"TargetName\":\"ZFS_SLC_OTTK_BTP\",\"Operation\":\"DELETE\",\"ImportJson\":\"[{\\\"ZOTTK_NO\\\":\\\"100051\\\"},{\\\"ZOTTK_NO\\\":\\\"100052\\\"},{\\\"ZOTTK_NO\\\":\\\"100053\\\"}]\",\"GenerateJson\":\"\",\"RequestId\":\"\"}",
+  "note": "First attempt sent only ZOTTK_NO (a non-key business field). ExecStatus 'S', ErrorCategory 'BUSINESS', ResultCount 0 - silently deleted nothing, because the table's real primary key is CLIENT+UUID, not ZOTTK_NO. Re-read confirmed all three rows still present. Corrected by adding UUID (base64 of the hex UUID read back from the table) to the ImportJson - see task9-cleanup-delete-attempt2-success.json."
+}

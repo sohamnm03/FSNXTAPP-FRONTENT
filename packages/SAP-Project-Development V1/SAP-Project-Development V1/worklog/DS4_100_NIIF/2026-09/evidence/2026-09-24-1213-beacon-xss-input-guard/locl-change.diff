@@ -1,0 +1,129 @@
+--- locl original
++++ locl after (DS4K907342)
+@@ -14,6 +14,18 @@
+   methods ZFS_T_091_ITSET_GET_ENTITYSET
+     redefinition .
+ private section.
++
++  "! Added by FS_DEV3 on 24.09.2026 (DS4K907342) - security audit, XSS input guard.<br/>
++  "! Rejects the request when any character field contains &lt; or &gt;.
++  "! @parameter is_header | Deep-insert header (position 0)
++  "! @parameter it_items | NP_ACC lines (position 1..n)
++  "! @raising /iwbep/cx_mgw_busi_exception | One ZFS_TRM_MSG 055 per offending field, HTTP 400
++  methods CHECK_NO_MARKUP
++    importing
++      !IS_HEADER type ANY
++      !IT_ITEMS type ANY TABLE
++    raising
++      /IWBEP/CX_MGW_BUSI_EXCEPTION .
+ ENDCLASS.
+ 
+ 
+@@ -22,6 +34,19 @@
+ 
+ 
+   METHOD /iwbep/if_mgw_appl_srv_runtime~create_deep_entity.
++*&---------------------------------------------------------------------*
++* Change History:
++*&---------------------------------------------------------------------*
++* Technical Consultant     : FS_DEV3
++* Date of Change           : 24.09.2026
++* Transport Request Number : DS4K907342
++* Description              : Security audit - "Accepting Script and HTML
++*                            Tags". The payload is checked by
++*                            CHECK_NO_MARKUP before anything is saved or
++*                            the posting job is started; a request with
++*                            < or > in any character field is rejected
++*                            with HTTP 400 (ZFS_TRM_MSG 055).
++*&---------------------------------------------------------------------*
+ 
+     DATA: ls_header              TYPE ihttpnvp.
+     DATA : BEGIN OF deepstructure.
+@@ -57,6 +82,11 @@
+ 
+     io_data_provider->read_entry_data( IMPORTING es_data = wa_dp ).
+ 
++    " SOC by FS_DEV3 on 24.09.2026 - DS4K907342 - reject HTML/script input (XSS audit)
++    check_no_markup( is_header = wa_dp
++                     it_items  = wa_dp-np_acc ).
++    " EOC by FS_DEV3 on 24.09.2026
++
+     wa_zfs_t_072-request_id = wa_dp-request_id.
+     DATA(lv_stamp) = sy-datum && sy-uzeit.
+ 
+@@ -260,4 +290,74 @@
+     ENDIF.
+ 
+   ENDMETHOD.
++
++
++  METHOD check_no_markup.
++* SOC by FS_DEV3 on 24.09.2026 - DS4K907342 - security audit: XSS input guard
++*&---------------------------------------------------------------------*
++* Method                   : CHECK_NO_MARKUP
++* Technical Consultant     : FS_DEV3
++* Date of Creation         : 24.09.2026
++* Transport Request Number : DS4K907342
++* Description              : Security audit fix (XSS). Walks every
++*                            character-like component (C, STRING) of the
++*                            header and of each NP_ACC line - DDIC
++*                            includes flattened, so new ZFS_T_072 columns
++*                            are covered automatically - and rejects the
++*                            whole request if any of them contains < or >.
++*                            Every offending field is reported with
++*                            ZFS_TRM_MSG 055 (field name + position only;
++*                            the caller's value is never echoed back).
++*                            Raised as a business exception => HTTP 400.
++*&---------------------------------------------------------------------*
++
++    TYPES: BEGIN OF ty_row,
++             position TYPE i,
++             data     TYPE REF TO data,
++           END OF ty_row.
++    DATA lt_rows     TYPE STANDARD TABLE OF ty_row WITH EMPTY KEY.
++    DATA lv_position TYPE i.
++    DATA lv_rejected TYPE abap_bool.
++
++    " Position 0 is the header, 1..n are the NP_ACC lines
++    APPEND VALUE #( position = 0 data = REF #( is_header ) ) TO lt_rows.
++    LOOP AT it_items ASSIGNING FIELD-SYMBOL(<ls_item>).
++      lv_position = lv_position + 1.
++      APPEND VALUE #( position = lv_position data = REF #( <ls_item> ) ) TO lt_rows.
++    ENDLOOP.
++
++    DATA(lo_container) = mo_context->get_message_container( ).
++
++    LOOP AT lt_rows INTO DATA(ls_row).
++      ASSIGN ls_row-data->* TO FIELD-SYMBOL(<ls_struct>).
++      DATA(lo_struct) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( <ls_struct> ) ).
++
++      " Only character-like fields can carry markup; tables, numbers and dates are skipped
++      LOOP AT lo_struct->get_included_view( ) INTO DATA(ls_comp).
++        IF ls_comp-type->type_kind <> cl_abap_typedescr=>typekind_char
++       AND ls_comp-type->type_kind <> cl_abap_typedescr=>typekind_string.
++          CONTINUE.
++        ENDIF.
++        ASSIGN COMPONENT ls_comp-name OF STRUCTURE <ls_struct> TO FIELD-SYMBOL(<lv_value>).
++        IF sy-subrc = 0 AND <lv_value> CA '<>'.
++          " Only the technical field name and the position go back - never the caller's value.
++          lo_container->add_message( iv_msg_type   = 'E'
++                                     iv_msg_id     = 'ZFS_TRM_MSG'
++                                     iv_msg_number = '055'
++                                     iv_msg_v1     = CONV #( ls_comp-name )
++                                     iv_msg_v2     = CONV #( |{ ls_row-position }| ) ).
++          lv_rejected = abap_true.
++        ENDIF.
++      ENDLOOP.
++    ENDLOOP.
++
++    " Raise once, after all fields are checked, so the caller sees every bad field
++    IF lv_rejected = abap_true.
++      RAISE EXCEPTION TYPE /iwbep/cx_mgw_busi_exception
++        EXPORTING
++          message_container = lo_container.
++    ENDIF.
++
++* EOC by FS_DEV3 on 24.09.2026 - DS4K907342
++  ENDMETHOD.
+ ENDCLASS.
+\ No newline at end of file

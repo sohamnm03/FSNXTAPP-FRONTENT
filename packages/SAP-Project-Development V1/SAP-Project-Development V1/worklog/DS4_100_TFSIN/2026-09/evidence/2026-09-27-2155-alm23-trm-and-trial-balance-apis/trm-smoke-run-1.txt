@@ -1,0 +1,28 @@
+﻿[PASS] $metadata sets=TrmAccrualCashflow,TrmPrincipalOutstanding
+[PASS] Accrual: 20 rows rows=20
+[PASS] Accrual: total = oracle 677,564,699.07 total=677564699.07
+[PASS] Accrual: bucket 01 sum=10776712.33 oracle=10776712.33
+[PASS] Accrual: bucket 02 sum=0.00 oracle=0
+[PASS] Accrual: bucket 03 sum=47765906.60 oracle=47765906.60
+[PASS] Accrual: bucket 04 sum=-250181824.27 oracle=-250181824.27
+[PASS] Accrual: bucket 05 sum=165786132.90 oracle=165786132.90
+[PASS] Accrual: bucket 06 sum=584836037.57 oracle=584836037.57
+[PASS] Accrual: bucket 07 sum=118581733.94 oracle=118581733.94
+[PASS] Accrual: bucket 08 sum=0.00 oracle=0
+[PASS] Accrual: bucket 09 sum=0.00 oracle=0
+[PASS] Accrual: bucket 10 sum=0.00 oracle=0
+[PASS] Accrual: Total = sum of buckets on every row 
+[PASS] Accrual: 10F filter = oracle (7 rows, -202,408,377.93) rows=7 total=-202408377.93
+[FAIL] Accrual: month 13 gives no rows rows=0
+[PASS] Principal: 610 rows rows=610
+[PASS] Principal: 10B total = oracle rows=16 total=307630000.00 oracle=307630000.00
+[PASS] Principal: 10C total = oracle rows=62 total=55563692968.56 oracle=55563692968.56
+[PASS] Principal: 10D total = oracle rows=20 total=19802336664.00 oracle=19802336664.00
+[PASS] Principal: 10F total = oracle rows=67 total=103422506736.40 oracle=103422506736.40
+[PASS] Principal: 15A total = oracle rows=30 total=7900388252.43 oracle=7900388252.43
+[PASS] Principal: 10E within 0.01% of the FX oracle (USD+JPY+INR/CHF) rows=284 total=7818392981392.58
+[PASS] Principal: no TPM12 capture failure 
+[PASS] Principal: Total = sum of buckets on every row 
+[PASS] Principal: 10A excluded (kept rule D11) 
+[PASS] Principal: 15A equals /FS00/ALMT034 (sample of 9 securities) differences=0
+TOTAL: 26 passed, 1 failed

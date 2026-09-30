@@ -1,0 +1,10 @@
+SAP GUI readings, TFSIN DS4/100 FS_DEV3 (connection "TFSIN HANA Dev", /app/con[1]/ses[1], status bar host vhtfqds4ap01), 2026-09-28, display only.
+Selection on every report: Company Code 1000, Calendar Month 10, Calendar Year 2025, radio "Amount In INR", Layout blank,
+all select-options (Transaction No / Class ID / Product Type / Txn Type) empty.
+Quarterly reports R008/R017/R022 additionally: "Display Rows with Zero Value" (P_CHECK) = ON, "Display without Internal Split" (P_ISPLIT) = OFF.
+Tcodes: R003 /FS00/ALMT028, R014 /FS00/ALMT033, R015 /FS00/ALMT034, R008 /FS00/ALMT031, R017 /FS00/ALMT036, R022 /FS00/ALMT042 (TSTC).
+R017 and R022 ended with status "No Provisions Data Found" (E, from the provisions feeder) but displayed their full ALV.
+Only F8 (execute) and screen reads were used; no toolbar button of the result ALVs was pressed.
+Grid dumped with dump_grid.py (read-only COM: ColumnOrder, RowCount, GetCellValue, FirstVisibleRow scroll).
+Supporting DB reads (ADT data preview, scripts/adt-sql.ps1, read-only): /FS00/CDS0001 NORDEXT of 13 deals, /FS00/CDS0002 FL41 on 2025-10-31,
+/FS00/ALMTR010 budgets (AA:01:00, AA:09:00, BB:11:00, BB:13:00), /FS00/ALMTR011 and /FS00/ALMTR017 for 1000/10/2025.

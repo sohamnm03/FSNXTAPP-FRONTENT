@@ -76,7 +76,7 @@ async function managerFixture(context, isPackaged = false) {
   const projectRoot = path.join(root, 'project');
   const files = {
     'gui_tests/run.py': '', 'scripts/run-gui-case.ps1': '', 'CLAUDE.md': '',
-    'config/sap-systems.json': JSON.stringify({ systems: [{ id: 'DS4_100_NIIF', enabled: true, sapGui: { enabled: true } }] }),
+    'config/sap-systems.json': JSON.stringify({ systems: [{ id: 'DS4_100_NIIF', enabled: true, sapGui: { enabled: true } }, { id: 'DS4_100_TFSIN', enabled: true, sapGui: { enabled: true } }] }),
     'config/gui-runs.json': '{"cases":{}}', 'config/runs.json': '{"cases":{}}',
   };
   for (const [name, content] of Object.entries(files)) {
@@ -110,7 +110,12 @@ async function managerFixture(context, isPackaged = false) {
     },
   }, { filename });
   const manager = await module.exports.createSapTerminalManager({ isPackaged, getPath: (name) => path.join(root, name) }, { get: () => 'test-token' }, {
-    showOpenDialog: async () => ({ canceled: false, filePaths: [path.join(root, 'browsed.md')] }),
+    showOpenDialog: async (_ownerWindow, options) => ({
+      canceled: false,
+      filePaths: [options?.properties?.includes('openDirectory')
+        ? path.join(root, 'chosen-archive')
+        : path.join(root, 'browsed.md')],
+    }),
   });
   const prep = manager.prepareCaseCreation('gui', 'DS4_100_NIIF');
   return { manager, calls, prep, root, projectRoot, options: { caseCreation: { systemId: 'DS4_100_NIIF', existingFiles: prep.existingFiles, author: 'test-author' } } };
@@ -119,7 +124,7 @@ async function managerFixture(context, isPackaged = false) {
 const markdown = '# TC-001 - Saved loan\n\n- **Case id:** TC-001\n- **Lane:** sap-gui\n- **System:** DS4_100_NIIF\n- **Transaction / app:** FTR_CREATE\n- **Writes to the database:** Creates one loan\n\n## Steps\n1. Save the entered loan.\n\n## Assertions\n- SAP displayed transaction 12345 saved.\n';
 
 test('creation carries scoped Save authorization and persists Markdown without renderer polling', async (context) => {
-  const { manager, calls, prep, options } = await managerFixture(context);
+  const { manager, calls, prep, options, root } = await managerFixture(context);
   const run = manager.start('Create a testcase', '', 'gui', options);
   const call = calls.at(-1);
   assert.equal(call.options.env.FSNXT_CASE_CREATION_AUTO_SAVE, '1');
@@ -133,6 +138,15 @@ test('creation carries scoped Save authorization and persists Markdown without r
   assert.equal(finished.status, 'completed');
   assert.equal(finished.createdCases.length, 1);
   assert.equal(fs.readFileSync(finished.createdCases[0].filePath, 'utf8'), markdown);
+  assert.equal(path.dirname(finished.createdCases[0].filePath), path.join(
+    root,
+    'downloads',
+    'FSNXT SAP Test Archives',
+    'FSNXT SAP Test Cases',
+    'test-cases',
+    'GUI-TC',
+    'DS4_100_NIIF',
+  ));
   assert.equal(fs.existsSync(draft), false);
   assert.equal(manager.listCases('gui').cases[0].caseId, 'TC-001');
   manager.start('Explain this case');
@@ -265,10 +279,34 @@ test('local storage failure is visible and retains the draft', async (context) =
   const run = manager.start('Create a testcase', '', 'gui', options);
   const draft = path.join(prep.caseDirectory, 'TC-001-loan-gui.md');
   fs.writeFileSync(draft, markdown);
-  fs.mkdirSync(path.join(root, 'documents'), { recursive: true });
-  fs.writeFileSync(path.join(root, 'documents', 'FSNXT SAP Test Cases'), 'blocks destination');
+  const archiveRoot = path.join(root, 'downloads', 'FSNXT SAP Test Archives');
+  fs.mkdirSync(archiveRoot, { recursive: true });
+  fs.writeFileSync(path.join(archiveRoot, 'FSNXT SAP Test Cases'), 'blocks destination');
   calls.at(-1).child.emit('close', 0);
   assert.equal(manager.getRun(run.id).status, 'failed');
   assert.match(manager.getRun(run.id).error, /Could not store the testcase locally/);
   assert.equal(fs.existsSync(draft), true);
+});
+
+test('selected archive location stores TFSIN cases in the TFSIN HANA Dev folder', async (context) => {
+  const { manager, root } = await managerFixture(context);
+  manager.getProject('test-user');
+  const selected = await manager.chooseArchiveDirectory();
+  assert.equal(selected.archiveDirectory, path.join(root, 'chosen-archive'));
+
+  const prep = manager.prepareCaseCreation('gui', 'DS4_100_TFSIN');
+  fs.writeFileSync(
+    path.join(prep.caseDirectory, 'TC-001-tfsin-gui.md'),
+    markdown.replace('DS4_100_NIIF', 'DS4_100_TFSIN'),
+  );
+  const result = manager.finalizeCaseCreation('gui', 'DS4_100_TFSIN', prep.existingFiles, 'test-user');
+  assert.equal(result.created.length, 1);
+  assert.equal(path.dirname(result.created[0].filePath), path.join(
+    root,
+    'chosen-archive',
+    'FSNXT SAP Test Cases',
+    'test-cases',
+    'GUI-TC',
+    'TFSIN HANA Dev',
+  ));
 });

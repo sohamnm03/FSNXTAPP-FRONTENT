@@ -4,7 +4,6 @@ import AppButton from '../../../components/common/AppButton';
 import Icon from '../../../components/common/Icon';
 import ScreenContainer from '../../../components/common/ScreenContainer';
 import { useAuth } from '../../auth/context/AuthContext';
-import { packageService } from '../services/packageService';
 import { sapTerminalService } from '../services/sapTerminalService';
 
 const FINAL_STATUSES = new Set(['completed', 'failed', 'stopped']);
@@ -85,7 +84,7 @@ function buildCaseCreationPrompt(lane, connectionServerName, connectedSystemId, 
   ].join('\n\n');
 }
 
-export default function SapTestingScreen({ module, onBack, onUninstalled }) {
+export default function SapTestingScreen({ onBack }) {
   const { user } = useAuth();
   const [isConfigured, setIsConfigured] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -113,7 +112,6 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
   const [isTokenDialogOpen, setIsTokenDialogOpen] = useState(false);
   const [oauthToken, setOauthToken] = useState('');
   const [tokenEnding, setTokenEnding] = useState('');
-  const [isUninstalling, setIsUninstalling] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState('idle');
   const [sapSystems, setSapSystems] = useState([]);
   const [selectedSystemId, setSelectedSystemId] = useState('');
@@ -255,7 +253,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     const nextPrompt = prompt.trim();
     if (!nextPrompt) return;
 
-    if (!isBusy && connectedSystemId === 'DS4_100_NIIF' && detectCreateCaseIntent(nextPrompt)) {
+    if (!isBusy && connectedSystemId && detectCreateCaseIntent(nextPrompt)) {
       setMessages((current) => [...current, { id: crypto.randomUUID(), role: 'user', text: nextPrompt }]);
       setPrompt('');
       startCaseCreation(nextPrompt);
@@ -611,17 +609,6 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
     closeCaseDialog();
   }
 
-  async function uninstall() {
-    setIsUninstalling(true);
-    try {
-      await packageService.uninstall(module.id);
-      onUninstalled();
-    } catch (uninstallError) {
-      setError(uninstallError.message);
-      setIsUninstalling(false);
-    }
-  }
-
   const isActive = status === 'running' || status === 'stopping' || status === 'finalizing';
   const isTestingConnection = connectionStatus === 'checking';
   const isBusy = isActive || isTestingConnection || isCreatingCase;
@@ -737,7 +724,7 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                   </div>
                 </div>
 
-                {connectedSystemId === 'DS4_100_NIIF' ? <div className="sap-case-section">
+                <div className="sap-case-section">
                   <div className="sap-case-section__header">
                     <span className="sap-sidebar-label">{LANES[lane].label} test cases</span>
                     <div className="sap-case-section__tools">
@@ -781,20 +768,19 @@ export default function SapTestingScreen({ module, onBack, onUninstalled }) {
                       </button>
                     ))}
                   </div>
-                </div> : null}
+                </div>
               </>
             ) : null}
           </div>
 
           <div className="sap-sidebar-actions">
             <AppButton disabled={isBusy || messages.length === 0} onClick={newChat} title="New chat" variant="secondary" />
-            <AppButton className="package-uninstall-button" disabled={isBusy} icon="trash" loading={isUninstalling} onClick={uninstall} title="Uninstall" variant="secondary" />
           </div>
         </aside>
 
         <section className="sap-chat-panel">
           <div className="run-status-row sap-chat-header">
-            <div><p className="eyebrow">AI ASSISTANT TERMINAL</p><h2>SAP testing automation</h2></div>
+            <div><p className="eyebrow">AI ASSISTANT TERMINAL</p><h2>SAP Testing Automation</h2></div>
             <div className="sap-chat-header-actions">
               {connectionServerName ? (
                 <span className="sap-server-chip">

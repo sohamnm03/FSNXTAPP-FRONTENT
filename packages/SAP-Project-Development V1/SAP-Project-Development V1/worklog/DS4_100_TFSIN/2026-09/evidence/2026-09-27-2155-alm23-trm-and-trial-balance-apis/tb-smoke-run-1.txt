@@ -1,0 +1,33 @@
+﻿Oracle: accounts=1121 balance-sheet=630 mapped=656 mapping rows=660 0010200001=-23619472061.65 non-zero=208
+[PASS] $metadata sets=GlAccount,GlAccountBalance,GlMapping
+[PASS] GlAccount: all accounts of the company code count=1121 oracle=1121
+[PASS] GlAccount: balance-sheet filter count=630 oracle=630
+[PASS] GlAccount: fields (texts, flags, created) chart=1000 name='Non Convertible Debe' created=2025-07-03 by=FS_DEV
+[PASS] GlAccountBalance: every account listed count=1121 oracle=1121
+[PASS] GlAccountBalance: balance = sum of journal entries balance=-23619472061.65 oracle=-23619472061.65 fiscal=2026/6 currency=INR
+[FAIL] GlAccountBalance: non-zero filter count=-1 oracle=208
+[PASS] GlAccountBalance: mapped-only filter count=656 oracle=656
+[PASS] GlAccountBalance: mapping and texts joined group=SA:07:01:00:00 'a) Sundry creditors' source=99 'Trial Balance Data' bucket=1 '01 Day(s) to 07 Day(s)'
+[FAIL] GlAccountBalance: trial balance sums to zero rows=1121 sum=9.5367431640625E-07
+[PASS] GlAccountBalance: parameters required 
+[PASS] GlMapping: all rows count=660 oracle=660
+[PASS] guard: 0010000002 has no mapping row HTTP 404
+[PASS] reject: unknown G/L account (002) 
+[PASS] reject: unknown ALM 2 group (002) => Alm2GroupId ZZ:99 does not exist
+[PASS] reject: unknown bucket (002) => Bucket 11 does not exist
+[PASS] reject: unknown source (002) => Source XX does not exist
+[PASS] reject: sensitivity outside the domain (002) => Sensitivity 03 does not exist
+[PASS] reject: unknown ALM 3 group (002) => Alm3GroupId ZZ does not exist
+[PASS] nothing stored by the refused creates 
+[PASS] create (key without leading zeros, codes in lower case) HTTP 201 key=10000002 
+[PASS] derived: G/L text from SAP, not from the caller name='Share Application Pending Allotment'
+[PASS] derived: group, source, bucket texts group='a) Sundry creditors' source='Trial Balance Data' b='01 Day(s) to 07 Day(s)' b3='Over 05 Year(s)'
+[PASS] stamps: created and changed set created=FS_DEV3 2026-09-27 changed=FS_DEV3
+[PASS] reject: duplicate (001) => GlMapping 0010000002 already exists
+[PASS] PATCH with stale ETag refused 
+[FAIL] PATCH bucket: text follows, created kept HTTP 200 bucket=2 '07 Day(s) to 15 Day(s)' alm3 bucket kept=10
+[PASS] PATCH: changed field checked (002) => Alm2GroupId ZZ:99 does not exist
+[PASS] DELETE HTTP 204
+[PASS] row gone 
+[PASS] GlMapping: row count back to the start count=660
+TOTAL: 28 passed, 3 failed

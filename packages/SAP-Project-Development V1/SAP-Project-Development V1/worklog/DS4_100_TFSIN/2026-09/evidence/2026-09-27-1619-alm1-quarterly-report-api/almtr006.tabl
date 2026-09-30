@@ -1,0 +1,25 @@
+@EndUserText.label : 'Budget Grouping'
+@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #ALLOWED
+define table /fs00/almtr006 {
+
+  key mandt     : mandt not null;
+  key zgrp_id   : /fs00/almdt0001 not null;
+  zgrp1         : /fs00/almdt0002;
+  zgrp2         : /fs00/almdt0002;
+  zgrp3         : /fs00/almdt0002;
+  zgrp_name     : /fs00/almdt0003;
+  zsrc          : /fs00/almdt0004;
+  zsrc_desc     : /fs00/almdt0005;
+  zlcr_src      : /fs00/almdt0004;
+  zlcr_src_desc : /fs00/almdt0005;
+  zcreated_by   : tb_cruser;
+  zcreated_date : tb_dcrdat;
+  zcreated_time : tb_tcrtim;
+  zchanged_by   : tb_upuser;
+  zchanged_date : tb_dupdat;
+  zchanged_time : tb_tuptim;
+
+}

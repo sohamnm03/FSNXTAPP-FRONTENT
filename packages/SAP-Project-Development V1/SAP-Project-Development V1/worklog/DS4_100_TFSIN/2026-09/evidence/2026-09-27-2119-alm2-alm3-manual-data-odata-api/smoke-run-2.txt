@@ -1,0 +1,35 @@
+﻿Manual Data root: https://vhtfqds4ap01.sap.tfsin.co.in:44300/sap/opu/odata4/sap/zfs_sb_almmanual_o4_api/srvd_a2x/sap/zfs_sd_almmanual/0001
+[PASS] $metadata -> HTTP 200 (expected 200) sets: Alm1ManualData, Alm2ManualData, Alm3ManualData
+[PASS] Alm1ManualData still answers -> HTTP 200 (expected 200) 
+[PASS] guard: Alm2ManualData 2099/12 empty -> HTTP 200 (expected 200) count=0
+[PASS] guard: Alm3ManualData 2099/12 empty -> HTTP 200 (expected 200) count=0
+[PASS] ALM2 create SB:11:01 b1 = 100 -> HTTP 201 (expected 201) amount=100.00 createdBy=FS_DEV3
+[PASS] ALM2 header b1 = 100 -> value 100.00 (expected 100)
+[PASS] ALM2 create SB:11:02 b1 = 50.5 -> HTTP 201 (expected 201) 
+[PASS] ALM2 create SB:11:02 b10 = 10 (bucket 10) -> HTTP 201 (expected 201) 
+[PASS] ALM2 header b1 = 150.50 -> value 150.50 (expected 150.5)
+[PASS] ALM2 header b10 = 10 -> value 10.00 (expected 10)
+[PASS] ALM2 duplicate create refused -> HTTP 400 (expected 400/409)  => The key value is already in use. Please enter a different one.
+[PASS] ALM2 header group refused (009) -> HTTP 400 (expected 400)  => Group SB:11:00:00:00 has source ; only source 92 is keyed in manually
+[PASS] ALM2 non-92 child refused (009) -> HTTP 400 (expected 400)  => Group SB:11:03:00:00 has source ; only source 92 is keyed in manually
+[PASS] ALM2 month 13 refused (010) -> HTTP 400 (expected 400)  => Month 13 is not valid; enter 01 to 12
+[PASS] ALM2 bucket 11 refused (002, not in /FS00/ALMTR005) -> HTTP 400 (expected 400)  => Bucket 11 does not exist
+[PASS] ALM2 ALM 1 group refused (002) -> HTTP 400 (expected 400)  => GroupId AA:02:01:00:00 does not exist
+[PASS] ALM2 string amount refused (L-244) -> HTTP 400 (expected 400)  => Error while parsing an XML stream
+[PASS] ALM2 read SB:11:01 b1 + ETag -> HTTP 200 (expected 200) etag=W/"SADL-202609271612320478060C~20260927161232.0478060"
+[PASS] ALM2 PATCH with stale ETag refused -> HTTP 412 (expected 412)  => State of entity CDS~ZFS_C_ALM2MANUALTP with key 1000 2099 12 SB:11:01:00:00 01 was already changed (stale If-Match)
+[PASS] ALM2 PATCH SB:11:01 b1 = 200 -> HTTP 200 (expected 200/204) 
+[PASS] ALM2 header b1 = 250.50 -> value 250.50 (expected 250.5)
+[PASS] ALM2 DELETE header refused (009) -> HTTP 400 (expected 400)  => Group SB:11:00:00:00 has source ; only source 92 is keyed in manually
+[PASS] ALM2 DELETE SB:11:01:00:00 b1 -> HTTP 204 (expected 204) 
+[PASS] ALM2 DELETE SB:11:02:00:00 b1 -> HTTP 204 (expected 204) 
+[PASS] ALM2 DELETE SB:11:02:00:00 b10 -> HTTP 204 (expected 204) 
+[PASS] ALM2 header b10 gone (sum 0) -> HTTP 404 (expected 404)  => Unspecified provider error occurred. See Error Context and Call Stack.
+[PASS] ALM2 period empty after clean-up -> HTTP 200 (expected 200) count=0
+[PASS] ALM3 GET collection -> HTTP 200 (expected 200) count=0
+[PASS] ALM3 header group refused (009) -> HTTP 400 (expected 400)  => Group IA:01:00:00:00:00 has source ; only source 92 is keyed in manually
+[PASS] ALM3 source-99 group refused (009) -> HTTP 400 (expected 400)  => Group IA:07:01:00:00:00 has source 99; only source 92 is keyed in manually
+[PASS] ALM3 ALM 2 group refused (002) -> HTTP 400 (expected 400)  => GroupId SB:11:01:00:00 does not exist
+[PASS] ALM3 month 13 refused (010) -> HTTP 400 (expected 400)  => Month 13 is not valid; enter 01 to 12
+[PASS] ALM3 period still empty -> HTTP 200 (expected 200) count=0
+TOTAL: 33 passed, 0 failed

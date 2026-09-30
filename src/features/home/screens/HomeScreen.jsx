@@ -5,6 +5,7 @@ import BrandLogo from '../../../components/common/BrandLogo';
 import Icon from '../../../components/common/Icon';
 import ScreenContainer from '../../../components/common/ScreenContainer';
 import { useAuth } from '../../auth/context/AuthContext';
+import { canAccessModule } from '../../auth/utils/moduleAccess';
 import { availableModules, packageService } from '../../packages/services/packageService';
 
 const moduleDetails = {
@@ -60,9 +61,10 @@ export default function HomeScreen({ onOpenModule }) {
   const { logout, user } = useAuth();
   const [installedModuleIds, setInstalledModuleIds] = useState([]);
   const [installingModuleId, setInstallingModuleId] = useState(null);
-  const [uninstallingModuleId, setUninstallingModuleId] = useState(null);
   const [downloadProgress, setDownloadProgress] = useState(0);
-  const [selectedModuleId, setSelectedModuleId] = useState(availableModules[0].id);
+  const [selectedModuleId, setSelectedModuleId] = useState(() => (
+    availableModules.find((module) => canAccessModule(user, module.id))?.id || availableModules[0].id
+  ));
   const [packageFilter, setPackageFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -90,36 +92,27 @@ export default function HomeScreen({ onOpenModule }) {
 
   async function handleModuleAction(module) {
     setSelectedModuleId(module.id);
+    if (!canAccessModule(user, module.id)) {
+      setError(`Your account does not have access to ${module.name}.`);
+      return;
+    }
     if (installedModuleIds.includes(module.id)) {
       onOpenModule(module);
       return;
     }
-    if (installingModuleId || uninstallingModuleId) return;
+    if (installingModuleId) return;
 
     setError('');
     setInstallingModuleId(module.id);
     setDownloadProgress(0);
     try {
       setInstalledModuleIds(await packageService.install(module.id, setDownloadProgress));
+      onOpenModule(module);
     } catch (installationError) {
       setError(installationError.message || 'Installation failed. Please try again.');
     } finally {
       setInstallingModuleId(null);
       setDownloadProgress(0);
-    }
-  }
-
-  async function handleUninstall(module) {
-    if (installingModuleId || uninstallingModuleId) return;
-    setSelectedModuleId(module.id);
-    setError('');
-    setUninstallingModuleId(module.id);
-    try {
-      setInstalledModuleIds(await packageService.uninstall(module.id));
-    } catch (uninstallationError) {
-      setError(uninstallationError.message || 'Uninstallation failed. Please try again.');
-    } finally {
-      setUninstallingModuleId(null);
     }
   }
 
@@ -137,6 +130,8 @@ export default function HomeScreen({ onOpenModule }) {
     || availableModules[0];
   const selectedDetails = moduleDetails[selectedModule.id];
   const isSelectedInstalled = installedModuleIds.includes(selectedModule.id);
+  const isSelectedAccessible = canAccessModule(user, selectedModule.id);
+  const isSelectedReady = isSelectedInstalled && isSelectedAccessible;
   const installedCount = installedModuleIds.length;
   const availableCount = availableModules.length - installedCount;
 
@@ -179,16 +174,17 @@ export default function HomeScreen({ onOpenModule }) {
             {filteredModules.length === 0 ? <p className="home-package-list__empty">No packages match this view.</p> : filteredModules.map((module) => {
               const installed = installedModuleIds.includes(module.id);
               const installing = installingModuleId === module.id;
+              const accessible = canAccessModule(user, module.id);
               return (
-                <article className={`home-package-card ${selectedModule.id === module.id ? 'is-selected' : ''}`} key={module.id}>
-                  <button aria-label={module.name} className="home-package-card__main" onClick={() => setSelectedModuleId(module.id)} title={module.name} type="button">
+                <article className={`home-package-card ${selectedModule.id === module.id ? 'is-selected' : ''} ${accessible ? '' : 'is-disabled'}`} key={module.id}>
+                  <button aria-label={module.name} className="home-package-card__main" disabled={!accessible} onClick={() => setSelectedModuleId(module.id)} title={accessible ? module.name : `${module.name} access is disabled`} type="button">
                     <span className="home-package-card__icon"><Icon name={module.icon} size={23} /></span>
                     <span className="home-package-card__copy">
                       <strong>{module.name}</strong>
-                      <small className={installed ? 'is-installed' : ''}>{installed ? '● Installed' : 'Available'}</small>
+                      <small className={installed && accessible ? 'is-installed' : ''}>{accessible ? (installed ? '● Installed' : 'Available') : 'Access disabled'}</small>
                       <span>{moduleDetails[module.id].version}</span>
                     </span>
-                    <Icon name={selectedModule.id === module.id ? 'chevronRight' : installed ? 'check' : 'lock'} size={18} />
+                    <Icon name={!accessible ? 'lock' : selectedModule.id === module.id ? 'chevronRight' : installed ? 'check' : 'lock'} size={18} />
                   </button>
 
                   {installing ? (
@@ -209,9 +205,9 @@ export default function HomeScreen({ onOpenModule }) {
           <div className="home-dashboard__breadcrumb"><span>Packages</span><Icon name="chevronRight" size={14} /><strong>{selectedModule.name}</strong></div>
 
           <section className="home-package-summary">
-            <div className={`home-package-summary__icon ${isSelectedInstalled ? 'is-ready' : ''}`}><Icon name={isSelectedInstalled ? selectedModule.icon : 'lock'} size={48} /></div>
+            <div className={`home-package-summary__icon ${isSelectedReady ? 'is-ready' : ''}`}><Icon name={isSelectedReady ? selectedModule.icon : 'lock'} size={48} /></div>
             <div className="home-package-summary__copy">
-              <span className={`home-package-summary__badge ${isSelectedInstalled ? 'is-ready' : ''}`}><Icon name={isSelectedInstalled ? 'check' : 'lock'} size={14} />{isSelectedInstalled ? 'PACKAGE READY' : 'PACKAGE LOCKED'}</span>
+              <span className={`home-package-summary__badge ${isSelectedReady ? 'is-ready' : ''}`}><Icon name={isSelectedReady ? 'check' : 'lock'} size={14} />{isSelectedAccessible ? (isSelectedInstalled ? 'PACKAGE READY' : 'PACKAGE LOCKED') : 'ACCESS RESTRICTED'}</span>
               <h2>{selectedModule.name}</h2>
               <p>{selectedModule.description}</p>
               <div className="home-package-summary__meta">
@@ -221,19 +217,15 @@ export default function HomeScreen({ onOpenModule }) {
               </div>
             </div>
             <div className="home-package-summary__actions">
-              {isSelectedInstalled ? (
-                <>
-                  <AppButton
-                    disabled={Boolean(uninstallingModuleId)}
-                    icon="play"
-                    onClick={() => onOpenModule(selectedModule)}
-                    title={`Open ${selectedModule.name}`}
-                  />
-                  <AppButton className="package-uninstall-button" icon="trash" loading={uninstallingModuleId === selectedModule.id} onClick={() => handleUninstall(selectedModule)} title="Uninstall package" variant="secondary" />
-                </>
-              ) : (
-                <AppButton disabled={Boolean(installingModuleId || uninstallingModuleId)} icon="download" loading={installingModuleId === selectedModule.id} onClick={() => handleModuleAction(selectedModule)} title={installingModuleId === selectedModule.id ? `Downloading ${downloadProgress}%` : 'Download package'} />
-              )}
+              <AppButton
+                disabled={!isSelectedAccessible || Boolean(installingModuleId)}
+                icon="play"
+                loading={installingModuleId === selectedModule.id}
+                onClick={() => handleModuleAction(selectedModule)}
+                title={installingModuleId === selectedModule.id
+                  ? `Opening ${selectedModule.name} ${downloadProgress}%`
+                  : `Open ${selectedModule.name}`}
+              />
             </div>
           </section>
 

@@ -1,0 +1,21 @@
+﻿SAP period before: saved=False savedRows=0 locked=False
+SAP report: rows=188 rows with Total<>0=17
+[PASS] temporary app instance up port 8098 pid 28868
+[PASS] sign in user=demo
+[PASS] setup: odata mode on the ALM 2 service, company codes mode=odata service=ZFS_SB_ALMQTR2RPT_O4_API companies=74
+[PASS] report: 10 ALM 2/3 buckets with XBRL codes xbrl=X010,X20,X030,X040,X050,X060,X070,X080,X090,X100
+[PASS] report: key date = month end + 1, snapshot date = month end key=2026-10-01 snapshot=2026-09-30
+[PASS] report: same rows as SAP app=188 sap=188
+[PASS] report: same group order as SAP, computed rows last last5=SA:99:99:99:99_A1,SC,SD,SE,SF
+[PASS] report: SA:99:99:99:99 total = SAP app=7875399732708.75 sap=7875399732708.75
+[PASS] report: PERCENT rows flagged (SE, SF) rows=SE,SF
+info: rows with sourceIncomplete = 0
+[PASS] period: not saved, not locked (guard) saved=False locked=False
+[PASS] save through the app: saved rows = rows with Total <> 0 savedRows=17 expected=17 by=FS_DEV3 
+[PASS] second save refused (SAP message 017) => {"error":{"message":"SaveSnapshot: ALM 2 data of 09/2026 for company code 1000 is already saved"}}
+[PASS] delete through the app saved=False 
+[PASS] unknown action refused by the app => {"error":{"message":"Choose save, lock or delete."}}
+temporary instance (pid 28868) stopped
+[PASS] SAP period afterwards: not saved, not locked saved=False savedRows=0 locked=False
+
+RESULT: 15 passed, 0 failed

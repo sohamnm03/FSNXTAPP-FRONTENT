@@ -1,0 +1,12 @@
+﻿[PASS] temporary app instance up port 8095
+[PASS] sign in user=demo
+[PASS] view: odata mode, budget table read mode=odata service=ZFS_SB_ALMRPTFMT_O4_API alm1/2/3/budget=147/183/178/41
+[PASS] view: source description derived AA:01:00 source=73 srcDesc=Disbursements
+[PASS] create through the app created=1 lcrSrcDesc=Disbursements 
+[PASS] unknown LCR source refused by the engine => {"error":{"message":"Some rows need attention.","details":[{"row":1,"field":"lcrSource","message":"Source 'Q9' is not in the ALM source master"}]}}
+[PASS] update through the app updated=1 name=App smoke budget v2 lcr='' 
+[PASS] delete through the app deleted=1 
+[PASS] row gone, count restored budget=41
+temporary instance (pid 9920) stopped
+
+RESULT: 9 passed, 0 failed

@@ -8,7 +8,6 @@ import SapChatPanel from '../components/SapChatPanel';
 import SapConnectionDialog from '../components/SapConnectionDialog';
 import SapConnectionPanel from '../components/SapConnectionPanel';
 import SapOAuthTokenDialog from '../components/SapOAuthTokenDialog';
-import { packageService } from '../services/packageService';
 import { sapDevelopmentService } from '../services/sapDevelopmentService';
 import { sapTerminalService } from '../services/sapTerminalService';
 
@@ -30,7 +29,7 @@ function friendlyDevelopmentError(error, fallback = 'SAP Development could not c
   return message.length > 240 ? fallback : message || fallback;
 }
 
-export default function SapDevelopmentScreen({ module, onBack, onUninstalled }) {
+export default function SapDevelopmentScreen({ onBack }) {
   const { user } = useAuth();
   const [isConfigured, setIsConfigured] = useState(false);
   const [sapSystems, setSapSystems] = useState([]);
@@ -54,7 +53,6 @@ export default function SapDevelopmentScreen({ module, onBack, onUninstalled }) 
   const [isStarting, setIsStarting] = useState(false);
   const [isStopping, setIsStopping] = useState(false);
   const [isChoosingReportDirectory, setIsChoosingReportDirectory] = useState(false);
-  const [isUninstalling, setIsUninstalling] = useState(false);
   const [reportDirectory, setReportDirectory] = useState('');
   const [error, setError] = useState('');
 
@@ -223,17 +221,6 @@ export default function SapDevelopmentScreen({ module, onBack, onUninstalled }) 
     setPrompt('');
   }
 
-  async function uninstall() {
-    setIsUninstalling(true);
-    try {
-      await packageService.uninstall(module.id);
-      onUninstalled();
-    } catch (uninstallError) {
-      setError(friendlyDevelopmentError(uninstallError));
-      setIsUninstalling(false);
-    }
-  }
-
   async function sendPrompt(event) {
     event.preventDefault();
     const nextPrompt = prompt.trim();
@@ -357,7 +344,6 @@ export default function SapDevelopmentScreen({ module, onBack, onUninstalled }) 
 
           <div className="sap-sidebar-actions">
             <AppButton disabled={isBusy || messages.length === 0} onClick={newChat} title="New chat" variant="secondary" />
-            <AppButton className="package-uninstall-button" disabled={isBusy} icon="trash" loading={isUninstalling} onClick={uninstall} title="Uninstall" variant="secondary" />
           </div>
         </aside>
 

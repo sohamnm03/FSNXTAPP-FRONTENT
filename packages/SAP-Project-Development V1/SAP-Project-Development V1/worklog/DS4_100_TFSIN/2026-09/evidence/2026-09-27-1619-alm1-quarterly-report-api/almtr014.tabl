@@ -1,0 +1,45 @@
+@EndUserText.label : 'ALM1 RBI Data Save'
+@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #ALLOWED
+define table /fs00/almtr014 {
+
+  key mandt     : mandt not null;
+  key zbukrs    : bukrs not null;
+  key zmonth    : /fs00/almdt0031 not null;
+  key zyear     : /fs00/almdt0032 not null;
+  key zdate     : /fs00/almdt0027 not null;
+  key zgrp_id   : /fs00/almdt0001 not null;
+  zgrp_name     : /fs00/almdt0003;
+  @Semantics.amount.currencyCode : 'vtbfhapo.wzbetr'
+  zbuc1         : /fs00/almdt0036;
+  @Semantics.amount.currencyCode : 'vtbfhapo.wzbetr'
+  zbuc2         : /fs00/almdt0036;
+  @Semantics.amount.currencyCode : 'vtbfhapo.wzbetr'
+  zbuc3         : /fs00/almdt0036;
+  @Semantics.amount.currencyCode : 'vtbfhapo.wzbetr'
+  zbuc4         : /fs00/almdt0036;
+  @Semantics.amount.currencyCode : 'vtbfhapo.wzbetr'
+  zbuc5         : /fs00/almdt0036;
+  @Semantics.amount.currencyCode : 'vtbfhapo.wzbetr'
+  zbuc6         : /fs00/almdt0036;
+  @Semantics.amount.currencyCode : 'vtbfhapo.wzbetr'
+  zbuc7         : /fs00/almdt0036;
+  @Semantics.amount.currencyCode : 'vtbfhapo.wzbetr'
+  zbuc8         : /fs00/almdt0036;
+  @Semantics.amount.currencyCode : 'vtbfhapo.wzbetr'
+  zbuc9         : /fs00/almdt0036;
+  @Semantics.amount.currencyCode : 'vtbfhapo.wzbetr'
+  zbuc10        : /fs00/almdt0036;
+  @Semantics.amount.currencyCode : 'vtbfhapo.wzbetr'
+  zns_amt       : /fs00/almdt0030;
+  zlock         : /fs00/almdt0039;
+  zcreated_by   : tb_cruser;
+  zcreated_date : tb_dcrdat;
+  zcreated_time : tb_tcrtim;
+  zchanged_by   : tb_upuser;
+  zchanged_date : tb_dupdat;
+  zchanged_time : tb_tuptim;
+
+}

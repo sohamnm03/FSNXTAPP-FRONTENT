@@ -1,0 +1,15 @@
+﻿### W13-probe
+PATCH https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmlc_o4_api/srvd_a2x/sap/zfs_sd_trmlc/0001/LetterOfCredit(CompanyCode='9990',FinancialTransaction='40000258')?sap-client=100
+Body: {"ContractDate":"2026-07-31"}
+Status: 400
+sap-messages: 
+{"error":{"code":"FTR_LC/107","message":"Transaction No. 40000258 does not belong to Letter of Credit","@SAP__common.ExceptionCategory":"Provider_Application_Error","details":[{"code":"FTR0/161","message":"BAPI processing was terminated","@SAP__common.Severity":"error","@SAP__common.numericSeverity":4}],"innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMLC","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690080E006AB65EA07F2A4","@SAP__common.Timestamp":"20260925114457.809119","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### fx-check
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmfx_o4_api/srvd_a2x/sap/zfs_sd_trmfx/0001/FxTransaction(CompanyCode='9990',FinancialTransaction='40000258')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#FxTransaction/$entity","@odata.metadataEtag":"W/\"20260925103923\"","CompanyCode":"9990","FinancialTransaction":"40000258","ProductType":"40A","TransactionType":"400","Partner":"400000002","ContractDate":"2026-07-31","ValuationClass":"5","Portfolio":"","BuyCurrency":"INR","SellCurrency":"USD","LeadCurrency":"USD","FollowCurrency":"INR","TradedCurrency":"USD","BuyAmount":96000000.0000,"SellAmount":1000000.0000,"ValueDate":"2026-11-30","SpotRate":96.000000000,"SwapRate":0.000000000,"ForwardRate":96.000000000,"ActiveStatus":"0","ActivityCategory":"20","SAP__Messages":[]}
+
+

@@ -1,0 +1,58 @@
+﻿### 1-list-before
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/Condition?$filter=CompanyCode eq '1000' and FinancialTransaction eq '160539'&$count=true&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#Condition","@odata.metadataEtag":"W/\"20260925094215\"","@odata.count":2,"value":[{"CompanyCode":"1000","FinancialTransaction":"160539","Side":"0","ConditionKey":"0100020261001","ConditionNumber":"1000","ConditionTypeCode":"1200","EffectiveFrom":"2026-10-01","AmountCalcRule":"1","PercentageRate":10.0000000,"Amount":0.0000,"Currency":"INR","CalcBaseAmount":0.0000,"RefInterestRate":"","RateMarkupOrDown":0.0000000,"CalcMethod":"3","CalcCalendar":"","Frequency":"0","FrequencyUnit":"0","CalcDate":"2027-09-30","CalcDateInclusive":false,"CalcDateMonthEnd":false,"DueDate":"2027-09-30","DueDateMonthEnd":"","ShiftDays":0,"ReferenceConditionKey":"","SAP__Messages":[]},{"CompanyCode":"1000","FinancialTransaction":"160539","Side":"0","ConditionKey":"0200020261001","ConditionNumber":"2000","ConditionTypeCode":"1120","EffectiveFrom":"2026-10-01","AmountCalcRule":"1","PercentageRate":100.0000000,"Amount":0.0000,"Currency":"INR","CalcBaseAmount":0.0000,"RefInterestRate":"","RateMarkupOrDown":0.0000000,"CalcMethod":"3","CalcCalendar":"","Frequency":"0","FrequencyUnit":"0","CalcDate":"2027-09-30","CalcDateInclusive":false,"CalcDateMonthEnd":false,"DueDate":"2027-09-30","DueDateMonthEnd":"","ShiftDays":0,"ReferenceConditionKey":"","SAP__Messages":[]}]}
+
+
+### 2-list-without-deal-filter
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/Condition?sap-client=100
+Status: 500
+sap-messages: 
+{"error":{"code":"ZFS_TRM_MSG/056","message":"Filter on CompanyCode and FinancialTransaction (eq) is required","@SAP__common.ExceptionCategory":"Provider_Application_Error","innererror":{"ErrorDetails":{"@SAP__common.Application":{"ComponentId":"BC-ESI-ESF-GW","ServiceRepository":"SRVD_A2X","ServiceId":"ZFS_SD_TRMDEALITEM","ServiceVersion":"0001"},"@SAP__common.TransactionId":"77366C9091690210E006AB5D946B9B7D","@SAP__common.Timestamp":"20260925100341.36374","@SAP__common.ErrorResolution":{"Analysis":"Use ADT feed reader \"SAP Gateway Error Log\" or run transaction /IWFND/ERROR_LOG on SAP Gateway hub system and search for entries with the timestamp above for more details","Note":"See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)"}}}}}
+
+
+### 3-create
+POST https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/Condition?sap-client=100
+Body: {"CompanyCode":"1000","FinancialTransaction":"160539","Side":"0","ConditionTypeCode":"1200","EffectiveFrom":"2027-01-01","PercentageRate":12,"ReferenceConditionKey":"0100020261001"}
+Status: 201
+sap-messages: [{"code":"FTR0/162","message":"BAPI was executed successfully","numericSeverity":2,"target":""}]
+{"@odata.context":"$metadata#Condition/$entity","@odata.metadataEtag":"W/\"20260925094215\"","CompanyCode":"1000","FinancialTransaction":"160539","Side":"0","ConditionKey":"0100020270101","ConditionNumber":"1000","ConditionTypeCode":"1200","EffectiveFrom":"2027-01-01","AmountCalcRule":"1","PercentageRate":12.0000000,"Amount":0.0000,"Currency":"INR","CalcBaseAmount":0.0000,"RefInterestRate":"","RateMarkupOrDown":0.0000000,"CalcMethod":"3","CalcCalendar":"","Frequency":"0","FrequencyUnit":"0","CalcDate":null,"CalcDateInclusive":false,"CalcDateMonthEnd":false,"DueDate":null,"DueDateMonthEnd":"","ShiftDays":0,"ReferenceConditionKey":"","SAP__Messages":[]}
+
+
+### 4-read
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/Condition(CompanyCode='1000',FinancialTransaction='160539',Side='0',ConditionKey='0100020270101')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#Condition/$entity","@odata.metadataEtag":"W/\"20260925094215\"","CompanyCode":"1000","FinancialTransaction":"160539","Side":"0","ConditionKey":"0100020270101","ConditionNumber":"1000","ConditionTypeCode":"1200","EffectiveFrom":"2027-01-01","AmountCalcRule":"1","PercentageRate":12.0000000,"Amount":0.0000,"Currency":"INR","CalcBaseAmount":0.0000,"RefInterestRate":"","RateMarkupOrDown":0.0000000,"CalcMethod":"3","CalcCalendar":"","Frequency":"0","FrequencyUnit":"0","CalcDate":null,"CalcDateInclusive":false,"CalcDateMonthEnd":false,"DueDate":null,"DueDateMonthEnd":"","ShiftDays":0,"ReferenceConditionKey":"","SAP__Messages":[]}
+
+
+### 5-patch
+PATCH https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/Condition(CompanyCode='1000',FinancialTransaction='160539',Side='0',ConditionKey='0100020270101')?sap-client=100
+Body: {"PercentageRate":12.5}
+Status: 200
+sap-messages: [{"code":"FTR0/162","message":"BAPI was executed successfully","numericSeverity":2,"target":""}]
+{"@odata.context":"$metadata#Condition/$entity","@odata.metadataEtag":"W/\"20260925094215\"","CompanyCode":"1000","FinancialTransaction":"160539","Side":"0","ConditionKey":"0100020270101","ConditionNumber":"1000","ConditionTypeCode":"1200","EffectiveFrom":"2027-01-01","AmountCalcRule":"1","PercentageRate":12.5000000,"Amount":0.0000,"Currency":"INR","CalcBaseAmount":0.0000,"RefInterestRate":"","RateMarkupOrDown":0.0000000,"CalcMethod":"3","CalcCalendar":"","Frequency":"0","FrequencyUnit":"0","CalcDate":null,"CalcDateInclusive":false,"CalcDateMonthEnd":false,"DueDate":null,"DueDateMonthEnd":"","ShiftDays":0,"ReferenceConditionKey":"","SAP__Messages":[]}
+
+
+### 6-read-after-patch
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/Condition(CompanyCode='1000',FinancialTransaction='160539',Side='0',ConditionKey='0100020270101')?sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#Condition/$entity","@odata.metadataEtag":"W/\"20260925094215\"","CompanyCode":"1000","FinancialTransaction":"160539","Side":"0","ConditionKey":"0100020270101","ConditionNumber":"1000","ConditionTypeCode":"1200","EffectiveFrom":"2027-01-01","AmountCalcRule":"1","PercentageRate":12.5000000,"Amount":0.0000,"Currency":"INR","CalcBaseAmount":0.0000,"RefInterestRate":"","RateMarkupOrDown":0.0000000,"CalcMethod":"3","CalcCalendar":"","Frequency":"0","FrequencyUnit":"0","CalcDate":null,"CalcDateInclusive":false,"CalcDateMonthEnd":false,"DueDate":null,"DueDateMonthEnd":"","ShiftDays":0,"ReferenceConditionKey":"","SAP__Messages":[]}
+
+
+### 7-delete
+DELETE https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/Condition(CompanyCode='1000',FinancialTransaction='160539',Side='0',ConditionKey='0100020270101')?sap-client=100
+Status: 204
+sap-messages: [{"code":"FTR0/162","message":"BAPI was executed successfully","numericSeverity":2}]
+
+
+
+### 8-list-after
+GET https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/Condition?$filter=CompanyCode eq '1000' and FinancialTransaction eq '160539'&$count=true&sap-client=100
+Status: 200
+sap-messages: 
+{"@odata.context":"$metadata#Condition","@odata.metadataEtag":"W/\"20260925094215\"","@odata.count":2,"value":[{"CompanyCode":"1000","FinancialTransaction":"160539","Side":"0","ConditionKey":"0100020261001","ConditionNumber":"1000","ConditionTypeCode":"1200","EffectiveFrom":"2026-10-01","AmountCalcRule":"1","PercentageRate":10.0000000,"Amount":0.0000,"Currency":"INR","CalcBaseAmount":0.0000,"RefInterestRate":"","RateMarkupOrDown":0.0000000,"CalcMethod":"3","CalcCalendar":"","Frequency":"0","FrequencyUnit":"0","CalcDate":"2027-09-30","CalcDateInclusive":false,"CalcDateMonthEnd":false,"DueDate":"2027-09-30","DueDateMonthEnd":"","ShiftDays":0,"ReferenceConditionKey":"","SAP__Messages":[]},{"CompanyCode":"1000","FinancialTransaction":"160539","Side":"0","ConditionKey":"0200020261001","ConditionNumber":"2000","ConditionTypeCode":"1120","EffectiveFrom":"2026-10-01","AmountCalcRule":"1","PercentageRate":100.0000000,"Amount":0.0000,"Currency":"INR","CalcBaseAmount":0.0000,"RefInterestRate":"","RateMarkupOrDown":0.0000000,"CalcMethod":"3","CalcCalendar":"","Frequency":"0","FrequencyUnit":"0","CalcDate":"2027-09-30","CalcDateInclusive":false,"CalcDateMonthEnd":false,"DueDate":"2027-09-30","DueDateMonthEnd":"","ShiftDays":0,"ReferenceConditionKey":"","SAP__Messages":[]}]}
+
+

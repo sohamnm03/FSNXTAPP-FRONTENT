@@ -1,0 +1,41 @@
+unmanaged implementation in class zbp_fs_almglmaptp unique;
+strict ( 2 );
+
+define behavior for ZFS_I_AlmGlMap alias AlmGlMap
+lock master
+etag master ChangeStamp
+authorization master ( global )
+{
+  create;
+  update;
+  delete;
+
+  // Descriptions are derived from SAP master data, never taken from the caller.
+  field ( readonly ) GLAccountName, Alm2GroupName, SourceDesc, BucketDesc, Alm3BucketDesc, Alm3GroupName;
+  field ( readonly ) CreatedBy, CreatedDate, CreatedTime, ChangedBy, ChangedDate, ChangedTime, ChangeStamp;
+  field ( mandatory : create, readonly : update ) GLAccount;
+
+  mapping for /fs00/almtr018
+  {
+    GLAccount      = zgl_id;
+    GLAccountName  = zgl_desc;
+    Alm2GroupId    = zgr_id;
+    Alm2GroupName  = zgr_desc;
+    Source         = zcal;
+    SourceDesc     = zcal_desc;
+    Bucket         = zbu_id;
+    BucketDesc     = zbu_desc;
+    Alm3Bucket     = zbu3_id;
+    Alm3BucketDesc = zbu3_desc;
+    Type3          = ztype3;
+    Sensitivity    = zsns;
+    Alm3GroupId    = zgrp_id;
+    Alm3GroupName  = zgrp_name;
+    CreatedBy      = zcreated_by;
+    CreatedDate    = zcreated_date;
+    CreatedTime    = zcreated_time;
+    ChangedBy      = zchanged_by;
+    ChangedDate    = zchanged_date;
+    ChangedTime    = zchanged_time;
+  }
+}

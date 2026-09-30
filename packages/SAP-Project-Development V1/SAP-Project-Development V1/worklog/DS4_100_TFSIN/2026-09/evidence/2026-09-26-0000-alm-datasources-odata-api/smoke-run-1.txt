@@ -1,0 +1,46 @@
+﻿Service root: https://vhtfqds4ap01.sap.tfsin.co.in:44300/sap/opu/odata4/sap/zfs_sb_almdatasrc_o4_api/srvd_a2x/sap/zfs_sd_almdatasrc/0001  (CSRF token fetched: True)
+[PASS] GET $metadata -> HTTP 200 (expected 200) sets: BpGroup, CompanyCode, DataSource, FlowType, InvestorSegmentMapping, ProductMaster, ProductType, SourceGroup, TransactionType, TrmFlowMapping
+[PASS] GET SourceGroup (top 2, count) -> HTTP 200 (expected 200) count=25
+[PASS] GET DataSource (top 2, count) -> HTTP 200 (expected 200) count=55
+[PASS] GET ProductMaster (top 2, count) -> HTTP 200 (expected 200) count=26
+[PASS] GET TrmFlowMapping (top 2, count) -> HTTP 200 (expected 200) count=37
+[PASS] GET InvestorSegmentMapping (top 2, count) -> HTTP 200 (expected 200) count=10
+[PASS] GET ProductType (top 2, count) -> HTTP 200 (expected 200) count=181
+[PASS] GET CompanyCode (top 2, count) -> HTTP 200 (expected 200) count=74
+[PASS] GET FlowType (top 2, count) -> HTTP 200 (expected 200) count=1598
+[PASS] GET TransactionType (top 2, count) -> HTTP 200 (expected 200) count=291
+[PASS] GET BpGroup (top 2, count) -> HTTP 200 (expected 200) count=11
+Reference values: CompanyCode=0001 ProductType=01A FlowType=AAREFDE1 BpGroup=1
+[PASS] SourceGroup create (lower-case key zt) -> HTTP 201 (expected 201) key=ZT createdBy=FS_DEV stamp=20260926153602
+[PASS] SourceGroup create duplicate refused -> HTTP 400 (expected 400/409)  | body: 
+[PASS] SourceGroup create without description refused -> HTTP 400 (expected 400)  | body: 
+[PASS] SourceGroup read + ETag -> HTTP 200 (expected 200) etag=W/"SADL-3230323630393236313533363032~20260926153602"
+[PASS] SourceGroup update with current ETag -> HTTP 200 (expected 200/204) 
+[PASS] SourceGroup update with stale ETag refused -> HTTP 412 (expected 412)  | body: 
+[FAIL] SourceGroup read after update -> HTTP 501 (expected 200)  | body: 
+[PASS] DataSource create (group text derived) -> HTTP 201 (expected 201) groupDesc=Smoke test group v2
+[FAIL] DataSource create with unknown group refused -> HTTP 201 (expected 400)  | body: {"@odata.context":"$metadata#DataSource/$entity","@odata.metadataEtag":"W/\"20260926100549\"","@odata.etag":"W/\"SADL-3230323630393236313533363036~20260926153606\"","Source":"ZU","SourceDesc":"x","ExcelSource":"","SourceGroup":"Z9","SourceGroupDesc":"ALM","CreatedBy":"FS_DEV","CreatedDate":"2026-09-
+[PASS] DataSource update -> HTTP 200 (expected 200/204) 
+[FAIL] DataSource read after update -> HTTP 501 (expected 200)  | body: 
+[FAIL] ProductMaster create (flag upper-cased, text derived) -> HTTP 400 (expected 201)  | body: 
+[PASS] ProductMaster create with unknown company code refused -> HTTP 400 (expected 400)  | body: 
+[FAIL] ProductMaster update -> HTTP 400 (expected 200/204)  | body: 
+[PASS] TrmFlowMapping create (texts derived) -> HTTP 201 (expected 201) srcDesc=Smoke test source flowDesc=Clear Asset Position from Old Account Assignment Ref. prdDesc=Stocks
+[PASS] TrmFlowMapping create without source type refused -> HTTP 400 (expected 400)  | body: 
+[FAIL] TrmFlowMapping update (re-derive texts) -> HTTP 501 (expected 200/204)  | body: 
+[PASS] InvestorSegmentMapping create (text derived) -> HTTP 201 (expected 201) bpGroupDesc=Corporate
+[PASS] InvestorSegmentMapping create with unknown BP group refused -> HTTP 400 (expected 400)  | body: 
+[FAIL] InvestorSegmentMapping update (re-derive text) -> HTTP 501 (expected 200/204)  | body: 
+[PASS] DELETE InvestorSegmentMapping(BpGroup='1',Segment='ZTS') -> HTTP 204 (expected 204) 
+[FAIL] GET InvestorSegmentMapping(BpGroup='1',Segment='ZTS') after delete -> HTTP 501 (expected 404)  | body: 
+[PASS] DELETE TrmFlowMapping(SourceType='ZT',FlowType='AAREFDE1',ProductType='01A',TransactionType='') -> HTTP 204 (expected 204) 
+[FAIL] GET TrmFlowMapping(SourceType='ZT',FlowType='AAREFDE1',ProductType='01A',TransactionType='') after delete -> HTTP 501 (expected 404)  | body: 
+[FAIL] DELETE ProductMaster(CompanyCode='0001',ProductType='01A') -> HTTP 404 (expected 204)  | body: 
+[FAIL] GET ProductMaster(CompanyCode='0001',ProductType='01A') after delete -> HTTP 501 (expected 404)  | body: 
+[PASS] DELETE DataSource('ZT') -> HTTP 204 (expected 204) 
+[FAIL] GET DataSource('ZT') after delete -> HTTP 501 (expected 404)  | body: 
+[PASS] DELETE SourceGroup('ZT') -> HTTP 204 (expected 204) 
+[FAIL] GET SourceGroup('ZT') after delete -> HTTP 501 (expected 404)  | body: 
+[PASS] DELETE non-existent SourceGroup refused -> HTTP 404 (expected 404)  | body: 
+
+RESULT: 29 passed, 13 failed

@@ -1,0 +1,20 @@
+=== T9 PARK_SIMPLE user payload | POST | HTTP 201
+REQ: {
+  "FileName": "",
+  "FileId": "",
+  "Bukrs": "1000",
+  "Message": "PARK_SIMPLE",
+  "Getdata": "bukrs=1000&doc_date=20260924&pstng_date=20260924&reference=API-TEST-001&header_txt=API%20park%20test&vendor=9842&gl_account=101000&amount=100000.00&currency=INR&item_text=Inter%20Co%20Loan"
+}
+RES: {"d":{"__metadata":{"id":"https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata/sap/ZVIM_SRV/ExtractSet('1900001652')","uri":"https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata/sap/ZVIM_SRV/ExtractSet('1900001652')","type":"ZVIM_SRV.Extract"},"Getdata":"bukrs=1000&doc_date=20260924&pstng_date=20260924&reference=API-TEST-001&header_txt=API%20park%20test&vendor=9842&gl_account=101000&amount=100000.00&currency=INR&item_text=Inter%20Co%20Loan","FileId":"1900001652","FileName":"","Bukrs":"1000","Message":"PARKED 1900001652 1000 2027"}}
+--- BKPF
+COLS: BUKRS | BELNR | GJAHR | BLART | BLDAT | BUDAT | BSTAT | WAERS | XBLNR | BKTXT | USNAM
+1000 | 1900001652 | 2027 | KR | 20260924 | 20260924 | V | INR | API-TEST-001 | API park test | FS_DEV3
+--- VBSEGK
+COLS: BUZEI | LIFNR | WRBTR | SHKZG | SGTXT
+001 | 0000009842 | 100000.00  | H | Inter Co Loan
+--- VBSEGS
+COLS: BUZEI | SAKNR | WRBTR | SHKZG | SGTXT
+002 | 0000101000 | 100000.00  | S | Inter Co Loan
+--- BSEG (expect none)
+COLS: BUZEI

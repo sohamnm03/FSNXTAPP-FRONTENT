@@ -1,0 +1,7 @@
+﻿### cleanup-delete
+DELETE https://vhnlqds4ap01.sap.niififl.in:44300/sap/opu/odata4/sap/zfs_sb_trmdealitem_o4_api/srvd_a2x/sap/zfs_sd_trmdealitem/0001/AdditionalFlow(CompanyCode='1000',FinancialTransaction='160537',Side='0',FlowKey='20260925145832000100001')?sap-client=100
+Status: 204
+sap-messages: [{"code":"FTR0/162","message":"BAPI was executed successfully","numericSeverity":2}]
+
+
+
