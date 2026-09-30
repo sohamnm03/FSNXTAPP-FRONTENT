@@ -43,12 +43,18 @@ test('development dashboard is generated, preserved and opened', { skip: process
   ].join('\n'));
 
   let openedPath = '';
+  let uploadedHtml = '';
   const result = await generateDevelopmentReport({
     completedWorklogPaths: ['worklog/DS4_100_NIIF/2026-09/2026-09-23-1600-sample.md'],
     projectRoot,
     reportsRoot,
     runId: 'sample-run',
     openPath: async (filePath) => { openedPath = filePath; return ''; },
+    uploadReport: async (filePath) => {
+      assert.equal(filePath, openedPath);
+      uploadedHtml = fs.readFileSync(filePath, 'utf8');
+      return 'https://example.invalid/sap-development-reports/test/report.html';
+    },
   });
 
   assert.equal(result.reportPath, openedPath);
@@ -60,4 +66,20 @@ test('development dashboard is generated, preserved and opened', { skip: process
   const report = fs.readFileSync(result.reportPath, 'utf8');
   assert.match(report, /Sample development activity/);
   assert.match(report, /"status": "complete"/);
+  assert.equal(uploadedHtml, report);
+  assert.equal(result.uploadError, '');
+  assert.match(result.reportUrl, /sap-development-reports/);
+
+  const failedUpload = await generateDevelopmentReport({
+    projectRoot, reportsRoot, runId: 'failed-upload',
+    openPath: async () => { throw new Error('Browser unavailable'); },
+    uploadReport: async (filePath) => {
+      assert.ok(fs.existsSync(filePath));
+      throw new Error('Network unavailable');
+    },
+  });
+  assert.ok(fs.existsSync(failedUpload.reportPath));
+  assert.equal(failedUpload.openError, 'Browser unavailable');
+  assert.equal(failedUpload.uploadError, 'Network unavailable');
+  assert.equal(failedUpload.reportUrl, '');
 });

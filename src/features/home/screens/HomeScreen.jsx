@@ -79,16 +79,14 @@ export default function HomeScreen({ onOpenModule }) {
   const filteredModules = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     return availableModules.filter((module) => {
-      const installed = installedModuleIds.includes(module.id);
       const matchesFilter = packageFilter === 'all'
-        || (packageFilter === 'installed' && installed)
-        || (packageFilter === 'available' && !installed);
+        || (packageFilter === 'available' && canAccessModule(user, module.id));
       const matchesSearch = !query
         || module.name.toLowerCase().includes(query)
         || module.description.toLowerCase().includes(query);
       return matchesFilter && matchesSearch;
     });
-  }, [installedModuleIds, packageFilter, searchQuery]);
+  }, [user, packageFilter, searchQuery]);
 
   async function handleModuleAction(module) {
     setSelectedModuleId(module.id);
@@ -133,7 +131,7 @@ export default function HomeScreen({ onOpenModule }) {
   const isSelectedAccessible = canAccessModule(user, selectedModule.id);
   const isSelectedReady = isSelectedInstalled && isSelectedAccessible;
   const installedCount = installedModuleIds.length;
-  const availableCount = availableModules.length - installedCount;
+  const availableCount = availableModules.filter((module) => canAccessModule(user, module.id)).length;
 
   return (
     <ScreenContainer className="workspace-screen home-dashboard-screen">
@@ -161,7 +159,6 @@ export default function HomeScreen({ onOpenModule }) {
           <div className="home-package-filters" role="group" aria-label="Filter packages">
             {[
               ['all', `All (${availableModules.length})`],
-              ['installed', `Installed (${installedCount})`],
               ['available', `Available (${availableCount})`],
             ].map(([filter, label]) => (
               <button aria-pressed={packageFilter === filter} className={packageFilter === filter ? 'is-active' : ''} key={filter} onClick={() => setPackageFilter(filter)} type="button">{label}</button>
@@ -198,7 +195,18 @@ export default function HomeScreen({ onOpenModule }) {
             })}
           </div>
 
-          <div className="home-catalog-sidebar__footer"><span>{availableModules.length} packages available</span><span>{installedCount} installed</span></div>
+          <div className="home-catalog-sidebar__footer"><span>{availableCount} packages available</span><span>{installedCount} installed</span></div>
+          <a
+            className="app-button app-button--primary home-catalog-dashboard-link"
+            href="https://desktopadmin.z29.web.core.windows.net/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Dashboard (opens in browser)"
+            title="Dashboard"
+          >
+            <Icon name="chart" size={19} />
+            <span>Dashboard</span>
+          </a>
         </aside>
 
         <section className="home-dashboard" aria-label="Selected package dashboard">

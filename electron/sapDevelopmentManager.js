@@ -4,6 +4,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { generateDevelopmentReport } = require('./sapDevelopmentReport');
+const { uploadDevelopmentReport } = require('./sapDevelopmentUpload');
 
 const FINAL_STATUSES = new Set(['completed', 'failed', 'stopped']);
 const DEVELOPMENT_FOLDER_NAME = 'Sap-Project-Development V1';
@@ -390,6 +391,7 @@ function createSapDevelopmentManager(electronApp, claudeTokenStore, desktop = {}
       exitCode: run.exitCode,
       reportError: run.reportError,
       reportPath: run.reportPath,
+      reportUrl: run.reportUrl,
     };
   }
 
@@ -400,14 +402,21 @@ function createSapDevelopmentManager(electronApp, claudeTokenStore, desktop = {}
           ? changedWorklogPaths(projectRoot, run.worklogState)
           : [],
         projectRoot,
-        reportsRoot: reportsRoot(),
+        reportsRoot: run.reportsRoot,
         runId: run.id,
         openPath: desktop.openPath,
+        uploadReport: (reportPath) => uploadDevelopmentReport({
+          electronApp, reportPath, runId: run.id, username: run.username,
+          connectionString: process.env.AZURE_STORAGE_CONNECTION_STRING
+            || sourceLocalEnvironment().AZURE_STORAGE_CONNECTION_STRING,
+        }),
       });
       run.reportPath = report.reportPath;
-      run.reportError = report.openError
-        ? `The report was saved, but could not be opened automatically: ${report.openError}`
-        : '';
+      run.reportUrl = report.reportUrl;
+      run.reportError = [
+        report.openError ? `The report was saved, but could not be opened automatically: ${report.openError}` : '',
+        report.uploadError ? `The report was saved locally, but could not be uploaded to Azure: ${report.uploadError}` : '',
+      ].filter(Boolean).join(' ');
     } catch (error) {
       run.reportError = `The development request finished, but its HTML report could not be generated: ${error.message}`;
     } finally {
@@ -547,6 +556,9 @@ function createSapDevelopmentManager(electronApp, claudeTokenStore, desktop = {}
         exitCode: null,
         reportError: '',
         reportPath: '',
+        reportUrl: '',
+        username: currentUsername,
+        reportsRoot: reportsRoot(),
         worklogState: captureWorklogState(configuration.projectRoot),
         process: null,
       };
