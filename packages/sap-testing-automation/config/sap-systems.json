@@ -102,7 +102,7 @@
         "enabled": true,
         "mcpServerName": "sap-gui-ds4-100-tfsin",
         "logonDescription": "TFSIN HANA Dev",
-        "readOnly": true,
+        "readOnly": false,
         "profile": "exploration"
       },
 
@@ -110,6 +110,42 @@
         "applicationServer": "10.110.0.33",
         "systemNumber": "00"
       }
-    }
+    },
+      {
+        "id": "LFD_100_LTFS",
+        "label": "LTFS S/4HANA Development (LFD, client 100)",
+        "enabled": true,
+        "connectionCheckEnabled": true,
+
+        "$comment": [
+          "LTFS development landscape. Logon Pad entry 'LTFH -Dev' (SID LFD, 172.30.90.76:3200).",
+          "Deliberately NOT 'LTFS DEV (001)' (172.30.90.72), a different box.",
+          "Behaves like DS4_100_TFSIN: connection check, GUI sessions and interactive/external",
+          "runs work; built-in case lists are NIIF-only. The password is typed in the app",
+          "and never stored; SAP_LFD_100_LTFS_PASSWORD is only a fallback for unattended runs."
+        ],
+
+        "systemId": "LFD",
+        "client": "100",
+        "language": "EN",
+
+        "credentials": {
+          "user": "VEN00966",
+          "passwordEnvVar": "SAP_LFD_100_LTFS_PASSWORD"
+        },
+
+        "sapGui": {
+          "enabled": true,
+          "mcpServerName": "sap-gui-lfd-100-ltfs",
+          "logonDescription": "LTFH -Dev",
+          "readOnly": false,
+          "profile": "exploration"
+        },
+
+        "rfc": {
+          "applicationServer": "172.30.90.76",
+          "systemNumber": "00"
+        }
+      }
   ]
 }
