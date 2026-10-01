@@ -52,6 +52,7 @@
     },
     "files": [
       "dist/**/*",
+      "assets/company-logo.ico",
       "electron/**/*",
       "!electron/**/*.test.js",
       "scripts/sapAutomationPayload.js",
@@ -93,6 +94,7 @@
       }
     ],
     "win": {
+      "icon": "assets/company-logo.ico",
       "target": [
         "nsis",
         "portable"

@@ -74,6 +74,7 @@ function createWindow() {
     backgroundColor: '#f4f7fc',
     show: false,
     title: 'FS Sprint',
+    icon: path.join(__dirname, '../assets/company-logo.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
