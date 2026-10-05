@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 
 import AppButton from '../../../components/common/AppButton';
@@ -16,6 +16,7 @@ export default function LoginScreen() {
     loginWithGoogleDesktop,
   } = useAuth();
   const [loginError, setLoginError] = useState('');
+  const desktopAttempt = useRef(0);
   const desktopGoogleAuth = window.desktopAPI?.googleAuth;
 
   async function handleGoogleSuccess(credentialResponse) {
@@ -39,13 +40,21 @@ export default function LoginScreen() {
 
   async function handleDesktopGoogleLogin() {
     if (isAuthenticating) return;
+    const attempt = ++desktopAttempt.current;
     setLoginError('');
 
     try {
       const authorization = await desktopGoogleAuth.login();
+      if (attempt !== desktopAttempt.current) return;
       await loginWithGoogleDesktop(authorization);
     } catch (error) {
-      setLoginError(error.message || 'Google sign-in failed. Please try again.');
+      if (attempt !== desktopAttempt.current) return;
+      const message = String(error.message || '');
+      setLoginError(/cancelled|canceled|denied/i.test(message)
+        ? 'Google sign in was cancelled, please try again.'
+        : /timed out/i.test(message)
+          ? 'Google sign-in timed out. Please try again.'
+          : 'Google sign-in failed. Please try again.');
     }
   }
 

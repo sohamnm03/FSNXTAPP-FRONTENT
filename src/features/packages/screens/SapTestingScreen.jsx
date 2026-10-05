@@ -623,7 +623,6 @@ export default function SapTestingScreen({ onBack }) {
     <ScreenContainer className="module-screen sap-testing-screen">
       <header className="module-screen__header">
         <button className="back-button" onClick={onBack} type="button"><Icon name="arrowLeft" /><span>Back to workspace</span></button>
-        <strong>SAP Testing with AI Assistant</strong>
       </header>
 
       <main className="sap-chat-layout">
