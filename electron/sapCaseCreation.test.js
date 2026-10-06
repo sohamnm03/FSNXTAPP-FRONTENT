@@ -1,3 +1,4 @@
+const { candidatePath } = require('./sapCaseAutomation');
 const assert = require('node:assert/strict');
 const { EventEmitter } = require('node:events');
 const { spawnSync } = require('node:child_process');
@@ -138,6 +139,35 @@ async function managerFixture(context, isPackaged = false) {
 
 const markdown = '# TC-001 - Saved loan\n\n- **Case id:** TC-001\n- **Lane:** sap-gui\n- **System:** DS4_100_NIIF\n- **Transaction / app:** FTR_CREATE\n- **Writes to the database:** Creates one loan\n\n## Steps\n1. Save the entered loan.\n\n## Assertions\n- SAP displayed transaction 12345 saved.\n';
 
+const validPlan = { version: 1, caseId: 'TC-001', lane: 'gui', systemId: 'DS4_100_NIIF', observedOutcome: 'PASS', steps: [
+  { action: 'transaction', label: 'Open', value: 'FTR_CREATE' },
+  { action: 'press', label: 'Save', target: 'wnd[0]/tbar[0]/btn[11]', write: true },
+  { action: 'assert', label: 'Saved', source: 'status', expected: 'saved', match: 'contains', verifiesWrite: true },
+] };
+
+test('a rejected plan is corrected by the same session with no SAP tools, then the script is saved', async (context) => {
+  const { manager, calls, prep, options } = await managerFixture(context);
+  const run = manager.start('Create a testcase', '', 'gui', options);
+  const call = calls.at(-1);
+  const caseFile = path.join(prep.caseDirectory, 'TC-001-loan-gui.md');
+  fs.writeFileSync(caseFile, markdown);
+  fs.mkdirSync(path.dirname(candidatePath(caseFile)), { recursive: true });
+  fs.writeFileSync(candidatePath(caseFile), JSON.stringify({ ...validPlan, steps: [{ action: 'key', label: 'x', value: 'Save' }] }));
+  call.child.stdout.emit('data', Buffer.from(JSON.stringify({ result: 'Saved 12345', session_id: '00000000-0000-0000-0000-000000000001' })));
+  call.child.emit('close', 0);
+  assert.equal(manager.getRun(run.id).status, 'finalizing');
+  const repair = calls.at(-1);
+  assert.equal(repair.args[repair.args.indexOf('--resume') + 1], '00000000-0000-0000-0000-000000000001');
+  assert.equal(repair.args.some((arg) => String(arg).includes('mcp__')), false);
+  const moved = manager.getRun(run.id).createdCases[0].filePath;
+  fs.mkdirSync(path.dirname(candidatePath(moved)), { recursive: true });
+  fs.writeFileSync(candidatePath(moved), JSON.stringify(validPlan));
+  repair.child.emit('close', 0);
+  await new Promise((resolve) => setTimeout(resolve, 50));
+  assert.equal(manager.getRun(run.id).status, 'completed');
+  assert.ok(fs.existsSync(moved.replace(/.md$/, '.py')));
+});
+
 test('creation carries scoped Save authorization and persists Markdown without renderer polling', async (context) => {
   const { manager, calls, prep, options, root, projectRoot } = await managerFixture(context);
   const run = manager.start('Create a testcase', '', 'gui', options);
@@ -162,14 +192,19 @@ test('creation carries scoped Save authorization and persists Markdown without r
   assert.equal(fs.existsSync(path.join(projectRoot, '.case-drafts')), false);
   const caseFile = path.join(prep.caseDirectory, 'TC-001-loan-gui.md');
   fs.writeFileSync(caseFile, markdown);
+  fs.mkdirSync(path.dirname(candidatePath(caseFile)), { recursive: true });
+  fs.writeFileSync(candidatePath(caseFile), JSON.stringify(validPlan));
   call.child.stdout.emit('data', Buffer.from(JSON.stringify({ result: 'Saved 12345', session_id: 'session' })));
   call.child.emit('close', 0);
   const finished = manager.getRun(run.id);
   assert.equal(finished.status, 'completed');
   assert.equal(finished.createdCases.length, 1);
-  assert.equal(finished.createdCases[0].filePath, caseFile);
-  assert.equal(fs.readFileSync(caseFile, 'utf8'), markdown);
-  assert.equal(fs.existsSync(caseFile), true);
+  const saved = finished.createdCases[0].filePath;
+  assert.equal(saved, path.join(prep.caseDirectory, 'TC_001_FTR_CREATE_Saved_loan', 'TC-001-loan-gui.md'));
+  assert.ok(fs.existsSync(saved.replace(/.md$/, '.py')), 'the script is saved in the same case folder as the Markdown');
+  assert.equal(fs.existsSync(caseFile), false, 'nothing is left loose at the root');
+  assert.equal(fs.existsSync(candidatePath(saved)), false);
+  assert.equal(fs.readFileSync(saved, 'utf8'), markdown);
   assert.equal(manager.listCases('gui').cases[0].caseId, 'TC-001');
   manager.start('Explain this case');
   assert.equal(calls.at(-1).options.env.FSNXT_CASE_CREATION_AUTO_SAVE, '0');
@@ -309,7 +344,7 @@ test('registration failure is visible and retains the case only in the selected 
   calls.at(-1).child.emit('close', 0);
   assert.equal(manager.getRun(run.id).status, 'failed');
   assert.match(manager.getRun(run.id).error, /remains in the selected folder but could not be registered/);
-  assert.equal(fs.existsSync(caseFile), true);
+  assert.equal(fs.existsSync(path.join(prep.caseDirectory, 'TC_001_FTR_CREATE_Saved_loan', 'TC-001-loan-gui.md')), true);
 });
 
 test('selected archive location stores TFSIN cases in the TFSIN HANA Dev folder', async (context) => {
@@ -326,7 +361,7 @@ test('selected archive location stores TFSIN cases in the TFSIN HANA Dev folder'
   );
   const result = manager.finalizeCaseCreation('gui', 'DS4_100_TFSIN', prep.existingFiles, 'test-user');
   assert.equal(result.created.length, 1);
-  assert.equal(path.dirname(result.created[0].filePath), path.join(
+  assert.equal(path.dirname(path.dirname(result.created[0].filePath)), path.join(
     root,
     'chosen-archive',
     'FSNXT SAP Test Cases',
@@ -334,8 +369,8 @@ test('selected archive location stores TFSIN cases in the TFSIN HANA Dev folder'
     'GUI-TC',
     'TFSIN HANA Dev',
   ));
-  assert.equal(result.created[0].filePath, caseFile);
-  assert.equal(fs.existsSync(caseFile), true);
+  assert.equal(path.basename(result.created[0].filePath), 'TC-001-tfsin-gui.md');
+  assert.equal(fs.existsSync(result.created[0].filePath), true);
 });
 
 test('case lists and files are scoped to NIIF, TFSIN, or LTFS instead of being NIIF-only', async (context) => {

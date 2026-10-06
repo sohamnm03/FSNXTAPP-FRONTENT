@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { automationPrompt } = require('./sapCaseAutomation');
 
 function createExternalRun(projectRoot, archiveRoot, runId, proposal) {
   const relativeRoot = `.external-runs/${runId}`;
@@ -20,6 +21,7 @@ function externalRunPrompt(run) {
     'For SAP GUI, attach to the logged-on session with sap_connect_existing and verify sap_get_session_info. For web, use the configured web tools and credentials. Never report an expected value as an observation.',
     `Record observations as you go with Write/Edit in ${run.relativeRoot}/observations.json. Capture screenshots into ${run.relativeRoot}/evidence. The JSON shape is {"verdict":"PASS|FAIL|BLOCKED|PARTIAL","systemConfirmed":true,"writesVerified":false,"session":"observed session and user","summary":"observed outcome or blocker","assertions":[{"expected":"from case","observed":"read from SAP, or NOT OBSERVED","result":"pass|fail|NOT OBSERVED"}],"steps":[{"step":"case step","outcome":"ok|skipped|error","detail":"what happened"}],"documents":[{"type":"observed type","number":"verified SAP number","leftInPlace":true}],"deviations":["observed deviation"],"evidence":[{"file":"screenshot.png","shows":"what is visible"}]}. Start with BLOCKED and update as you execute. Set writesVerified to true only after every authorized write is verified in SAP, or if the case is entirely read-only. PASS requires every step and assertion to succeed and all intended writes to be verified. Record missing values as NOT OBSERVED, never invent them.`,
     'Before finishing, write and read back observations.json even if blocked or failed. The desktop app will generate the result Markdown, rebuild the dashboard, create the local archive and upload it to Azure using the normal archive pipeline. Do not run those scripts yourself or claim an upload before the app reports it. Finish with a concise observed summary.',
+    automationPrompt(run.lane, `${run.relativeRoot}/automation.json`),
   ].join('\n\n');
 }
 
@@ -38,7 +40,7 @@ function writeExternalResult(run, execution) {
     problem = 'The runner did not produce a readable observation record. SAP writes may be unverified; inspect SAP before retrying.';
   }
   const rows = (key) => Array.isArray(observed[key]) ? observed[key].filter((row) => row && typeof row === 'object') : [];
-  const assertions = rows('assertions').map((row) => ({ ...row, observed: row.observed || 'NOT OBSERVED', result: !row.observed || row.observed === 'NOT OBSERVED' ? 'NOT OBSERVED' : row.result }));
+  const assertions = rows('assertions').map((row) => ({ ...row, observed: row.observed ?? 'NOT OBSERVED', result: row.observed == null || row.observed === 'NOT OBSERVED' ? 'NOT OBSERVED' : row.result }));
   const steps = rows('steps');
   const documents = rows('documents');
   const missingDocument = /\b(?:creat\w*|sav\w*)\b/i.test(run.writes)
@@ -55,7 +57,7 @@ function writeExternalResult(run, execution) {
   const result = [
     `# ${run.caseId} — run ${run.startedAt}`,
     '',
-    `- **Case:** ${run.relativeRoot}/case.md`,
+    `- **Case:** ${run.caseId} (${run.relativeRoot}/case.md)`,
     `- **System:** ${cell(run.systemId)} — **confirmed via session inspection:** ${observed.systemConfirmed === true ? 'yes' : 'no'}`,
     `- **Session:** ${cell(observed.session) || 'NOT OBSERVED'}`,
     `- **Run by:** ${cell(run.username)}`,
@@ -66,6 +68,8 @@ function writeExternalResult(run, execution) {
     ...steps.map((row, index) => `| ${index + 1} | ${cell(row.step)} | ${cell(row.outcome)} ${cell(row.detail)} |`),
     '', '## Deviations', '',
     ...(Array.isArray(observed.deviations) ? observed.deviations.map(cell) : []),
+    ...(!observed.deviations?.length ? ['None'] : []),
+    '', '## Outcome', '',
     cell(observed.summary), cell(problem), cell(execution.error),
     '', '## Documents created', '', '| Type | Number | Left in place? |', '|---|---|---|',
     ...documents.map((row) => `| ${cell(row.type)} | ${cell(row.number) || 'NOT OBSERVED'} | ${typeof row.leftInPlace === 'boolean' ? (row.leftInPlace ? 'yes' : 'no') : 'NOT OBSERVED'} |`),

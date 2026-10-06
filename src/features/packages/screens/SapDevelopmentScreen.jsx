@@ -297,7 +297,6 @@ export default function SapDevelopmentScreen({ onBack }) {
     <ScreenContainer className="module-screen sap-testing-screen sap-development-screen">
       <header className="module-screen__header">
         <button className="back-button" onClick={onBack} type="button"><Icon name="arrowLeft" /><span>Back to workspace</span></button>
-        <strong>SAP Development with AI Assistant</strong>
       </header>
 
       <main className="sap-chat-layout">

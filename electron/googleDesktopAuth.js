@@ -17,7 +17,7 @@ function createPkce() {
 
 function callbackPage(message, success) {
   const color = success ? '#1769e0' : '#b42318';
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>FSNXT Google Sign-In</title></head><body style="font-family:system-ui,sans-serif;padding:48px;text-align:center"><h1 style="color:${color}">${message}</h1><p>You can close this window and return to FSNXT.</p></body></html>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>FS Sprint Google Sign-In</title></head><body style="font-family:system-ui,sans-serif;padding:48px;text-align:center"><h1 style="color:${color}">${message}</h1><p>You can close this window and return to FS Sprint.</p></body></html>`;
 }
 
 function createLoopbackListener(expectedState, timeoutMs) {
@@ -61,7 +61,7 @@ function createLoopbackListener(expectedState, timeoutMs) {
     if (error) {
       response.writeHead(400, { 'Content-Type': 'text/html; charset=utf-8' });
       response.end(callbackPage('Google sign-in was cancelled', false));
-      finish(new Error('Google sign-in was cancelled or denied.'));
+      finish(new Error('Google sign in was cancelled, please try again.'));
       return;
     }
     if (!state || state !== expectedState) {
@@ -116,14 +116,16 @@ function createGoogleDesktopAuth({
 
   let activeLogin = null;
 
-  async function runLogin() {
+  async function runLogin(attempt) {
     const { challenge, verifier } = createPkce();
     const state = toBase64Url(crypto.randomBytes(32));
     const nonce = toBase64Url(crypto.randomBytes(32));
     const listener = createLoopbackListener(state, timeoutMs);
+    attempt.cancel = () => listener.cancel(new Error("Google sign in was cancelled, please try again."));
 
     try {
       const redirectUri = await listener.ready;
+      if (activeLogin !== attempt) throw new Error('Google sign in was cancelled, please try again.');
       const authorizationUrl = new URL(GOOGLE_AUTHORIZATION_URL);
       authorizationUrl.search = new URLSearchParams({
         client_id: clientId,
@@ -155,12 +157,12 @@ function createGoogleDesktopAuth({
 
   return {
     login() {
-      if (!activeLogin) {
-        activeLogin = runLogin().finally(() => {
-          activeLogin = null;
-        });
-      }
-      return activeLogin;
+      activeLogin?.cancel();
+      const attempt = {};
+      activeLogin = attempt;
+      return runLogin(attempt).finally(() => {
+        if (activeLogin === attempt) activeLogin = null;
+      });
     },
   };
 }
