@@ -399,7 +399,7 @@ export default function SapTestingScreen({ onBack }) {
       if (result.canceled) return;
       if (result.lane !== lane) selectLane(result.lane);
       const source = result.runnable ? 'built-in' : 'external';
-      const externalLabel = result.runnable ? '' : 'No frozen script — runs interactively';
+      const externalLabel = result.runnable ? '' : result.hasAutomation ? 'Saved automation script found' : 'No saved script — first run prepares one';
       setSelectedCase({ caseId: result.caseId, summary: result.summary, source, externalLabel });
       setViewingCase({
         caseId: result.caseId,
@@ -410,6 +410,7 @@ export default function SapTestingScreen({ onBack }) {
         externalLabel,
         runnableReason: result.reason,
         filePath: result.filePath,
+        hasAutomation: Boolean(result.hasAutomation),
       });
       setCaseFileError('');
       setIsLoadingCaseFile(false);
@@ -447,7 +448,7 @@ export default function SapTestingScreen({ onBack }) {
 
       // Match how every frozen-script GUI-lane run already starts (session.py's
       // GuiSession.login(), CLAUDE.md rule 2/9): open a brand-new logged-on
-      // session first, same as runCaseInteractively does before running an
+      // session first, same as runExternalCase does before running an
       // existing case. Best-effort — if it fails, the AI Assistant still tries
       // to attach to whatever session is already open.
       if (lane === 'gui' && sapUsername.trim() && sapPassword) {
@@ -479,7 +480,7 @@ export default function SapTestingScreen({ onBack }) {
   async function runViewedCase() {
     if (!viewingCase) return;
     if (viewingCase.source === 'external') {
-      setError(viewingCase.runnableReason || 'This test case has no frozen automation script — use "Run interactively" instead.');
+      await runExternalCase();
       return;
     }
     const caseId = viewingCase.caseId;
@@ -496,15 +497,17 @@ export default function SapTestingScreen({ onBack }) {
     }
   }
 
-  async function runCaseInteractively() {
+  // A saved script runs directly; a case without one is driven by the AI
+  // Assistant once, and that passing run prepares the script for next time.
+  async function runExternalCase() {
     if (!viewingCase) return;
-    if (!isAuthenticated) {
+    if (!viewingCase.hasAutomation && !isAuthenticated) {
       setError('Connect a Claude OAuth token before asking the AI Assistant to run a case interactively.');
       return;
     }
     const testCase = viewingCase;
     closeCaseDialog();
-    setMessages((current) => [...current, { id: crypto.randomUUID(), role: 'user', text: `Run ${testCase.caseId} interactively.` }]);
+    setMessages((current) => [...current, { id: crypto.randomUUID(), role: 'user', text: testCase.hasAutomation ? `Run ${testCase.caseId} with its saved script.` : `Run ${testCase.caseId} interactively.` }]);
     setIsStarting(true);
     setError('');
     try {
@@ -966,10 +969,10 @@ export default function SapTestingScreen({ onBack }) {
               <AppButton onClick={closeCaseDialog} title="Close" variant="secondary" />
               {viewingCase.source === 'external' ? (
                 <AppButton
-                  disabled={!connectionServerName || !isAuthenticated || isBusy || isStarting || isLoadingCaseFile || Boolean(caseFileError)}
+                  disabled={!connectionServerName || (!viewingCase.hasAutomation && !isAuthenticated) || isBusy || isStarting || isLoadingCaseFile || Boolean(caseFileError)}
                   loading={isStarting}
-                  onClick={runCaseInteractively}
-                  title="Run interactively"
+                  onClick={runExternalCase}
+                  title={viewingCase.hasAutomation ? 'Run test case' : 'Run interactively'}
                 />
               ) : (
                 <AppButton

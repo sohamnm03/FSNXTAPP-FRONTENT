@@ -5,6 +5,7 @@ const path = require('path');
 const { createSapAutomationWorkspace } = require('./sapAutomationWorkspace');
 const { webRuntimeEnvironment } = require('./sapWebRuntime');
 const { createExternalRun, externalRunPrompt, writeExternalResult } = require('./sapExternalRun');
+const { automationPrompt, candidatePath, clearCandidate, caseDigest, publishAutomation, readAutomation } = require('./sapCaseAutomation');
 
 const FINAL_STATUSES = new Set(['completed', 'failed', 'stopped']);
 const CONFIRMATION_TTL_MS = 10 * 60 * 1000;
@@ -491,6 +492,8 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         source: 'external',
         externalLabel: 'External created TC',
         filePath: typeof entry.caseFile === 'string' ? path.join(externalCasesRoot(), entry.caseFile) : '',
+        hasAutomation: typeof entry.caseFile === 'string'
+          && hasSavedAutomation(path.join(externalCasesRoot(), entry.caseFile), lane, String(entry.caseId || ''), selectedSystem.id),
       }))
       .filter((entry) => /^TC-\d{3}$/.test(entry.caseId));
     const cases = [...builtInCases, ...externalCases]
@@ -520,6 +523,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         source: 'external',
         externalLabel: 'External created TC',
         filePath: externalPath,
+        hasAutomation: hasSavedAutomation(externalPath, lane, caseId, selectedSystem.id),
       };
     }
     const filePath = findCaseMarkdownFile(lane, caseId, entry);
@@ -585,6 +589,16 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     return headers;
   }
 
+  // True only when a valid saved script sits beside this exact Markdown case
+  // for this lane and SAP system; anything else means the case still needs its
+  // first (interactive) run, which prepares the script.
+  function hasSavedAutomation(filePath, lane, caseId, systemId) {
+    try {
+      return Boolean(filePath && systemId
+        && readAutomation(filePath, fs.readFileSync(filePath, 'utf8'), { caseId, lane, systemId }));
+    } catch { return false; }
+  }
+
   // Runs once a case-creation AI Assistant run finishes: diffs the permanent
   // folder against the file list prepareCaseCreation captured before the run
   // started, and for whatever new *.md files showed up (there may be several
@@ -606,7 +620,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     const manifest = externalManifest();
     const created = [];
     for (const fileName of newFiles) {
-      const casePath = path.join(caseDirectory, fileName);
+      let casePath = path.join(caseDirectory, fileName);
       const content = fs.readFileSync(casePath, 'utf8');
       const headers = parseCaseHeaders(content);
       let caseId;
@@ -617,10 +631,34 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       const summary = titleLine.replace(/^#\s*/, '').replace(/^TC-\d{3}\s*[—-]\s*/, '').trim()
         || headers['Transaction / app'] || fileName;
 
+      // Each case lives in its own folder, [TC_nnn]_[ShortDescription], holding the
+      // Markdown and its script together so the pair can be shared as one unit.
+      const shortDescription = (headers['Transaction / app'] ? `${headers['Transaction / app']} ${summary}` : summary)
+        .normalize('NFKD').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 40).replace(/_+$/, '') || 'Testcase';
+      let caseFolder = path.join(caseDirectory, `${caseId.replace('-', '_')}_${shortDescription}`);
+      for (let n = 2; fs.existsSync(caseFolder); n++) caseFolder = path.join(caseDirectory, `${caseId.replace('-', '_')}_${shortDescription}_${n}`);
+      fs.mkdirSync(caseFolder, { recursive: true });
+      const loosePlan = candidatePath(casePath);
+      const movedPath = path.join(caseFolder, fileName);
+      fs.renameSync(casePath, movedPath);
+      if (fs.existsSync(loosePlan)) {
+        fs.mkdirSync(path.dirname(candidatePath(movedPath)), { recursive: true });
+        fs.renameSync(loosePlan, candidatePath(movedPath));
+        clearCandidate(casePath);
+      }
+      casePath = movedPath;
+
       const storageRoot = externalCasesRoot();
       const relativeCaseFile = path.relative(storageRoot, casePath).split(path.sep).join('/');
       const key = externalCaseKey(lane, caseId);
       const writes = headers['Writes to the database'] || 'Not classified yet.';
+      let automationFile = '';
+      let automationNote = '';
+      try {
+        automationFile = publishAutomation(casePath, { caseId, lane, systemId: system }) || '';
+      } catch (error) {
+        automationNote = `Case saved; repeat-run automation was not accepted: ${error.message}`;
+      }
       manifest.cases[key] = {
         caseId,
         lane,
@@ -634,7 +672,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         source: 'external',
       };
       created.push({
-        caseId, lane, summary, writes, source: 'external', externalLabel: 'External created TC', fileName, filePath: casePath, storageRoot,
+        caseId, lane, summary, writes, source: 'external', externalLabel: 'External created TC', fileName, filePath: casePath, storageRoot, automationFile, automationNote,
       });
     }
     if (created.length) writeJsonFile(externalCasesManifestPath(), manifest);
@@ -691,16 +729,21 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       manifestEntry = null;
     }
 
+    const headerSystems = String(headers.System || '').split(/[\s`()[\],;]+/);
+    const automationSystem = manifestEntry ? null : (systemRegistry().systems || [])
+      .find((entry) => headerSystems.includes(entry.id) && hasSavedAutomation(filePath, lane, caseId, entry.id));
+
     return {
       canceled: false,
       caseId,
       lane,
+      hasAutomation: Boolean(automationSystem),
       fileName: path.basename(filePath),
       filePath,
       content,
       summary: String(manifestEntry?.summary || headers['Transaction / app'] || ''),
       runnable: Boolean(manifestEntry),
-      reason: manifestEntry
+      reason: manifestEntry || automationSystem
         ? ''
         : `${caseId} isn't registered in this project's ${lane === 'gui' ? 'config/gui-runs.json' : 'config/runs.json'} yet, so there's no frozen automation script for it — use "Run interactively" to have the AI Assistant drive it live instead.`,
     };
@@ -727,7 +770,8 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         throw new Error('The testcase System header must match the selected SAP system before running.');
       }
       if (!headers['Writes to the database']) throw new Error('The testcase must describe its database writes before it can be approved.');
-      external = { content, systemId: system.id };
+      external = { content, systemId: system.id, filePath: externalCase.filePath,
+        automation: readAutomation(externalCase.filePath, content, { caseId, lane, systemId: system.id }) };
       testCase = { summary: headers['Transaction / app'] || caseId, writes: headers['Writes to the database'] };
     }
     if (!testCase) throw new Error(`${caseId} is not registered in the selected ${lane === 'gui' ? 'SAP GUI' : 'Fiori / WebGUI'} lane.`);
@@ -774,9 +818,101 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       stage: proposal.stage,
       systemLabel: proposal.systemLabel,
       usesCustomCredentials: Boolean(credentials),
-      source: external ? 'external' : 'direct',
+      source: external && !external.automation ? 'external' : 'direct',
       systemId: system.id,
     };
+  }
+
+  function finishExternalRun(run, externalRun, lane) {
+  const execution = { status: run.status, error: run.error, response: run.response };
+  run.status = 'finalizing';
+  try {
+    const result = writeExternalResult(externalRun, execution);
+    if (!externalRun.automation && result.verdict === 'PASS' && externalRun.filePath) {
+      try {
+        if (caseDigest(fs.readFileSync(externalRun.filePath, 'utf8')) === caseDigest(externalRun.content)) {
+          const saved = publishAutomation(externalRun.filePath,
+            { caseId: externalRun.caseId, lane, systemId: externalRun.systemId },
+            path.join(externalRun.workRoot, 'automation.json'));
+          if (saved) run.response += '\nRepeat-run automation saved beside the testcase.';
+        }
+      } catch (error) {
+        run.response += `\nThe test result is retained; automation could not be saved: ${error.message}`;
+      }
+    }
+    run.resultPath = result.resultPath;
+    run.response += `\n\nTest result: ${result.verdict}\nSaved result: ${result.resultPath}`;
+    run.error = execution.error || result.error;
+    const finish = (error = '') => {
+      run.process = null;
+      if (error) run.error = [run.error, error].filter(Boolean).join('\n');
+      run.status = execution.status === 'stopped' ? 'stopped' : run.error ? 'failed' : 'completed';
+    };
+    const finalizer = spawn('powershell.exe', [
+      '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(projectRoot, 'scripts', 'finalize-external-run.ps1'),
+      '-RunId', run.id, '-StartedAtUtc', externalRun.startedAt, '-Case', externalRun.caseId,
+      '-Lane', lane, '-SystemId', externalRun.systemId, '-ResultsDirectory', externalRun.outputRoot,
+      '-OutputRoot', path.dirname(path.dirname(externalRun.outputRoot)),
+    ], {
+      cwd: projectRoot,
+      env: { ...process.env, ...projectLocalEnv(), FSNXT_APP_USERNAME: externalRun.username },
+      windowsHide: true, shell: false, stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    run.process = finalizer;
+    let archiveError = '';
+    finalizer.stdout.on('data', (chunk) => { run.response += `\n${chunk.toString('utf8').trim()}`; });
+    finalizer.stderr.on('data', (chunk) => { archiveError += chunk.toString('utf8'); });
+    finalizer.once('error', (error) => finish(`Could not archive the test result: ${error.message}. The local result is retained.`));
+    finalizer.once('close', (code) => finish(code === 0 ? '' : `Result archive failed: ${archiveError || `exit code ${code}`}. The local result is retained.`));
+  } catch (error) {
+    run.status = 'failed';
+    run.error = `Could not finalize the external testcase: ${error.message}. Inspect SAP before retrying any Save.`;
+  }
+  }
+
+  function startScriptedExternalCase(proposal) {
+    const { external, lane, caseId } = proposal;
+    const current = fs.readFileSync(external.filePath, 'utf8');
+    const automation = readAutomation(external.filePath, current, { caseId, lane, systemId: proposal.systemId });
+    if (caseDigest(current) !== caseDigest(external.content) || !automation || automation.sha256 !== external.automation.sha256) {
+      throw new Error('The testcase or automation changed after approval. Reopen the testcase and confirm it again.');
+    }
+    const id = crypto.randomUUID();
+    const externalRun = createExternalRun(projectRoot, archiveDir(), id, { ...proposal, ...external, username: currentUsername });
+    const planFile = path.join(externalRun.workRoot, 'plan.json');
+    fs.writeFileSync(planFile, JSON.stringify(automation.plan), 'utf8');
+    fs.writeFileSync(path.join(externalRun.workRoot, lane === 'gui' ? 'case.py' : 'case.spec.ts'), automation.source, 'utf8');
+    const env = {
+      ...(electronApp.isPackaged && lane === 'web' ? webRuntimeEnvironment(process.resourcesPath) : process.env),
+      ...projectLocalEnv(), SAP_SYSTEM_ID: proposal.systemId,
+      FSNXT_AUTOMATION_PLAN: planFile, FSNXT_EXTERNAL_RUN_DIR: externalRun.workRoot,
+      FSNXT_AUTOMATION_APPROVED: '1', FSNXT_RUN_ID: id,
+      FSNXT_EXTERNAL_CASE_RUNTIME: require('url').pathToFileURL(path.join(projectRoot, 'web-tests', 'external-case.ts')).href,
+      ...(proposal.credentials ? (lane === 'gui'
+        ? { SAP_TEST_USERNAME: proposal.credentials.username, SAP_TEST_PASSWORD: proposal.credentials.password }
+        : { SAP_WEB_USER: proposal.credentials.username, SAP_WEB_PASSWORD: proposal.credentials.password }) : {}),
+    };
+    const command = lane === 'gui'
+      ? pythonPath || path.join(projectRoot, 'tools', 'mcp-sap-gui', '.venv', 'Scripts', 'python.exe')
+      : electronApp.isPackaged ? path.join(process.resourcesPath, 'sap-web-runtime', 'node.exe') : 'node';
+    const args = lane === 'gui' ? ['-m', 'gui_tests.external_case']
+      : [path.join(projectRoot, 'web-tests', 'node_modules', '@playwright-sap', 'test', 'cli.js'), 'test', '--config', 'external-case.config.ts'];
+    const run = { id, status: 'running', source: 'direct', response: '', sessionId: '', error: '', stdout: '', stderr: '', exitCode: null, process: null };
+    const child = spawn(command, args, { cwd: lane === 'gui' ? projectRoot : path.join(projectRoot, 'web-tests'), env, windowsHide: true, shell: false, stdio: ['ignore', 'pipe', 'pipe'] });
+    run.process = child;
+    runs.set(id, run);
+    child.stdout.on('data', (chunk) => { run.stdout += chunk.toString('utf8'); });
+    child.stderr.on('data', (chunk) => { run.stderr += chunk.toString('utf8'); });
+    child.once('error', (error) => { run.error = error.message; });
+    child.once('close', (code) => {
+      run.process = null;
+      run.exitCode = code;
+      run.status = run.status === 'stopping' ? 'stopped' : code === 0 && !run.error ? 'completed' : 'failed';
+      run.response = run.stdout.trim();
+      if (run.status === 'failed') run.error ||= run.stderr.trim() || 'Saved automation stopped. Inspect the result before retrying.';
+      finishExternalRun(run, externalRun, lane);
+    });
+    return publicRun(run);
   }
 
   function startConfirmedCase(confirmationId) {
@@ -790,6 +926,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
     }
 
     if (proposal.external) {
+      if (proposal.external.automation) return startScriptedExternalCase(proposal);
       return manager.start('Run the approved external testcase.', '', proposal.lane, {
         [externalAuthorization]: { ...proposal, ...proposal.external, username: currentUsername },
       });
@@ -1122,6 +1259,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       // dontAsk runs allowed tools and rejects everything else without a prompt.
       const permissionMode = caseCreation || externalRun ? 'dontAsk' : 'auto';
       if (externalRun) prompt = externalRunPrompt(externalRun);
+      if (caseCreation) prompt += '\n\n' + automationPrompt(lane, creationDirectory);
 
       const laneGuidance = lane === 'gui'
         ? 'The user selected the SAP GUI lane. Use GUI-lane cases and scripts/run-gui-case.ps1 for runnable tests.'
@@ -1171,6 +1309,42 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
 
       child.stdout.on('data', (chunk) => { run.stdout += chunk.toString('utf8'); });
       child.stderr.on('data', (chunk) => { run.stderr += chunk.toString('utf8'); });
+      // Up to two correction passes per case; each reuses the creation session so the
+      // discovered control ids and observed values are still in context.
+      async function repairAutomation(run, missing) {
+        for (const created of missing) {
+          const identity = { caseId: created.caseId, lane, systemId: caseCreation.systemId };
+          for (let attempt = 0; attempt < 2 && !created.automationFile; attempt++) {
+            const destination = candidatePath(created.filePath);
+            const reason = created.automationNote || 'No automation plan was found beside the testcase.';
+            const repairPrompt = [
+              `The Markdown testcase ${created.filePath} was saved, but its repeat-run automation plan was not accepted: ${reason}`,
+              `Do NOT use any SAP tool and do not perform any SAP action. Using only the steps, control ids and values you already observed in this session, write a corrected plan to ${destination}.`,
+              automationPrompt(lane, destination),
+            ].join('\n\n');
+            await new Promise((resolve) => {
+              const repair = spawn(claudePath, ['-p', repairPrompt, '--output-format', 'json', '--permission-mode', 'dontAsk',
+                '--add-dir', creationDirectory, '--allowedTools', claudeAbsoluteEditRule(creationDirectory), '--resume', run.sessionId], {
+                cwd: projectRoot, env: claudeEnvironment(oauthToken, run.id, caseCreation, lane, externalRun),
+                windowsHide: true, shell: false, stdio: ['ignore', 'ignore', 'ignore'],
+              });
+              run.process = repair;
+              repair.once('error', resolve);
+              repair.once('close', resolve);
+            });
+            run.process = null;
+            try {
+              created.automationFile = publishAutomation(created.filePath, identity) || '';
+              created.automationNote = created.automationFile ? '' : 'No passing automation plan was written.';
+            } catch (error) {
+              created.automationNote = `Repeat-run automation was not accepted: ${error.message}`;
+            }
+          }
+          if (!created.automationFile) clearCandidate(created.filePath);
+          if (!created.automationFile) run.response +=`\n${created.caseId}: saved without a script. ${created.automationNote}`;
+          else run.response += `\n${created.caseId}: automation script saved beside the testcase (${path.basename(created.automationFile)}).`;
+        }
+      }
       child.once('error', (error) => {
         if (!externalRun) run.status = 'failed';
         run.error = error.code === 'ENOENT'
@@ -1202,45 +1376,20 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
               run.status = 'failed';
               run.error = 'Testcase creation is unfinished: no Markdown file was produced. Continue this testcase in chat; verify the existing SAP deal before retrying any Save.';
             }
+            // A case must leave with its script. If the plan was missing or rejected, the
+            // same AI session (no SAP tools, no new writes) corrects the plan from what it observed.
+            const missing = run.createdCases.filter((created) => !created.automationFile);
+            if (missing.length && !(run.status === 'completed' && run.sessionId)) missing.forEach((created) => clearCandidate(created.filePath));
+            if (missing.length && run.status === 'completed' && run.sessionId) {
+              run.status = 'finalizing';
+              repairAutomation(run, missing).finally(() => { run.status = run.error ? 'failed' : 'completed'; });
+            }
           } catch (error) {
             run.error = `The testcase remains in the selected folder but could not be registered: ${error.message}`;
             run.status = 'failed';
           }
         }
-        if (externalRun) {
-          const execution = { status: run.status, error: run.error, response: run.response };
-          run.status = 'finalizing';
-          try {
-            const result = writeExternalResult(externalRun, execution);
-            run.resultPath = result.resultPath;
-            run.response += `\n\nTest result: ${result.verdict}\nSaved result: ${result.resultPath}`;
-            run.error = execution.error || result.error;
-            const finish = (error = '') => {
-              run.process = null;
-              if (error) run.error = [run.error, error].filter(Boolean).join('\n');
-              run.status = execution.status === 'stopped' ? 'stopped' : run.error ? 'failed' : 'completed';
-            };
-            const finalizer = spawn('powershell.exe', [
-              '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(projectRoot, 'scripts', 'finalize-external-run.ps1'),
-              '-RunId', run.id, '-StartedAtUtc', externalRun.startedAt, '-Case', externalRun.caseId,
-              '-Lane', lane, '-SystemId', externalRun.systemId, '-ResultsDirectory', externalRun.outputRoot,
-              '-OutputRoot', path.dirname(path.dirname(externalRun.outputRoot)),
-            ], {
-              cwd: projectRoot,
-              env: { ...process.env, ...projectLocalEnv(), FSNXT_APP_USERNAME: externalRun.username },
-              windowsHide: true, shell: false, stdio: ['ignore', 'pipe', 'pipe'],
-            });
-            run.process = finalizer;
-            let archiveError = '';
-            finalizer.stdout.on('data', (chunk) => { run.response += `\n${chunk.toString('utf8').trim()}`; });
-            finalizer.stderr.on('data', (chunk) => { archiveError += chunk.toString('utf8'); });
-            finalizer.once('error', (error) => finish(`Could not archive the test result: ${error.message}. The local result is retained.`));
-            finalizer.once('close', (code) => finish(code === 0 ? '' : `Result archive failed: ${archiveError || `exit code ${code}`}. The local result is retained.`));
-          } catch (error) {
-            run.status = 'failed';
-            run.error = `Could not finalize the external testcase: ${error.message}. Inspect SAP before retrying any Save.`;
-          }
-        }
+        if (externalRun) finishExternalRun(run, externalRun, lane);
       });
       return publicRun(run);
     },
