@@ -51,12 +51,18 @@ function completePlanFromMarkdown(plan, content) {
 function completeEntryDefaults(plan) {
   if (!plan || plan.lane !== 'gui' || !Array.isArray(plan.steps)) return plan;
   const entryField = /^wnd\[0\]\/usr\/ctxtFTR_ENTRY-(?:SGSART|SFHAART)$/i;
-  const filled = new Set();
+  let inCreateTransaction = false;
+  let filled = new Set();
   const steps = [];
   for (const step of plan.steps) {
+    if (step?.action === 'transaction') {
+      const transaction = String(step.value || '').trim().toUpperCase().replace(/^\/(?:N|O)/, '');
+      inCreateTransaction = transaction === 'FTR_CREATE';
+      filled = new Set();
+    }
     const target = step?.target || '';
-    if (step?.action === 'fill' && entryField.test(target)) filled.add(target.toLowerCase());
-    if (step?.action === 'assert' && step.source === 'field' && entryField.test(target)
+    if (inCreateTransaction && step?.action === 'fill' && entryField.test(target)) filled.add(target.toLowerCase());
+    if (inCreateTransaction && step?.action === 'assert' && step.source === 'field' && entryField.test(target)
       && !filled.has(target.toLowerCase()) && step.match !== 'contains' && step.expected) {
       filled.add(target.toLowerCase());
       steps.push({ action: 'fill', target, value: step.expected, label: `Set ${step.label}` });
@@ -128,6 +134,10 @@ function validatePlan(plan, { caseId, lane, systemId }) {
       assertions++;
       if (typeof step.expected !== 'string' || !['equals', 'contains'].includes(step.match || 'equals')) throw new Error('Assertion requires an expected value and equals/contains comparison.');
       if (!['field', 'status', 'text', 'value', 'checked', 'popup'].includes(step.source)) throw new Error('Assertion source is required.');
+      if (step.numeric !== undefined && typeof step.numeric !== 'boolean') throw new Error('Assertion numeric marker must be true or false.');
+      if (step.numeric === true && (!['field', 'value'].includes(step.source) || (step.match || 'equals') !== 'equals')) {
+        throw new Error('Numeric comparison is only valid for exact field/value assertions.');
+      }
       if (step.capture) {
         if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(step.capture) || typeof step.pattern !== 'string' || !step.pattern) throw new Error('Capture needs a name and a pattern with one capture group.');
         new RegExp(step.pattern);
@@ -194,7 +204,7 @@ function automationPrompt(lane, destination) {
   return [
     'Prepare repeat-run automation from the exact steps you just observed, without running the scenario again or doing extra SAP writes. Read docs/external-case-automation.md for the supported step contract.',
     `After a completely successful observed case, write a JSON plan to ${destination}. For new cases write one plan per .md file at <that folder>/.fsnxt-plans/<Markdown basename without .md>.json (create the .fsnxt-plans folder if needed); it is a temporary build input the app consumes and deletes, never a deliverable. For a failed, blocked or incompletely observed case, do not create a plan.`,
-    `Use version:1, caseId, lane:"${lane}", systemId (the exact registry id), observedOutcome:"PASS", and steps. Include EVERY precondition, step and assertion in the Markdown, in order; never shorten the business flow for speed. Use only actually discovered controls and observed values. Never rely on the user's current SAP default company code: explicitly set and read back the Markdown's FTR_ENTRY-BUKRS value before the other entry fields. Likewise never rely on pre-filled Product Type / Transaction Type (FTR_ENTRY-SGSART / FTR_ENTRY-SFHAART): they are the SAP user's remembered values and read blank on another session, so fill each with the Markdown value before asserting it. Mark every Save/post/settle or other database-writing action write:true and immediately follow it with an assert marked verifiesWrite:true that reads the real success result. Capture new document numbers from SAP; never reuse the document number from authoring. Do not store credentials, cookies or machine-specific paths. Use exact spellings from docs/external-case-automation.md: GUI targets start at wnd[0]/ (no /app/con[0]/ses[0]/ prefix), GUI tab targets ending in /tabp... always use action:"tab" (never press/select), and GUI keys are numeric VKey strings ("0" Enter, "11" Save). Before using a control nested below /tabp..., include a tab action for that exact ancestor even if it was already active while authoring. Record field/value assertions without SAP's outer display padding; the runtime ignores outer whitespace and treats inner whitespace runs as one space. For an ALV/GuiGridView assertion, use source:"text", the discovered grid target and match:"contains" with an observed cell value; the runtime reads row data rather than the COM type name. A GUI status assertion can match the SAP message id/number, message text, or exact active-screen title exposed by the runtime (with match:"equals" the expected value must be exactly one of those values; use match:"contains" for partial text); never append a selected tab caption to that title. If any step cannot be represented by the supported contract, omit the plan and explain that this case still needs interactive execution.`,
+    `Use version:1, caseId, lane:"${lane}", systemId (the exact registry id), observedOutcome:"PASS", and steps. Include EVERY precondition, step and assertion in the Markdown, in order; never shorten the business flow for speed. Use only actually discovered controls and observed values. Never rely on the user's current SAP default company code: explicitly set and read back the Markdown's FTR_ENTRY-BUKRS value before the other entry fields. Likewise never rely on pre-filled Product Type / Transaction Type (FTR_ENTRY-SGSART / FTR_ENTRY-SFHAART): they are the SAP user's remembered values and read blank on another session, so fill each with the Markdown value before asserting it. Mark every Save/post/settle or other database-writing action write:true and immediately follow it with an assert marked verifiesWrite:true that reads the real success result. Capture new document numbers from SAP; never reuse the document number from authoring. Do not store credentials, cookies or machine-specific paths. Use exact spellings from docs/external-case-automation.md: GUI targets start at wnd[0]/ (no /app/con[0]/ses[0]/ prefix), GUI tab targets ending in /tabp... always use action:"tab" (never press/select), and GUI keys are numeric VKey strings ("0" Enter, "11" Save). Before using a control nested below /tabp..., include a tab action for that exact ancestor even if it was already active while authoring. Record field/value assertions without SAP's outer display padding; the runtime ignores outer whitespace and treats inner whitespace runs as one space. Mark exact field/value assertions for amounts, rates or quantities with numeric:true so grouping separators, decimal zero-padding and SAP's trailing minus are compared by numeric value; never mark identifiers, company codes or dates numeric. For an ALV/GuiGridView assertion, use source:"text", the discovered grid target and match:"contains" with an observed cell value; the runtime reads row data rather than the COM type name. A GUI status assertion can match the SAP message id/number, message text, or exact active-screen title exposed by the runtime (with match:"equals" the expected value must be exactly one of those values; use match:"contains" for partial text); never append a selected tab caption to that title. If any step cannot be represented by the supported contract, omit the plan and explain that this case still needs interactive execution.`,
     'The app validates the plan structure and creates the matching .py (GUI) or .spec.ts (web) sidecar. Do not write arbitrary Python/TypeScript code, change execution registries, or mark the case frozen. A saved plan is not evidence that a scripted regression run has passed.',
   ].join('\n\n');
 }

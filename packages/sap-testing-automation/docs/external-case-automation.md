@@ -31,7 +31,7 @@ controls and values actually discovered. No credentials, cookies or machine path
 | `tab` | yes | no | `target` |
 | `select` | yes | yes | `target`, `value` |
 | `check` | yes | yes | `target`, boolean `value` |
-| `assert` | yes | yes | `source` (`field`/`status`/`text`/`value`/`checked`), `expected`, `match` (`equals`/`contains`), optional `capture` + `pattern` (one group) + `documentType` |
+| `assert` | yes | yes | `source` (`field`/`status`/`text`/`value`/`checked`), `expected`, `match` (`equals`/`contains`), optional `numeric`, `capture` + `pattern` (one group) + `documentType` |
 
 GUI `target`s are discovered ids (`wnd[0]/...`); web `target`s are the field title for
 `fill`/`select`/field asserts, or the control id for `click`/`check`.
@@ -42,6 +42,11 @@ GUI `target`s are discovered ids (`wnd[0]/...`); web `target`s are the field tit
 - Always record `FTR_ENTRY-BUKRS` as an explicit verified `fill`; a repeat run must not
   depend on the SAP user's current default company code. Existing signed sidecars that omitted
   it are completed from the exact technical-name/value row in their matching Markdown.
+- In an `FTR_CREATE` plan, always record `FTR_ENTRY-SGSART` (Product Type) and
+  `FTR_ENTRY-SFHAART` (Transaction Type) as explicit verified `fill` steps before asserting
+  them. SAP can remember those values in the authoring user's current session while a fresh
+  repeat-run session starts with them blank. Existing signed sidecars that only asserted an
+  exact value for either field are completed with the matching fill when they are loaded.
 - GUI tab controls (a final id segment beginning with `tabp`) always use
   `action:"tab"`; never encode a tab as `press` or `select`.
 - GUI `key` `value`: numeric VKey as a string (`"0"` Enter, `"11"` Save, `"3"` Back, `"8"` Execute).
@@ -49,9 +54,13 @@ GUI `target`s are discovered ids (`wnd[0]/...`); web `target`s are the field tit
 - `source:"popup"` reads the open popup's text; assert it with `contains` only, never a derived count.
 - GUI comparisons ignore SAP's display padding for every source: outer whitespace is
   dropped and inner whitespace runs compare as one space, on both the expected and the
-  observed side. Record the canonical business value (for example `100,000,000.00`);
-  punctuation, signs and decimal digits still have to match. A `fill` read-back also
-  accepts SAP's formatting of the same plain number (`150000000` as `150,000,000.00`).
+  observed side. On an exact `field`/`value` assertion for an amount, rate or quantity,
+  set `"numeric":true`. Numeric assertions compare the business value, so `1000000`,
+  `1,000,000.00`, decimal zero-padding and SAP's trailing-minus form are equivalent.
+  Identifiers, company codes and dates must never be marked numeric and remain strict.
+  For compatibility, older plans without the marker get the same numeric fallback only
+  when one side visibly contains SAP number formatting. A `fill` read-back follows that
+  same guarded rule.
 - GUI `source:"text"` on an ALV/`GuiGridView` target reads the grid's row and cell
   contents, not its COM type name. Use `match:"contains"` with an observed cell value.
 - GUI `source:"status"` exposes the SAP message id/number, message text, program / screen
@@ -66,6 +75,12 @@ GUI `target`s are discovered ids (`wnd[0]/...`); web `target`s are the field tit
   again. If the remaining container path has drifted, it may use a live control only when the same
   SAP technical name occurs exactly once on the current screen. Missing or ambiguous controls stop
   the run without guessing.
+- A fresh GUI login can receive SAP's non-interactive `Express Information` inbox notice even when
+  the authoring session did not. The runner acknowledges only that exact no-input popup through its
+  standard Continue button and records the notice text as an executed step. If it interrupted a
+  transaction change, the runner retries that read-only navigation once and verifies the requested
+  transaction became active. Confirmations, input dialogs, and every other popup remain explicit
+  plan steps and are never dismissed automatically.
 
 ## Writes
 

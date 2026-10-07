@@ -16,6 +16,8 @@ const plan = { version: 1, ...identity, observedOutcome: 'PASS', steps: [
 test('authoring prompt records padding-safe fields and table-aware ALV assertions', () => {
   const prompt = automationPrompt('gui', 'automation.json');
   assert.match(prompt, /outer display padding/);
+  assert.match(prompt, /numeric:true/);
+  assert.match(prompt, /never mark identifiers, company codes or dates numeric/);
   assert.match(prompt, /ALV\/GuiGridView assertion/);
   assert.match(prompt, /source:"text"/);
   assert.match(prompt, /reads row data rather than the COM type name/);
@@ -116,12 +118,42 @@ test('types entry Product/Transaction Type that a plan only asserted as defaults
   const sfhaart = 'wnd[0]/usr/ctxtFTR_ENTRY-SFHAART';
   const typed = { action: 'fill', target: sfhaart, value: '200', label: 'Transaction Type' };
   const completed = completePlanFromMarkdown({ version: 1, ...identity, steps: [
+    { action: 'transaction', label: 'Create', value: 'FTR_CREATE' },
     asserted(sgsart, 'FAC', 'Product Type defaulted to FAC'),
     typed,
     asserted(sfhaart, '200', 'Transaction Type'),
+    { action: 'transaction', label: 'Edit', value: 'FTR_EDIT' },
+    asserted(sgsart, 'FAC', 'Verify saved Product Type'),
+    { action: 'transaction', label: 'Create another', value: '/nFTR_CREATE' },
+    asserted(sfhaart, '200', 'Second Transaction Type'),
   ] }, '').steps;
   assert.deepEqual(completed.map((step) => [step.action, step.target]), [
+    ['transaction', undefined],
     ['fill', sgsart], ['assert', sgsart], ['fill', sfhaart], ['assert', sfhaart],
+    ['transaction', undefined], ['assert', sgsart],
+    ['transaction', undefined], ['fill', sfhaart], ['assert', sfhaart],
   ]);
-  assert.equal(completed[0].value, 'FAC');
+  assert.equal(completed[1].value, 'FAC');
+  assert.equal(completed[8].value, '200');
+});
+
+test('accepts numeric amount assertions but rejects unsafe numeric markers', () => {
+  const amount = {
+    action: 'assert', label: 'Investment Amount confirmed', source: 'field',
+    target: 'wnd[0]/usr/txtVTG_INVEST-XZBETR', expected: '1,000,000.00',
+    match: 'equals', numeric: true,
+  };
+  assert.equal(validatePlan({ ...plan, steps: [plan.steps[0], amount] }, identity).steps[1].numeric, true);
+  assert.throws(
+    () => validatePlan({ ...plan, steps: [plan.steps[0], { ...amount, numeric: 'yes' }] }, identity),
+    /numeric marker must be true or false/,
+  );
+  assert.throws(
+    () => validatePlan({ ...plan, steps: [plan.steps[0], { ...amount, source: 'status' }] }, identity),
+    /only valid for exact field\/value assertions/,
+  );
+  assert.throws(
+    () => validatePlan({ ...plan, steps: [plan.steps[0], { ...amount, match: 'contains' }] }, identity),
+    /only valid for exact field\/value assertions/,
+  );
 });

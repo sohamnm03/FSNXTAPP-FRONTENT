@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import tempfile
 import unittest
 
-from gui_tests.external_case import _status_title_matches, execute
+from gui_tests.external_case import _same_number, _status_title_matches, execute
 
 
 class _Controller:
@@ -49,6 +49,62 @@ class _Sap:
 
 
 class ExternalCaseCompatibilityTests(unittest.TestCase):
+    def test_noninteractive_express_information_is_recorded_and_dismissed(self):
+        class ExpressSap(_Sap):
+            def __init__(self):
+                super().__init__()
+                self.notice_open = False
+                self.pressed = []
+                self.transaction_attempts = 0
+                self.current_transaction = "FTR_CREATE"
+
+            def start_transaction(self, transaction):
+                self.transaction_attempts += 1
+                if self.transaction_attempts == 1:
+                    self.notice_open = True
+                else:
+                    self.current_transaction = transaction
+                return {"success": True}
+
+            def screen(self):
+                return {**super().screen(), "transaction": self.current_transaction}
+
+            def popup(self):
+                if not self.notice_open:
+                    return {"popup_exists": False}
+                return {
+                    "popup_exists": True,
+                    "title": "Express Information",
+                    "has_inputs": False,
+                    "texts": ["Background notification received"],
+                    "buttons": [{
+                        "id": "/app/con[2]/ses[0]/wnd[1]/tbar[0]/btn[0]",
+                        "tooltip": "Continue   (Enter)",
+                    }],
+                }
+
+            def press(self, target):
+                self.pressed.append(target)
+                self.notice_open = False
+                return {"success": True}
+
+        sap = ExpressSap()
+        plan = {"steps": [
+            {"action": "transaction", "label": "Open edit", "value": "FTR_EDIT"},
+            {"action": "assert", "label": "Edit screen", "source": "status",
+             "expected": "Create Interest Rate Instrument:", "match": "equals"},
+        ]}
+
+        with tempfile.TemporaryDirectory() as directory:
+            result = execute(plan, sap, Path(directory) / "observations.json")
+
+        self.assertEqual(result["verdict"], "PASS")
+        self.assertEqual(sap.pressed, ["wnd[1]/tbar[0]/btn[0]"])
+        self.assertEqual(sap.transaction_attempts, 2)
+        notice = next(step for step in result["steps"]
+                      if step["step"] == "Dismiss Express Information")
+        self.assertIn("Background notification received", notice["detail"])
+
     def test_field_assertions_ignore_only_outer_sap_padding(self):
         class PaddedAmountController(_Controller):
             def read_field(self, _target):
@@ -75,6 +131,49 @@ class ExternalCaseCompatibilityTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             result = execute(plan, sap, Path(directory) / "observations.json")
         self.assertEqual(result["verdict"], "FAIL")
+
+    def test_amount_assertions_compare_values_not_sap_display_format(self):
+        class AmountController(_Controller):
+            def __init__(self, shown):
+                self.shown = shown
+
+            def read_field(self, _target):
+                return {"value": self.shown}
+
+        cases = [
+            ("1,000,000.00", "1000000", False, "PASS"),
+            ("1000000", "1,000,000.00", False, "PASS"),
+            ("10,00,000.50", "1000000.5", False, "PASS"),
+            ("-1,000.00", "1,000.000-", False, "PASS"),
+            ("1,000,000.00", "999999.99", False, "FAIL"),
+            ("0010", "10", False, "FAIL"),
+            ("0010", "10", True, "PASS"),
+            ("01.10.2026", "1.10.2026", True, "FAIL"),
+        ]
+        for expected, shown, numeric, verdict in cases:
+            with self.subTest(expected=expected, shown=shown, numeric=numeric):
+                sap = _Sap()
+                sap.controller = AmountController(shown)
+                step = {
+                    "action": "assert", "source": "field",
+                    "target": "wnd[0]/usr/txtVTG_INVEST-XZBETR",
+                    "expected": expected, "match": "equals",
+                    "label": "Investment Amount confirmed",
+                }
+                if numeric:
+                    step["numeric"] = True
+                plan = {"steps": [step]}
+                with tempfile.TemporaryDirectory() as directory:
+                    result = execute(plan, sap, Path(directory) / "observations.json")
+                self.assertEqual(result["verdict"], verdict)
+                self.assertEqual(result["assertions"][0]["observed"], shown)
+
+    def test_numeric_parser_handles_decimal_padding_signs_and_zero(self):
+        self.assertTrue(_same_number("1,000,000.00", "1000000"))
+        self.assertTrue(_same_number("1,000.5000-", "-1000.5"))
+        self.assertTrue(_same_number("-0.000", "0"))
+        self.assertFalse(_same_number("1,000,000.01", "1000000"))
+        self.assertFalse(_same_number("10C", "10"))
 
     def test_padding_is_ignored_for_every_source_and_padding_width(self):
         for padded in ("150,000,000.00", " 150,000,000.00", "  150,000,000.00 ",
@@ -111,6 +210,7 @@ class ExternalCaseCompatibilityTests(unittest.TestCase):
         cases = [("150000000", " 150,000,000.00", "PASS"),
                  ("7", "7.0000000 ", "PASS"),
                  ("150000000", "15,000,000.00", "FAIL"),
+                 ("0010", "10", "FAIL"),
                  ("10C", " 10C", "PASS"),
                  ("10C", "10", "FAIL"),
                  ("01.10.2026", "1.10.2026", "FAIL")]

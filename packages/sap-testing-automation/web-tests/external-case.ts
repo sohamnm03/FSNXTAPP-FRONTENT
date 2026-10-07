@@ -18,9 +18,30 @@ type Step = {
   action: string; label: string; target?: string; value?: string | boolean;
   write?: boolean; verifiesWrite?: boolean; expected?: string; match?: 'equals' | 'contains';
   source?: 'field' | 'status' | 'text' | 'value' | 'checked'; capture?: string;
-  pattern?: string; documentType?: string;
+  pattern?: string; documentType?: string; numeric?: boolean;
 };
 type Plan = { caseId: string; systemId: string; steps: Step[] };
+type NumberMode = 'strict' | 'formatted' | 'numeric';
+
+function canonicalNumber(input: string): string | null {
+  const text = input.trim();
+  if (!/^(?:[+-]?[\d,]+(?:\.\d+)?|[\d,]+(?:\.\d+)?-)$/.test(text)) return null;
+  const negative = text.startsWith('-') || text.endsWith('-');
+  const digits = text.replace(/^[+-]/, '').replace(/-$/, '').replace(/,/g, '');
+  const [rawWhole, rawFraction = ''] = digits.split('.');
+  const whole = rawWhole.replace(/^0+/, '') || '0';
+  const fraction = rawFraction.replace(/0+$/, '');
+  const value = fraction ? `${whole}.${fraction}` : whole;
+  return negative && value !== '0' ? `-${value}` : value;
+}
+
+export function sameNumber(observed: string, expected: string, requireDisplayFormat = false): boolean {
+  if (requireDisplayFormat && ![observed, expected].some((value) =>
+    value.includes(',') || value.includes('.') || value.trim().endsWith('-') || value.trim().startsWith('+'))) return false;
+  const actualNumber = canonicalNumber(observed);
+  const expectedNumber = canonicalNumber(expected);
+  return actualNumber !== null && actualNumber === expectedNumber;
+}
 
 export function defineExternalCase(plan: Plan) {
   test(`${plan.caseId} saved automation`, async ({ sapPage: page }) => {
@@ -50,8 +71,11 @@ export function defineExternalCase(plan: Plan) {
       }
       return readField(page, s.target!);
     };
-    const assertion = (expected: string, actual: string, label: string, match = 'equals') => {
-      const ok = match === 'contains' ? actual.includes(expected) : actual === expected;
+    const assertion = (expected: string, actual: string, label: string, match = 'equals', numberMode: NumberMode = 'strict') => {
+      let ok = match === 'contains' ? actual.includes(expected) : actual === expected;
+      if (!ok && match === 'equals' && numberMode !== 'strict') {
+        ok = sameNumber(actual, expected, numberMode === 'formatted');
+      }
       observed.assertions.push({ expected: `${label}: ${expected}`, observed: actual, result: ok ? 'pass' : 'fail' });
       flush();
       if (!ok) throw new Error(`${label}: expected '${expected}', observed '${actual}'`);
@@ -72,14 +96,16 @@ export function defineExternalCase(plan: Plan) {
         flush();
         switch (step.action) {
           case 'transaction': break;
-          case 'fill': await setField(page, step.target!, String(value)); assertion(String(value), await readField(page, step.target!), step.label); break;
+          case 'fill': await setField(page, step.target!, String(value)); assertion(String(value), await readField(page, step.target!), step.label, 'equals', 'formatted'); break;
           case 'click': await clickButton(page, step.target!); break;
           case 'key': await pressKey(page, String(value)); break;
           case 'select': await selectDropdown(page, step.target!, String(value)); break;
           case 'check': await setCheckbox(page, step.target!, value as boolean); break;
           case 'assert': {
             const actual = await read(step);
-            assertion(String(subst(step.expected)), actual, step.label, step.match);
+            const numericSource = step.source === 'field' || step.source === 'value';
+            const numberMode: NumberMode = step.numeric === true ? 'numeric' : numericSource ? 'formatted' : 'strict';
+            assertion(String(subst(step.expected)), actual, step.label, step.match, numberMode);
             if (step.capture) {
               const m = actual.match(new RegExp(step.pattern!));
               if (!m || !m[1]) throw new Error('The current SAP document/value could not be captured');

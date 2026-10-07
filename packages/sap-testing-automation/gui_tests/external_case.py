@@ -45,26 +45,39 @@ def _comparable(value) -> str:
     return " ".join(str(value or "").split())
 
 
-def _same_number(observed: str, sent: str) -> bool:
-    """Did SAP keep the number we typed, after reformatting it for display?
+def _same_number(observed: str, expected: str,
+                 require_display_format: bool = False) -> bool:
+    """Compare numeric values without confusing identifiers with amounts.
 
-    ``150000000`` reads back as ``150,000,000.00`` and ``7`` as
-    ``7.0000000``. Only plain numeric input qualifies; codes, dates and text
-    still need an exact (whitespace-normalized) match.
+    SAP may turn ``1000000`` into ``1,000,000.00`` or move a minus sign to
+    the end. Existing plans do not carry a numeric marker, so their fallback
+    is enabled only when one side visibly has numeric display formatting.
+    New plans can opt in explicitly for known amount/rate/quantity fields.
     """
-    if not re.fullmatch(r"-?\d+(?:\.\d+)?-?", sent):
+    observed = _comparable(observed)
+    expected = _comparable(expected)
+    if require_display_format and not any(
+            "," in value or "." in value or value.endswith("-")
+            or value.startswith("+") for value in (observed, expected)):
         return False
-    if not re.fullmatch(r"-?[\d,]+(?:\.\d+)?-?", observed):
+
+    number = r"(?:[+-]?[\d,]+(?:\.\d+)?|[\d,]+(?:\.\d+)?-)"
+    if not re.fullmatch(number, observed) or not re.fullmatch(number, expected):
         return False
 
     def canonical(text: str) -> str:
         negative = text.startswith("-") or text.endswith("-")
-        digits = text.strip("-").replace(",", "")
+        digits = text.lstrip("+-").rstrip("-").replace(",", "")
         if "." in digits:
-            digits = digits.rstrip("0").rstrip(".")
-        return ("-" if negative else "") + (digits.lstrip("0") or "0")
+            whole, fraction = digits.split(".", 1)
+            fraction = fraction.rstrip("0")
+        else:
+            whole, fraction = digits, ""
+        whole = whole.lstrip("0") or "0"
+        value = f"{whole}.{fraction}" if fraction else whole
+        return f"-{value}" if negative and value != "0" else value
 
-    return canonical(observed) == canonical(sent)
+    return canonical(observed) == canonical(expected)
 
 
 def _short_control_id(control_id: str) -> str:
@@ -75,6 +88,13 @@ def _technical_name(control_id: str) -> str:
     leaf = _short_control_id(control_id).rsplit("/", 1)[-1]
     return re.sub(r"^(?:ctxt|txt|cmb|chk|rad|btn|tabp)", "", leaf,
                   flags=re.IGNORECASE)
+
+
+def _canonical_transaction(value: str) -> str:
+    transaction = str(value or "").strip().upper().lstrip("=")
+    while transaction.startswith(("/N", "/O", "/*")):
+        transaction = transaction[2:].lstrip()
+    return transaction
 
 
 def _containing_tab(control_id: str) -> str:
@@ -127,6 +147,39 @@ def execute(plan, sap, output: Path):
             raise RuntimeError(str(result.get("error") or result))
         return result
 
+    def dismiss_express_information():
+        """Dismiss SAP's non-interactive inbox notice without hiding its text.
+
+        A fresh scripted login can receive an ``Express Information`` window
+        that the authoring session already acknowledged. It has no inputs and
+        only covers the actual transaction screen; leaving it open makes the
+        next discovered ``wnd[0]`` control look missing. Do not generalise this
+        to confirmations or arbitrary popups: those remain explicit plan steps.
+        """
+        popup_reader = getattr(sap, "popup", None)
+        if not callable(popup_reader):
+            return False
+        popup = check_result(popup_reader())
+        if (not popup.get("popup_exists")
+                or str(popup.get("title") or "").strip() != "Express Information"
+                or popup.get("has_inputs") is True):
+            return False
+        button = next((item for item in popup.get("buttons", [])
+                       if str(item.get("tooltip") or item.get("text") or "")
+                       .strip().lower().startswith("continue")), None)
+        if not button or not button.get("id"):
+            return False
+        check_result(sap.press(_short_control_id(button["id"])))
+        detail = " | ".join(str(text).strip() for text in popup.get("texts", [])
+                            if str(text).strip())
+        observed["steps"].append(dict(
+            step="Dismiss Express Information",
+            outcome="ok",
+            detail=f"Acknowledged non-interactive SAP notice: {detail or 'no text exposed'}",
+        ))
+        flush()
+        return True
+
     def discover_target(target):
         """Resolve a drifted container path by one unique SAP technical name."""
         try:
@@ -154,6 +207,9 @@ def execute(plan, sap, output: Path):
         result = operation(target)
         failed = isinstance(result, dict) and (result.get("error") or result.get("success") is False)
         resolved = ""
+        if failed and str(target or "").startswith("wnd[0]/") and dismiss_express_information():
+            result = operation(target)
+            failed = isinstance(result, dict) and (result.get("error") or result.get("success") is False)
         tab = _containing_tab(target)
         if failed and tab and tab != _short_control_id(target):
             tab_result = sap.select_tab(tab)
@@ -223,7 +279,7 @@ def execute(plan, sap, output: Path):
         return value
 
     def assertion(expected, actual, label, match="equals", source="",
-                  fallback_target="", loose_number=False):
+                  fallback_target="", number_mode="strict"):
         # SAP pads values for display, and how much depends on the field's
         # length and whether the screen has been processed yet, so the same
         # plan can read "150,000,000.00" one run and " 150,000,000.00" the
@@ -235,8 +291,12 @@ def execute(plan, sap, output: Path):
         ok = (comparable_expected in comparable_actual
               if match == "contains"
               else comparable_actual == comparable_expected)
-        if not ok and loose_number:
-            ok = _same_number(comparable_actual, comparable_expected)
+        if not ok and match == "equals" and number_mode != "strict":
+            ok = _same_number(
+                comparable_actual,
+                comparable_expected,
+                require_display_format=number_mode == "formatted",
+            )
         if not ok and source == "status" and match == "equals":
             # The status observation joins code, message, program/screen and
             # title; an authored "equals" names exactly one of those values.
@@ -261,6 +321,10 @@ def execute(plan, sap, output: Path):
         for index, step in enumerate(plan["steps"]):
             sap.assert_dev_system(step["label"])
             action, target = step["action"], step.get("target", "")
+            expects_popup = (action == "assert" and step.get("source") == "popup") \
+                or bool(re.match(r"^wnd\[[1-9]\]/", str(target or "")))
+            if not expects_popup:
+                dismiss_express_information()
             value = substitute(step.get("value"), variables)
             entry = dict(step=step["label"], outcome="error", detail="Started; completion not yet verified")
             observed["steps"].append(entry)
@@ -270,16 +334,41 @@ def execute(plan, sap, output: Path):
             flush()
             if action == "transaction":
                 check_result(sap.start_transaction(value))
+                next_step = plan["steps"][index + 1] if index + 1 < len(plan["steps"]) else {}
+                next_expects_popup = (next_step.get("action") == "assert"
+                                      and next_step.get("source") == "popup") \
+                    or bool(re.match(r"^wnd\[[1-9]\]/",
+                                     str(next_step.get("target") or "")))
+                if not next_expects_popup:
+                    dismissed_notice = dismiss_express_information()
+                    current = check_result(sap.screen())
+                    actual_transaction = _canonical_transaction(current.get("transaction"))
+                    if (dismissed_notice and actual_transaction
+                            and actual_transaction != _canonical_transaction(value)):
+                        # The modal notice can interrupt StartTransaction before
+                        # SAP consumes it. Navigation is read-only, so retry it
+                        # once after acknowledging the notice; writes are never
+                        # retried anywhere in this runner.
+                        check_result(sap.start_transaction(value))
+                        dismiss_express_information()
+                        current = check_result(sap.screen())
+                        actual_transaction = _canonical_transaction(current.get("transaction"))
+                    if actual_transaction and actual_transaction != _canonical_transaction(value):
+                        raise RuntimeError(
+                            f"{step['label']}: expected transaction "
+                            f"{_canonical_transaction(value)}, observed {actual_transaction}"
+                        )
             elif action == "fill":
                 result, target = target_call(
                     target, lambda candidate: sap.controller.set_field(candidate, value),
                     step["label"])
                 check_result(result)
                 # A fill sends raw input ("150000000"); SAP may already show it
-                # formatted ("150,000,000.00"), so accept the same number.
+                # formatted ("150,000,000.00"), so accept the same number. The
+                # visible-format requirement keeps numeric identifiers strict.
                 assertion(value, read(dict(source="field", target=target,
                                            label=step["label"])), step["label"],
-                          source="field", loose_number=True)
+                          source="field", number_mode="formatted")
             elif action == "press":
                 # Compatibility for sidecars published before tab actions were
                 # normalized: GuiTab exposes select(), never press().
@@ -311,12 +400,16 @@ def execute(plan, sap, output: Path):
                 assertion(str(value).lower(), read(dict(source="checked", target=target)), step["label"])
             elif action == "assert":
                 actual = read(step)
+                numeric_source = step.get("source") in ("field", "value")
+                number_mode = ("numeric" if step.get("numeric") is True
+                               else "formatted" if numeric_source
+                               else "strict")
                 fallback_target = next(
                     (later.get("target", "") for later in plan["steps"][index + 1:]
                      if later.get("target")), "")
                 assertion(substitute(step["expected"], variables), actual, step["label"],
                           step.get("match", "equals"), step.get("source", ""),
-                          fallback_target)
+                          fallback_target, number_mode)
                 if step.get("capture"):
                     match = re.search(step["pattern"], actual)
                     if not match or not match.lastindex or not match.group(1):

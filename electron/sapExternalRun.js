@@ -57,7 +57,7 @@ function writeExternalResult(run, execution) {
   const result = [
     `# ${run.caseId} — run ${run.startedAt}`,
     '',
-    `- **Case:** ${run.caseId} (${run.relativeRoot}/case.md)`,
+    `- **Case:** \`${run.relativeRoot}/case.md\``,
     `- **System:** ${cell(run.systemId)} — **confirmed via session inspection:** ${observed.systemConfirmed === true ? 'yes' : 'no'}`,
     `- **Session:** ${cell(observed.session) || 'NOT OBSERVED'}`,
     `- **Run by:** ${cell(run.username)}`,
