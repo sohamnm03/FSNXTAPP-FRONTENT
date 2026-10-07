@@ -149,10 +149,39 @@ def execute(plan, sap, output: Path):
         matches = list(dict.fromkeys(leaf_matches or name_matches))
         return matches[0] if len(matches) == 1 else ""
 
+    def acknowledge_express_info(label):
+        """Dismiss SAP's Express Information screen, keeping what it said.
+
+        SAP raises it for system/update-task notices and it covers the screen
+        the next step expects. The text is recorded as a deviation so a
+        dismissed notice is never silent.
+        """
+        try:
+            screen = sap.screen()
+        except Exception:
+            return False
+        if (str(screen.get("program") or "") != "SAPMSSY0"
+                or str(screen.get("screen_number") or "") != "120"):
+            return False
+        try:
+            text = json.dumps(sap.popup(), default=str)
+        except Exception:
+            text = "text not readable"
+        result = sap.send(0)
+        if isinstance(result, dict) and (result.get("error") or result.get("success") is False):
+            return False
+        observed["deviations"].append(
+            f"{label}: acknowledged SAP Express Information (SAPMSSY0 / 120): {text}")
+        flush()
+        return True
+
     def target_call(target, operation, label):
         """Use the recorded id first, then one unambiguous live equivalent."""
         result = operation(target)
         failed = isinstance(result, dict) and (result.get("error") or result.get("success") is False)
+        if failed and acknowledge_express_info(label):
+            result = operation(target)
+            failed = isinstance(result, dict) and (result.get("error") or result.get("success") is False)
         resolved = ""
         tab = _containing_tab(target)
         if failed and tab and tab != _short_control_id(target):
