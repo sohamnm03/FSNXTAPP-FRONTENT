@@ -40,6 +40,13 @@ def _status_title_matches(expected: str, actual: str) -> bool:
     return bool(title.endswith(":") and suffix)
 
 
+def _derives_entry_defaults(target: str, screen: dict) -> bool:
+    """True after filling Company Code on the FTR_CREATE entry screen (2000)."""
+    return (_technical_name(target).upper() == "FTR_ENTRY-BUKRS"
+            and str(screen.get("program") or "") == "FTR_ENTRY"
+            and str(screen.get("screen_number") or "") == "2000")
+
+
 def _comparable(value) -> str:
     """Text as SAP means it: no outer padding, internal whitespace runs as one."""
     return " ".join(str(value or "").split())
@@ -280,6 +287,12 @@ def execute(plan, sap, output: Path):
                 assertion(value, read(dict(source="field", target=target,
                                            label=step["label"])), step["label"],
                           source="field", loose_number=True)
+                if _derives_entry_defaults(target, sap.screen()):
+                    # Scripting writes the text without a server round trip, so
+                    # SAP has not yet derived Product/Transaction Type from the
+                    # company code. One Enter with only BUKRS filled derives
+                    # them without leaving the entry screen (partner is next).
+                    check_result(sap.send(0))
             elif action == "press":
                 # Compatibility for sidecars published before tab actions were
                 # normalized: GuiTab exposes select(), never press().

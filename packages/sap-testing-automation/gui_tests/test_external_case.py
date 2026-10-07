@@ -321,6 +321,52 @@ class ExternalCaseCompatibilityTests(unittest.TestCase):
         self.assertEqual(sap.tabs, ["wnd[0]/usr/tabsMAIN/tabpMMFD01"])
         self.assertEqual(sap.controller.value, "60000000")
 
+    def test_entry_company_code_round_trip_derives_product_type_default(self):
+        class EntryController(_Controller):
+            def __init__(self):
+                self.fields = {}
+                self.derived = False
+
+            def set_field(self, target, value):
+                self.fields[target] = value
+                return {"status": "success"}
+
+            def read_field(self, target):
+                if target.endswith("SGSART") and self.derived:
+                    return {"value": "FAC"}
+                return {"value": self.fields.get(target, "")}
+
+        class EntrySap(_Sap):
+            def __init__(self):
+                super().__init__()
+                self.controller = EntryController()
+                self.keys = []
+
+            def screen(self):
+                return {"program": "FTR_ENTRY", "screen_number": "2000"}
+
+            def send(self, vkey):
+                self.keys.append(vkey)
+                self.controller.derived = True
+                return {"success": True}
+
+        sap = EntrySap()
+        plan = {"steps": [
+            {"action": "fill", "label": "Company Code", "value": "IDF",
+             "target": "wnd[0]/usr/ctxtFTR_ENTRY-BUKRS"},
+            {"action": "fill", "label": "Partner", "value": "1002",
+             "target": "wnd[0]/usr/ctxtFTR_ENTRY-KONTRH"},
+            {"action": "assert", "label": "Product Type", "source": "field",
+             "target": "wnd[0]/usr/ctxtFTR_ENTRY-SGSART", "expected": "FAC",
+             "match": "equals"},
+        ]}
+
+        with tempfile.TemporaryDirectory() as directory:
+            result = execute(plan, sap, Path(directory) / "observations.json")
+
+        self.assertEqual(result["verdict"], "PASS")
+        self.assertEqual(sap.keys, [0])
+
 
 if __name__ == "__main__":
     unittest.main()
