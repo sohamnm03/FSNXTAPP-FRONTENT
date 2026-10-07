@@ -40,6 +40,33 @@ function markdownTechnicalValue(content, technicalName) {
 // Restore the exact FTR_ENTRY-BUKRS value approved in the matching Markdown
 // when an early sidecar omitted that precondition from its plan.
 function completePlanFromMarkdown(plan, content) {
+  return completeEntryDefaults(completeCompanyCode(plan, content));
+}
+
+// Product/Transaction Type on the FTR_CREATE entry screen are not derived from
+// the company code: they are the user's remembered SAP parameter values, so a
+// different SAP user or session shows them blank. A plan authored on a session
+// where they happened to be pre-filled asserts them without ever typing them.
+// Type the asserted value first; the assertion then reads back what was typed.
+function completeEntryDefaults(plan) {
+  if (!plan || plan.lane !== 'gui' || !Array.isArray(plan.steps)) return plan;
+  const entryField = /^wnd\[0\]\/usr\/ctxtFTR_ENTRY-(?:SGSART|SFHAART)$/i;
+  const filled = new Set();
+  const steps = [];
+  for (const step of plan.steps) {
+    const target = step?.target || '';
+    if (step?.action === 'fill' && entryField.test(target)) filled.add(target.toLowerCase());
+    if (step?.action === 'assert' && step.source === 'field' && entryField.test(target)
+      && !filled.has(target.toLowerCase()) && step.match !== 'contains' && step.expected) {
+      filled.add(target.toLowerCase());
+      steps.push({ action: 'fill', target, value: step.expected, label: `Set ${step.label}` });
+    }
+    steps.push(step);
+  }
+  return { ...plan, steps };
+}
+
+function completeCompanyCode(plan, content) {
   const normalized = normalizePlan(plan);
   if (!normalized || normalized.lane !== 'gui' || !Array.isArray(normalized.steps)) return normalized;
   const companyCode = markdownTechnicalValue(content, 'FTR_ENTRY-BUKRS');
@@ -167,7 +194,7 @@ function automationPrompt(lane, destination) {
   return [
     'Prepare repeat-run automation from the exact steps you just observed, without running the scenario again or doing extra SAP writes. Read docs/external-case-automation.md for the supported step contract.',
     `After a completely successful observed case, write a JSON plan to ${destination}. For new cases write one plan per .md file at <that folder>/.fsnxt-plans/<Markdown basename without .md>.json (create the .fsnxt-plans folder if needed); it is a temporary build input the app consumes and deletes, never a deliverable. For a failed, blocked or incompletely observed case, do not create a plan.`,
-    `Use version:1, caseId, lane:"${lane}", systemId (the exact registry id), observedOutcome:"PASS", and steps. Include EVERY precondition, step and assertion in the Markdown, in order; never shorten the business flow for speed. Use only actually discovered controls and observed values. Never rely on the user's current SAP default company code: explicitly set and read back the Markdown's FTR_ENTRY-BUKRS value before the other entry fields. Mark every Save/post/settle or other database-writing action write:true and immediately follow it with an assert marked verifiesWrite:true that reads the real success result. Capture new document numbers from SAP; never reuse the document number from authoring. Do not store credentials, cookies or machine-specific paths. Use exact spellings from docs/external-case-automation.md: GUI targets start at wnd[0]/ (no /app/con[0]/ses[0]/ prefix), GUI tab targets ending in /tabp... always use action:"tab" (never press/select), and GUI keys are numeric VKey strings ("0" Enter, "11" Save). Before using a control nested below /tabp..., include a tab action for that exact ancestor even if it was already active while authoring. Record field/value assertions without SAP's outer display padding; the runtime ignores outer whitespace and treats inner whitespace runs as one space. For an ALV/GuiGridView assertion, use source:"text", the discovered grid target and match:"contains" with an observed cell value; the runtime reads row data rather than the COM type name. A GUI status assertion can match the SAP message id/number, message text, or exact active-screen title exposed by the runtime (with match:"equals" the expected value must be exactly one of those values; use match:"contains" for partial text); never append a selected tab caption to that title. If any step cannot be represented by the supported contract, omit the plan and explain that this case still needs interactive execution.`,
+    `Use version:1, caseId, lane:"${lane}", systemId (the exact registry id), observedOutcome:"PASS", and steps. Include EVERY precondition, step and assertion in the Markdown, in order; never shorten the business flow for speed. Use only actually discovered controls and observed values. Never rely on the user's current SAP default company code: explicitly set and read back the Markdown's FTR_ENTRY-BUKRS value before the other entry fields. Likewise never rely on pre-filled Product Type / Transaction Type (FTR_ENTRY-SGSART / FTR_ENTRY-SFHAART): they are the SAP user's remembered values and read blank on another session, so fill each with the Markdown value before asserting it. Mark every Save/post/settle or other database-writing action write:true and immediately follow it with an assert marked verifiesWrite:true that reads the real success result. Capture new document numbers from SAP; never reuse the document number from authoring. Do not store credentials, cookies or machine-specific paths. Use exact spellings from docs/external-case-automation.md: GUI targets start at wnd[0]/ (no /app/con[0]/ses[0]/ prefix), GUI tab targets ending in /tabp... always use action:"tab" (never press/select), and GUI keys are numeric VKey strings ("0" Enter, "11" Save). Before using a control nested below /tabp..., include a tab action for that exact ancestor even if it was already active while authoring. Record field/value assertions without SAP's outer display padding; the runtime ignores outer whitespace and treats inner whitespace runs as one space. For an ALV/GuiGridView assertion, use source:"text", the discovered grid target and match:"contains" with an observed cell value; the runtime reads row data rather than the COM type name. A GUI status assertion can match the SAP message id/number, message text, or exact active-screen title exposed by the runtime (with match:"equals" the expected value must be exactly one of those values; use match:"contains" for partial text); never append a selected tab caption to that title. If any step cannot be represented by the supported contract, omit the plan and explain that this case still needs interactive execution.`,
     'The app validates the plan structure and creates the matching .py (GUI) or .spec.ts (web) sidecar. Do not write arbitrary Python/TypeScript code, change execution registries, or mark the case frozen. A saved plan is not evidence that a scripted regression run has passed.',
   ].join('\n\n');
 }

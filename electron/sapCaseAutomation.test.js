@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { automationPrompt, candidatePath, caseDigest, normalizePlan, publishAutomation, readAutomation, renderSidecar, sidecarPath, validatePlan } = require('./sapCaseAutomation');
+const { automationPrompt, candidatePath, completePlanFromMarkdown, caseDigest, normalizePlan, publishAutomation, readAutomation, renderSidecar, sidecarPath, validatePlan } = require('./sapCaseAutomation');
 
 const identity = { caseId: 'TC-900', lane: 'gui', systemId: 'DS4_100_NIIF' };
 const plan = { version: 1, ...identity, observedOutcome: 'PASS', steps: [
@@ -108,4 +108,20 @@ test('restores an omitted Markdown company code in an existing signed sidecar', 
       label: 'Set Company Code IDF',
     },
   ]);
+});
+
+test('types entry Product/Transaction Type that a plan only asserted as defaults', () => {
+  const asserted = (target, expected, label) => ({ action: 'assert', source: 'field', target, expected, match: 'equals', label });
+  const sgsart = 'wnd[0]/usr/ctxtFTR_ENTRY-SGSART';
+  const sfhaart = 'wnd[0]/usr/ctxtFTR_ENTRY-SFHAART';
+  const typed = { action: 'fill', target: sfhaart, value: '200', label: 'Transaction Type' };
+  const completed = completePlanFromMarkdown({ version: 1, ...identity, steps: [
+    asserted(sgsart, 'FAC', 'Product Type defaulted to FAC'),
+    typed,
+    asserted(sfhaart, '200', 'Transaction Type'),
+  ] }, '').steps;
+  assert.deepEqual(completed.map((step) => [step.action, step.target]), [
+    ['fill', sgsart], ['assert', sgsart], ['fill', sfhaart], ['assert', sfhaart],
+  ]);
+  assert.equal(completed[0].value, 'FAC');
 });
