@@ -421,6 +421,59 @@ class ExternalCaseCompatibilityTests(unittest.TestCase):
         self.assertEqual(sap.tabs, ["wnd[0]/usr/tabsMAIN/tabpMMFD01"])
         self.assertEqual(sap.controller.value, "60000000")
 
+    def test_express_information_is_acknowledged_and_recorded(self):
+        class ExpressController(_Controller):
+            def __init__(self, sap):
+                self.sap = sap
+                self.value = ""
+
+            def set_field(self, target, value):
+                if self.sap.express:
+                    return {"error": "The control could not be found by id."}
+                self.value = value
+                return {"status": "success"}
+
+            def read_field(self, target):
+                return {"value": self.value}
+
+            def get_screen_elements(self, **_kwargs):
+                return []
+
+        class ExpressSap(_Sap):
+            def __init__(self):
+                super().__init__()
+                self.express = True
+                self.keys = []
+                self.controller = ExpressController(self)
+
+            def screen(self):
+                if self.express:
+                    return {"program": "SAPMSSY0", "screen_number": "120"}
+                return {"program": "FTR_ENTRY", "screen_number": "1000"}
+
+            def popup(self):
+                return {"text": "Update successful"}
+
+            def send(self, vkey):
+                self.keys.append(vkey)
+                self.express = False
+                return {"success": True}
+
+        sap = ExpressSap()
+        plan = {"steps": [
+            {"action": "fill", "label": "Company Code", "value": "IDF",
+             "target": "wnd[0]/usr/ctxtFTR_ENTRY-BUKRS"},
+            {"action": "assert", "label": "Company Code", "source": "field",
+             "target": "wnd[0]/usr/ctxtFTR_ENTRY-BUKRS", "expected": "IDF"},
+        ]}
+
+        with tempfile.TemporaryDirectory() as directory:
+            result = execute(plan, sap, Path(directory) / "observations.json")
+
+        self.assertEqual(result["verdict"], "PASS")
+        self.assertEqual(sap.keys, [0])
+        self.assertIn("Update successful", result["deviations"][0])
+
 
 if __name__ == "__main__":
     unittest.main()
