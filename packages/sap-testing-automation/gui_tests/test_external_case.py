@@ -76,6 +76,58 @@ class ExternalCaseCompatibilityTests(unittest.TestCase):
             result = execute(plan, sap, Path(directory) / "observations.json")
         self.assertEqual(result["verdict"], "FAIL")
 
+    def test_padding_is_ignored_for_every_source_and_padding_width(self):
+        for padded in ("150,000,000.00", " 150,000,000.00", "  150,000,000.00 ",
+                       "\xa0150,000,000.00", "150,000,000.00\t"):
+            for source in ("field", "value", "text", ""):
+                class Padded(_Controller):
+                    def read_field(self, _target, value=padded):
+                        return {"value": value}
+
+                sap = _Sap()
+                sap.controller = Padded()
+                plan = {"steps": [{
+                    "action": "assert", "source": source,
+                    "target": "wnd[0]/usr/txtVTG_INVEST-XZBETR",
+                    "expected": " 150,000,000.00 ", "match": "equals",
+                    "label": "Amount round-trip",
+                }]}
+                with tempfile.TemporaryDirectory() as directory:
+                    result = execute(plan, sap, Path(directory) / "observations.json")
+                self.assertEqual(result["verdict"], "PASS", (padded, source))
+                self.assertEqual(result["assertions"][0]["observed"], padded)
+
+    def test_fill_accepts_sap_formatting_of_the_same_number_only(self):
+        class Formatted(_Controller):
+            def __init__(self, shown):
+                self.shown = shown
+
+            def set_field(self, _target, _value):
+                return {"success": True}
+
+            def read_field(self, _target):
+                return {"value": self.shown}
+
+        cases = [("150000000", " 150,000,000.00", "PASS"),
+                 ("7", "7.0000000 ", "PASS"),
+                 ("150000000", "15,000,000.00", "FAIL"),
+                 ("10C", " 10C", "PASS"),
+                 ("10C", "10", "FAIL"),
+                 ("01.10.2026", "1.10.2026", "FAIL")]
+        for sent, shown, verdict in cases:
+            sap = _Sap()
+            sap.controller = Formatted(shown)
+            plan = {"steps": [
+                {"action": "fill", "target": "wnd[0]/usr/txtVTG_INVEST-XZBETR",
+                 "value": sent, "label": "Set field"},
+            ]}
+            with tempfile.TemporaryDirectory() as directory:
+                result = execute(plan, sap, Path(directory) / "observations.json")
+            # A fill-only plan has no recorded assertion of its own, so a
+            # passing read-back still ends FAIL on "Missing assertions".
+            self.assertEqual(result["assertions"][0]["result"],
+                             "pass" if verdict == "PASS" else "fail", (sent, shown))
+
     def test_text_assertion_reads_alv_cells_instead_of_com_type_name(self):
         class GridController(_Controller):
             def read_field(self, _target):

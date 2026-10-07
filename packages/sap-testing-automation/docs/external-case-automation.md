@@ -47,9 +47,11 @@ GUI `target`s are discovered ids (`wnd[0]/...`); web `target`s are the field tit
 - GUI `key` `value`: numeric VKey as a string (`"0"` Enter, `"11"` Save, `"3"` Back, `"8"` Execute).
 - `pattern`: single-escaped regex, e.g. `"instrument (\\d+) in"` (as written in the JSON file).
 - `source:"popup"` reads the open popup's text; assert it with `contains` only, never a derived count.
-- GUI `source:"field"` and `source:"value"` comparisons ignore SAP's leading/trailing
-  display padding. Record the canonical business value (for example `100,000,000.00`);
-  punctuation, signs and decimal digits still have to match.
+- GUI comparisons ignore SAP's display padding for every source: outer whitespace is
+  dropped and inner whitespace runs compare as one space, on both the expected and the
+  observed side. Record the canonical business value (for example `100,000,000.00`);
+  punctuation, signs and decimal digits still have to match. A `fill` read-back also
+  accepts SAP's formatting of the same plain number (`150000000` as `150,000,000.00`).
 - GUI `source:"text"` on an ALV/`GuiGridView` target reads the grid's row and cell
   contents, not its COM type name. Use `match:"contains"` with an observed cell value.
 - GUI `source:"status"` exposes the SAP message id/number, message text, program / screen

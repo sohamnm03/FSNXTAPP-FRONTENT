@@ -40,6 +40,33 @@ def _status_title_matches(expected: str, actual: str) -> bool:
     return bool(title.endswith(":") and suffix)
 
 
+def _comparable(value) -> str:
+    """Text as SAP means it: no outer padding, internal whitespace runs as one."""
+    return " ".join(str(value or "").split())
+
+
+def _same_number(observed: str, sent: str) -> bool:
+    """Did SAP keep the number we typed, after reformatting it for display?
+
+    ``150000000`` reads back as ``150,000,000.00`` and ``7`` as
+    ``7.0000000``. Only plain numeric input qualifies; codes, dates and text
+    still need an exact (whitespace-normalized) match.
+    """
+    if not re.fullmatch(r"-?\d+(?:\.\d+)?-?", sent):
+        return False
+    if not re.fullmatch(r"-?[\d,]+(?:\.\d+)?-?", observed):
+        return False
+
+    def canonical(text: str) -> str:
+        negative = text.startswith("-") or text.endswith("-")
+        digits = text.strip("-").replace(",", "")
+        if "." in digits:
+            digits = digits.rstrip("0").rstrip(".")
+        return ("-" if negative else "") + (digits.lstrip("0") or "0")
+
+    return canonical(observed) == canonical(sent)
+
+
 def _short_control_id(control_id: str) -> str:
     return re.sub(r"^/app/con\[\d+\]/ses\[\d+\]/", "", str(control_id or ""))
 
@@ -196,15 +223,20 @@ def execute(plan, sap, output: Path):
         return value
 
     def assertion(expected, actual, label, match="equals", source="",
-                  fallback_target=""):
-        # SAP pads many numeric/currency fields for display. Ignore only outer
-        # whitespace for field/value comparisons; keep punctuation, sign,
-        # decimals and the original observed value intact for the run report.
-        comparable_expected = expected.strip() if source in {"field", "value"} else expected
-        comparable_actual = actual.strip() if source in {"field", "value"} else actual
+                  fallback_target="", loose_number=False):
+        # SAP pads values for display, and how much depends on the field's
+        # length and whether the screen has been processed yet, so the same
+        # plan can read "150,000,000.00" one run and " 150,000,000.00" the
+        # next. Compare whitespace-normalized text for every source; keep
+        # punctuation, sign, decimals and the original observed value intact
+        # for the run report.
+        comparable_expected = _comparable(expected)
+        comparable_actual = _comparable(actual)
         ok = (comparable_expected in comparable_actual
               if match == "contains"
               else comparable_actual == comparable_expected)
+        if not ok and loose_number:
+            ok = _same_number(comparable_actual, comparable_expected)
         if not ok and source == "status" and match == "equals":
             # The status observation joins code, message, program/screen and
             # title; an authored "equals" names exactly one of those values.
@@ -243,9 +275,11 @@ def execute(plan, sap, output: Path):
                     target, lambda candidate: sap.controller.set_field(candidate, value),
                     step["label"])
                 check_result(result)
+                # A fill sends raw input ("150000000"); SAP may already show it
+                # formatted ("150,000,000.00"), so accept the same number.
                 assertion(value, read(dict(source="field", target=target,
                                            label=step["label"])), step["label"],
-                          source="field")
+                          source="field", loose_number=True)
             elif action == "press":
                 # Compatibility for sidecars published before tab actions were
                 # normalized: GuiTab exposes select(), never press().
