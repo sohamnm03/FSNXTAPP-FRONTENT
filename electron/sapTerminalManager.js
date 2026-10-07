@@ -909,7 +909,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       run.exitCode = code;
       run.status = run.status === 'stopping' ? 'stopped' : code === 0 && !run.error ? 'completed' : 'failed';
       run.response = run.stdout.trim();
-      if (run.status === 'failed') run.error ||= run.stderr.trim() || 'Saved automation stopped. Inspect the result before retrying.';
+      if (run.status === 'failed') run.error ||= run.stdout.trim() || run.stderr.trim() || 'Saved automation stopped. Inspect the result before retrying.';
       finishExternalRun(run, externalRun, lane);
     });
     return publicRun(run);

@@ -59,14 +59,11 @@ class SystemMismatch(Exception):
 
 class TransactionRefused(Exception):
     """
-    The requested t-code is not on this workspace's allow-list.
+    The requested t-code is denied by this workspace's transaction policy.
 
     This lane imports `SAPGUIController` directly and never goes through the
-    MCP server, so the server's own blocklist/allow-list (config/sap-systems.json
-    -> scripts/sync-sap-systems.ps1 -> --allowed-transactions) does not apply
-    here on its own. This mirrors that same check independently, so SE16,
-    SE16N and SM30 (direct table maintenance) are refused in the scripted
-    lane too, not only when a model drives MCP tools.
+    MCP server, so its blocklist/allow-list does not apply here on its own.
+    This mirrors the policy from config/sap-systems.json independently.
     """
 
 
@@ -142,6 +139,7 @@ class GuiSession:
                  logon_description: str | None = None, sap_user: str | None = None,
                  sap_password: str | None = None, language: str = "EN",
                  allowed_transactions: Iterable[str] | None = None,
+                 blocked_transactions: Iterable[str] | None = None,
                  evidence_dir: Path | None = None):
         self.journal = journal
         self.expect_system = expect_system
@@ -154,6 +152,9 @@ class GuiSession:
             {_normalize_tcode(t) for t in allowed_transactions}
             if allowed_transactions else None
         )
+        self._blocked_transactions = {
+            _normalize_tcode(t) for t in (blocked_transactions or ())
+        }
         self.evidence_dir = evidence_dir or (REPO_ROOT / "evidence" / journal.system_id)
         self.controller = SAPGUIController()
         self._attached = False
@@ -308,23 +309,23 @@ class GuiSession:
 
     def start_transaction(self, tcode: str) -> dict:
         """
-        Run a t-code, refusing anything not on this workspace's allow-list.
+        Run a t-code after applying this workspace's transaction policy.
 
         This lane bypasses the MCP server (it imports `SAPGUIController`
-        directly), so the server's own blocklist/`allowedTransactions`
-        enforcement never runs here on its own. This check mirrors it, so
-        SE16, SE16N and SM30 (direct table maintenance) are refused in a
-        scripted case exactly as they would be for a model driving MCP
-        tools — never on config/sap-systems.json's word alone.
+        directly), so the server's policy never runs here on its own. This
+        check mirrors both `blockedTransactions` and the optional
+        `allowedTransactions` policy used by the MCP-driven lane.
         """
         canonical = _normalize_tcode(tcode)
+        if canonical in self._blocked_transactions:
+            raise TransactionRefused(
+                f"{canonical} is blocked by the transaction denylist "
+                f"(config/sap-systems.json)."
+            )
         if self._allowed_transactions is not None and canonical not in self._allowed_transactions:
             raise TransactionRefused(
                 f"{canonical} is not on this workspace's allowed-transactions list "
-                f"(config/sap-systems.json). Direct table maintenance (SE16, SE16N, "
-                f"SM30) is deliberately never on it. If {canonical} is genuinely "
-                f"needed, add it there and re-run scripts/sync-sap-systems.ps1 — "
-                f"never bypass this check instead."
+                f"(config/sap-systems.json)."
             )
         result = self.controller.execute_transaction(tcode)
         self.assert_dev_system(tcode)

@@ -40,22 +40,27 @@ the profile parameter `sapgui/user_scripting` and belongs to Basis.
 
 ```json
 {
-  "id": "DS4_100_NIIF",
-  "enabled": true,
-  "systemId": "DS4",
-  "client": "100",
-  "language": "EN",
-  "credentials": {
-    "user": "FS_DEV",
-    "passwordEnvVar": "SAP_DS4_100_NIIF_PASSWORD"
-  },
-  "sapGui": {
-    "enabled": true,
-    "logonDescription": "NIIF - Development",
-    "readOnly": false,
-    "profile": "full",
-    "auditLog": "logs/sap-gui-audit.jsonl"
-  }
+  "blockedTransactions": ["STMS_IMPORT", "SU53", "SE16N", "SM30", "SNOTE"],
+  "systems": [
+    {
+      "id": "DS4_100_NIIF",
+      "enabled": true,
+      "systemId": "DS4",
+      "client": "100",
+      "language": "EN",
+      "credentials": {
+        "user": "FS_DEV",
+        "passwordEnvVar": "SAP_DS4_100_NIIF_PASSWORD"
+      },
+      "sapGui": {
+        "enabled": true,
+        "logonDescription": "NIIF - Development",
+        "readOnly": false,
+        "profile": "full",
+        "auditLog": "logs/sap-gui-audit.jsonl"
+      }
+    }
+  ]
 }
 ```
 
@@ -65,7 +70,9 @@ the profile parameter `sapgui/user_scripting` and belongs to Basis.
 | `readOnly` | `true` adds `--read-only`, disabling every mutating tool |
 | `profile` | `exploration` \| `operator` \| `full` — how many tools are exposed |
 | `auditLog` | JSON-lines audit trail, repo-relative; the directory is created for you |
-| `allowedTransactions` | Optional array — whitelist mode; only these t-codes may run |
+| root `blockedTransactions` | Shared denylist inherited by NIIF, TFSIN and LTFS; every other t-code may run |
+| `sapGui.blockedTransactions` | Optional per-system replacement for the shared denylist |
+| `allowedTransactions` | Optional stricter per-system whitelist, intended for exceptional read-only systems |
 | `mcpServerName` | Optional override of the derived name |
 
 Server naming: the default system gets `sap-gui`, any other gets
@@ -144,11 +151,10 @@ attached to is left alone.
 
 ## Safety
 
-- **Blocklist, always on** — user admin, role maintenance, direct table
-  maintenance and system administration t-codes are refused, OK-code bypass
-  included. Not configurable away.
+- **Configured blocklist, always on** — the shared `blockedTransactions` list
+  is applied to every enabled SAP GUI system, with OK-code bypass included.
 - **`--read-only`** (`readOnly: true`) disables every mutating tool.
-- **`allowedTransactions`** flips to whitelist mode.
+- **`allowedTransactions`** optionally adds a stricter whitelist for a system.
 - **Save confirmation** — `sap_send_key` with `Save`/`F11` asks the MCP client to
   confirm. If the client doesn't support elicitation, the call fails rather than
   saving silently. The FSNXT desktop app drives `claude -p` headlessly (no TTY

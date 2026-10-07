@@ -145,6 +145,26 @@ const validPlan = { version: 1, caseId: 'TC-001', lane: 'gui', systemId: 'DS4_10
   { action: 'assert', label: 'Saved', source: 'status', expected: 'saved', match: 'contains', verifiesWrite: true },
 ] };
 
+test('every enabled SAP GUI system inherits the shared transaction denylist', () => {
+  const registry = JSON.parse(fs.readFileSync(path.resolve(
+    __dirname,
+    '../packages/sap-testing-automation/config/sap-systems.json',
+  ), 'utf8'));
+  assert.ok(Array.isArray(registry.blockedTransactions) && registry.blockedTransactions.length > 0);
+  assert.equal(new Set(registry.blockedTransactions).size, registry.blockedTransactions.length);
+  for (const expected of ['STMS_IMPORT', 'SU53', 'SE16N', 'SM30', 'SNOTE']) {
+    assert.ok(registry.blockedTransactions.includes(expected), `${expected} must be blocked`);
+  }
+  for (const system of registry.systems.filter((entry) => entry.enabled && entry.sapGui?.enabled)) {
+    assert.equal(system.sapGui.allowedTransactions, undefined, `${system.id} must not use whitelist mode`);
+    assert.deepEqual(
+      system.sapGui.blockedTransactions || registry.blockedTransactions,
+      registry.blockedTransactions,
+      `${system.id} must use the shared transaction denylist`,
+    );
+  }
+});
+
 test('a rejected plan is corrected by the same session with no SAP tools, then the script is saved', async (context) => {
   const { manager, calls, prep, options } = await managerFixture(context);
   const run = manager.start('Create a testcase', '', 'gui', options);

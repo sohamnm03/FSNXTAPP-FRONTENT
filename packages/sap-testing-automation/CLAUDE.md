@@ -159,14 +159,15 @@ rather than reaching for a different server.
 
 ## Safety rails already in place
 
-- **Blocklist, always on.** `SU01`, `PFCG`, `SE16N` and other admin t-codes are refused, including
-  via OK-code bypass. This is the server's own list and is not configurable away.
+- **Configured blocklist, always on.** Every t-code in the registry-level `blockedTransactions`
+  list is refused on NIIF, TFSIN and LTFS, including via OK-code bypass; all other t-codes remain accessible.
 - **Save authorization.** `sap_send_key` with `Save`/`F11` uses MCP elicitation before
   committing. For desktop testcase creation, `.claude/hooks/sap-save-confirmation.ps1`
   answers using the run's existing authorization (`FSNXT_CASE_CREATION_AUTO_SAVE=1`),
   with no popup. Other desktop runs relay the question to the app UI.
-- **`readOnly` / `allowedTransactions`** in `config/sap-systems.json` — one edit plus a regenerate
-  turns the whole server into look-but-don't-touch, or pins it to a named list of t-codes.
+- **`readOnly` / `blockedTransactions` / optional `allowedTransactions`** in
+  `config/sap-systems.json` — one edit plus a regenerate turns the server into
+  look-but-don't-touch, updates the shared denylist, or adds a stricter per-system whitelist.
 - **Audit log** at `logs/sap-gui-audit.jsonl`: every tool call, with timing and status.
 - **Generated files are guarded.** `.claude/hooks/guard-generated-files.ps1` runs as a `PreToolUse`
   hook on `Edit`/`Write` and refuses two edits that used to be rules nothing enforced: `.mcp.json`

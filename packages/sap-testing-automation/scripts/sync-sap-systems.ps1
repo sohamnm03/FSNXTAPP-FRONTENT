@@ -53,6 +53,11 @@ if (-not (Test-Path $registryPath)) {
 }
 
 $registry = Get-Content $registryPath -Raw | ConvertFrom-Json
+$defaultBlockedTransactions = if ($registry.PSObject.Properties.Name.Contains('blockedTransactions')) {
+    @($registry.blockedTransactions)
+} else {
+    @()
+}
 
 # ---------------------------------------------------------------- validation
 $errors      = New-Object System.Collections.Generic.List[string]
@@ -101,6 +106,30 @@ foreach ($sys in $registry.systems) {
             -not $gui.logonDescription) {
             $errors.Add("$ctx sapGui.enabled is true but 'logonDescription' is missing - it must match the SAP Logon Pad entry name exactly.")
         }
+        $blockedTransactions = if ($gui.PSObject.Properties.Name.Contains('blockedTransactions')) {
+            @($gui.blockedTransactions)
+        } else {
+            @($defaultBlockedTransactions)
+        }
+        $allowedTransactions = if ($gui.PSObject.Properties.Name.Contains('allowedTransactions')) {
+            @($gui.allowedTransactions)
+        } else {
+            @()
+        }
+        if ($blockedTransactions.Count -eq 0 -and $allowedTransactions.Count -eq 0) {
+            $errors.Add("$ctx sapGui.enabled is true but no transaction policy is configured - define a registry/system 'blockedTransactions' denylist or a system 'allowedTransactions' allowlist.")
+        }
+        $seenPolicyTransactions = @{}
+        foreach ($tcode in $blockedTransactions) {
+            $canonical = ([string]$tcode).Trim().ToUpperInvariant()
+            if ($canonical -notmatch '^/?[A-Z0-9_]+(?:/[A-Z0-9_]+)*$') {
+                $errors.Add("$ctx has invalid blocked transaction '$tcode'.")
+            } elseif ($seenPolicyTransactions.ContainsKey($canonical)) {
+                $errors.Add("$ctx has duplicate blocked transaction '$canonical'.")
+            } else {
+                $seenPolicyTransactions[$canonical] = $true
+            }
+        }
         if (-not $sys.enabled) {
             $errors.Add("$ctx has sapGui.enabled true but the system itself is disabled.")
         }
@@ -147,6 +176,10 @@ $guiPython = if ($env:FSNXT_PYTHON -and (Test-Path $env:FSNXT_PYTHON)) {
 } else {
     Join-Path $root 'tools\mcp-sap-gui\.venv\Scripts\python.exe'
 }
+$guiServer = Join-Path $root 'scripts\sap_gui_mcp_server.py'
+if (-not (Test-Path $guiServer)) {
+    throw "SAP GUI MCP launcher not found: $guiServer"
+}
 if (-not (Test-Path $guiPython)) {
     Write-Warn2 "SAP GUI MCP interpreter not found: $guiPython"
     Write-Warn2 "Create it with: python -m venv tools\mcp-sap-gui\.venv"
@@ -188,7 +221,7 @@ foreach ($sys in $enabled) {
     $serverNames.Add($name)
 
     $guiArgs = [System.Collections.Generic.List[string]]::new()
-    $guiArgs.Add('-m'); $guiArgs.Add('mcp_sap_gui.server')
+    $guiArgs.Add($guiServer)
 
     if ($gui.PSObject.Properties.Name.Contains('readOnly') -and $gui.readOnly) {
         $guiArgs.Add('--read-only')
@@ -212,15 +245,26 @@ foreach ($sys in $enabled) {
         foreach ($tcode in $gui.allowedTransactions) { $guiArgs.Add($tcode) }
     }
 
+    $blockedTransactions = if ($gui.PSObject.Properties.Name.Contains('blockedTransactions')) {
+        @($gui.blockedTransactions)
+    } else {
+        @($defaultBlockedTransactions)
+    }
+    $serverEnvironment = [ordered]@{
+        SAP_USER     = $sys.credentials.user
+        SAP_PASSWORD = ('${{{0}}}' -f $sys.credentials.passwordEnvVar)
+        SAP_CLIENT   = $sys.client
+        SAP_LANGUAGE = $sys.language
+    }
+    if ($blockedTransactions.Count -gt 0) {
+        $serverEnvironment['FSNXT_SAP_BLOCKED_TRANSACTIONS'] =
+            ConvertTo-Json -InputObject $blockedTransactions -Compress
+    }
+
     $servers[$name] = [ordered]@{
         command = $guiPython
         args    = @($guiArgs)
-        env     = [ordered]@{
-            SAP_USER     = $sys.credentials.user
-            SAP_PASSWORD = ('${{{0}}}' -f $sys.credentials.passwordEnvVar)
-            SAP_CLIENT   = $sys.client
-            SAP_LANGUAGE = $sys.language
-        }
+        env     = $serverEnvironment
     }
 
     $secretSet = [Environment]::GetEnvironmentVariable($sys.credentials.passwordEnvVar)

@@ -39,9 +39,31 @@ GUI `target`s are discovered ids (`wnd[0]/...`); web `target`s are the field tit
 ## Exact spelling (the app rejects anything else)
 
 - GUI `target`: `wnd[0]/usr/...` — never the `/app/con[0]/ses[0]/` prefix.
+- Always record `FTR_ENTRY-BUKRS` as an explicit verified `fill`; a repeat run must not
+  depend on the SAP user's current default company code. Existing signed sidecars that omitted
+  it are completed from the exact technical-name/value row in their matching Markdown.
+- GUI tab controls (a final id segment beginning with `tabp`) always use
+  `action:"tab"`; never encode a tab as `press` or `select`.
 - GUI `key` `value`: numeric VKey as a string (`"0"` Enter, `"11"` Save, `"3"` Back, `"8"` Execute).
 - `pattern`: single-escaped regex, e.g. `"instrument (\\d+) in"` (as written in the JSON file).
 - `source:"popup"` reads the open popup's text; assert it with `contains` only, never a derived count.
+- GUI `source:"field"` and `source:"value"` comparisons ignore SAP's leading/trailing
+  display padding. Record the canonical business value (for example `100,000,000.00`);
+  punctuation, signs and decimal digits still have to match.
+- GUI `source:"text"` on an ALV/`GuiGridView` target reads the grid's row and cell
+  contents, not its COM type name. Use `match:"contains"` with an observed cell value.
+- GUI `source:"status"` exposes the SAP message id/number, message text, program / screen
+  number, and active screen title, joined with ` | `. `equals` passes when it matches one of
+  those values exactly (e.g. the title alone); `contains` searches the whole joined text.
+  Record that title exactly as returned. For compatibility with existing cases, a recorded
+  section-qualified title such as `Create Interest Rate Instrument: Structure` also matches
+  SAP GUI's stable base title `Create Interest Rate Instrument:` only when the next recorded
+  control is present on that screen; unrelated titles and missing subscreens do not match.
+- At run time the exact recorded GUI control id is always tried first. If its container path
+  includes a tab that is not active, the runtime selects that recorded tab and tries the exact id
+  again. If the remaining container path has drifted, it may use a live control only when the same
+  SAP technical name occurs exactly once on the current screen. Missing or ambiguous controls stop
+  the run without guessing.
 
 ## Writes
 

@@ -98,7 +98,7 @@ def resolve_system(system_id: str | None) -> tuple[str, str, str, dict]:
     no way for the two lanes to disagree about what they are allowed to drive.
 
     `login info` is what `GuiSession.login()` needs to open a fresh session:
-    the SAP Logon Pad entry name, credentials, and the allow-list that
+    the SAP Logon Pad entry name, credentials, and the transaction policy that
     `start_transaction()` enforces independently of the MCP server.
     """
     registry = load_json(SYSTEMS)
@@ -135,6 +135,8 @@ def resolve_system(system_id: str | None) -> tuple[str, str, str, dict]:
         "password": os.environ.get("SAP_TEST_PASSWORD") or os.environ.get("SAP_PASSWORD") or (os.environ.get(password_env) if password_env else None),
         "language": entry.get("language", "EN"),
         "allowed_transactions": gui.get("allowedTransactions"),
+        "blocked_transactions": gui.get(
+            "blockedTransactions", registry.get("blockedTransactions")),
     }
     return sid, name, client, login_info
 
@@ -385,6 +387,7 @@ def main(argv: list[str] | None = None) -> int:
         sap_user=login_info["user"], sap_password=login_info["password"],
         language=login_info["language"],
         allowed_transactions=login_info["allowed_transactions"],
+        blocked_transactions=login_info["blocked_transactions"],
     )
     try:
         info = sap.login()
@@ -409,7 +412,7 @@ def main(argv: list[str] | None = None) -> int:
     except TransactionRefused as exc:
         blocked = True
         error_text = str(exc)
-        journal.verdict("BLOCKED", "a t-code outside the allow-list was requested — see Deviations")
+        journal.verdict("BLOCKED", "the transaction policy refused a t-code — see Deviations")
         journal.deviation(f"Transaction refused, nothing was run: {exc}")
         say(f"  BLOCKED: {exc}")
     except ComDisconnected as exc:
