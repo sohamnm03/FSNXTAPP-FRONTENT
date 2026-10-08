@@ -165,6 +165,60 @@ test('every enabled SAP GUI system inherits the shared transaction denylist', ()
   }
 });
 
+const passingObservation = {
+  verdict: 'PASS', systemConfirmed: true, writesVerified: true, session: 'DS4/100 user=TESTER',
+  assertions: [{ expected: 'Saved', observed: 'Saved', result: 'pass' }],
+  steps: [{ step: 'Save', outcome: 'ok', detail: 'Executed and checked' }],
+  documents: [{ type: 'Loan', number: '12345', leftInPlace: true }],
+};
+const failingObservation = {
+  verdict: 'FAIL', systemConfirmed: true, writesVerified: false, session: 'DS4/100 user=TESTER',
+  summary: "Product Type defaulted to FAC: expected 'FAC', observed ''",
+  assertions: [{ expected: 'Product Type defaulted to FAC: FAC', observed: '', result: 'fail' }],
+  steps: [{ step: 'Product Type defaulted to FAC', outcome: 'error', detail: 'Started; completion not yet verified' }],
+  documents: [],
+};
+
+async function until(condition, what) {
+  for (let i = 0; i < 300; i++) {
+    if (condition()) return;
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+  assert.fail(`timed out waiting for ${what}`);
+}
+
+// Drives the scripted dry run the app starts on its own: waits for the runner
+// process, writes what it observed, and lets the result archive finish.
+async function finishDryRun(calls, observation, exitCode = 0) {
+  await until(() => calls.filter((call) => call.args.includes('gui_tests.external_case')).length > finishDryRun.done, 'a dry run to start');
+  const runner = calls.filter((call) => call.args.includes('gui_tests.external_case'))[finishDryRun.done++];
+  fs.writeFileSync(path.join(runner.options.env.FSNXT_EXTERNAL_RUN_DIR, 'observations.json'), JSON.stringify(observation));
+  runner.child.emit('close', exitCode);
+  const finalizer = calls.at(-1);
+  assert.match(finalizer.args[finalizer.args.indexOf('-File') + 1], /finalize-external-run.ps1$/);
+  finalizer.child.emit('close', 0);
+  return runner;
+}
+
+async function nextRepair(calls, seen) {
+  await until(() => calls.filter((call) => call.command.endsWith('claude.exe') || call.args.includes('--resume')).length > seen, 'an AI repair');
+  return calls.filter((call) => call.command.endsWith('claude.exe') || call.args.includes('--resume'))[seen];
+}
+
+async function createCaseForLoop(context) {
+  finishDryRun.done = 0;
+  const fixture = await managerFixture(context);
+  const { manager, calls, prep, options } = fixture;
+  const run = manager.start('Create a testcase', '', 'gui', options);
+  const caseFile = path.join(prep.caseDirectory, 'TC-001-loan-gui.md');
+  fs.writeFileSync(caseFile, markdown);
+  fs.mkdirSync(path.dirname(candidatePath(caseFile)), { recursive: true });
+  fs.writeFileSync(candidatePath(caseFile), JSON.stringify(validPlan));
+  calls.at(-1).child.stdout.emit('data', Buffer.from(JSON.stringify({ result: 'Saved 12345', session_id: '00000000-0000-0000-0000-000000000002' })));
+  calls.at(-1).child.emit('close', 0);
+  return { ...fixture, run, saved: manager.getRun(run.id).createdCases[0].filePath };
+}
+
 test('a rejected plan is corrected by the same session with no SAP tools, then the script is saved', async (context) => {
   const { manager, calls, prep, options } = await managerFixture(context);
   const run = manager.start('Create a testcase', '', 'gui', options);
@@ -183,8 +237,9 @@ test('a rejected plan is corrected by the same session with no SAP tools, then t
   fs.mkdirSync(path.dirname(candidatePath(moved)), { recursive: true });
   fs.writeFileSync(candidatePath(moved), JSON.stringify(validPlan));
   repair.child.emit('close', 0);
-  await new Promise((resolve) => setTimeout(resolve, 50));
-  assert.equal(manager.getRun(run.id).status, 'completed');
+  finishDryRun.done = 0;
+  await finishDryRun(calls, passingObservation);
+  await until(() => manager.getRun(run.id).status === 'completed', 'the case to complete');
   assert.ok(fs.existsSync(moved.replace(/.md$/, '.py')));
 });
 
@@ -216,8 +271,12 @@ test('creation carries scoped Save authorization and persists Markdown without r
   fs.writeFileSync(candidatePath(caseFile), JSON.stringify(validPlan));
   call.child.stdout.emit('data', Buffer.from(JSON.stringify({ result: 'Saved 12345', session_id: 'session' })));
   call.child.emit('close', 0);
+  // The new case is dry-run immediately; the run only completes after it passes.
+  assert.equal(manager.getRun(run.id).status, 'finalizing');
+  finishDryRun.done = 0;
+  await finishDryRun(calls, passingObservation);
+  await until(() => manager.getRun(run.id).status === 'completed', 'the case to complete');
   const finished = manager.getRun(run.id);
-  assert.equal(finished.status, 'completed');
   assert.equal(finished.createdCases.length, 1);
   const saved = finished.createdCases[0].filePath;
   assert.equal(saved, path.join(prep.caseDirectory, 'TC_001_FTR_CREATE_Saved_loan', 'TC-001-loan-gui.md'));
@@ -230,6 +289,62 @@ test('creation carries scoped Save authorization and persists Markdown without r
   assert.equal(calls.at(-1).options.env.FSNXT_CASE_CREATION_AUTO_SAVE, '0');
   assert.equal(calls.at(-1).args[calls.at(-1).args.indexOf('--permission-mode') + 1], 'auto');
   assert.equal(calls.at(-1).args.includes('--allowedTools'), false);
+});
+
+test('a failing dry run is repaired by the AI and the loop ends on the first pass', async (context) => {
+  const { manager, calls, run, saved } = await createCaseForLoop(context);
+  assert.equal(manager.getRun(run.id).status, 'finalizing');
+  await finishDryRun(calls, failingObservation, 1);
+  const repair = await nextRepair(calls, 1);
+  assert.equal(repair.args[repair.args.indexOf('--resume') + 1], '00000000-0000-0000-0000-000000000002');
+  assert.equal(repair.args.some((arg) => String(arg).includes('mcp__')), false);
+  assert.match(repair.args[repair.args.indexOf('-p') + 1], /Product Type defaulted to FAC/);
+  const repaired = { ...validPlan, steps: [{ action: 'key', label: 'Enter', value: '0' }, ...validPlan.steps] };
+  fs.writeFileSync(candidatePath(saved), JSON.stringify(repaired));
+  repair.child.stdout.emit('data', Buffer.from(JSON.stringify({ result: 'Added an Enter step so SAP derives the value.' })));
+  repair.child.emit('close', 0);
+  await finishDryRun(calls, passingObservation);
+  await until(() => manager.getRun(run.id).status === 'completed', 'the case to complete');
+  const done = manager.getRun(run.id);
+  assert.match(done.response, /Test case creation succeeded — the saved automation passed dry run 2 of 3/);
+  assert.equal(done.error, '');
+  assert.equal(done.createdCases[0].verification.status, 'passed');
+  assert.match(fs.readFileSync(saved.replace(/.md$/, '.py'), 'utf8'), /FSNXT-AUTOMATION-V1/);
+  assert.match(fs.readFileSync(path.join(path.dirname(saved), 'verification-log.md'), 'utf8'), /PASSED/);
+  assert.equal(calls.filter((call) => call.args.includes('gui_tests.external_case')).length, 2);
+});
+
+test('three failed dry runs end the loop, report failure and keep the draft', async (context) => {
+  const { manager, calls, run, saved } = await createCaseForLoop(context);
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    await finishDryRun(calls, failingObservation, 1);
+    if (attempt === 3) break;
+    const repair = await nextRepair(calls, attempt);
+    fs.writeFileSync(candidatePath(saved), JSON.stringify({ ...validPlan, steps: [{ action: 'key', label: `Attempt ${attempt}`, value: '0' }, ...validPlan.steps] }));
+    repair.child.emit('close', 0);
+  }
+  await until(() => manager.getRun(run.id).status === 'failed', 'the case to be reported as failed');
+  const done = manager.getRun(run.id);
+  assert.match(done.response, /Test case creation failed/);
+  assert.match(done.error, /test case creation failed after 3 dry run/);
+  assert.equal(calls.filter((call) => call.args.includes('gui_tests.external_case')).length, 3);
+  assert.equal(calls.filter((call) => call.args.includes('--resume') && !call.args.includes('gui_tests.external_case')).length, 2, 'no repair follows the last dry run');
+  assert.ok(fs.existsSync(saved), 'the draft Markdown is kept');
+  assert.ok(fs.existsSync(saved.replace(/.md$/, '.py')), 'the draft script is kept');
+  assert.match(fs.readFileSync(path.join(path.dirname(saved), 'verification-log.md'), 'utf8'), /FAILED/);
+  assert.equal(done.createdCases[0].verification.status, 'failed');
+});
+
+test('the loop stops early when the AI proposes no change', async (context) => {
+  const { manager, calls, run, saved } = await createCaseForLoop(context);
+  await finishDryRun(calls, failingObservation, 1);
+  const repair = await nextRepair(calls, 1);
+  repair.child.stdout.emit('data', Buffer.from(JSON.stringify({ result: 'SAP was not logged on; nothing to change.' })));
+  repair.child.emit('close', 0);
+  await until(() => manager.getRun(run.id).status === 'failed', 'the case to be reported as failed');
+  assert.equal(calls.filter((call) => call.args.includes('gui_tests.external_case')).length, 1);
+  assert.match(manager.getRun(run.id).response, /SAP was not logged on/);
+  assert.ok(fs.existsSync(saved.replace(/.md$/, '.py')), 'the original script stays valid');
 });
 
 const successfulObservation = {

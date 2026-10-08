@@ -12,6 +12,26 @@ when creating a case — temporary, deleted by the app, never a deliverable; `au
 The app validates it and renders the `.py` / `.spec.ts`. A failed, blocked or partial run
 produces no plan. Never reuse a document number from authoring; capture it.
 
+## Automatic dry run after creation
+
+Once a created case has its Markdown and script, the app immediately dry-runs it through
+the same runner as Confirm & Run. The steps you authored are not changed up front. If a run
+fails, you are resumed with the failure evidence (failed assertions, steps that did not
+complete, deviations, console tail) and **no SAP tools**; edit the plan seeded at the path
+named in that prompt, and the Markdown only where the documented flow was wrong. The app
+re-validates and republishes the script, then dry-runs again.
+
+- At most **3 dry runs** per case; a repair follows each failed run except the last.
+- The loop ends at the first pass, after the third run, or when a repair changes nothing.
+- A dry run executes the case's real writes, so each run (including a failed one that got as
+  far as Save) can create another document on the system. Document numbers are listed in
+  `verification-log.md`.
+- Pass: the creation reports success. Otherwise it reports failure, keeps the latest
+  Markdown and script as a draft, and writes `verification-log.md` beside them.
+- Never weaken or drop an assertion, remove a write or its verification, or add writes to
+  make a run pass. Environmental failures (SAP not logged on, wrong system) and product
+  defects are reported, not worked around.
+
 ## Plan shape
 
 ```json

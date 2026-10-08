@@ -9,6 +9,11 @@ const { automationPrompt, candidatePath, clearCandidate, caseDigest, publishAuto
 
 const FINAL_STATUSES = new Set(['completed', 'failed', 'stopped']);
 const CONFIRMATION_TTL_MS = 10 * 60 * 1000;
+// Authoring ends with up to this many automatic dry runs of the new case; the AI
+// repairs the Markdown/plan between runs (so at most MAX - 1 repairs).
+const MAX_VERIFY_ATTEMPTS = 3;
+const VERIFY_POLL_MS = 100;
+const VERIFY_ATTEMPT_TIMEOUT_MS = 30 * 60 * 1000;
 const DISPLAY_GUIDANCE = [
   'You are running inside the FSNXT SAP Testing desktop application.',
   'Keep user-facing responses functional and concise.',
@@ -828,6 +833,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
   run.status = 'finalizing';
   try {
     const result = writeExternalResult(externalRun, execution);
+    run.verdict = result.verdict;
     if (!externalRun.automation && result.verdict === 'PASS' && externalRun.filePath) {
       try {
         if (caseDigest(fs.readFileSync(externalRun.filePath, 'utf8')) === caseDigest(externalRun.content)) {
@@ -897,7 +903,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       : electronApp.isPackaged ? path.join(process.resourcesPath, 'sap-web-runtime', 'node.exe') : 'node';
     const args = lane === 'gui' ? ['-m', 'gui_tests.external_case']
       : [path.join(projectRoot, 'web-tests', 'node_modules', '@playwright-sap', 'test', 'cli.js'), 'test', '--config', 'external-case.config.ts'];
-    const run = { id, status: 'running', source: 'direct', response: '', sessionId: '', error: '', stdout: '', stderr: '', exitCode: null, process: null };
+    const run = { id, status: 'running', source: 'direct', response: '', sessionId: '', error: '', stdout: '', stderr: '', exitCode: null, process: null, workRoot: externalRun.workRoot };
     const child = spawn(command, args, { cwd: lane === 'gui' ? projectRoot : path.join(projectRoot, 'web-tests'), env, windowsHide: true, shell: false, stdio: ['ignore', 'pipe', 'pipe'] });
     run.process = child;
     runs.set(id, run);
@@ -1345,6 +1351,173 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
           else run.response += `\n${created.caseId}: automation script saved beside the testcase (${path.basename(created.automationFile)}).`;
         }
       }
+      const { setTimeout: sleep } = require('timers/promises');
+
+      function readObservations(workRoot) {
+        try { return JSON.parse(fs.readFileSync(path.join(workRoot, 'observations.json'), 'utf8').replace(/^﻿/, '')); } catch { return null; }
+      }
+
+      function failureEvidence(observations, attemptRun) {
+        const lines = [];
+        if (observations) {
+          if (observations.summary) lines.push(`Runner summary: ${observations.summary}`);
+          const failed = (observations.assertions || []).filter((row) => row?.result !== 'pass');
+          failed.forEach((row) => lines.push(`Failed assertion: ${row.expected} | observed: ${row.observed}`));
+          const steps = observations.steps || [];
+          lines.push(`Steps: ${steps.filter((row) => row?.outcome === 'ok').length} of ${steps.length} recorded steps completed.`);
+          steps.filter((row) => row?.outcome !== 'ok').forEach((row) => lines.push(`Step that did not complete: ${row.step} (${row.outcome}) ${row.detail || ''}`));
+          (observations.deviations || []).forEach((row) => lines.push(`Deviation: ${row}`));
+          (observations.documents || []).forEach((row) => lines.push(`Document written before the stop: ${row.type} ${row.number}`));
+        } else {
+          lines.push('The runner produced no readable observation record.');
+        }
+        const tail = `${attemptRun.stderr || ''}\n${attemptRun.stdout || ''}`.trim().slice(-2000);
+        if (tail) lines.push(`Runner console tail:\n${tail}`);
+        return lines.join('\n');
+      }
+
+      // One scripted dry run of the freshly created case, through the same
+      // runner a user's Confirm & Run uses. Resolves with its verdict and evidence.
+      async function runScriptedAttempt(created, identity) {
+        const content = fs.readFileSync(created.filePath, 'utf8');
+        const automation = readAutomation(created.filePath, content, identity);
+        if (!automation) return { verdict: 'BLOCKED', summary: 'The saved automation does not match the testcase.', evidence: '' };
+        let started;
+        try {
+          started = startScriptedExternalCase({
+            lane, caseId: created.caseId, systemId: identity.systemId, credentials: null,
+            summary: created.summary, writes: created.writes,
+            external: { content, systemId: identity.systemId, filePath: created.filePath, automation },
+          });
+        } catch (error) {
+          return { verdict: 'BLOCKED', summary: error.message, evidence: '' };
+        }
+        const attemptRun = runs.get(started.id);
+        run.process = attemptRun.process;
+        const deadline = Date.now() + VERIFY_ATTEMPT_TIMEOUT_MS;
+        while (!FINAL_STATUSES.has(attemptRun.status)) {
+          if (Date.now() > deadline) {
+            attemptRun.process?.kill();
+            attemptRun.error ||= 'The dry run did not finish in time and was stopped.';
+            attemptRun.status = 'failed';
+            break;
+          }
+          await sleep(VERIFY_POLL_MS);
+        }
+        run.process = null;
+        const observations = readObservations(attemptRun.workRoot);
+        return {
+          verdict: attemptRun.verdict || 'FAIL',
+          summary: observations?.summary || attemptRun.error || 'The dry run failed.',
+          evidence: failureEvidence(observations, attemptRun),
+          resultPath: attemptRun.resultPath || '',
+          documents: (observations?.documents || []).map((row) => `${row.type} ${row.number}`),
+        };
+      }
+
+      // The creation session sees the failure evidence and repairs the Markdown and/or
+      // the plan. No SAP tool is granted: the repair works from what was observed.
+      async function repairFromDryRun(created, identity, attempt, outcome) {
+        const markdownBefore = fs.readFileSync(created.filePath, 'utf8');
+        const current = readAutomation(created.filePath, markdownBefore, identity);
+        if (!current) return { changed: false, note: 'The saved automation could not be read back.' };
+        const destination = candidatePath(created.filePath);
+        const seeded = JSON.stringify(current.plan, null, 2);
+        fs.mkdirSync(path.dirname(destination), { recursive: true });
+        fs.writeFileSync(destination, seeded, 'utf8');
+        const prompt = [
+          `The testcase ${created.filePath} was just created and its saved repeat-run automation failed automatic dry run ${attempt} of ${MAX_VERIFY_ATTEMPTS}. Verdict: ${outcome.verdict}.`,
+          `Evidence from the dry run:\n${outcome.evidence || outcome.summary}`,
+          `The current plan is at ${destination}. Edit that plan so the next dry run passes, and edit the Markdown ${created.filePath} only where the documented flow or expected values were wrong or must stay consistent with the plan.`,
+          'Do NOT use any SAP tool and do not perform any SAP action; work only from what you observed while creating this case and from the evidence above. Fix the cause, not the symptom: add a missing step (for example key "0" so SAP derives a value, a tab step, an explicit fill for a value SAP only remembers per user), or correct a control id or expected value the evidence proves wrong. Never weaken or delete an assertion to make it pass, never remove a write or its verification, and never add database writes beyond this case. If the failure is environmental (SAP not logged on, wrong system, data already used) or a genuine product defect, change nothing and say why.',
+          'Reply with one short paragraph saying what you changed and why.',
+          automationPrompt(lane, destination),
+        ].join('\n\n');
+        const args = ['-p', prompt, '--output-format', 'json', '--permission-mode', 'dontAsk',
+          '--add-dir', creationDirectory, '--allowedTools', claudeAbsoluteEditRule(creationDirectory)];
+        if (run.sessionId) args.push('--resume', run.sessionId);
+        let note = '';
+        await new Promise((resolve) => {
+          const repair = spawn(claudePath, args, {
+            cwd: projectRoot, env: claudeEnvironment(oauthToken, run.id, caseCreation, lane, externalRun),
+            windowsHide: true, shell: false, stdio: ['ignore', 'pipe', 'ignore'],
+          });
+          run.process = repair;
+          let out = '';
+          repair.stdout?.on('data', (chunk) => { out += chunk.toString('utf8'); });
+          const done = () => { note = parseClaudeResult(out, '').response || ''; resolve(); };
+          repair.once('error', done);
+          repair.once('close', done);
+        });
+        run.process = null;
+        const markdownAfter = fs.readFileSync(created.filePath, 'utf8');
+        const candidate = fs.existsSync(destination) ? fs.readFileSync(destination, 'utf8') : seeded;
+        const changed = markdownAfter !== markdownBefore || candidate !== seeded;
+        try {
+          if (!publishAutomation(created.filePath, identity)) throw new Error('No passing automation plan was written.');
+        } catch (error) {
+          // Never leave the case without a valid script: put the previous version back.
+          fs.writeFileSync(created.filePath, markdownBefore, 'utf8');
+          fs.writeFileSync(destination, seeded, 'utf8');
+          publishAutomation(created.filePath, identity);
+          return { changed: false, note: `The proposed repair was not accepted (${error.message}) and was discarded.` };
+        }
+        return { changed, note: note || (changed ? 'Repair applied.' : 'No change was proposed.') };
+      }
+
+      function recordVerification(created, identity, attempts, passed) {
+        created.verification = { status: passed ? 'passed' : 'failed', attempts: attempts.length };
+        const log = [
+          `# ${created.caseId} verification — ${passed ? 'PASSED' : 'FAILED'}`, '',
+          passed ? `The saved automation passed dry run ${attempts.length} of ${MAX_VERIFY_ATTEMPTS}.`
+            : `The saved automation did not pass within ${MAX_VERIFY_ATTEMPTS} dry runs. The Markdown and script beside this file are the latest draft, kept for reference.`,
+          '',
+          ...attempts.flatMap((entry) => [
+            `## Dry run ${entry.attempt}: ${entry.verdict}`, '', entry.summary || '',
+            ...(entry.documents?.length ? ['', `Documents written: ${entry.documents.join(', ')}`] : []),
+            ...(entry.evidence ? ['', '```', entry.evidence, '```'] : []),
+            ...(entry.fix ? ['', `AI repair: ${entry.fix}`] : []), '',
+          ]),
+        ].join('\n');
+        try { fs.writeFileSync(path.join(path.dirname(created.filePath), 'verification-log.md'), log, 'utf8'); } catch { /* the draft itself is already saved */ }
+        try {
+          const manifest = externalManifest();
+          const entry = manifest.cases[externalCaseKey(lane, created.caseId)];
+          if (entry) { entry.verification = created.verification; writeJsonFile(externalCasesManifestPath(), manifest); }
+        } catch { /* the manifest is refreshed on the next creation */ }
+      }
+
+      // TC created -> dry run -> (fail -> AI repair -> dry run) ... at most
+      // MAX_VERIFY_ATTEMPTS dry runs; stops at the first pass.
+      async function verifyCreatedCases(run) {
+        for (const created of run.createdCases || []) {
+          if (!created.automationFile) continue;
+          const identity = { caseId: created.caseId, lane, systemId: caseCreation.systemId };
+          const attempts = [];
+          let passed = false;
+          for (let attempt = 1; attempt <= MAX_VERIFY_ATTEMPTS && !passed; attempt++) {
+            run.response += `\n${created.caseId}: dry run ${attempt} of ${MAX_VERIFY_ATTEMPTS} started.`;
+            const outcome = await runScriptedAttempt(created, identity);
+            const entry = { attempt, ...outcome };
+            attempts.push(entry);
+            if (outcome.verdict === 'PASS') { passed = true; break; }
+            run.response += `\n${created.caseId}: dry run ${attempt} ${outcome.verdict} — ${outcome.summary}`;
+            if (attempt === MAX_VERIFY_ATTEMPTS) break;
+            run.response += `\n${created.caseId}: the AI Assistant is checking how to fix it.`;
+            const repaired = await repairFromDryRun(created, identity, attempt, outcome);
+            entry.fix = repaired.note;
+            run.response += `\n${created.caseId}: ${repaired.note}`;
+            if (!repaired.changed) break;
+          }
+          recordVerification(created, identity, attempts, passed);
+          if (passed) {
+            run.response += `\n${created.caseId}: Test case creation succeeded — the saved automation passed dry run ${attempts.length} of ${MAX_VERIFY_ATTEMPTS}.`;
+          } else {
+            run.response += `\n${created.caseId}: Test case creation failed — the automation did not pass a dry run. The latest draft is saved at ${created.filePath} with verification-log.md for reference.`;
+            run.error = [run.error, `${created.caseId}: test case creation failed after ${attempts.length} dry run(s); draft retained with verification-log.md.`].filter(Boolean).join('\n');
+          }
+        }
+      }
       child.once('error', (error) => {
         if (!externalRun) run.status = 'failed';
         run.error = error.code === 'ENOENT'
@@ -1379,10 +1552,17 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
             // A case must leave with its script. If the plan was missing or rejected, the
             // same AI session (no SAP tools, no new writes) corrects the plan from what it observed.
             const missing = run.createdCases.filter((created) => !created.automationFile);
-            if (missing.length && !(run.status === 'completed' && run.sessionId)) missing.forEach((created) => clearCandidate(created.filePath));
-            if (missing.length && run.status === 'completed' && run.sessionId) {
+            const canRepair = run.status === 'completed' && Boolean(run.sessionId);
+            if (missing.length && !canRepair) missing.forEach((created) => clearCandidate(created.filePath));
+            // Every case that has a script is then dry-run immediately; a failing run
+            // hands the evidence to the AI, which repairs the case before the next run.
+            if (run.status === 'completed' && ((missing.length && canRepair) || run.createdCases.some((created) => created.automationFile))) {
               run.status = 'finalizing';
-              repairAutomation(run, missing).finally(() => { run.status = run.error ? 'failed' : 'completed'; });
+              (async () => {
+                if (missing.length && canRepair) await repairAutomation(run, missing);
+                await verifyCreatedCases(run);
+              })().catch((error) => { run.error = [run.error, `Testcase verification stopped: ${error.message}`].filter(Boolean).join('\n'); })
+                .finally(() => { run.status = run.error ? 'failed' : 'completed'; });
             }
           } catch (error) {
             run.error = `The testcase remains in the selected folder but could not be registered: ${error.message}`;
