@@ -62,10 +62,14 @@ function buildDevelopmentMcpRuntime() {
   // electron-builder excludes directories named node_modules even inside
   // extraResources. Stage the complete dependency tree under `modules` and
   // provide it through NODE_PATH at runtime.
+  // Links are skipped: npm can leave one pointing back at this repository (for
+  // example after `npm install --prefix` from the repo root), and recreating it
+  // needs admin rights on Windows and would pull the whole repo into the app.
+  // The MCP server's own packages are plain folders.
   fs.cpSync(
     path.join(developmentMcpSource, 'node_modules'),
     path.join(developmentMcpBuildRoot, 'modules'),
-    { recursive: true },
+    { recursive: true, filter: (source) => !fs.lstatSync(source).isSymbolicLink() },
   );
 
   const packagedInterface = path.join(
