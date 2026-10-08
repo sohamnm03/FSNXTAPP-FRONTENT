@@ -245,8 +245,8 @@
           "and never stored; SAP_LFD_100_LTFS_PASSWORD is only a fallback for unattended runs."
         ],
 
-        "systemId": "LFD",
-        "client": "100",
+        "systemId": "LFS",
+        "client": "400",
         "language": "EN",
 
         "credentials": {
@@ -257,13 +257,13 @@
         "sapGui": {
           "enabled": true,
           "mcpServerName": "sap-gui-lfd-100-ltfs",
-          "logonDescription": "LTFH -Dev",
+          "logonDescription": "LTFS - S4 HANA Sandbox",
           "readOnly": false,
           "profile": "full"
         },
 
         "rfc": {
-          "applicationServer": "172.30.90.76",
+          "applicationServer": "172.30.90.55",
           "systemNumber": "00"
         }
       }
