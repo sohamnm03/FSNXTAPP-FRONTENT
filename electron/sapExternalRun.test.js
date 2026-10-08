@@ -107,3 +107,18 @@ function Send-ArchiveLog {
   assert.equal(listing.status, 0, listing.stderr);
   for (const file of ['dashboard.html', 'observations.json', 'run.json', 'case.md', 'evidences/save.png']) assert.ok(listing.stdout.replace(/\\/g, '/').includes(file), file);
 });
+
+test('a read-only case passes without a document even when its writes text mentions saving', (context) => {
+  const { run } = fixture(context);
+  const execution = { status: 'completed', response: 'Finished', error: '' };
+  const readOnly = { ...observation, documents: [] };
+  fs.writeFileSync(path.join(run.workRoot, 'observations.json'), JSON.stringify(readOnly));
+  // A saved script with no write step decides it, whatever the header says.
+  const scripted = { ...run, writes: 'None — display only; nothing is created or saved', automation: { plan: { steps: [{ action: 'assert', label: 'Shown' }] } } };
+  assert.equal(writeExternalResult(scripted, execution).verdict, 'PASS');
+  // An AI-driven run reads the header; one that opens with "None" is read-only.
+  assert.equal(writeExternalResult({ ...run, writes: 'None — nothing is created or saved' }, execution).verdict, 'PASS');
+  // A script that does write still needs its document number.
+  const writing = { ...run, automation: { plan: { steps: [{ action: 'key', label: 'Save', write: true }] } } };
+  assert.equal(writeExternalResult(writing, execution).verdict, 'PARTIAL');
+});

@@ -1432,7 +1432,11 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
           verdict: attemptRun.verdict || (runnerPassed ? 'PASS' : 'FAIL'),
           started: reachedCase,
           problems,
-          summary: plainText(reachedCase ? observations.summary : consoleReason(attemptRun) || observations?.summary || attemptRun.error).trim() || 'The dry run failed.',
+          // When the runner itself reported PASS but the app's result check did not,
+          // say why (attemptRun.error) instead of repeating the runner's "all passed".
+          summary: plainText(reachedCase
+            ? (observations.verdict === 'PASS' && attemptRun.verdict !== 'PASS' && attemptRun.error ? attemptRun.error : observations.summary)
+            : consoleReason(attemptRun) || observations?.summary || attemptRun.error).trim() || 'The dry run failed.',
           evidence: failureEvidence(observations, attemptRun),
           resultPath: attemptRun.resultPath || '',
           documents: (observations?.documents || []).map((row) => `${row.type} ${row.number}`),

@@ -43,7 +43,14 @@ function writeExternalResult(run, execution) {
   const assertions = rows('assertions').map((row) => ({ ...row, observed: row.observed ?? 'NOT OBSERVED', result: row.observed == null || row.observed === 'NOT OBSERVED' ? 'NOT OBSERVED' : row.result }));
   const steps = rows('steps');
   const documents = rows('documents');
-  const missingDocument = /\b(?:creat\w*|sav\w*)\b/i.test(run.writes)
+  // A saved script says exactly whether the case writes (a step marked write:true);
+  // only an AI-driven run falls back to reading the "Writes to the database" text,
+  // and a header that opens with No/None ("None — nothing is created") is read-only.
+  const planSteps = run.automation?.plan?.steps;
+  const expectsDocument = Array.isArray(planSteps)
+    ? planSteps.some((step) => step?.write === true)
+    : /\b(?:creat\w*|sav\w*)\b/i.test(run.writes) && !/^\W*(?:no|none|n\/a|read[- ]only)\b/i.test(String(run.writes || ''));
+  const missingDocument = expectsDocument
     && !documents.some((row) => row.number && row.number !== 'NOT OBSERVED');
   let verdict = ['PASS', 'FAIL', 'BLOCKED', 'PARTIAL'].includes(observed.verdict) ? observed.verdict : 'BLOCKED';
   if (execution.status !== 'completed') verdict = execution.status === 'stopped' ? 'PARTIAL' : 'FAIL';
