@@ -205,11 +205,11 @@ async function nextRepair(calls, seen) {
   return calls.filter((call) => call.command.endsWith('claude.exe') || call.args.includes('--resume'))[seen];
 }
 
-async function createCaseForLoop(context) {
+async function createCaseForLoop(context, extra = {}) {
   finishDryRun.done = 0;
   const fixture = await managerFixture(context);
   const { manager, calls, prep, options } = fixture;
-  const run = manager.start('Create a testcase', '', 'gui', options);
+  const run = manager.start('Create a testcase', '', 'gui', { ...options, ...extra });
   const caseFile = path.join(prep.caseDirectory, 'TC-001-loan-gui.md');
   fs.writeFileSync(caseFile, markdown);
   fs.mkdirSync(path.dirname(candidatePath(caseFile)), { recursive: true });
@@ -344,9 +344,49 @@ test('the loop stops early when the AI proposes no change', async (context) => {
   repair.child.emit('close', 0);
   await until(() => manager.getRun(run.id).status === 'failed', 'the case to be reported as failed');
   assert.equal(calls.filter((call) => call.args.includes('gui_tests.external_case')).length, 1);
-  assert.match(manager.getRun(run.id).response, /SAP was not logged on/);
+  assert.match(manager.getRun(run.id).response, /No fix found\./);
   assert.match(manager.getRun(run.id).response, /Test case creation failed/);
+  assert.match(fs.readFileSync(path.join(path.dirname(saved), 'verification-log.md'), 'utf8'), /SAP was not logged on/);
   assert.ok(fs.existsSync(saved.replace(/.md$/, '.py')), 'the original script stays valid');
+});
+
+test('the dry run logs on with the SAP credentials typed for the creation run', async (context) => {
+  const { manager, calls, run } = await createCaseForLoop(context, { dryRunCredentials: { username: ' TESTER ', password: 'secret' } });
+  const creation = calls[0];
+  assert.equal(creation.options.env.SAP_TEST_PASSWORD, undefined, 'the AI Assistant never receives the password');
+  assert.equal(JSON.stringify(manager.getRun(run.id)).includes('secret'), false);
+  const runner = await finishDryRun(calls, passingObservation);
+  assert.equal(runner.options.env.SAP_TEST_USERNAME, 'TESTER');
+  assert.equal(runner.options.env.SAP_TEST_PASSWORD, 'secret');
+  assert.equal(runner.options.env.PYTHON_COLORS, '0');
+  await until(() => manager.getRun(run.id).status === 'completed', 'the case to complete');
+});
+
+test('a dry run that never reaches the case is reported plainly and not sent to the AI', async (context) => {
+  const { manager, calls, run } = await createCaseForLoop(context);
+  await until(() => calls.some((call) => call.args.includes('gui_tests.external_case')), 'a dry run to start');
+  const runner = calls.find((call) => call.args.includes('gui_tests.external_case'));
+  fs.writeFileSync(path.join(runner.options.env.FSNXT_EXTERNAL_RUN_DIR, 'observations.json'), JSON.stringify({ verdict: 'BLOCKED', steps: [], assertions: [] }));
+  runner.child.stderr.emit('data', Buffer.from('Traceback (most recent call last):\n  File \u001b[35m"session.py"\u001b[0m, line 182\n    \u001b[31mraise SystemMismatch(\u001b[0m\n\u001b[1;35mgui_tests.session.SystemMismatch\u001b[0m: \u001b[35mlogin() needs logon_description, sap_user and sap_password\u001b[0m\n'));
+  runner.child.emit('close', 1);
+  calls.at(-1).child.emit('close', 0);
+  await until(() => manager.getRun(run.id).status === 'failed', 'the case to be reported as failed');
+  const done = manager.getRun(run.id);
+  assert.match(done.response, /dry run 1 could not start — SystemMismatch: login\(\) needs logon_description, sap_user and sap_password/);
+  assert.doesNotMatch(done.response, /\u001b|Traceback/);
+  assert.equal(calls.filter((call) => call.args.includes('--resume')).length, 0, 'no AI repair for a run that never reached the case');
+});
+
+test('an AI repair can only edit the case folder', async (context) => {
+  const { manager, run, calls, saved, prep } = await createCaseForLoop(context);
+  await finishDryRun(calls, failingObservation, 1);
+  const repair = await nextRepair(calls, 1);
+  const caseFolder = path.dirname(saved);
+  assert.equal(repair.args[repair.args.indexOf('--add-dir') + 1], caseFolder);
+  assert.ok(repair.args.includes(absoluteEditRule(caseFolder)));
+  assert.equal(repair.args.includes(absoluteEditRule(prep.caseDirectory)), false);
+  repair.child.emit('close', 0);
+  await until(() => manager.getRun(run.id).status === 'failed', 'the loop to end');
 });
 
 const successfulObservation = {

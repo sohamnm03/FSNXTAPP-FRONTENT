@@ -892,6 +892,8 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       ...projectLocalEnv(), SAP_SYSTEM_ID: proposal.systemId,
       FSNXT_AUTOMATION_PLAN: planFile, FSNXT_EXTERNAL_RUN_DIR: externalRun.workRoot,
       FSNXT_AUTOMATION_APPROVED: '1', FSNXT_RUN_ID: id,
+      // Plain console text: the tail can be shown to the user and handed to the AI.
+      NO_COLOR: '1', FORCE_COLOR: '0', PYTHON_COLORS: '0',
       FSNXT_EXTERNAL_CASE_RUNTIME: require('url').pathToFileURL(path.join(projectRoot, 'web-tests', 'external-case.ts')).href,
       ...(proposal.credentials ? (lane === 'gui'
         ? { SAP_TEST_USERNAME: proposal.credentials.username, SAP_TEST_PASSWORD: proposal.credentials.password }
@@ -1247,6 +1249,10 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       if (previousSessionId && !/^[0-9a-f-]{36}$/i.test(previousSessionId)) throw new Error('The AI Assistant session is invalid. Start a new chat.');
       if (!['gui', 'web'].includes(lane)) throw new Error('Select SAP GUI or Fiori / WebGUI testing.');
       const caseCreation = options?.caseCreation || null;
+      // Only for the automatic dry run after creation; never written anywhere.
+      const dryRunCredentials = typeof options?.dryRunCredentials?.username === 'string' && options.dryRunCredentials.username.trim()
+        && typeof options.dryRunCredentials.password === 'string' && options.dryRunCredentials.password
+        ? { username: options.dryRunCredentials.username.trim(), password: options.dryRunCredentials.password } : null;
       const caseCreationSystem = caseCreation ? configuredConnectionCheckSystem(caseCreation.systemId) : null;
       if ([...runs.values()].some((run) => !FINAL_STATUSES.has(run.status))) {
         throw new Error('Another SAP request is already running. Wait for it to finish or stop it first.');
@@ -1356,6 +1362,14 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         try { return JSON.parse(fs.readFileSync(path.join(workRoot, 'observations.json'), 'utf8').replace(/^﻿/, '')); } catch { return null; }
       }
 
+      const plainText = (text) => String(text || '').replace(/\u001b\[[0-9;]*[A-Za-z]/g, '');
+      // The last meaningful console line, e.g. "SystemMismatch: login() needs ...".
+      function consoleReason(attemptRun) {
+        const lines = plainText(`${attemptRun.stderr || ''}\n${attemptRun.stdout || ''}`).split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+        const last = lines.reverse().find((line) => !/^[~^\s]+$/.test(line)) || '';
+        return last.replace(/^[\w.]+\.(\w+(?:Error|Exception|Mismatch|Refused|Exit)\b)/, '$1').slice(0, 300);
+      }
+
       function failureEvidence(observations, attemptRun) {
         const lines = [];
         if (observations) {
@@ -1370,7 +1384,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         } else {
           lines.push('The runner produced no readable observation record.');
         }
-        const tail = `${attemptRun.stderr || ''}\n${attemptRun.stdout || ''}`.trim().slice(-2000);
+        const tail = plainText(`${attemptRun.stderr || ''}\n${attemptRun.stdout || ''}`).trim().slice(-2000);
         if (tail) lines.push(`Runner console tail:\n${tail}`);
         return lines.join('\n');
       }
@@ -1380,16 +1394,16 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       async function runScriptedAttempt(created, identity) {
         const content = fs.readFileSync(created.filePath, 'utf8');
         const automation = readAutomation(created.filePath, content, identity);
-        if (!automation) return { verdict: 'BLOCKED', summary: 'The saved automation does not match the testcase.', evidence: '' };
+        if (!automation) return { verdict: 'BLOCKED', started: false, summary: 'The saved automation does not match the testcase.', evidence: '' };
         let started;
         try {
           started = startScriptedExternalCase({
-            lane, caseId: created.caseId, systemId: identity.systemId, credentials: null,
+            lane, caseId: created.caseId, systemId: identity.systemId, credentials: dryRunCredentials,
             summary: created.summary, writes: created.writes,
             external: { content, systemId: identity.systemId, filePath: created.filePath, automation },
           });
         } catch (error) {
-          return { verdict: 'BLOCKED', summary: error.message, evidence: '' };
+          return { verdict: 'BLOCKED', started: false, summary: error.message, evidence: '' };
         }
         const attemptRun = runs.get(started.id);
         run.process = attemptRun.process;
@@ -1409,9 +1423,13 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         // of reporting a passing dry run as failed.
         const runnerPassed = attemptRun.exitCode === 0 && observations?.verdict === 'PASS'
           && observations.writesVerified === true && observations.systemConfirmed === true;
+        // A run that recorded no plan step never reached the case (login, runtime or
+        // system problem): nothing in the Markdown or plan can fix that.
+        const reachedCase = Array.isArray(observations?.steps) && observations.steps.length > 0;
         return {
           verdict: attemptRun.verdict || (runnerPassed ? 'PASS' : 'FAIL'),
-          summary: observations?.summary || attemptRun.error || 'The dry run failed.',
+          started: reachedCase,
+          summary: plainText(reachedCase ? observations.summary : consoleReason(attemptRun) || observations?.summary || attemptRun.error).trim() || 'The dry run failed.',
           evidence: failureEvidence(observations, attemptRun),
           resultPath: attemptRun.resultPath || '',
           documents: (observations?.documents || []).map((row) => `${row.type} ${row.number}`),
@@ -1431,13 +1449,16 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         const prompt = [
           `The testcase ${created.filePath} was just created and its saved repeat-run automation failed automatic dry run ${attempt} of ${MAX_VERIFY_ATTEMPTS}. Verdict: ${outcome.verdict}.`,
           `Evidence from the dry run:\n${outcome.evidence || outcome.summary}`,
-          `The current plan is at ${destination}. Edit that plan so the next dry run passes, and edit the Markdown ${created.filePath} only where the documented flow or expected values were wrong or must stay consistent with the plan.`,
+          `The current plan is at ${destination}. Edit that plan so the next dry run passes, and edit the Markdown ${created.filePath} only where the documented flow or expected values were wrong or must stay consistent with the plan. Edit only those two files; do not create, copy or move any other file.`,
           'Do NOT use any SAP tool and do not perform any SAP action; work only from what you observed while creating this case and from the evidence above. Fix the cause, not the symptom: add a missing step (for example key "0" so SAP derives a value, a tab step, an explicit fill for a value SAP only remembers per user), or correct a control id or expected value the evidence proves wrong. Never weaken or delete an assertion to make it pass, never remove a write or its verification, and never add database writes beyond this case. If the failure is environmental (SAP not logged on, wrong system, data already used) or a genuine product defect, change nothing and say why.',
           'Reply with one short paragraph saying what you changed and why.',
           automationPrompt(lane, destination),
         ].join('\n\n');
+        // Edits are confined to this case's own folder, so a repair cannot drop
+        // extra copies of the testcase anywhere else in the archive.
+        const caseFolder = path.dirname(created.filePath);
         const args = ['-p', prompt, '--output-format', 'json', '--permission-mode', 'dontAsk',
-          '--add-dir', creationDirectory, '--allowedTools', claudeAbsoluteEditRule(creationDirectory)];
+          '--add-dir', caseFolder, '--allowedTools', claudeAbsoluteEditRule(caseFolder)];
         if (run.sessionId) args.push('--resume', run.sessionId);
         let note = '';
         await new Promise((resolve) => {
@@ -1504,13 +1525,17 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
             const entry = { attempt, ...outcome };
             attempts.push(entry);
             if (outcome.verdict === 'PASS') { passed = true; break; }
-            // Detail goes to verification-log.md; the chat only says it did not pass yet.
+            // Detail goes to verification-log.md; the chat gets one short line.
+            if (!outcome.started) {
+              run.response += `\n${created.caseId}: dry run ${attempt} could not start — ${outcome.summary}`;
+              break;
+            }
             run.response += `\n${created.caseId}: dry run ${attempt} did not pass.`;
             if (attempt === MAX_VERIFY_ATTEMPTS) break;
             run.response += ' The AI Assistant is checking how to fix it.';
             const repaired = await repairFromDryRun(created, identity, attempt, outcome);
             entry.fix = repaired.note;
-            run.response += `\n${created.caseId}: ${repaired.note}`;
+            run.response += `\n${created.caseId}: ${repaired.changed ? 'Fix applied; running again.' : 'No fix found.'}`;
             if (!repaired.changed) break;
           }
           recordVerification(created, identity, attempts, passed);
@@ -1519,8 +1544,9 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
             run.response += `\n${created.caseId}: Test case creation succeeded — the saved automation passed dry run ${attempts.length} of ${MAX_VERIFY_ATTEMPTS}${repairs ? ` after ${repairs} AI repair${repairs > 1 ? 's' : ''}` : ''}.`;
           } else {
             const last = attempts.at(-1);
-            run.response += `\n${created.caseId}: Test case creation failed — the automation did not pass a dry run (last: ${last?.verdict} — ${last?.summary}). The latest draft is saved at ${created.filePath} with verification-log.md for reference.`;
-            run.error = [run.error, `${created.caseId}: test case creation failed after ${attempts.length} dry run(s); draft retained with verification-log.md.`].filter(Boolean).join('\n');
+            const reason = last?.started === false ? `the dry run could not start (${last.summary})` : `the automation did not pass (${last?.summary})`;
+            run.response += `\n${created.caseId}: Test case creation failed — ${reason}. The draft is kept in ${path.dirname(created.filePath)}; see verification-log.md there for details.`;
+            run.error = [run.error, `${created.caseId}: test case creation failed after ${attempts.length} dry run${attempts.length > 1 ? 's' : ''}. Draft kept with verification-log.md.`].filter(Boolean).join('\n');
           }
         }
       }

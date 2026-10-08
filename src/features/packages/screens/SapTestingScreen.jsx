@@ -181,8 +181,9 @@ export default function SapTestingScreen({ onBack }) {
               caseCreationRef.current = null;
               await loadCasesForLane(pending.lane);
               setSelectedCase(result.created[result.created.length - 1]);
+              const verified = result.created.length === 1 && result.created[0].verification?.status === 'passed';
               pushRunnerMessage(result.created.length === 1
-                ? `${result.created[0].caseId} was saved to ${result.created[0].filePath}. Ask the AI Assistant to run it again live.`
+                ? `${result.created[0].caseId} was saved to ${result.created[0].filePath}.${verified ? ' Its automation passed a dry run.' : ''}`
                 : `${result.created.length} test cases were saved: ${result.created.map((created) => created.caseId).join(', ')}. Ask the AI Assistant to run them again live.`);
             } else if (run.status === 'completed') {
               pushRunnerMessage('No testcase file was created yet. Your next message will continue this testcase with the same local output folder.');
@@ -278,7 +279,9 @@ export default function SapTestingScreen({ onBack }) {
       const continuationPrompt = pending
         ? `${nextPrompt}\n\nContinue the unfinished testcase. Inspect the existing SAP session before acting; do not recreate a deal that was already saved. Write the Markdown testcase to ${pending.caseDirectory}, using ${pending.nextCaseId} if no file has been created yet. Include the observed Save outcome and document number, or the exact blocker.`
         : nextPrompt;
-      const run = await sapTerminalService.start(continuationPrompt, sessionId, lane, pending ? { caseCreation: pending } : undefined);
+      // The SAP login is passed on only so the app can dry-run the finished case; it is
+      // held in memory for that run and never stored with the case.
+      const run = await sapTerminalService.start(continuationPrompt, sessionId, lane, pending ? { caseCreation: pending, dryRunCredentials: webCredentials() } : undefined);
       setActiveSource('claude');
       setRunId(run.id);
       setStatus(run.status);
@@ -464,7 +467,7 @@ export default function SapTestingScreen({ onBack }) {
       }
 
       const casePrompt = buildCaseCreationPrompt(lane, connectionServerName, connectedSystemId, userRequest, prep, author);
-      const run = await sapTerminalService.start(casePrompt, '', lane, { caseCreation: caseCreationRef.current });
+      const run = await sapTerminalService.start(casePrompt, '', lane, { caseCreation: caseCreationRef.current, dryRunCredentials: webCredentials() });
       setActiveSource('claude');
       setRunId(run.id);
       setStatus(run.status);
