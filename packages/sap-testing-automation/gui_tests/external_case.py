@@ -127,7 +127,13 @@ def _grid_observation(table: dict) -> str:
 def substitute(value, variables):
     if not isinstance(value, str):
         return value
-    return re.sub(r"\$\{([^}]+)\}", lambda match: variables[match[1]], value)
+
+    def lookup(match):
+        if match[1] not in variables:
+            raise RuntimeError(f"${{{match[1]}}} was never captured by an earlier step")
+        return variables[match[1]]
+
+    return re.sub(r"\$\{([^}]+)\}", lookup, value)
 
 
 def execute(plan, sap, output: Path):
@@ -137,6 +143,7 @@ def execute(plan, sap, output: Path):
                     steps=[], documents=[], deviations=[], evidence=[])
     variables = {}
     writes = verified = 0
+    failures = []
 
     def flush():
         output.parent.mkdir(parents=True, exist_ok=True)
@@ -352,109 +359,130 @@ def execute(plan, sap, output: Path):
             action, target = step["action"], step.get("target", "")
             expects_popup = (action == "assert" and step.get("source") == "popup") \
                 or bool(re.match(r"^wnd\[[1-9]\]/", str(target or "")))
-            if not expects_popup:
-                dismiss_express_information()
-            value = substitute(step.get("value"), variables)
             entry = dict(step=step["label"], outcome="error", detail="Started; completion not yet verified")
             observed["steps"].append(entry)
             if step.get("write"):
                 writes += 1
                 observed["writesVerified"] = False
             flush()
-            if action == "transaction":
-                check_result(sap.start_transaction(value))
-                next_step = plan["steps"][index + 1] if index + 1 < len(plan["steps"]) else {}
-                next_expects_popup = (next_step.get("action") == "assert"
-                                      and next_step.get("source") == "popup") \
-                    or bool(re.match(r"^wnd\[[1-9]\]/",
-                                     str(next_step.get("target") or "")))
-                if not next_expects_popup:
-                    dismissed_notice = dismiss_express_information()
-                    current = check_result(sap.screen())
-                    actual_transaction = _canonical_transaction(current.get("transaction"))
-                    if (dismissed_notice and actual_transaction
-                            and actual_transaction != _canonical_transaction(value)):
-                        # The modal notice can interrupt StartTransaction before
-                        # SAP consumes it. Navigation is read-only, so retry it
-                        # once after acknowledging the notice; writes are never
-                        # retried anywhere in this runner.
-                        check_result(sap.start_transaction(value))
-                        dismiss_express_information()
+            try:
+                if not expects_popup:
+                    dismiss_express_information()
+                value = substitute(step.get("value"), variables)
+                if action == "transaction":
+                    check_result(sap.start_transaction(value))
+                    next_step = plan["steps"][index + 1] if index + 1 < len(plan["steps"]) else {}
+                    next_expects_popup = (next_step.get("action") == "assert"
+                                          and next_step.get("source") == "popup") \
+                        or bool(re.match(r"^wnd\[[1-9]\]/",
+                                         str(next_step.get("target") or "")))
+                    if not next_expects_popup:
+                        dismissed_notice = dismiss_express_information()
                         current = check_result(sap.screen())
                         actual_transaction = _canonical_transaction(current.get("transaction"))
-                    if actual_transaction and actual_transaction != _canonical_transaction(value):
-                        raise RuntimeError(
-                            f"{step['label']}: expected transaction "
-                            f"{_canonical_transaction(value)}, observed {actual_transaction}"
-                        )
-            elif action == "fill":
-                result, target = target_call(
-                    target, lambda candidate: sap.controller.set_field(candidate, value),
-                    step["label"])
-                check_result(result)
-                # A fill sends raw input ("150000000"); SAP may already show it
-                # formatted ("150,000,000.00"), so accept the same number. The
-                # visible-format requirement keeps numeric identifiers strict.
-                assertion(value, read(dict(source="field", target=target,
-                                           label=step["label"])), step["label"],
-                          source="field", number_mode="formatted")
-            elif action == "press":
-                # Compatibility for sidecars published before tab actions were
-                # normalized: GuiTab exposes select(), never press().
-                if _is_tab_target(target):
-                    result, target = target_call(target, sap.select_tab, step["label"])
-                    check_result(result)
-                else:
-                    result, target = target_call(target, sap.press, step["label"])
-                    check_result(result)
-            elif action == "key":
-                check_result(sap.send(int(value)))
-            elif action == "tab":
-                result, target = target_call(target, sap.select_tab, step["label"])
-                check_result(result)
-            elif action == "select":
-                # LTFS plans created by the first sidecar release used select
-                # for both combo boxes and tabs. Keep those signed sidecars
-                # runnable while new plans are normalized to action="tab".
-                if _is_tab_target(target):
-                    result, target = target_call(target, sap.select_tab, step["label"])
-                    check_result(result)
-                else:
+                        if (dismissed_notice and actual_transaction
+                                and actual_transaction != _canonical_transaction(value)):
+                            # The modal notice can interrupt StartTransaction before
+                            # SAP consumes it. Navigation is read-only, so retry it
+                            # once after acknowledging the notice; writes are never
+                            # retried anywhere in this runner.
+                            check_result(sap.start_transaction(value))
+                            dismiss_express_information()
+                            current = check_result(sap.screen())
+                            actual_transaction = _canonical_transaction(current.get("transaction"))
+                        if actual_transaction and actual_transaction != _canonical_transaction(value):
+                            raise RuntimeError(
+                                f"{step['label']}: expected transaction "
+                                f"{_canonical_transaction(value)}, observed {actual_transaction}"
+                            )
+                elif action == "fill":
                     result, target = target_call(
-                        target, lambda candidate: sap.select_combobox(candidate, value),
+                        target, lambda candidate: sap.controller.set_field(candidate, value),
                         step["label"])
                     check_result(result)
-            elif action == "check":
-                check_result(sap.controller.select_checkbox(target, value))
-                assertion(str(value).lower(), read(dict(source="checked", target=target)), step["label"])
-            elif action == "assert":
-                actual = read(step)
-                numeric_source = step.get("source") in ("field", "value")
-                number_mode = ("numeric" if step.get("numeric") is True
-                               else "formatted" if numeric_source
-                               else "strict")
-                fallback_target = next(
-                    (later.get("target", "") for later in plan["steps"][index + 1:]
-                     if later.get("target")), "")
-                assertion(substitute(step["expected"], variables), actual, step["label"],
-                          step.get("match", "equals"), step.get("source", ""),
-                          fallback_target, number_mode)
-                if step.get("capture"):
-                    match = re.search(step["pattern"], actual)
-                    if not match or not match.lastindex or not match.group(1):
-                        raise AssertionError("The current SAP document/value could not be captured")
-                    variables[step["capture"]] = match.group(1)
-                    if step.get("documentType"):
-                        observed["documents"].append(dict(type=step["documentType"], number=match.group(1), leftInPlace=True))
-                if step.get("verifiesWrite"):
-                    verified += 1
-            else:
-                raise ValueError(f"Unsupported action: {action}")
+                    # A fill sends raw input ("150000000"); SAP may already show it
+                    # formatted ("150,000,000.00"), so accept the same number. The
+                    # visible-format requirement keeps numeric identifiers strict.
+                    assertion(value, read(dict(source="field", target=target,
+                                               label=step["label"])), step["label"],
+                              source="field", number_mode="formatted")
+                elif action == "press":
+                    # Compatibility for sidecars published before tab actions were
+                    # normalized: GuiTab exposes select(), never press().
+                    if _is_tab_target(target):
+                        result, target = target_call(target, sap.select_tab, step["label"])
+                        check_result(result)
+                    else:
+                        result, target = target_call(target, sap.press, step["label"])
+                        check_result(result)
+                elif action == "key":
+                    check_result(sap.send(int(value)))
+                elif action == "tab":
+                    result, target = target_call(target, sap.select_tab, step["label"])
+                    check_result(result)
+                elif action == "select":
+                    # LTFS plans created by the first sidecar release used select
+                    # for both combo boxes and tabs. Keep those signed sidecars
+                    # runnable while new plans are normalized to action="tab".
+                    if _is_tab_target(target):
+                        result, target = target_call(target, sap.select_tab, step["label"])
+                        check_result(result)
+                    else:
+                        result, target = target_call(
+                            target, lambda candidate: sap.select_combobox(candidate, value),
+                            step["label"])
+                        check_result(result)
+                elif action == "check":
+                    check_result(sap.controller.select_checkbox(target, value))
+                    assertion(str(value).lower(), read(dict(source="checked", target=target)), step["label"])
+                elif action == "assert":
+                    actual = read(step)
+                    numeric_source = step.get("source") in ("field", "value")
+                    number_mode = ("numeric" if step.get("numeric") is True
+                                   else "formatted" if numeric_source
+                                   else "strict")
+                    fallback_target = next(
+                        (later.get("target", "") for later in plan["steps"][index + 1:]
+                         if later.get("target")), "")
+                    assertion(substitute(step["expected"], variables), actual, step["label"],
+                              step.get("match", "equals"), step.get("source", ""),
+                              fallback_target, number_mode)
+                    if step.get("capture"):
+                        match = re.search(step["pattern"], actual)
+                        if not match or not match.lastindex or not match.group(1):
+                            raise AssertionError("The current SAP document/value could not be captured")
+                        variables[step["capture"]] = match.group(1)
+                        if step.get("documentType"):
+                            observed["documents"].append(dict(type=step["documentType"], number=match.group(1), leftInPlace=True))
+                    if step.get("verifiesWrite"):
+                        verified += 1
+                else:
+                    raise ValueError(f"Unsupported action: {action}")
+            except Exception as error:
+                # A Save/post or its verification is never skipped past: its outcome
+                # decides what SAP now holds, and a retry could duplicate a document.
+                if step.get("write") or step.get("verifiesWrite"):
+                    raise
+                # Any other step that is off (a field, a tab, an expected value) is
+                # recorded and the run carries on, so one dry run reports every
+                # mismatch in the case instead of only the first.
+                entry.update(outcome="error", detail=str(error))
+                failures.append(f"{step['label']}: {error}")
+                observed["deviations"].append(f"{step['label']}: {error}")
+                flush()
+                continue
             entry.update(outcome="ok", detail="Executed and checked")
             flush()
-        if not observed["assertions"] or writes != verified:
+        if failures:
+            observed.update(
+                verdict="FAIL",
+                writesVerified=bool(writes) and writes == verified,
+                summary=(f"{len(failures)} of {len(plan['steps'])} steps did not pass; "
+                         f"first: {failures[0]}"))
+        elif not observed["assertions"] or writes != verified:
             raise AssertionError("Missing assertions or unverified database writes")
-        observed.update(verdict="PASS", writesVerified=True, summary="Saved automation completed; all recorded assertions passed.")
+        else:
+            observed.update(verdict="PASS", writesVerified=True, summary="Saved automation completed; all recorded assertions passed.")
     except Exception as error:
         observed.update(verdict="FAIL", summary=str(error))
         observed["deviations"].append(str(error))

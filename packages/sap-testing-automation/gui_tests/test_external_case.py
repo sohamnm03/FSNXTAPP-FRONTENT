@@ -474,6 +474,82 @@ class ExternalCaseCompatibilityTests(unittest.TestCase):
         self.assertEqual(sap.keys, [0])
         self.assertIn("Update successful", result["deviations"][0])
 
+    def test_a_field_that_is_off_does_not_stop_the_run(self):
+        class Fields(_Controller):
+            def __init__(self):
+                self.values = {}
+
+            def set_field(self, target, value):
+                if target.endswith("MISSING"):
+                    return {"error": "The control could not be found by id."}
+                self.values[target] = value
+                return {"status": "success"}
+
+            def read_field(self, target):
+                if target.endswith("MISSING"):
+                    return {"error": "The control could not be found by id."}
+                return {"value": self.values.get(target, "")}
+
+            def get_screen_elements(self, **_kwargs):
+                return []
+
+        class FieldSap(_Sap):
+            def __init__(self):
+                super().__init__()
+                self.controller = Fields()
+                self.keys = []
+
+            def send(self, vkey):
+                self.keys.append(vkey)
+                return {"success": True}
+
+        sap = FieldSap()
+        plan = {"steps": [
+            {"action": "fill", "label": "Missing field", "value": "200",
+             "target": "wnd[0]/usr/ctxtMISSING"},
+            {"action": "fill", "label": "Amount", "value": "100",
+             "target": "wnd[0]/usr/txtAMOUNT"},
+            {"action": "assert", "label": "Wrong expectation", "source": "field",
+             "target": "wnd[0]/usr/txtAMOUNT", "expected": "999"},
+            {"action": "key", "label": "Enter", "value": "0"},
+            {"action": "assert", "label": "Amount kept", "source": "field",
+             "target": "wnd[0]/usr/txtAMOUNT", "expected": "100"},
+        ]}
+
+        with tempfile.TemporaryDirectory() as directory:
+            result = execute(plan, sap, Path(directory) / "observations.json")
+
+        self.assertEqual(result["verdict"], "FAIL")
+        self.assertEqual([step["outcome"] for step in result["steps"]],
+                         ["error", "ok", "error", "ok", "ok"])
+        self.assertEqual(sap.keys, [0], "steps after a failed field still run")
+        self.assertIn("2 of 5 steps did not pass", result["summary"])
+        self.assertEqual(len(result["deviations"]), 2)
+
+    def test_a_failed_write_still_stops_the_run(self):
+        class SaveSap(_Sap):
+            def __init__(self):
+                super().__init__()
+                self.keys = []
+
+            def send(self, vkey):
+                self.keys.append(vkey)
+                return {"error": "Save could not be sent"} if vkey == 11 else {"success": True}
+
+        sap = SaveSap()
+        plan = {"steps": [
+            {"action": "key", "label": "Save", "value": "11", "write": True},
+            {"action": "key", "label": "After save", "value": "0"},
+            {"action": "assert", "label": "Saved", "source": "status",
+             "expected": "created", "match": "contains", "verifiesWrite": True},
+        ]}
+
+        with tempfile.TemporaryDirectory() as directory:
+            result = execute(plan, sap, Path(directory) / "observations.json")
+
+        self.assertEqual(result["verdict"], "FAIL")
+        self.assertEqual(sap.keys, [11], "nothing runs after a write whose outcome is unknown")
+
 
 if __name__ == "__main__":
     unittest.main()
