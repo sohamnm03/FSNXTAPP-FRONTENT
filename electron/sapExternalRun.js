@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { automationPrompt } = require('./sapCaseAutomation');
 const { buildRunReportDocx } = require('./sapRunReportDocx');
+const { buildFunctionalReport } = require('./sapRunReport');
 
 function createExternalRun(projectRoot, archiveRoot, runId, proposal) {
   const relativeRoot = `.external-runs/${runId}`;
@@ -97,21 +98,9 @@ function writeExternalResult(run, execution) {
   let reportPath = '';
   try {
     reportPath = path.join(run.outputRoot, `${run.caseId}-${stamp}-report.docx`);
-    fs.writeFileSync(reportPath, buildRunReportDocx({
-      caseId: run.caseId,
-      title: run.summary || '',
-      systemId: run.systemId,
-      session: observed.session,
-      runBy: run.username,
-      startedAt: run.startedAt,
-      verdict,
-      summary: [observed.summary, problem, execution.error].filter(Boolean).join(' '),
-      steps,
-      assertions,
-      documents,
-      deviations: Array.isArray(observed.deviations) ? observed.deviations : [],
-      evidence: evidence.map((row) => ({ ...row, path: path.join(run.outputRoot, 'evidence', row.file) })),
-    }));
+    fs.writeFileSync(reportPath, buildRunReportDocx(buildFunctionalReport({
+      run, observed, verdict, problem, execution, evidence, evidenceDir: path.join(run.outputRoot, 'evidence'),
+    })));
   } catch {
     reportPath = '';
   }
