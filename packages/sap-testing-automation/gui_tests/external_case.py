@@ -144,6 +144,27 @@ def execute(plan, sap, output: Path):
     variables = {}
     writes = verified = 0
     failures = []
+    evidence_dir = output.parent / "evidence"
+
+    def screenshot(index, label):
+        """Picture of the screen a step left behind, for the run's Word report.
+
+        Evidence is worth less than the run: a screenshot that cannot be taken
+        is skipped, never an error.
+        """
+        take = getattr(sap.controller, "take_screenshot", None)
+        if not callable(take):
+            return
+        name = f"step-{index + 1:02d}.png"
+        try:
+            evidence_dir.mkdir(parents=True, exist_ok=True)
+            result = take(str(evidence_dir / name))
+            if isinstance(result, dict) and result.get("error"):
+                return
+            if (evidence_dir / name).exists():
+                observed["evidence"].append(dict(file=name, shows=label, step=index + 1))
+        except Exception:
+            return
 
     def flush():
         output.parent.mkdir(parents=True, exist_ok=True)
@@ -462,6 +483,7 @@ def execute(plan, sap, output: Path):
                 # A Save/post or its verification is never skipped past: its outcome
                 # decides what SAP now holds, and a retry could duplicate a document.
                 if step.get("write") or step.get("verifiesWrite"):
+                    screenshot(index, step["label"])
                     raise
                 # Any other step that is off (a field, a tab, an expected value) is
                 # recorded and the run carries on, so one dry run reports every
@@ -469,9 +491,11 @@ def execute(plan, sap, output: Path):
                 entry.update(outcome="error", detail=str(error))
                 failures.append(f"{step['label']}: {error}")
                 observed["deviations"].append(f"{step['label']}: {error}")
+                screenshot(index, step["label"])
                 flush()
                 continue
             entry.update(outcome="ok", detail="Executed and checked")
+            screenshot(index, step["label"])
             flush()
         if failures:
             observed.update(

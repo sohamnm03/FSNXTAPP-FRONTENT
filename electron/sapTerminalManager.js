@@ -847,7 +847,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       }
     }
     run.resultPath = result.resultPath;
-    run.response += `\n\nTest result: ${result.verdict}\nSaved result: ${result.resultPath}`;
+    run.response += `\n\nTest result: ${result.verdict}\nSaved result: ${result.resultPath}${result.reportPath ? `\nWord report: ${result.reportPath}` : ''}`;
     run.error = execution.error || result.error;
     const finish = (error = '') => {
       run.process = null;

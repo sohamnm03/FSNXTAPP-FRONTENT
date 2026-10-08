@@ -550,6 +550,45 @@ class ExternalCaseCompatibilityTests(unittest.TestCase):
         self.assertEqual(result["verdict"], "FAIL")
         self.assertEqual(sap.keys, [11], "nothing runs after a write whose outcome is unknown")
 
+    def test_every_step_leaves_a_screenshot_for_the_report(self):
+        class Camera(_Controller):
+            def __init__(self):
+                self.values = {}
+
+            def set_field(self, target, value):
+                if target.endswith("MISSING"):
+                    return {"error": "The control could not be found by id."}
+                self.values[target] = value
+                return {"status": "success"}
+
+            def read_field(self, target):
+                return {"value": self.values.get(target, "")}
+
+            def get_screen_elements(self, **_kwargs):
+                return []
+
+            def take_screenshot(self, filepath):
+                Path(filepath).write_bytes(b"png")
+                return {"filepath": filepath}
+
+        sap = _Sap()
+        sap.controller = Camera()
+        plan = {"steps": [
+            {"action": "fill", "label": "Amount", "value": "100", "target": "wnd[0]/usr/txtAMOUNT"},
+            {"action": "fill", "label": "Missing", "value": "1", "target": "wnd[0]/usr/txtMISSING"},
+            {"action": "assert", "label": "Amount kept", "source": "field",
+             "target": "wnd[0]/usr/txtAMOUNT", "expected": "100"},
+        ]}
+
+        with tempfile.TemporaryDirectory() as directory:
+            result = execute(plan, sap, Path(directory) / "observations.json")
+            files = sorted(path.name for path in (Path(directory) / "evidence").iterdir())
+
+        self.assertEqual(files, ["step-01.png", "step-02.png", "step-03.png"])
+        self.assertEqual([(row["file"], row["step"], row["shows"]) for row in result["evidence"]],
+                         [("step-01.png", 1, "Amount"), ("step-02.png", 2, "Missing"),
+                          ("step-03.png", 3, "Amount kept")])
+
 
 if __name__ == "__main__":
     unittest.main()

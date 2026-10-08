@@ -122,3 +122,22 @@ test('a read-only case passes without a document even when its writes text menti
   const writing = { ...run, automation: { plan: { steps: [{ action: 'key', label: 'Save', write: true }] } } };
   assert.equal(writeExternalResult(writing, execution).verdict, 'PARTIAL');
 });
+
+test('every run writes a Word report with each step and its screenshot', (context) => {
+  const { run } = fixture(context);
+  // Smallest valid 1x1 PNG.
+  const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
+  fs.mkdirSync(path.join(run.workRoot, 'evidence'), { recursive: true });
+  fs.writeFileSync(path.join(run.workRoot, 'evidence', 'step-01.png'), png);
+  fs.writeFileSync(path.join(run.workRoot, 'observations.json'), JSON.stringify({
+    ...observation, evidence: [{ file: 'step-01.png', shows: 'Save loan', step: 1 }],
+  }));
+  const result = writeExternalResult(run, { status: 'completed', response: 'Finished', error: '' });
+  assert.match(result.reportPath, /TC-099-.*-report\.docx$/);
+  const docx = fs.readFileSync(result.reportPath);
+  assert.equal(docx.readUInt32LE(0), 0x04034b50, 'a .docx is a zip package');
+  const names = docx.toString('latin1');
+  for (const part of ['[Content_Types].xml', 'word/document.xml', 'word/styles.xml', 'word/media/image1.png']) {
+    assert.ok(names.includes(part), `${part} is in the report`);
+  }
+});

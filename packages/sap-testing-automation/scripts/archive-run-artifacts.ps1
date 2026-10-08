@@ -6,8 +6,9 @@
 .DESCRIPTION
     Collects the current dashboard and evidence images changed during the run,
     then writes one zip to the user's Downloads folder unless an explicit output
-    folder is supplied. The zip contains only dashboard.html and an evidences
-    folder containing all collected images.
+    folder is supplied. The zip contains dashboard.html and an evidences folder
+    containing all collected images; an external run's zip carries its Word
+    report (steps with screenshots) instead of dashboard.html.
 
     If AZURE_STORAGE_CONNECTION_STRING is set in the environment (this
     workspace keeps it in the gitignored .claude/settings.local.json, the same
@@ -265,12 +266,18 @@ if ($Lane -eq 'web') {
 }
 
 $images = @($images | Sort-Object -Unique)
-if (-not (Test-Path -LiteralPath $dashboardPath -PathType Leaf) -and $images.Count -eq 0) {
+# External runs carry a Word report (steps with their screenshots) instead of
+# the HTML dashboard.
+$wordReports = @()
+if ($ResultsDirectory) {
+    $wordReports = @(Get-ChildItem -LiteralPath $resultsRoot -File -Filter '*.docx' -ErrorAction SilentlyContinue)
+}
+if (-not (Test-Path -LiteralPath $dashboardPath -PathType Leaf) -and $images.Count -eq 0 -and $wordReports.Count -eq 0) {
     Write-Host 'No report or evidence files were found to archive.' -ForegroundColor Yellow
     exit 0
 }
 
-if (Test-Path -LiteralPath $dashboardPath -PathType Leaf) {
+if ($wordReports.Count -eq 0 -and (Test-Path -LiteralPath $dashboardPath -PathType Leaf)) {
     Copy-Item -LiteralPath $dashboardPath -Destination (Join-Path $stageRoot 'dashboard.html') -Force
 }
 
@@ -278,7 +285,7 @@ if (Test-Path -LiteralPath $dashboardPath -PathType Leaf) {
 # dashboard/evidence archive so they also survive a packaged workspace cleanup.
 if ($ResultsDirectory) {
     Get-ChildItem -LiteralPath $resultsRoot -File |
-        Where-Object { $_.Extension -in @('.md', '.json') } |
+        Where-Object { $_.Extension -in @('.md', '.json', '.docx') } |
         ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $stageRoot -Force }
 }
 

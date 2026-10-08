@@ -10,9 +10,10 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 
-# Use the same dashboard and Azure/archive pipeline as a frozen-script run.
-# ResultsDirectory is persistent storage; the EXE's project root is temporary.
-& (Join-Path $PSScriptRoot 'build-dashboard.ps1') -ResultsDirectory $ResultsDirectory -SystemLabel $SystemId -NoOpen
+# Same Azure/archive pipeline as a frozen-script run, but the run's report is the
+# Word document the app wrote into ResultsDirectory (steps with screenshots), so
+# no HTML dashboard is built. ResultsDirectory is persistent storage; the EXE's
+# project root is temporary.
 & (Join-Path $PSScriptRoot 'archive-run-artifacts.ps1') -RunId $RunId -StartedAtUtc $StartedAtUtc `
     -Case $Case -Lane $Lane -SystemId $SystemId -OutputRoot $OutputRoot `
     -ResultsDirectory $ResultsDirectory -EvidenceDirectory (Join-Path $ResultsDirectory 'evidence')
