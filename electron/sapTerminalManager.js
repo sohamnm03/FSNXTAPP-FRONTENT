@@ -13,7 +13,6 @@ const CONFIRMATION_TTL_MS = 10 * 60 * 1000;
 // repairs the Markdown/plan between runs (so at most MAX - 1 repairs).
 const MAX_VERIFY_ATTEMPTS = 3;
 const VERIFY_POLL_MS = 100;
-const VERIFY_ATTEMPT_TIMEOUT_MS = 30 * 60 * 1000;
 const DISPLAY_GUIDANCE = [
   'You are running inside the FSNXT SAP Testing desktop application.',
   'Keep user-facing responses functional and concise.',
@@ -1394,11 +1393,10 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         }
         const attemptRun = runs.get(started.id);
         run.process = attemptRun.process;
-        const deadline = Date.now() + VERIFY_ATTEMPT_TIMEOUT_MS;
+        // No wall-clock limit: a run ends when its runner does. The one case that never
+        // reports a close is a runner that could not start at all (it has no pid).
         while (!FINAL_STATUSES.has(attemptRun.status)) {
-          if (Date.now() > deadline) {
-            attemptRun.process?.kill();
-            attemptRun.error ||= 'The dry run did not finish in time and was stopped.';
+          if (attemptRun.error && attemptRun.process && attemptRun.process.pid === undefined) {
             attemptRun.status = 'failed';
             break;
           }
