@@ -1404,8 +1404,13 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         }
         run.process = null;
         const observations = readObservations(attemptRun.workRoot);
+        // The verdict normally comes from the result file the app writes. If that step
+        // itself broke after a clean run, trust the runner's own verified PASS instead
+        // of reporting a passing dry run as failed.
+        const runnerPassed = attemptRun.exitCode === 0 && observations?.verdict === 'PASS'
+          && observations.writesVerified === true && observations.systemConfirmed === true;
         return {
-          verdict: attemptRun.verdict || 'FAIL',
+          verdict: attemptRun.verdict || (runnerPassed ? 'PASS' : 'FAIL'),
           summary: observations?.summary || attemptRun.error || 'The dry run failed.',
           evidence: failureEvidence(observations, attemptRun),
           resultPath: attemptRun.resultPath || '',
@@ -1499,9 +1504,10 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
             const entry = { attempt, ...outcome };
             attempts.push(entry);
             if (outcome.verdict === 'PASS') { passed = true; break; }
-            run.response += `\n${created.caseId}: dry run ${attempt} ${outcome.verdict} — ${outcome.summary}`;
+            // Detail goes to verification-log.md; the chat only says it did not pass yet.
+            run.response += `\n${created.caseId}: dry run ${attempt} did not pass.`;
             if (attempt === MAX_VERIFY_ATTEMPTS) break;
-            run.response += `\n${created.caseId}: the AI Assistant is checking how to fix it.`;
+            run.response += ' The AI Assistant is checking how to fix it.';
             const repaired = await repairFromDryRun(created, identity, attempt, outcome);
             entry.fix = repaired.note;
             run.response += `\n${created.caseId}: ${repaired.note}`;
@@ -1509,9 +1515,11 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
           }
           recordVerification(created, identity, attempts, passed);
           if (passed) {
-            run.response += `\n${created.caseId}: Test case creation succeeded — the saved automation passed dry run ${attempts.length} of ${MAX_VERIFY_ATTEMPTS}.`;
+            const repairs = attempts.length - 1;
+            run.response += `\n${created.caseId}: Test case creation succeeded — the saved automation passed dry run ${attempts.length} of ${MAX_VERIFY_ATTEMPTS}${repairs ? ` after ${repairs} AI repair${repairs > 1 ? 's' : ''}` : ''}.`;
           } else {
-            run.response += `\n${created.caseId}: Test case creation failed — the automation did not pass a dry run. The latest draft is saved at ${created.filePath} with verification-log.md for reference.`;
+            const last = attempts.at(-1);
+            run.response += `\n${created.caseId}: Test case creation failed — the automation did not pass a dry run (last: ${last?.verdict} — ${last?.summary}). The latest draft is saved at ${created.filePath} with verification-log.md for reference.`;
             run.error = [run.error, `${created.caseId}: test case creation failed after ${attempts.length} dry run(s); draft retained with verification-log.md.`].filter(Boolean).join('\n');
           }
         }

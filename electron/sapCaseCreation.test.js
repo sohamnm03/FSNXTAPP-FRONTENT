@@ -306,8 +306,9 @@ test('a failing dry run is repaired by the AI and the loop ends on the first pas
   await finishDryRun(calls, passingObservation);
   await until(() => manager.getRun(run.id).status === 'completed', 'the case to complete');
   const done = manager.getRun(run.id);
-  assert.match(done.response, /Test case creation succeeded — the saved automation passed dry run 2 of 3/);
+  assert.match(done.response, /Test case creation succeeded — the saved automation passed dry run 2 of 3 after 1 AI repair\./);
   assert.equal(done.error, '');
+  assert.doesNotMatch(done.response, /FAIL|expected 'FAC'/, 'earlier attempts are not shown as errors once a run passes');
   assert.equal(done.createdCases[0].verification.status, 'passed');
   assert.match(fs.readFileSync(saved.replace(/.md$/, '.py'), 'utf8'), /FSNXT-AUTOMATION-V1/);
   assert.match(fs.readFileSync(path.join(path.dirname(saved), 'verification-log.md'), 'utf8'), /PASSED/);
@@ -344,6 +345,7 @@ test('the loop stops early when the AI proposes no change', async (context) => {
   await until(() => manager.getRun(run.id).status === 'failed', 'the case to be reported as failed');
   assert.equal(calls.filter((call) => call.args.includes('gui_tests.external_case')).length, 1);
   assert.match(manager.getRun(run.id).response, /SAP was not logged on/);
+  assert.match(manager.getRun(run.id).response, /Test case creation failed/);
   assert.ok(fs.existsSync(saved.replace(/.md$/, '.py')), 'the original script stays valid');
 });
 
