@@ -27,7 +27,7 @@ test('the objective and test data come from the case Markdown, without technical
   assert.deepEqual(testDataFrom(markdown), [{ field: 'Company Code', value: 'LTFH' }]);
 });
 
-test('only the case\'s own checks are verification checks, and each step gets its screenshot', () => {
+test('only the case\'s own checks are verification checks, and steps on one screen share a screenshot', () => {
   const plan = { steps: [
     { action: 'fill', label: 'Amount', value: '100' },
     { action: 'assert', label: 'Saved', source: 'status', expected: 'created' },
@@ -40,11 +40,13 @@ test('only the case\'s own checks are verification checks, and each step gets it
       documents: [{ type: 'Loan', number: '9' }],
     },
     verdict: 'PASS', problem: '', execution: {},
-    evidence: [{ file: 'step-01.png', step: 1 }, { file: 'step-02.png', step: 2 }],
+    evidence: [{ file: 'screen-01.png', step: 2, steps: [1, 2], screen: 'Create Loan: Structure' }],
     evidenceDir: '/evidence',
   });
   assert.equal(report.result, 'Passed');
   assert.deepEqual(report.checks, [{ check: 'Saved', expected: 'created', actual: 'Loan 9 created', passed: true }]);
-  assert.deepEqual(report.steps.map((step) => step.screenshots.length), [1, 1]);
+  assert.equal(report.screens.length, 1, 'both steps share one screenshot of their screen');
+  assert.equal(report.screens[0].title, 'Create Loan: Structure');
+  assert.deepEqual(report.screens[0].steps.map((step) => step.number), [1, 2]);
   assert.equal(report.title, 'Loan');
 });

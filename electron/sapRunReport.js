@@ -104,43 +104,48 @@ const RESULT_WORDS = { PASS: 'Passed', FAIL: 'Failed', PARTIAL: 'Partially verif
 function buildFunctionalReport({ run, observed, verdict, problem, execution, evidence, evidenceDir }) {
   const planSteps = Array.isArray(run.automation?.plan?.steps) ? run.automation.plan.steps : [];
   const observedSteps = Array.isArray(observed.steps) ? observed.steps.filter((row) => row && typeof row === 'object') : [];
-  const shotsByStep = new Map();
-  const unmatchedShots = [];
-  for (const item of evidence) {
-    const file = path.join(evidenceDir, item.file);
-    const number = Number(item.step);
-    if (number > 0) shotsByStep.set(number, [...(shotsByStep.get(number) || []), { path: file, caption: item.shows }]);
-    else unmatchedShots.push({ path: file, caption: item.shows, label: item.shows });
-  }
-
   // Observed steps follow the plan in order; extra rows (for example an SAP
   // information message the runner acknowledged) have no plan step.
   let planAt = 0;
-  const steps = observedSteps.map((row) => {
+  const displayForPlan = new Map(); // plan step number -> report step number
+  const steps = observedSteps.map((row, index) => {
     const label = String(row.step || '');
     let planStep = null;
-    if (planSteps[planAt] && planSteps[planAt].label === label) planStep = planSteps[planAt++];
+    if (planSteps[planAt] && planSteps[planAt].label === label) {
+      planStep = planSteps[planAt++];
+      displayForPlan.set(planAt, index + 1);
+    }
     const described = planStep ? describe(planStep)
       : /express information/i.test(label) ? { action: 'Acknowledge the SAP information message', input: '' }
         : { action: label, input: '' };
     const status = row.outcome === 'ok' ? 'Passed' : row.outcome === 'skipped' ? 'Not run' : 'Failed';
-    let screenshots = planStep ? shotsByStep.get(planAt) || [] : [];
-    if (!planStep && !planSteps.length) {
-      // An AI-driven run has no plan: match its screenshots by caption.
-      screenshots = unmatchedShots.filter((shot) => shot.label && shot.label.trim() === label.trim());
-      screenshots.forEach((shot) => { shot.used = true; });
-    }
     return {
+      number: index + 1,
       action: described.action,
       input: described.input,
       status,
       note: status === 'Passed' ? '' : plainLanguage(row.detail, label),
-      screenshots,
     };
   });
-  if (!planSteps.length) {
-    for (const [number, shots] of shotsByStep) if (steps[number - 1]) steps[number - 1].screenshots.push(...shots);
+
+  // One screenshot per screen: each covers the steps done on that screen. A run
+  // without a plan (AI-driven) numbers its screenshots by its own steps.
+  const toDisplay = (number) => (planSteps.length ? displayForPlan.get(number) : number);
+  const screens = [];
+  const otherScreenshots = [];
+  for (const item of evidence) {
+    const numbers = (Array.isArray(item.steps) && item.steps.length ? item.steps : [item.step])
+      .map((number) => toDisplay(Number(number))).filter((number) => number > 0 && steps[number - 1]);
+    const shot = { path: path.join(evidenceDir, item.file) };
+    if (!numbers.length) { otherScreenshots.push({ ...shot, caption: item.shows || 'Screenshot' }); continue; }
+    screens.push({ title: String(item.screen || '').replace(/:\s*$/, ''), steps: numbers.map((number) => steps[number - 1]), shot });
   }
+  // A failed step whose screen was never pictured still gets its explanation.
+  const pictured = new Set(screens.flatMap((screen) => screen.steps.map((step) => step.number)));
+  for (const step of steps) {
+    if (step.note && !pictured.has(step.number)) screens.push({ title: '', steps: [step], shot: null });
+  }
+  screens.sort((a, b) => a.steps[0].number - b.steps[0].number);
 
   // Verification checks are the case's own assert steps; the read-back of every
   // typed value is evidence for the step, not a separate business check.
@@ -187,7 +192,8 @@ function buildFunctionalReport({ run, observed, verdict, problem, execution, evi
     checksSummary: checks.length ? `${checks.filter((check) => check.passed).length} of ${checks.length} checks passed` : '',
     testData: testDataFrom(run.content),
     steps,
-    otherScreenshots: unmatchedShots.filter((shot) => !shot.used),
+    screens,
+    otherScreenshots,
     checks,
     documents,
     issues,

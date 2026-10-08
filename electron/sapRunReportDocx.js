@@ -1,5 +1,5 @@
 // Renders a run's functional report (see sapRunReport.js) as a Word document:
-// summary, objective, test data, step overview, each step's screenshots,
+// summary, objective, test data, step overview, one screenshot per screen,
 // verification checks, documents and observations. No dependency: a .docx is a zip of a
 // few XML parts, written here with Node's own zlib.
 const fs = require('fs');
@@ -231,16 +231,19 @@ function buildRunReportDocx(report) {
     ? table(['#', 'Action', 'Input', 'Result'], report.steps.map((step, index) => [index + 1, step.action, step.input, { status: step.status }]), [350, 2550, 1350, 750])
     : text('No steps were recorded.'));
 
-  if (report.steps.some((step) => step.screenshots.length || step.note)) {
-    body.push(text('Step details and screenshots', { style: 'Heading1' }));
-    report.steps.forEach((step, index) => {
-      if (!step.screenshots.length && !step.note) return;
-      const colors = tone(step.status);
-      body.push(paragraph(run(`Step ${index + 1}  `, { color: MUTED }) + run(step.action) + run(`   ${step.status}`, { bold: true, color: colors.text, size: 18 }), { style: 'Heading2' }));
-      if (step.input) body.push(text(step.input, {}, { color: MUTED }));
-      if (step.note) body.push(paragraph(run('What happened: ', { bold: true, color: colors.text }) + run(step.note)));
-      for (const shot of step.screenshots) body.push(pictureFor(shot, `Screen after step ${index + 1}: ${step.action}`));
-    });
+  if (report.screens.length) {
+    body.push(text('Screens', { style: 'Heading1' }));
+    for (const screen of report.screens) {
+      const first = screen.steps[0].number;
+      const last = screen.steps[screen.steps.length - 1].number;
+      const range = first === last ? `Step ${first}` : `Steps ${first}–${last}`;
+      body.push(paragraph(run(`${range}  `, { color: MUTED }) + run(screen.title || screen.steps[screen.steps.length - 1].action), { style: 'Heading2' }));
+      body.push(table(['#', 'Action', 'Input', 'Result'], screen.steps.map((step) => [step.number, step.action, step.input, { status: step.status }]), [350, 2550, 1350, 750]));
+      for (const step of screen.steps.filter((row) => row.note)) {
+        body.push(paragraph(run(`What happened at step ${step.number}: `, { bold: true, color: tone(step.status).text }) + run(step.note)));
+      }
+      if (screen.shot) body.push(pictureFor(screen.shot, `${screen.title || 'Screen'} — ${range.toLowerCase()}`));
+    }
   }
 
   if (report.otherScreenshots.length) {

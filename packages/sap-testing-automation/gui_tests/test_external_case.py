@@ -550,7 +550,7 @@ class ExternalCaseCompatibilityTests(unittest.TestCase):
         self.assertEqual(result["verdict"], "FAIL")
         self.assertEqual(sap.keys, [11], "nothing runs after a write whose outcome is unknown")
 
-    def test_every_step_leaves_a_screenshot_for_the_report(self):
+    def test_one_screenshot_per_screen_taken_before_leaving_it(self):
         class Camera(_Controller):
             def __init__(self):
                 self.values = {}
@@ -571,24 +571,38 @@ class ExternalCaseCompatibilityTests(unittest.TestCase):
                 Path(filepath).write_bytes(b"png")
                 return {"filepath": filepath}
 
-        sap = _Sap()
-        sap.controller = Camera()
+        class CameraSap(_Sap):
+            def __init__(self):
+                super().__init__()
+                self.controller = Camera()
+                self.title = "Entry"
+
+            def screen(self):
+                return {"title": self.title}
+
+            def send(self, vkey):
+                self.title = "Structure"
+                return {"success": True}
+
+        sap = CameraSap()
         plan = {"steps": [
-            {"action": "fill", "label": "Amount", "value": "100", "target": "wnd[0]/usr/txtAMOUNT"},
+            {"action": "fill", "label": "Company Code", "value": "LTFH", "target": "wnd[0]/usr/txtBUKRS"},
+            {"action": "key", "label": "Enter", "value": "0"},
+            {"action": "fill", "label": "Start date", "value": "01.01.2026", "target": "wnd[0]/usr/txtSTART"},
+            {"action": "fill", "label": "End date", "value": "01.01.2027", "target": "wnd[0]/usr/txtEND"},
             {"action": "fill", "label": "Missing", "value": "1", "target": "wnd[0]/usr/txtMISSING"},
             {"action": "assert", "label": "Amount kept", "source": "field",
-             "target": "wnd[0]/usr/txtAMOUNT", "expected": "100"},
+             "target": "wnd[0]/usr/txtSTART", "expected": "01.01.2026"},
         ]}
 
         with tempfile.TemporaryDirectory() as directory:
             result = execute(plan, sap, Path(directory) / "observations.json")
             files = sorted(path.name for path in (Path(directory) / "evidence").iterdir())
 
-        self.assertEqual(files, ["step-01.png", "step-02.png", "step-03.png"])
-        self.assertEqual([(row["file"], row["step"], row["shows"]) for row in result["evidence"]],
-                         [("step-01.png", 1, "Amount"), ("step-02.png", 2, "Missing"),
-                          ("step-03.png", 3, "Amount kept")])
-
+        self.assertEqual(files, ["screen-01.png", "screen-02.png"])
+        self.assertEqual([(row["file"], row["steps"], row["screen"]) for row in result["evidence"]],
+                         [("screen-01.png", [1], "Entry"),
+                          ("screen-02.png", [2, 3, 4, 5, 6], "Structure")])
 
 if __name__ == "__main__":
     unittest.main()

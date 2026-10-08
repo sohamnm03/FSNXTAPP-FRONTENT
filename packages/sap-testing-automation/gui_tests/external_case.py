@@ -146,23 +146,47 @@ def execute(plan, sap, output: Path):
     failures = []
     evidence_dir = output.parent / "evidence"
 
-    def screenshot(index, label):
-        """Picture of the screen a step left behind, for the run's Word report.
+    # One screenshot per screen, not per step: the steps done on a screen are
+    # collected here and pictured together just before a step that can leave
+    # that screen (a transaction, key, button or tab), and once at the end.
+    pending = []
+    shots = [0]
+
+    def navigates(step):
+        action = step.get("action")
+        if action in ("transaction", "key", "press", "tab"):
+            return True
+        return action == "select" and _is_tab_target(step.get("target", ""))
+
+    def screenshot_screen():
+        """Picture the current screen for the steps done on it, for the Word report.
 
         Evidence is worth less than the run: a screenshot that cannot be taken
         is skipped, never an error.
         """
+        if not pending:
+            return
+        numbers = list(pending)
+        pending.clear()
         take = getattr(sap.controller, "take_screenshot", None)
         if not callable(take):
             return
-        name = f"step-{index + 1:02d}.png"
+        shots[0] += 1
+        name = f"screen-{shots[0]:02d}.png"
         try:
+            title = ""
+            try:
+                title = str((sap.screen() or {}).get("title") or "").strip()
+            except Exception:
+                pass
             evidence_dir.mkdir(parents=True, exist_ok=True)
             result = take(str(evidence_dir / name))
             if isinstance(result, dict) and result.get("error"):
                 return
             if (evidence_dir / name).exists():
-                observed["evidence"].append(dict(file=name, shows=label, step=index + 1))
+                observed["evidence"].append(dict(
+                    file=name, shows=title or f"Screen after step {numbers[-1]}",
+                    screen=title, step=numbers[-1], steps=numbers))
         except Exception:
             return
 
@@ -386,6 +410,8 @@ def execute(plan, sap, output: Path):
                 writes += 1
                 observed["writesVerified"] = False
             flush()
+            if navigates(step):
+                screenshot_screen()
             try:
                 if not expects_popup:
                     dismiss_express_information()
@@ -483,7 +509,8 @@ def execute(plan, sap, output: Path):
                 # A Save/post or its verification is never skipped past: its outcome
                 # decides what SAP now holds, and a retry could duplicate a document.
                 if step.get("write") or step.get("verifiesWrite"):
-                    screenshot(index, step["label"])
+                    pending.append(index + 1)
+                    screenshot_screen()
                     raise
                 # Any other step that is off (a field, a tab, an expected value) is
                 # recorded and the run carries on, so one dry run reports every
@@ -491,12 +518,13 @@ def execute(plan, sap, output: Path):
                 entry.update(outcome="error", detail=str(error))
                 failures.append(f"{step['label']}: {error}")
                 observed["deviations"].append(f"{step['label']}: {error}")
-                screenshot(index, step["label"])
+                pending.append(index + 1)
                 flush()
                 continue
             entry.update(outcome="ok", detail="Executed and checked")
-            screenshot(index, step["label"])
+            pending.append(index + 1)
             flush()
+        screenshot_screen()
         if failures:
             observed.update(
                 verdict="FAIL",
