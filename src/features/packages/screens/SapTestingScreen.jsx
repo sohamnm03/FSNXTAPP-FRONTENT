@@ -104,6 +104,8 @@ export default function SapTestingScreen({ onBack }) {
   // via sapTerminalManager's run-status poll below) for a write the AI
   // Assistant is about to make right now, mid-conversation.
   const [pendingElicitation, setPendingElicitation] = useState(null);
+  const [pendingWalkthrough, setPendingWalkthrough] = useState(null);
+  const [isAnsweringWalkthrough, setIsAnsweringWalkthrough] = useState(false);
   const [isAnsweringElicitation, setIsAnsweringElicitation] = useState(false);
   const [error, setError] = useState('');
   const [isStarting, setIsStarting] = useState(false);
@@ -163,6 +165,7 @@ export default function SapTestingScreen({ onBack }) {
         setStatus(run.status);
         setActiveSource(run.source || 'claude');
         setPendingElicitation(run.pendingElicitation || null);
+        setPendingWalkthrough(run.pendingWalkthrough || null);
         if (FINAL_STATUSES.has(run.status) && run.sessionId) setSessionId(run.sessionId);
         if (run.status === 'completed') {
           setMessages((current) => [...current, { id: `${run.id}-assistant`, role: run.source === 'direct' ? 'runner' : 'assistant', text: run.response || 'Completed.' }]);
@@ -596,6 +599,21 @@ export default function SapTestingScreen({ onBack }) {
     }
   }
 
+  // After a failed dry run the main process waits for this answer before the AI
+  // touches SAP again. Declining keeps the draft and ends the run.
+  async function answerWalkthrough(approve) {
+    if (!pendingWalkthrough) return;
+    setIsAnsweringWalkthrough(true);
+    try {
+      await sapTerminalService.answerWalkthrough(runId, approve);
+      setPendingWalkthrough(null);
+    } catch (answerError) {
+      setError(answerError.message);
+    } finally {
+      setIsAnsweringWalkthrough(false);
+    }
+  }
+
   function newChat() {
     setSessionId('');
     setRunId('');
@@ -604,6 +622,7 @@ export default function SapTestingScreen({ onBack }) {
     setMessages([]);
     setPendingConfirmation(null);
     setPendingElicitation(null);
+    setPendingWalkthrough(null);
     caseCreationRef.current = null;
     setError('');
     setPrompt('');
@@ -1045,6 +1064,37 @@ export default function SapTestingScreen({ onBack }) {
             <div className="sap-confirmation-actions">
               <AppButton disabled={isAnsweringElicitation} onClick={() => answerElicitation(false)} title="Cancel" variant="secondary" />
               <AppButton loading={isAnsweringElicitation} onClick={() => answerElicitation(true)} title="Confirm & Save" />
+            </div>
+          </section>
+        </div>
+      ) : null}
+      {pendingWalkthrough ? (
+        <div className="sap-confirmation-backdrop" role="presentation">
+          <section aria-labelledby="sap-walkthrough-title" aria-modal="true" className="sap-confirmation-dialog" role="dialog">
+            <p className="eyebrow">HUMAN APPROVAL REQUIRED</p>
+            <h2 id="sap-walkthrough-title">Let the AI walk through {pendingWalkthrough.caseId}?</h2>
+            <dl>
+              <div>
+                <dt>Dry run</dt>
+                <dd>{pendingWalkthrough.attempt} of {pendingWalkthrough.maxAttempts} did not pass{pendingWalkthrough.problems ? ` — ${pendingWalkthrough.problems} step${pendingWalkthrough.problems === 1 ? '' : 's'} need fixing` : ''}.</dd>
+              </div>
+              <div>
+                <dt>First problem</dt>
+                <dd>{pendingWalkthrough.summary}</dd>
+              </div>
+              <div>
+                <dt>What happens</dt>
+                <dd>The AI Assistant follows the whole case in SAP ({pendingWalkthrough.systemId}), fixes every step that is off in the Markdown and script, then the dry run repeats.</dd>
+              </div>
+              <div>
+                <dt>Database writes</dt>
+                <dd>{pendingWalkthrough.writes} — performed once more during the walkthrough.</dd>
+              </div>
+            </dl>
+            <p className="sap-confirmation-warning">The walkthrough repeats this case's Save, so it creates one more document in the displayed SAP system. Skip keeps the current draft and ends test case creation.</p>
+            <div className="sap-confirmation-actions">
+              <AppButton disabled={isAnsweringWalkthrough} onClick={() => answerWalkthrough(false)} title="Skip" variant="secondary" />
+              <AppButton loading={isAnsweringWalkthrough} onClick={() => answerWalkthrough(true)} title="Walk through & fix" />
             </div>
           </section>
         </div>

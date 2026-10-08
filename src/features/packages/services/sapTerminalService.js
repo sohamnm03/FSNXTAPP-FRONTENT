@@ -50,6 +50,9 @@ export const sapTerminalService = {
   answerElicitation(runId, accept) {
     return localTerminal().answerElicitation(runId, accept);
   },
+  answerWalkthrough(runId, approve) {
+    return localTerminal().answerWalkthrough(runId, approve);
+  },
   start(prompt, sessionId, lane, options) {
     return localTerminal().start(prompt, sessionId, lane, options);
   },

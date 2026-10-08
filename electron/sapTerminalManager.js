@@ -310,6 +310,7 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       source: run.source || 'claude',
       resultPath: run.resultPath || '',
       pendingElicitation: run.status === 'running' ? readPendingElicitation(run.id) : null,
+      pendingWalkthrough: run.pendingWalkthrough || null,
     };
   }
 
@@ -1426,9 +1427,11 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         // A run that recorded no plan step never reached the case (login, runtime or
         // system problem): nothing in the Markdown or plan can fix that.
         const reachedCase = Array.isArray(observations?.steps) && observations.steps.length > 0;
+        const problems = reachedCase ? observations.steps.filter((row) => row?.outcome !== 'ok').length : 0;
         return {
           verdict: attemptRun.verdict || (runnerPassed ? 'PASS' : 'FAIL'),
           started: reachedCase,
+          problems,
           summary: plainText(reachedCase ? observations.summary : consoleReason(attemptRun) || observations?.summary || attemptRun.error).trim() || 'The dry run failed.',
           evidence: failureEvidence(observations, attemptRun),
           resultPath: attemptRun.resultPath || '',
@@ -1446,19 +1449,29 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
         const seeded = JSON.stringify(current.plan, null, 2);
         fs.mkdirSync(path.dirname(destination), { recursive: true });
         fs.writeFileSync(destination, seeded, 'utf8');
+        // A GUI case gets a live, whole-case walkthrough (the user approved it, see
+        // askForWalkthrough): the AI follows the Markdown and plan in SAP from the first
+        // step to the last and fixes every mismatch, instead of one failure per dry run.
+        const live = Boolean(approvedGuiTool);
         const prompt = [
           `The testcase ${created.filePath} was just created and its saved repeat-run automation failed automatic dry run ${attempt} of ${MAX_VERIFY_ATTEMPTS}. Verdict: ${outcome.verdict}.`,
-          `Evidence from the dry run:\n${outcome.evidence || outcome.summary}`,
-          `The current plan is at ${destination}. Edit that plan so the next dry run passes, and edit the Markdown ${created.filePath} only where the documented flow or expected values were wrong or must stay consistent with the plan. Edit only those two files; do not create, copy or move any other file.`,
-          'Do NOT use any SAP tool and do not perform any SAP action; work only from what you observed while creating this case and from the evidence above. Fix the cause, not the symptom: add a missing step (for example key "0" so SAP derives a value, a tab step, an explicit fill for a value SAP only remembers per user), or correct a control id or expected value the evidence proves wrong. Never weaken or delete an assertion to make it pass, never remove a write or its verification, and never add database writes beyond this case. If the failure is environmental (SAP not logged on, wrong system, data already used) or a genuine product defect, change nothing and say why.',
-          'Reply with one short paragraph saying what you changed and why.',
+          `Everything the dry run reported (it continues past steps that are off, so this can list several problems):\n${outcome.evidence || outcome.summary}`,
+          live
+            ? `The user approved an AI-assisted walkthrough of the WHOLE case in SAP. Attach to the logged-on session with sap_connect_existing and confirm sap_get_session_info shows ${identity.systemId} before acting. Follow the plan at ${destination} step by step from the first step to the last, against the live screens. At every step compare the plan's control id, value, key and expected result with what SAP actually shows; where they differ, correct the plan (discover ids with sap_get_screen_elements, add any missing tab/Enter/fill/popup step, fix expected values to what SAP shows for the intended business result). Do not stop at the first problem: fix every step, including those after the ones listed above. Perform the case's own Save/post steps exactly once as part of the walkthrough, verify the new document number from SAP, and do not add any other write. If a Save outcome is uncertain, inspect SAP instead of saving again.`
+            : 'Do NOT use any SAP tool; work only from what you observed while creating this case and from the evidence above, and fix every problem listed, not only the first.',
+          `Write the corrected full plan to ${destination} (observedOutcome "PASS" only if every step was observed to work) and update the Markdown ${created.filePath} wherever the documented steps, controls or expected values were wrong, so both describe the same flow. Edit only those two files; do not create, copy or move any other file.`,
+          'Never weaken or delete an assertion just to make it pass, never remove a write or its verification, and never add database writes beyond this case. If the failure is environmental (SAP not logged on, wrong system, data already used) or a genuine product defect, change nothing and say why.',
+          'Reply with one short paragraph listing what you changed and why.',
           automationPrompt(lane, destination),
         ].join('\n\n');
         // Edits are confined to this case's own folder, so a repair cannot drop
         // extra copies of the testcase anywhere else in the archive.
         const caseFolder = path.dirname(created.filePath);
         const args = ['-p', prompt, '--output-format', 'json', '--permission-mode', 'dontAsk',
-          '--add-dir', caseFolder, '--allowedTools', claudeAbsoluteEditRule(caseFolder)];
+          '--add-dir', caseFolder, '--allowedTools', ...(live ? [approvedGuiTool] : []), claudeAbsoluteEditRule(caseFolder)];
+        if (live) {
+          args.push('--append-system-prompt', `${DISPLAY_GUIDANCE} This is an FSNXT walkthrough repair of testcase ${created.caseId} on ${identity.systemId}, approved by the user in the app. That approval covers repeating this testcase's own Save once during the walkthrough; announce it and perform it without another confirmation. It covers this testcase's writes only. Verify the target SAP system before writing.`);
+        }
         if (run.sessionId) args.push('--resume', run.sessionId);
         let note = '';
         await new Promise((resolve) => {
@@ -1487,6 +1500,22 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
           return { changed: false, note: `The proposed repair was not accepted (${error.message}) and was discarded.` };
         }
         return { changed, note: note || (changed ? 'Repair applied.' : 'No change was proposed.') };
+      }
+
+      // Pauses the loop until the user answers in the app (answerWalkthrough).
+      function askForWalkthrough(created, identity, attempt, outcome) {
+        return new Promise((resolve) => {
+          run.walkthroughDecision = resolve;
+          run.pendingWalkthrough = {
+            caseId: created.caseId,
+            systemId: identity.systemId,
+            attempt,
+            maxAttempts: MAX_VERIFY_ATTEMPTS,
+            problems: outcome.problems || 0,
+            summary: outcome.summary,
+            writes: created.writes,
+          };
+        });
       }
 
       function recordVerification(created, identity, attempts, passed) {
@@ -1532,7 +1561,18 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
             }
             run.response += `\n${created.caseId}: dry run ${attempt} did not pass.`;
             if (attempt === MAX_VERIFY_ATTEMPTS) break;
-            run.response += ' The AI Assistant is checking how to fix it.';
+            if (approvedGuiTool) {
+              run.response += ` Waiting for your approval to walk through the case in SAP.`;
+              const approved = await askForWalkthrough(created, identity, attempt, outcome);
+              if (!approved) {
+                entry.fix = 'Walkthrough declined by the user.';
+                run.response += `\n${created.caseId}: Walkthrough declined.`;
+                break;
+              }
+              run.response += `\n${created.caseId}: The AI Assistant is walking through the whole case in SAP to fix every step.`;
+            } else {
+              run.response += ' The AI Assistant is checking how to fix it.';
+            }
             const repaired = await repairFromDryRun(created, identity, attempt, outcome);
             entry.fix = repaired.note;
             run.response += `\n${created.caseId}: ${repaired.changed ? 'Fix applied; running again.' : 'No fix found.'}`;
@@ -1623,6 +1663,19 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
       return publicRun(run);
     },
     answerElicitation,
+    // The user's answer to "let the AI walk through the case in SAP?" after a
+    // failed dry run. Nothing in SAP happens until this is answered yes.
+    answerWalkthrough(runId, approve) {
+      const run = requireRun(runId);
+      if (!run.pendingWalkthrough || typeof run.walkthroughDecision !== 'function') {
+        throw new Error('No walkthrough is waiting for an answer.');
+      }
+      const decide = run.walkthroughDecision;
+      run.pendingWalkthrough = null;
+      run.walkthroughDecision = null;
+      decide(Boolean(approve));
+      return publicRun(run);
+    },
     stopAll() {
       connectionCheckProcess?.kill();
       runs.forEach((run) => run.process?.kill());

@@ -15,22 +15,26 @@ produces no plan. Never reuse a document number from authoring; capture it.
 ## Automatic dry run after creation
 
 Once a created case has its Markdown and script, the app immediately dry-runs it through
-the same runner as Confirm & Run. The steps you authored are not changed up front. If a run
-fails, you are resumed with the failure evidence (failed assertions, steps that did not
-complete, deviations, console tail) and **no SAP tools**; edit the plan seeded at the path
-named in that prompt, and the Markdown only where the documented flow was wrong. The app
-re-validates and republishes the script, then dry-runs again.
+the same runner as Confirm & Run. The authored steps are not changed up front.
 
-- At most **3 dry runs** per case; a repair follows each failed run except the last.
-- The loop ends at the first pass, after the third run, or when a repair changes nothing.
-- A dry run executes the case's real writes, so each run (including a failed one that got as
-  far as Save) can create another document on the system. Document numbers are listed in
-  `verification-log.md`.
-- Pass: the creation reports success. Otherwise it reports failure, keeps the latest
-  Markdown and script as a draft, and writes `verification-log.md` beside them.
+- The GUI runner does not stop at a step that is off (a missing control, a wrong value, a
+  missing tab): it records the step as an error and carries on, so one dry run reports every
+  mismatch. A Save/post step or its verification still stops the run when it fails.
+- After a failed dry run the app asks the user before anything else touches SAP. On approval,
+  the AI Assistant walks through the **whole** case live in SAP, follows the plan from the
+  first step to the last, fixes every step that is off in the plan and the Markdown, and
+  performs the case's own Save once. Skipping keeps the draft and ends creation.
+- At most **3 dry runs** per case; a walkthrough can follow each failed run except the last.
+  The loop ends at the first pass, after the third run, when a walkthrough changes nothing,
+  or when the user skips.
+- A dry run that never reaches the case (login, runtime or system problem) is reported in one
+  line and is not sent to the AI.
+- Every dry run and walkthrough executes the case's real writes, so each one that reaches the
+  Save creates another document. Document numbers are listed in `verification-log.md`.
+- Pass: creation reports success. Otherwise it reports failure, keeps the latest Markdown and
+  script as a draft, and writes `verification-log.md` beside them.
 - Never weaken or drop an assertion, remove a write or its verification, or add writes to
-  make a run pass. Environmental failures (SAP not logged on, wrong system) and product
-  defects are reported, not worked around.
+  make a run pass. Environmental failures and product defects are reported, not worked around.
 
 ## Plan shape
 

@@ -200,6 +200,12 @@ async function finishDryRun(calls, observation, exitCode = 0) {
   return runner;
 }
 
+// The loop pauses for the user's approval before each walkthrough.
+async function approveWalkthrough(manager, run, approve = true) {
+  await until(() => manager.getRun(run.id).pendingWalkthrough, 'the walkthrough question');
+  return manager.answerWalkthrough(run.id, approve);
+}
+
 async function nextRepair(calls, seen) {
   await until(() => calls.filter((call) => call.command.endsWith('claude.exe') || call.args.includes('--resume')).length > seen, 'an AI repair');
   return calls.filter((call) => call.command.endsWith('claude.exe') || call.args.includes('--resume'))[seen];
@@ -295,9 +301,15 @@ test('a failing dry run is repaired by the AI and the loop ends on the first pas
   const { manager, calls, run, saved } = await createCaseForLoop(context);
   assert.equal(manager.getRun(run.id).status, 'finalizing');
   await finishDryRun(calls, failingObservation, 1);
+  const question = (await until(() => manager.getRun(run.id).pendingWalkthrough, 'the walkthrough question'), manager.getRun(run.id).pendingWalkthrough);
+  assert.equal(question.attempt, 1);
+  assert.equal(question.problems, 1);
+  assert.equal(calls.filter((call) => call.args.includes('--resume')).length, 0, 'nothing touches SAP before the user approves');
+  manager.answerWalkthrough(run.id, true);
   const repair = await nextRepair(calls, 1);
   assert.equal(repair.args[repair.args.indexOf('--resume') + 1], '00000000-0000-0000-0000-000000000002');
-  assert.equal(repair.args.some((arg) => String(arg).includes('mcp__')), false);
+  assert.ok(repair.args.includes('mcp__sap-gui__*'), 'the approved walkthrough drives SAP');
+  assert.match(repair.args[repair.args.indexOf('-p') + 1], /WHOLE case/);
   assert.match(repair.args[repair.args.indexOf('-p') + 1], /Product Type defaulted to FAC/);
   const repaired = { ...validPlan, steps: [{ action: 'key', label: 'Enter', value: '0' }, ...validPlan.steps] };
   fs.writeFileSync(candidatePath(saved), JSON.stringify(repaired));
@@ -320,6 +332,7 @@ test('three failed dry runs end the loop, report failure and keep the draft', as
   for (let attempt = 1; attempt <= 3; attempt++) {
     await finishDryRun(calls, failingObservation, 1);
     if (attempt === 3) break;
+    await approveWalkthrough(manager, run);
     const repair = await nextRepair(calls, attempt);
     fs.writeFileSync(candidatePath(saved), JSON.stringify({ ...validPlan, steps: [{ action: 'key', label: `Attempt ${attempt}`, value: '0' }, ...validPlan.steps] }));
     repair.child.emit('close', 0);
@@ -339,6 +352,7 @@ test('three failed dry runs end the loop, report failure and keep the draft', as
 test('the loop stops early when the AI proposes no change', async (context) => {
   const { manager, calls, run, saved } = await createCaseForLoop(context);
   await finishDryRun(calls, failingObservation, 1);
+  await approveWalkthrough(manager, run);
   const repair = await nextRepair(calls, 1);
   repair.child.stdout.emit('data', Buffer.from(JSON.stringify({ result: 'SAP was not logged on; nothing to change.' })));
   repair.child.emit('close', 0);
@@ -380,6 +394,7 @@ test('a dry run that never reaches the case is reported plainly and not sent to 
 test('an AI repair can only edit the case folder', async (context) => {
   const { manager, run, calls, saved, prep } = await createCaseForLoop(context);
   await finishDryRun(calls, failingObservation, 1);
+  await approveWalkthrough(manager, run);
   const repair = await nextRepair(calls, 1);
   const caseFolder = path.dirname(saved);
   assert.equal(repair.args[repair.args.indexOf('--add-dir') + 1], caseFolder);
@@ -387,6 +402,19 @@ test('an AI repair can only edit the case folder', async (context) => {
   assert.equal(repair.args.includes(absoluteEditRule(prep.caseDirectory)), false);
   repair.child.emit('close', 0);
   await until(() => manager.getRun(run.id).status === 'failed', 'the loop to end');
+});
+
+test('declining the walkthrough keeps the draft and ends creation without touching SAP', async (context) => {
+  const { manager, calls, run, saved } = await createCaseForLoop(context);
+  await finishDryRun(calls, failingObservation, 1);
+  await approveWalkthrough(manager, run, false);
+  await until(() => manager.getRun(run.id).status === 'failed', 'the case to be reported as failed');
+  const done = manager.getRun(run.id);
+  assert.match(done.response, /Walkthrough declined\./);
+  assert.equal(done.pendingWalkthrough, null);
+  assert.equal(calls.filter((call) => call.args.includes('--resume')).length, 0);
+  assert.ok(fs.existsSync(saved.replace(/.md$/, '.py')));
+  assert.throws(() => manager.answerWalkthrough(run.id, true), /No walkthrough is waiting/);
 });
 
 const successfulObservation = {
