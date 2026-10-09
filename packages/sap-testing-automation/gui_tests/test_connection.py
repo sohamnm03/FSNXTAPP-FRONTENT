@@ -9,16 +9,20 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "tools" / "mcp-sap-gui" / ".venv" / "Lib" / "site-packages"))
+sys.path.insert(0, str(REPO_ROOT))
 from mcp_sap_gui.sap_controller import SAPGUIController  # noqa: E402
 import pythoncom  # noqa: E402
+from gui_tests.sap_connection import connect_by_application_server  # noqa: E402
 
 
 def main() -> int:
     pythoncom.CoInitialize()
     controller = SAPGUIController()
     try:
-        controller.connect(
-            system_description=os.environ["SAP_TEST_LOGON_DESCRIPTION"],
+        connect_by_application_server(
+            controller,
+            application_server=os.environ["SAP_TEST_APPLICATION_SERVER"],
+            system_number=os.environ["SAP_TEST_SYSTEM_NUMBER"],
             client=os.environ["SAP_TEST_CLIENT"],
             user=os.environ["SAP_TEST_USERNAME"],
             password=os.environ["SAP_TEST_PASSWORD"],

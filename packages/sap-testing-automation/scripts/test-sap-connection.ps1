@@ -7,9 +7,6 @@ param(
     [string]$Client,
 
     [Parameter(Mandatory = $true)]
-    [string]$LogonDescription,
-
-    [Parameter(Mandatory = $true)]
     [string]$ApplicationServer,
 
     [Parameter(Mandatory = $true)]
@@ -51,6 +48,7 @@ function Test-EstablishedSapSocket {
 }
 
 try {
+    $expectedConnectionString = "/H/$ApplicationServer/S/32$SystemNumber"
     $sapRotWrapper = New-Object -ComObject 'SapROTWr.SapROTWrapper'
     $sapGui = $sapRotWrapper.GetROTEntry('SAPGUI')
     if (-not $sapGui) {
@@ -72,10 +70,10 @@ try {
 
     for ($connectionIndex = 0; $connectionIndex -lt $application.Children.Count; $connectionIndex++) {
         $connection = $application.Children.Item($connectionIndex)
-        $description = ''
-        try { $description = [string]$connection.Description } catch { $description = '' }
+        $connectionString = ''
+        try { $connectionString = [string]$connection.ConnectionString } catch { $connectionString = '' }
 
-        if ($description -ne $LogonDescription) { continue }
+        if (-not $connectionString.Equals($expectedConnectionString, [StringComparison]::OrdinalIgnoreCase)) { continue }
 
         for ($sessionIndex = 0; $sessionIndex -lt $connection.Children.Count; $sessionIndex++) {
             $session = $connection.Children.Item($sessionIndex)
@@ -91,7 +89,7 @@ try {
         }
     }
 
-    Write-Result $false "No logged-in session matches $LogonDescription ($SystemId/$Client)."
+    Write-Result $false "No logged-in session matches $expectedConnectionString ($SystemId/$Client)."
 } catch {
     Write-Result $false 'SAP Logon is not running, SAP GUI Scripting is disabled, or no session is available.'
 }

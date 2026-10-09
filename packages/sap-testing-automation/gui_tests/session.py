@@ -47,6 +47,7 @@ from mcp_sap_gui.models import VKey  # noqa: E402
 from mcp_sap_gui.sap_controller import SAPGUIController  # noqa: E402
 
 from .journal import Journal  # noqa: E402
+from .sap_connection import connect_by_application_server  # noqa: E402
 
 
 class WriteRefused(Exception):
@@ -136,7 +137,8 @@ class GuiSession:
     """A live SAP GUI session, with this workspace's rules wrapped around it."""
 
     def __init__(self, journal: Journal, expect_system: str, expect_client: str, *,
-                 logon_description: str | None = None, sap_user: str | None = None,
+                 application_server: str | None = None, system_number: str | None = None,
+                 sap_user: str | None = None,
                  sap_password: str | None = None, language: str = "EN",
                  allowed_transactions: Iterable[str] | None = None,
                  blocked_transactions: Iterable[str] | None = None,
@@ -144,7 +146,8 @@ class GuiSession:
         self.journal = journal
         self.expect_system = expect_system
         self.expect_client = expect_client
-        self.logon_description = logon_description
+        self.application_server = application_server
+        self.system_number = system_number
         self.sap_user = sap_user
         self.sap_password = sap_password
         self.language = language
@@ -178,13 +181,15 @@ class GuiSession:
         always answers it by keeping every other session alive and continuing
         with this new one.
         """
-        if not (self.logon_description and self.sap_user and self.sap_password):
+        if not (self.application_server and self.system_number and self.sap_user and self.sap_password):
             raise SystemMismatch(
-                "login() needs logon_description, sap_user and sap_password — "
+                "login() needs application_server, system_number, sap_user and sap_password — "
                 "resolve them from config/sap-systems.json before constructing GuiSession."
             )
-        self.controller.connect(
-            system_description=self.logon_description,
+        connect_by_application_server(
+            self.controller,
+            application_server=self.application_server,
+            system_number=self.system_number,
             client=self.expect_client,
             user=self.sap_user,
             password=self.sap_password,

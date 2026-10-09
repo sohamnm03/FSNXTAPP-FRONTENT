@@ -1125,7 +1125,6 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
           '-File', scriptPath,
           '-SystemId', String(system.systemId),
           '-Client', String(system.client),
-          '-LogonDescription', String(system.sapGui.logonDescription),
           '-ApplicationServer', String(system.rfc.applicationServer),
           '-SystemNumber', String(system.rfc.systemNumber),
         ], {
@@ -1198,7 +1197,6 @@ async function createSapTerminalManager(electronApp, claudeTokenStore, dialog) {
           '-File', scriptPath,
           '-SystemId', String(system.systemId),
           '-Client', String(system.client),
-          '-LogonDescription', String(system.sapGui.logonDescription),
           '-ApplicationServer', String(system.rfc.applicationServer),
           '-SystemNumber', String(system.rfc.systemNumber),
         ], {

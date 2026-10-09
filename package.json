@@ -22,6 +22,7 @@
     "lint": "eslint .",
     "test:desktop-auth": "node --test electron/googleDesktopAuth.test.js",
     "test:sap-payload": "node --test electron/sapAutomationPayload.test.js",
+    "test:package-windows": "node --test scripts/packageWindows.test.js",
     "check:syntax": "node scripts/checkSyntax.js",
     "check": "npm run lint && npm run check:syntax && npm run build"
   },

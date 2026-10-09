@@ -58,6 +58,10 @@ the profile parameter `sapgui/user_scripting` and belongs to Basis.
         "readOnly": false,
         "profile": "full",
         "auditLog": "logs/sap-gui-audit.jsonl"
+      },
+      "rfc": {
+        "applicationServer": "10.40.1.33",
+        "systemNumber": "00"
       }
     }
   ]
@@ -66,7 +70,9 @@ the profile parameter `sapgui/user_scripting` and belongs to Basis.
 
 | Field | Meaning |
 | --- | --- |
-| `logonDescription` | **Exact** SAP Logon Pad entry name — the argument to `sap_connect` |
+| `logonDescription` | Display label only; it is not used to open a connection |
+| `rfc.applicationServer` | Host name or IP address used for every fresh SAP GUI connection |
+| `rfc.systemNumber` | Two-digit system number; direct SAP GUI port is `32<systemNumber>` |
 | `readOnly` | `true` adds `--read-only`, disabling every mutating tool |
 | `profile` | `exploration` \| `operator` \| `full` — how many tools are exposed |
 | `auditLog` | JSON-lines audit trail, repo-relative; the directory is created for you |
@@ -83,7 +89,8 @@ with an explicit `mcpServerName`, because it shares SYSID and client with
 ### Credentials
 
 Reused from the same registry entry — there is no second credential to maintain.
-The generator emits `SAP_USER` / `SAP_PASSWORD` / `SAP_CLIENT` / `SAP_LANGUAGE`
+The generator emits `SAP_USER` / `SAP_PASSWORD` / `SAP_CLIENT` / `SAP_LANGUAGE` /
+`SAP_APPLICATION_SERVER` / `SAP_SYSTEM_NUMBER`
 into the server's env block, with the password as a `${SAP_DS4_100_NIIF_PASSWORD}`
 reference resolved from `.claude/settings.local.json`:
 
@@ -111,10 +118,10 @@ To rotate: change the value, restart Claude Code. No regeneration needed —
 powershell -ExecutionPolicy Bypass -File "scripts\sync-sap-systems.ps1"
 ```
 
-The generator refuses a registry with a missing `logonDescription`, a bad client
-format, a duplicate id, a server-name collision, an unknown `defaultSystem`, or a
-`sapGui` block on a system that has none. It warns loudly if a
-`logonDescription` looks like production, and if a password is unset.
+The generator refuses a registry with missing direct-connection metadata, a bad
+client format, a duplicate id, a server-name collision, an unknown
+`defaultSystem`, or a `sapGui` block on a system that has none. It warns loudly
+if a display label looks like production, and if a password is unset.
 
 ## Connecting
 
@@ -123,7 +130,10 @@ format, a duplicate id, a server-name collision, an unknown `defaultSystem`, or 
   consumed, no dialogs. Use `sap_list_connections` first if several sessions are
   open; it reports index, user, system, client and current t-code per session.
 - **`sap_connect(system_description="NIIF - Development")`** — opens a fresh
-  connection and types the credentials. Use only when nothing is logged on.
+  direct connection and types the credentials. The upstream tool schema still
+  requires `system_description`, but this workspace ignores it and connects to
+  the MCP server's configured `rfc.applicationServer` / `rfc.systemNumber`.
+  Use only when nothing is logged on.
 
 `sap_connect` lands on the **"License Information for Multiple Logons"** dialog
 whenever `FS_DEV` already has a dialog session. The tool still returns `ok`, but
@@ -165,8 +175,9 @@ attached to is left alone.
   secrets masked. Gitignored: it can contain business data.
 
 The landscape hazard is real: SAP Logon Pad here also holds **"NIIF - Production"**
-(PS4) and **"TFSIN - S4 Production"** (PS4). The registry binds `sap-gui` to
-"NIIF - Development", but `sap_connect_existing` attaches to whatever is open.
+(PS4) and **"TFSIN - S4 Production"** (PS4). Fresh connections are bound to the
+development application server in the registry, but `sap_connect_existing`
+attaches to whatever is open.
 Read `sap_get_session_info` and confirm `DS4` / `100` before anything that writes.
 
 ## Verification (2026-08-16)

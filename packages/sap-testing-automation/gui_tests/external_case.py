@@ -563,7 +563,9 @@ def main(plan=None):
     pythoncom.CoInitialize()
     try:
         journal = Journal(os.environ["FSNXT_RUN_ID"], sid, plan["caseId"])
-        sap = GuiSession(journal, name, client, logon_description=login["logon_description"],
+        sap = GuiSession(journal, name, client,
+                         application_server=login["application_server"],
+                         system_number=login["system_number"],
                          sap_user=login["user"], sap_password=login["password"],
                          language=login["language"],
                          allowed_transactions=login["allowed_transactions"],

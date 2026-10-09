@@ -21,6 +21,7 @@ const developmentMcpSource = path.join(
 const developmentMcpBuildRoot = path.join(projectRoot, '.build', 'sap-development-mcp');
 const payloadPath = path.join(buildRoot, 'sap-testing-automation.fsnxtpkg');
 const generatedKeyPath = path.join(projectRoot, 'electron', 'sapAutomationKey.generated.js');
+const releaseRoot = path.join(projectRoot, 'release');
 
 function run(command, args, options = {}) {
   const result = spawnSync(command, args, {
@@ -39,6 +40,38 @@ function requireBuildPassword() {
     throw new Error('Set SAP_AUTOMATION_PASSWORD to at least 12 characters before packaging Windows builds.');
   }
   return password;
+}
+
+function publishElectronBuilderOutput(outputRoot, destinationRoot = releaseRoot) {
+  if (!fs.existsSync(outputRoot)) {
+    throw new Error(`Electron Builder produced no output at ${outputRoot}.`);
+  }
+  const resolvedDestinationRoot = path.resolve(destinationRoot);
+  fs.mkdirSync(resolvedDestinationRoot, { recursive: true });
+  const entries = fs.readdirSync(outputRoot, { withFileTypes: true });
+  if (!entries.length) throw new Error('Electron Builder produced an empty output directory.');
+
+  for (const entry of entries) {
+    const source = path.join(outputRoot, entry.name);
+    const destination = path.join(resolvedDestinationRoot, entry.name);
+    if (path.dirname(destination) !== resolvedDestinationRoot) {
+      throw new Error(`Refusing to publish an unexpected build output path: ${destination}`);
+    }
+    if (entry.isDirectory()) {
+      fs.rmSync(destination, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
+      fs.cpSync(source, destination, { recursive: true });
+    } else if (entry.isFile()) {
+      fs.copyFileSync(source, destination);
+    }
+  }
+}
+
+function removeTemporaryDirectory(directory) {
+  try {
+    fs.rmSync(directory, { recursive: true, force: true, maxRetries: 20, retryDelay: 250 });
+  } catch (error) {
+    console.warn(`Could not remove temporary packaging directory ${directory}: ${error.message}`);
+  }
 }
 
 function buildDevelopmentMcpRuntime() {
@@ -98,6 +131,7 @@ async function main() {
   buildDevelopmentMcpRuntime();
   const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'fsnxt-sap-build-'));
   const archivePath = path.join(temporaryRoot, 'sap-testing-automation.tar.gz');
+  const electronBuilderOutput = path.join(temporaryRoot, 'electron-builder-output');
   fs.mkdirSync(buildRoot, { recursive: true });
 
   try {
@@ -128,9 +162,18 @@ async function main() {
     );
 
     const electronBuilderCli = require.resolve('electron-builder/cli.js');
-    run(process.execPath, [electronBuilderCli, '--win']);
+    // Building directly under release/ is unreliable on Windows when Defender,
+    // Search Indexer, an IDE, or a repository watcher opens the freshly
+    // extracted Electron directory between electron-builder's extract and
+    // rename steps. Stage outside the workspace, then publish completed output.
+    run(process.execPath, [
+      electronBuilderCli,
+      '--win',
+      `-c.directories.output=${electronBuilderOutput}`,
+    ]);
+    publishElectronBuilderOutput(electronBuilderOutput);
   } finally {
-    fs.rmSync(temporaryRoot, { recursive: true, force: true });
+    removeTemporaryDirectory(temporaryRoot);
     fs.rmSync(buildRoot, { recursive: true, force: true });
     fs.rmSync(generatedKeyPath, { force: true });
     fs.rmSync(developmentMcpBuildRoot, { recursive: true, force: true });
@@ -144,4 +187,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { buildDevelopmentMcpRuntime };
+module.exports = { buildDevelopmentMcpRuntime, publishElectronBuilderOutput };

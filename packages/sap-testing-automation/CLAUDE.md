@@ -136,7 +136,7 @@ off a real SAP system.
 
 | Server | Use for |
 |---|---|
-| `sap-gui` | The whole GUI lane. Runs a t-code, fills a selection screen, reads a field / ALV / tree, handles popups, takes screenshots. 57 tools. Bound to `DS4_100_NIIF` (SAP Logon "NIIF - Development"). |
+| `sap-gui` | The whole GUI lane. Runs a t-code, fills a selection screen, reads a field / ALV / tree, handles popups, takes screenshots. 57 tools. Bound directly to the `DS4_100_NIIF` application server from `config/sap-systems.json`. |
 
 The web lane is **not** an MCP server — it's a Playwright suite you run with `npm test`. No ADT
 server is configured here by design: reading or changing ABAP source belongs in the sibling

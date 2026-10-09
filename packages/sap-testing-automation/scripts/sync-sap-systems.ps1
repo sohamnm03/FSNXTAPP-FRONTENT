@@ -102,9 +102,15 @@ foreach ($sys in $registry.systems) {
         $errors.Add("$ctx sapGui block is missing 'enabled'.")
     }
     if ($gui.PSObject.Properties.Name.Contains('enabled') -and $gui.enabled) {
-        if (-not $gui.PSObject.Properties.Name.Contains('logonDescription') -or
-            -not $gui.logonDescription) {
-            $errors.Add("$ctx sapGui.enabled is true but 'logonDescription' is missing - it must match the SAP Logon Pad entry name exactly.")
+        if (-not $sys.PSObject.Properties.Name.Contains('rfc') -or -not $sys.rfc -or
+            -not $sys.rfc.PSObject.Properties.Name.Contains('applicationServer') -or
+            -not $sys.rfc.applicationServer) {
+            $errors.Add("$ctx sapGui.enabled is true but 'rfc.applicationServer' is missing.")
+        }
+        if (-not $sys.PSObject.Properties.Name.Contains('rfc') -or -not $sys.rfc -or
+            -not $sys.rfc.PSObject.Properties.Name.Contains('systemNumber') -or
+            $sys.rfc.systemNumber -notmatch '^\d{2}$') {
+            $errors.Add("$ctx sapGui.enabled is true but 'rfc.systemNumber' is not exactly two digits.")
         }
         $blockedTransactions = if ($gui.PSObject.Properties.Name.Contains('blockedTransactions')) {
             @($gui.blockedTransactions)
@@ -140,7 +146,7 @@ foreach ($sys in $registry.systems) {
     }
     if ($gui.PSObject.Properties.Name.Contains('logonDescription') -and
         $gui.logonDescription -match '(?i)prod') {
-        Write-Warn2 "$ctx targets SAP Logon entry '$($gui.logonDescription)' - that looks like PRODUCTION."
+        Write-Warn2 "$ctx has display label '$($gui.logonDescription)' - that looks like PRODUCTION."
     }
 }
 
@@ -251,10 +257,12 @@ foreach ($sys in $enabled) {
         @($defaultBlockedTransactions)
     }
     $serverEnvironment = [ordered]@{
-        SAP_USER     = $sys.credentials.user
-        SAP_PASSWORD = ('${{{0}}}' -f $sys.credentials.passwordEnvVar)
-        SAP_CLIENT   = $sys.client
-        SAP_LANGUAGE = $sys.language
+        SAP_USER               = $sys.credentials.user
+        SAP_PASSWORD           = ('${{{0}}}' -f $sys.credentials.passwordEnvVar)
+        SAP_CLIENT             = $sys.client
+        SAP_LANGUAGE           = $sys.language
+        SAP_APPLICATION_SERVER = $sys.rfc.applicationServer
+        SAP_SYSTEM_NUMBER      = $sys.rfc.systemNumber
     }
     if ($blockedTransactions.Count -gt 0) {
         $serverEnvironment['FSNXT_SAP_BLOCKED_TRANSACTIONS'] =
@@ -281,7 +289,7 @@ foreach ($sys in $enabled) {
     }
 
     $mode = if ($gui.PSObject.Properties.Name.Contains('readOnly') -and $gui.readOnly) { 'read-only' } else { 'read-write' }
-    Write-Step ("{0,-24} -> {1}  (SAP Logon '{2}', {3})" -f $sys.id, $name, $gui.logonDescription, $mode)
+    Write-Step ("{0,-24} -> {1}  ({2}:32{3}, {4})" -f $sys.id, $name, $sys.rfc.applicationServer, $sys.rfc.systemNumber, $mode)
 }
 
 if ($Check) {

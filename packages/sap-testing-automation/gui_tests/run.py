@@ -98,7 +98,7 @@ def resolve_system(system_id: str | None) -> tuple[str, str, str, dict]:
     no way for the two lanes to disagree about what they are allowed to drive.
 
     `login info` is what `GuiSession.login()` needs to open a fresh session:
-    the SAP Logon Pad entry name, credentials, and the transaction policy that
+    the application server, system number, credentials, and transaction policy that
     `start_transaction()` enforces independently of the MCP server.
     """
     registry = load_json(SYSTEMS)
@@ -127,10 +127,12 @@ def resolve_system(system_id: str | None) -> tuple[str, str, str, dict]:
             )
 
     gui = entry.get("sapGui") or {}
+    rfc = entry.get("rfc") or {}
     creds = entry.get("credentials") or {}
     password_env = creds.get("passwordEnvVar")
     login_info = {
-        "logon_description": gui.get("logonDescription"),
+        "application_server": rfc.get("applicationServer"),
+        "system_number": rfc.get("systemNumber"),
         "user": os.environ.get("SAP_TEST_USERNAME") or os.environ.get("SAP_USER") or creds.get("user"),
         "password": os.environ.get("SAP_TEST_PASSWORD") or os.environ.get("SAP_PASSWORD") or (os.environ.get(password_env) if password_env else None),
         "language": entry.get("language", "EN"),
@@ -383,7 +385,8 @@ def main(argv: list[str] | None = None) -> int:
 
     sap = GuiSession(
         journal, expect_system=system_name, expect_client=client,
-        logon_description=login_info["logon_description"],
+        application_server=login_info["application_server"],
+        system_number=login_info["system_number"],
         sap_user=login_info["user"], sap_password=login_info["password"],
         language=login_info["language"],
         allowed_transactions=login_info["allowed_transactions"],

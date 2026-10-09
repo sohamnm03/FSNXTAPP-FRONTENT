@@ -165,8 +165,9 @@
         "profile": "full",
         "auditLog": "logs/sap-gui-audit.jsonl",
         "$comment": [
-          "'logonDescription' MUST match the SAP Logon Pad entry name exactly - it is",
-          "the argument to sap_connect. Set readOnly=true for a look-but-don't-touch",
+          "'logonDescription' is a display label only. Fresh connections use",
+          "rfc.applicationServer and rfc.systemNumber for every configured system.",
+          "Set readOnly=true for a look-but-don't-touch",
           "profile. The registry-level blockedTransactions policy applies to every",
           "enabled SAP GUI system, including NIIF, TFSIN and LTFS.",
           "",

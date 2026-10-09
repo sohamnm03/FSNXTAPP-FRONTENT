@@ -381,12 +381,12 @@ test('a dry run that never reaches the case is reported plainly and not sent to 
   await until(() => calls.some((call) => call.args.includes('gui_tests.external_case')), 'a dry run to start');
   const runner = calls.find((call) => call.args.includes('gui_tests.external_case'));
   fs.writeFileSync(path.join(runner.options.env.FSNXT_EXTERNAL_RUN_DIR, 'observations.json'), JSON.stringify({ verdict: 'BLOCKED', steps: [], assertions: [] }));
-  runner.child.stderr.emit('data', Buffer.from('Traceback (most recent call last):\n  File \u001b[35m"session.py"\u001b[0m, line 182\n    \u001b[31mraise SystemMismatch(\u001b[0m\n\u001b[1;35mgui_tests.session.SystemMismatch\u001b[0m: \u001b[35mlogin() needs logon_description, sap_user and sap_password\u001b[0m\n'));
+  runner.child.stderr.emit('data', Buffer.from('Traceback (most recent call last):\n  File \u001b[35m"session.py"\u001b[0m, line 185\n    \u001b[31mraise SystemMismatch(\u001b[0m\n\u001b[1;35mgui_tests.session.SystemMismatch\u001b[0m: \u001b[35mlogin() needs application_server, system_number, sap_user and sap_password\u001b[0m\n'));
   runner.child.emit('close', 1);
   calls.at(-1).child.emit('close', 0);
   await until(() => manager.getRun(run.id).status === 'failed', 'the case to be reported as failed');
   const done = manager.getRun(run.id);
-  assert.match(done.response, /dry run 1 could not start — SystemMismatch: login\(\) needs logon_description, sap_user and sap_password/);
+  assert.match(done.response, /dry run 1 could not start — SystemMismatch: login\(\) needs application_server, system_number, sap_user and sap_password/);
   assert.doesNotMatch(done.response, /\u001b|Traceback/);
   assert.equal(calls.filter((call) => call.args.includes('--resume')).length, 0, 'no AI repair for a run that never reached the case');
 });

@@ -15,7 +15,6 @@
 param(
     [Parameter(Mandatory = $true)][string]$SystemId,
     [Parameter(Mandatory = $true)][string]$Client,
-    [Parameter(Mandatory = $true)][string]$LogonDescription,
     [Parameter(Mandatory = $true)][string]$ApplicationServer,
     [Parameter(Mandatory = $true)][ValidatePattern('^\d{2}$')][string]$SystemNumber
 )
@@ -31,7 +30,8 @@ if (-not (Test-Path $python)) {
     Write-Output (@{ connected = $false; reason = 'The SAP GUI Python runtime is missing.' } | ConvertTo-Json -Compress)
     exit 0
 }
-$env:SAP_TEST_LOGON_DESCRIPTION = $LogonDescription
+$env:SAP_TEST_APPLICATION_SERVER = $ApplicationServer
+$env:SAP_TEST_SYSTEM_NUMBER = $SystemNumber
 $env:SAP_TEST_CLIENT = $Client
 $env:SAP_TEST_USERNAME = $env:SAP_TEST_USERNAME
 $env:SAP_TEST_PASSWORD = $env:SAP_TEST_PASSWORD
