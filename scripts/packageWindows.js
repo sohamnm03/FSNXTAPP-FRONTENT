@@ -121,6 +121,47 @@ function buildDevelopmentMcpRuntime() {
   }
 }
 
+// npm can leave links in node_modules that point outside it, most often a link
+// named after this repository back to its root (after `npm install --prefix`
+// from the repo root). tar follows them and recurses forever, so every such
+// link is listed and excluded from the payload.
+function linksLeavingNodeModules(root) {
+  const found = [];
+  const walk = (directory) => {
+    let entries = [];
+    try { entries = fs.readdirSync(directory, { withFileTypes: true }); } catch { return; }
+    for (const entry of entries) {
+      if (entry.name === '.bin' || entry.name === '.cache') continue;
+      const full = path.join(directory, entry.name);
+      let stat;
+      try { stat = fs.lstatSync(full); } catch { continue; }
+      if (stat.isSymbolicLink()) {
+        let target = '';
+        try { target = fs.realpathSync(full); } catch { target = ''; }
+        const nodeModulesPath = full.slice(0, full.lastIndexOf(`${path.sep}node_modules${path.sep}`) + `${path.sep}node_modules`.length);
+        let nodeModules = nodeModulesPath;
+        try { nodeModules = fs.realpathSync(nodeModulesPath); } catch { /* compare unresolved */ }
+        if (!target || !(target === nodeModules || target.startsWith(nodeModules + path.sep))) found.push(full);
+      } else if (stat.isDirectory() && (entry.name === 'node_modules' || entry.name.startsWith('@') || path.basename(directory) === 'node_modules' || path.basename(path.dirname(directory)) === 'node_modules')) {
+        // Packages and scopes directly under a node_modules folder, and nested node_modules.
+        walk(full);
+      }
+    }
+  };
+  const visit = (directory) => {
+    let entries = [];
+    try { entries = fs.readdirSync(directory, { withFileTypes: true }); } catch { return; }
+    for (const entry of entries) {
+      if (!entry.isDirectory() || entry.isSymbolicLink()) continue;
+      const full = path.join(directory, entry.name);
+      if (entry.name === 'node_modules') walk(full);
+      else if (!['.git', '.venv', 'results', 'evidence', 'logs'].includes(entry.name)) visit(full);
+    }
+  };
+  visit(root);
+  return found;
+}
+
 async function main() {
   fs.rmSync(buildRoot, { recursive: true, force: true });
   fs.rmSync(generatedKeyPath, { force: true });
@@ -135,8 +176,13 @@ async function main() {
   fs.mkdirSync(buildRoot, { recursive: true });
 
   try {
+    const strayLinks = linksLeavingNodeModules(sourceRoot);
+    for (const link of strayLinks) {
+      console.warn(`Skipping a node_modules link that points outside its folder: ${link}`);
+    }
     run(resolveTarExecutable(), [
       '-czf', archivePath,
+      ...strayLinks.map((link) => `--exclude=${path.relative(path.dirname(sourceRoot), link).split(path.sep).join('/')}`),
       '--exclude=*/.env',
       '--exclude=*/settings.local.json',
       '--exclude=*/.venv',
@@ -187,4 +233,8 @@ if (require.main === module) {
   });
 }
 
+<<<<<<< HEAD
 module.exports = { buildDevelopmentMcpRuntime, publishElectronBuilderOutput };
+=======
+module.exports = { buildDevelopmentMcpRuntime, linksLeavingNodeModules };
+>>>>>>> b9c7b4fef1cd2495aa5e16ed4493daef1938ce82
